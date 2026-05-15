@@ -1,0 +1,16 @@
+[network]
+api_base_url = "http://127.0.0.1:8080"
+req_conn_timeout = 30
+req_tot_timeout = 30
+
+[sqlite_options]
+max_connections = 5
+duration = 3
+
+
+[own_company]
+own_ras_acc = "40802810629370001827"
+own_inn = "161101510882"
+own_bic = "042202824"
+own_comp_id = "1"
+own_user_id = "1"

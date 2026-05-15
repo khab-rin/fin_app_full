@@ -1,0 +1,36 @@
+use std::sync::Arc;
+
+use shared_lib::Status;
+use shared_lib::primitives::frozen::implements::{DateTime, BoxUuid};
+use shared_lib::service::auth_service::implements::{RestoreByTelCallRequest};
+
+use crate::config::ApiState;
+
+pub(crate) async fn get_user_time_by_device_external(
+    state: &Arc<ApiState>,
+    data: &RestoreByTelCallRequest
+) -> Result<(BoxUuid, DateTime), Status> {
+
+    let RestoreByTelCallRequest {device_id, external_id } = data;
+
+    let record = match sqlx::
+        query_file!(
+            "src/db/sql_queries/call_cf/get/by_extern_device.sql",
+            device_id.as_ref(),
+            external_id
+        ).fetch_one(&state.pool).await {
+            Ok(r) => r,
+            Err(err) => {
+                tracing::error!(
+                    device_id = %device_id,
+                    external_id = %external_id,
+                    tech_err = ?err,
+                    local_err = ?Status::BackSqlQueryCallCf,
+                    "FUN get_user_time_by_device_external WRONG SQL QUERY call_cf"
+                );
+                return Err(Status::BackSqlQueryCallCf);
+            }
+        };
+
+    Ok((record.user_id, record.expires_t))
+}

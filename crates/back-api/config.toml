@@ -1,0 +1,17 @@
+[network]
+conn_timeout = 30
+tot_timeout = 30
+poll_intervals = 4
+connect_retrys = 5
+
+[dadata]
+dadata_comp_url = "https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party"
+dadata_adr_paid_url = "https://cleaner.dadata.ru/api/v1/clean/address"
+
+[smsru]
+call_add_url = "https://sms.ru/callcheck/add"
+get_stat_url = "https://sms.ru/callcheck/status"
+
+[email_sender]
+base_url = "https://api.resend.com/emails"
+from = "Security <onboarding@resend.dev>"

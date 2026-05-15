@@ -1,0 +1,36 @@
+# --- Rust ---
+**/target/
+Cargo.lock
+# Если вы хотите фиксировать версии, Cargo.lock можно оставить, 
+# но в больших монорепозиториях он может весить пару мегабайт.
+
+# --- Дистрибутивы и тяжелые файлы ---
+*.tgz
+*.tar.gz
+*.zip
+*.7z
+*.exe
+*.deb
+
+# --- Базы данных (Tauri и Backend) ---
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/*.sqlite
+
+# --- Frontend (Svelte/Vite/Node) ---
+**/node_modules/
+**/.svelte-kit/
+**/dist/
+**/.vite/
+.npm/
+
+# --- Логи и временные файлы ---
+**/logs/*.log*
+*.log
+**/.vscode/
+**/.idea/
+.DS_Store
+
+# --- Секреты ---
+.env*

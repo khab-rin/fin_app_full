@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: fin_app
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: fin_app_server
+    ports:
+      - "5432:5432"
+    volumes:
+      - fin_app_server_data:/var/lib/postgresql/data
+    healthcheck: # Исправлена опечатка в имени параметра
+      test: ["CMD-SHELL", "pg_isready -U postgres -d fin_app_server"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  back-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cryptocp_checker
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgres://postgres:password@db:5432/fin_app_server
+      - RUST_LOG=info
+    tmpfs:
+      - /tmp
+
+volumes:
+  fin_app_server_data:

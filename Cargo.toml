@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "crates/back-api",
+    "crates/client-desktop/src-tauri", "crates/crypto-service",
+    "crates/shared-lib",
+    "crates/test_crate"]
+resolver = "2"

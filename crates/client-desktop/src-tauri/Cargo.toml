@@ -1,0 +1,52 @@
+[package]
+name = "app-exe"
+version = "0.1.0"
+description = "fin-app"
+authors = [""]
+license = ""
+repository = ""
+edition = "2021"
+rust-version = "1.77.2"
+
+
+[lib]
+name = "back_lib"
+crate-type = ["rlib"]
+path = "src/lib.rs"
+
+[build-dependencies]
+tauri-build = { version = "2.5.6", features = [] }
+
+[dependencies]
+tauri = { version = "2.10.3", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-shell = "2"
+tauri-plugin-log = "2.0.0-rc"
+
+tokio = { version = "1", features = ["full"] }
+futures = "0.3"
+
+sqlx = { version = "0.8", features = [ 
+    "sqlite",
+    "macros",
+    "runtime-tokio-rustls",
+    "uuid",
+    "chrono",
+    "json"
+] }
+
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+encoding_rs = "0.8.35"
+
+reqwest = { version = "0.12", features = ["json", "rustls-tls"] }
+
+log = "0.4"
+shared-lib= {path="../../shared-lib"}
+toml = "0.8"
+dotenvy = "0.15.7"
+directories = "6.0.0"
+uuid = { version = "1.21.0", features = ["v4", "v5", "serde"] }
+keyring = "3.6.3"
+machine-uid = "0.5.4"
+
