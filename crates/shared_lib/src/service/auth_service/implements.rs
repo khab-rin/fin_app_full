@@ -5,8 +5,7 @@ use crate::Status;
 use crate::sql_models::company_models::implements::Company;
 use crate::sql_models::person_models::implements::Person;
 use crate::sql_models::user_models::implements::User;
-use crate::primitives::frozen::implements::{BoxUuid, Email, Phone};
-use crate::primitives::frozen::implements::{Inn, Kpp};
+use crate::primitives::frozen::implements::{BoxUuid, Email, Inn, Kpp, Phone, Snils};
 
 #[derive(Serialize, Deserialize)]
 pub struct SessionUser {
@@ -161,13 +160,53 @@ pub struct SmsruGetResResponse {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RegistrationRequestDto {
-    person: Person,
-    comp_inn: Inn,
-    kpp: Kpp,
+    pub person: Person,
+    pub comp_inn: Inn,
+    pub kpp: Kpp,
+    pub password: String,
+    pub device_id: BoxUuid,
     
     #[serde(with = "serde_bytes")]
     pub document: Vec<u8>,  
     
     #[serde(with = "serde_bytes")]
     pub signature: Vec<u8>, 
+}
+
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct RegistrationRequest {
+    pub person: Person,
+    pub comp_inn: Inn,
+    pub kpp: Kpp,
+    pub password: String,
+    pub device_id: BoxUuid,
+    pub document: Vec<u8>,
+    pub signature: Vec<u8>,
+}
+
+impl From<RegistrationRequestDto> for RegistrationRequest {
+    fn from(dto: RegistrationRequestDto) -> Self {
+        Self { 
+            person: dto.person, 
+            comp_inn: dto.comp_inn, 
+            kpp: dto.kpp, 
+            password: dto.password, 
+            device_id: dto.device_id, 
+            document: dto.document, 
+            signature: dto.signature 
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CryptoVerifySnilsRequest {
+    pub document: Vec<u8>,
+    pub signature: Vec<u8>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CryptoVerifySnilsResponse {
+    pub is_signed: bool,
+    pub snils: Option<Snils>
 }

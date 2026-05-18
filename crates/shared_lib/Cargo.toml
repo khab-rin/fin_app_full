@@ -1,0 +1,24 @@
+[package]
+name="shared_lib"
+version="0.1.0"
+edition="2021"
+
+[features]
+default = ["server"]
+server = ["dep:axum"]
+
+[dependencies]
+tokio = { workspace = true, features = ["sync"] }
+
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_bytes = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+regex = { workspace = true }
+reqwest = { workspace = true }
+
+sqlx = { workspace = true, default-features = false, features = ["macros", "chrono", "rust_decimal", "json", "uuid", "sqlite", "postgres"] }
+rust_decimal = { workspace = true, features = ["db-postgres"] }
+
+axum = { workspace = true, optional = true, default-features = false }

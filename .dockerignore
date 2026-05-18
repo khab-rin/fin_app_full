@@ -1,0 +1,6 @@
+target/
+crates/back-api/logs/
+crates/client-desktop/src-tauri/target/
+crates/client-desktop/ui/node_modules/
+crates/client-desktop/ui/build/
+.git/

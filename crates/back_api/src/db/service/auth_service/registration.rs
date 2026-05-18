@@ -3,16 +3,15 @@ use tokio::io::AsyncWriteExt;
 use uuid::Uuid;
 
 use shared_lib::Status;
-use shared_lib::service::auth_service::implements::{RegisterResponse, VerifyData,VerifyMethod};
+use shared_lib::service::auth_service::implements::{RegisterResponse, VerifyData,VerifyMethod, RegistrationRequestDto};
 use shared_lib::sql_models::person_models::implements::Person;
 
 use crate::config::ApiState;
-use crate::models::registration::RegistrationRequest;
 use crate::db::parsers::cryptocp::parser::parse_cryptcp_output;
 
 pub(crate) async fn register_new_user(
     state: &Arc<ApiState>,
-    payload: RegistrationRequest
+    payload: RegistrationRequestDto
 ) -> Result<RegisterResponse, Status> {
 
     let failed_res = RegisterResponse::Verify(
@@ -46,7 +45,7 @@ pub(crate) async fn register_new_user(
         }
     };
 
-    match doc_file.write_all(&payload.document.contents).await {
+    match doc_file.write_all(&payload.document).await {
         Ok(_) => {}
         Err(err) => {
             tracing::error!(
@@ -70,7 +69,7 @@ pub(crate) async fn register_new_user(
         }
     };
 
-    match sig_file.write_all(&payload.document.contents).await {
+    match sig_file.write_all(&payload.document).await {
         Ok(_) => {}
         Err(err) => {
             tracing::error!(

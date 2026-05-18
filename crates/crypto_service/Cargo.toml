@@ -1,0 +1,18 @@
+[package]
+name = "crypto_service"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "crypto_service_bin"
+path = "src/main.rs"
+
+[dependencies]
+shared_lib = { workspace = true }
+axum = { workspace = true }
+tokio = { workspace = true }
+serde =  {workspace = true}
+tracing-subscriber = { workspace = true }
+tracing = { workspace = true }
+Uuid = { workspace = true }
+

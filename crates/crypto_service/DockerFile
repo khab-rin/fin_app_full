@@ -1,0 +1,66 @@
+# === ЭТАП 1: Сборка Бинаря Криптосервиса ===
+FROM rust:slim-bookworm AS builder
+WORKDIR /app
+
+# Настройка российских зеркал и установка системных зависимостей
+RUN sed -i 's/deb.debian.org/mirror.yandex.ru/g' /etc/apt/sources.list.d/debian.sources || \
+    sed -i 's/deb.debian.org/mirror.yandex.ru/g' /etc/apt/sources.list && \
+    apt-get update && apt-get install -y pkg-config libssl-dev && rm -rf /var/lib/apt/lists/*
+
+# Подтягиваем имя сервиса из docker-compose.yml
+ARG CRATE_NAME
+
+# Копируем И корневой манифест, И лок-файл
+COPY Cargo.toml Cargo.lock ./
+
+# ХАК: Вырезаем из корневого Cargo.toml все лишние крейты, оставляя только shared-lib и наш сервис
+RUN sed -i '/members = \[/,/\]/c\members = [ "crates/shared_lib", "crates/'"${CRATE_NAME}"'" ]' Cargo.toml
+
+# Копируем исходный код только нужных крейтов
+COPY crates/shared_lib/ ./crates/shared_lib/
+
+COPY crates/${CRATE_NAME}/ ./crates/${CRATE_NAME}/
+
+# Теперь мы можем собирать через обычный флаг -p, так как воркспейс стал "маленьким"
+RUN cargo build --release -p ${CRATE_NAME}
+
+RUN ls -la target/release/
+
+# При сборке через воркспейс бинарник всегда падает в общий корень target/release/
+RUN cp target/release/crypto_service_bin /app/crypto_service
+
+
+# === ЭТАП 2: Финальный образ с КриптоПро ===
+FROM debian:bookworm-slim
+WORKDIR /app
+
+RUN sed -i 's/deb.debian.org/mirror.yandex.ru/g' /etc/apt/sources.list.d/debian.sources || \
+    sed -i 's/deb.debian.org/mirror.yandex.ru/g' /etc/apt/sources.list && \
+    apt-get update --fix-missing && \
+    apt-get install -y --no-install-recommends \
+    curl libccid pcscd lsb-release procps && rm -rf /var/lib/apt/lists/*
+
+# Распаковка архива КриптоПро
+ADD crates/crypto_service/linux-amd64_deb.tgz /tmp/
+
+# Установка КриптоПро
+RUN cd /tmp/linux-amd64_deb && \
+    ./install.sh && \
+    dpkg -i cprocsp-pki-cades*.deb cprocsp-pki-plugin*.deb || true && \
+    apt-get update && \
+    apt-get install -y -f --no-install-recommends && \
+    rm -rf /tmp/linux-amd64_deb /var/lib/apt/lists/*
+
+# Установка корневого сертификата
+COPY crates/crypto_service/russian_trusted_root_ca.cer /tmp/guc.crt
+RUN /opt/cprocsp/bin/amd64/certmgr -inst -store mRoot -file /tmp/guc.crt || \
+    /opt/cprocsp/bin/amd64/certmgr -inst -store root -file /tmp/guc.crt && \
+    rm /tmp/guc.crt
+
+# Копируем собранный бинарь. 
+COPY --from=builder /app/crypto_service /app/crypto_service
+
+ENV PATH="/opt/cprocsp/bin/amd64:/opt/cprocsp/sbin/amd64:${PATH}"
+EXPOSE 8081
+
+CMD ["./crypto_service"]
