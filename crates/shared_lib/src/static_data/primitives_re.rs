@@ -95,7 +95,7 @@ pub fn get_nds_22_default() -> &'static Decimal {
 }
 
 
-pub(crate) fn init_static_regex() {
+pub fn init_primitivrs_re() {
     get_scan_dates_reg();
     get_scan_doc_nums_reg();
     get_scan_nds_rate_reg();

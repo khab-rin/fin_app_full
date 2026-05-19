@@ -2,11 +2,15 @@ use shared_lib::service::auth_service::implements::*;
 use shared_lib::Status;
 use shared_lib::service::api_routes::implements::ApiRoutes;
 use shared_lib::service::auth_service::implements::{AuthData, SessionUserToken};
+use shared_lib::service::auth_service::client_state::ClientState;
 
 use crate::service::auth_service::helper::get_device_id;
 
 
-pub async fn register_user(auth_data: AuthData, state: &AppState) -> Result<(), Status> {
+pub async fn register_user(
+    auth_data: AuthData, 
+    state: &ClientState
+) -> Result<(), Status> {
     let AuthData { pers_inn, password, comp_inn, kpp } = auth_data;
 
 

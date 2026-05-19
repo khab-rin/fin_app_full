@@ -6,7 +6,7 @@ use shared_lib::primitives::frozen::implements::{Inn, Kpp, CompType, CompStatus}
 use shared_lib::sql_models::company_models::implements::{Company, CompanyDto};
 use shared_lib::alias_types::implements::{InnKppAccMap, InnKppAccVec};
 
-use crate::config::ApiState;
+use crate::config::BackApiState;
 use crate::db::parsers::dadata::parser::dadata_reqwest_func;
 use crate::db::sql_queries::companys::add_company::helper::{
     make_inn_kpp_pairs,
@@ -17,7 +17,7 @@ use crate::db::sql_queries::companys::add_company::helper::{
 use crate::db::sql_queries::companys::helper::dto_to_company_vec;
 
 pub(crate) async fn sync_server_companys(
-    state: &Arc<ApiState>, 
+    state: &Arc<BackApiState>, 
     data_vec:InnKppAccVec
 ) -> Result<Vec<Company>, Status> {
 

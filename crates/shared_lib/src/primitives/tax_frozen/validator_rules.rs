@@ -1,7 +1,7 @@
 use rust_decimal::Decimal;
 
 use crate::Status;
-use crate::static_data::static_re::{get_scan_nds_rate_reg, get_nds_22_default};
+use crate::static_data::primitives_re::{get_scan_nds_rate_reg, get_nds_22_default};
 
 pub(crate) fn init_nds22_from_str(nds: &str) -> Result<Decimal, Status> {
     get_scan_nds_rate_reg()

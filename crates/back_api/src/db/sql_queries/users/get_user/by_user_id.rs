@@ -2,12 +2,12 @@ use std::sync::Arc;
 
 use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::BoxUuid;
-use shared_lib::service::auth_service::implements::{SessionUserDto, SessionUser};
+use shared_lib::service::auth_service::client_state::{SessionUserDto, SessionUser};
 
-use crate::config::ApiState;
+use crate::config::BackApiState;
 
 pub(crate) async fn get_user_by_user_id(
-    state: &Arc<ApiState>,
+    state: &Arc<BackApiState>,
     user_id: &BoxUuid
 ) -> Result<SessionUser, Status> {
 

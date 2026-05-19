@@ -4,10 +4,10 @@ use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::{DateTime, BoxUuid};
 use shared_lib::service::auth_service::implements::{RestoreByTelCallRequest};
 
-use crate::config::ApiState;
+use crate::config::BackApiState;
 
 pub(crate) async fn get_user_time_by_device_external(
-    state: &Arc<ApiState>,
+    state: &Arc<BackApiState>,
     data: &RestoreByTelCallRequest
 ) -> Result<(BoxUuid, DateTime), Status> {
 

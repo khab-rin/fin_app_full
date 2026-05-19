@@ -4,10 +4,10 @@ use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::Phone;
 use shared_lib::service::auth_service::implements::SmsruCallResponse;
 
-use crate::config::ApiState;
+use crate::config::BackApiState;
 
 pub(crate) async fn smsru_get_phone(
-    state: &Arc<ApiState>,
+    state: &Arc<BackApiState>,
     phone: &Phone
 ) -> Result<(String, Phone), Status> {
 

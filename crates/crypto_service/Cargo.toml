@@ -9,10 +9,17 @@ path = "src/main.rs"
 
 [dependencies]
 shared_lib = { workspace = true }
+
 axum = { workspace = true }
+
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+tracing-appender = { workspace = true }
+
+
+encoding_rs = { workspace = true }
+
 tokio = { workspace = true }
 serde =  {workspace = true}
-tracing-subscriber = { workspace = true }
-tracing = { workspace = true }
-Uuid = { workspace = true }
+uuid = { workspace = true }
 

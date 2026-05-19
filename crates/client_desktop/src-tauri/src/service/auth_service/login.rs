@@ -3,7 +3,8 @@ use keyring::Entry;
 
 use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::BoxUuid;
-use shared_lib::service::auth_service::implements::{AppState, RestoreByAuthDataRequest, AuthData};
+use shared_lib::service::auth_service::implements::{ RestoreByAuthDataRequest, AuthData };
+use shared_lib::service::auth_service::client_state::ClientState;
 
 use crate::service::auth_service::restore_session::restore_session;
 use crate::service::auth_service::helper::get_device_id;
@@ -11,7 +12,7 @@ use crate::service::auth_service::helper::get_device_id;
 
 
 pub(crate) async fn login(
-    state: &AppState,
+    state: &ClientState,
     auth_data: AuthData
 ) -> Result<Status, Status> {
     

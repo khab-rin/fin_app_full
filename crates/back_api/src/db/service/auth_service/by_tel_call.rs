@@ -4,7 +4,7 @@ use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{
     RegisterResponse, RestoreByTelCallRequest, SessionUserToken, SmsruCallResponse, VerifyData, VerifyMethod};
 
-use crate::config::ApiState;
+use crate::config::BackApiState;
 use crate::db::sql_queries::call_cf::get::by_extern_device::get_user_time_by_device_external;
 use crate::db::service::auth_service::smsru_cf_query::smsru_get_cf;
 use crate::db::sql_queries::sessions::set::new_session::new_session;
@@ -12,7 +12,7 @@ use crate::db::sql_queries::users::get_user::by_user_id::get_user_by_user_id;
 
 
 pub(crate) async fn restore_user_by_tel_call(
-    state: &Arc<ApiState>,
+    state: &Arc<BackApiState>,
     data: &RestoreByTelCallRequest
 ) -> Result<RegisterResponse, Status> {
     let failed_result = Ok(RegisterResponse::

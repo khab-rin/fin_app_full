@@ -4,10 +4,10 @@ use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::{Email, Inn, Kpp};
 use shared_lib::service::auth_service::implements::{RestoreByTokenRequest, WarnEmailData};
 
-use crate::config::ApiState;
+use crate::config::BackApiState;
 
 pub(crate) async fn delete_session_by_token(
-    state: &Arc<ApiState>,
+    state: &Arc<BackApiState>,
     payload: &RestoreByTokenRequest
 ) -> Result<Vec<WarnEmailData>, Status> {
 

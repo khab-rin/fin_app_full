@@ -1,9 +1,12 @@
 use axum::{routing::post, Router};
 use std::sync::Arc;
+use tracing_subscriber::{fmt, prelude::*, EnvFilter};
 
-pub mod check_sign;
+use shared_lib::service::api_routes::implements::CryptoApiRoutes;
 
-use check_sign::verify_signature_handler;
+pub mod person_snils;
+
+use person_snils::checker::verify_signature_handler;
 
 pub struct AppState {
     pub cryptcp_path: String,
@@ -49,18 +52,20 @@ async fn main() {
     let cryptcp_path = std::env::var("CRYPTCP_PATH")
         .unwrap_or_else(|_| "/opt/cprocsp/bin/amd64/cryptcp".to_string());
 
-    let port: u16 = std::env::var("PORT")
-        .ok()
-        .and_then(|p| p.parse().ok())
-        .unwrap_or(8081);
-
     tracing::info!("Crypto service is initializing with cryptcp path: {}", cryptcp_path);
 
     let state = Arc::new(AppState { cryptcp_path });
 
     let app = Router::new()
-        .route("/verify", post(verify_signature_handler))
+        .route(
+            CryptoApiRoutes::CryptoVerifyPerson.get_path(), 
+            post(verify_signature_handler))
         .with_state(state);
+
+    let port: u16 = std::env::var("PORT")
+        .ok()
+        .and_then(|p| p.parse().ok())
+        .unwrap_or(8081);
 
     let addr = format!("0.0.0.0:{}", port);
 

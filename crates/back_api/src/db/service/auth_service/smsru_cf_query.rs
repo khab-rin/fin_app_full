@@ -5,10 +5,10 @@ use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::DateTime;
 use shared_lib::service::auth_service::implements::{SmsruGetResResponse, SmsRuResponseTextCode};
 
-use crate::config::ApiState;
+use crate::config::BackApiState;
 
 pub(crate) async fn smsru_get_cf(
-    state: &Arc<ApiState>,
+    state: &Arc<BackApiState>,
     expires_t: &DateTime,
     external_id: &str
 ) -> Result<bool, Status> {

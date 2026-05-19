@@ -1,13 +1,14 @@
-use shared_lib::primitives::frozen::implements::BoxUuid;
-use shared_lib::service::auth_service::implements::{AppState, SessionUserToken};
 use shared_lib::Status;
+use shared_lib::primitives::frozen::implements::BoxUuid;
+use shared_lib::service::auth_service::implements::SessionUserToken;
 use shared_lib::service::api_routes::implements::ApiRoutes;
+use shared_lib::service::auth_service::client_state::ClientState;
 
 use crate::config::init_session;
 use crate::service::auth_service::helper::get_device_id;
 
 pub(crate) async fn restore_session(
-    state: &AppState,
+    state: &ClientState,
     token: BoxUuid
 ) -> Result<Status, Status> {
 

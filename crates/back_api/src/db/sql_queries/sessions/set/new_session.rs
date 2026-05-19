@@ -3,10 +3,10 @@ use std::sync::Arc;
 use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::BoxUuid;
 
-use crate::config::ApiState;
+use crate::config::BackApiState;
 
 pub(crate) async fn new_session(
-    state: &Arc<ApiState>,
+    state: &Arc<BackApiState>,
     user_id: &BoxUuid,
     device_id: &BoxUuid
 ) -> Result<BoxUuid, Status> {

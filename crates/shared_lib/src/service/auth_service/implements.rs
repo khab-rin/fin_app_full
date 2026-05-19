@@ -2,57 +2,17 @@ use serde::{Deserialize, Serialize};
 
 
 use crate::Status;
-use crate::sql_models::company_models::implements::Company;
 use crate::sql_models::person_models::implements::Person;
-use crate::sql_models::user_models::implements::User;
 use crate::primitives::frozen::implements::{BoxUuid, Email, Inn, Kpp, Phone, Snils};
+use crate::primitives::composite::implements::Fio;
+use crate::service::auth_service::client_state::SessionUser;
 
-#[derive(Serialize, Deserialize)]
-pub struct SessionUser {
-    pub user: User,
-    pub person: Person,
-    pub company: Company
-}
 
-#[derive(Debug)]
-pub struct SessionUserDto {
-    pub user: serde_json::Value,
-    pub person: serde_json::Value,
-    pub company: serde_json::Value
-}
 
-impl std::convert::TryFrom<SessionUserDto> for SessionUser {
-    type Error = Status;
-    fn try_from(dto: SessionUserDto) -> Result<Self, Self::Error> {
-        Ok(Self { 
-            user: serde_json::
-                from_value(dto.user)
-                .map_err(|_| Status::UserWrongMapping)?,
-            
-            person: serde_json::
-                from_value(dto.person)
-                .map_err(|_| Status::PersonWrongMapping)?,
-            
-            company: serde_json::
-                from_value(dto.company)
-                .map_err(|_| Status::CompanyWrongMapping)?
-         })
-    }
-}
 
-pub struct AppState {
-    pub client: reqwest::Client,
-    pub api_url: String,
-    pub app_name: String,
-    pub app_path: std::path::PathBuf,
-    pub session: tokio::sync::Mutex<Option<ActiveSession>>
-}
 
-pub struct ActiveSession {
-    pub user: SessionUser,
-    pub local_db: sqlx::SqlitePool,
-    pub token: BoxUuid
-}
+
+
 
 #[derive(Serialize, Deserialize)]
 pub enum RegisterResponse {
@@ -165,6 +125,7 @@ pub struct RegistrationRequestDto {
     pub kpp: Kpp,
     pub password: String,
     pub device_id: BoxUuid,
+    pub doc_hash: String,
     
     #[serde(with = "serde_bytes")]
     pub document: Vec<u8>,  
@@ -181,6 +142,7 @@ pub struct RegistrationRequest {
     pub kpp: Kpp,
     pub password: String,
     pub device_id: BoxUuid,
+    pub doc_hash: String,
     pub document: Vec<u8>,
     pub signature: Vec<u8>,
 }
@@ -193,6 +155,7 @@ impl From<RegistrationRequestDto> for RegistrationRequest {
             kpp: dto.kpp, 
             password: dto.password, 
             device_id: dto.device_id, 
+            doc_hash: dto.doc_hash,
             document: dto.document, 
             signature: dto.signature 
         }
@@ -200,13 +163,15 @@ impl From<RegistrationRequestDto> for RegistrationRequest {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct CryptoVerifySnilsRequest {
+pub struct CryptoVerifyRequest {
     pub document: Vec<u8>,
     pub signature: Vec<u8>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct CryptoVerifySnilsResponse {
+pub struct CryptoVerifyPersonResponse {
     pub is_signed: bool,
-    pub snils: Option<Snils>
+    pub snils: Option<Snils>,
+    pub inn: Option<Inn>,
+    pub fio: Option<Fio>
 }

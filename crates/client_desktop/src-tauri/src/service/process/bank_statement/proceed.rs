@@ -5,7 +5,7 @@ use shared_lib::service::process::bank_statement::implements::BankStatementProce
 use shared_lib::sql_models::company_models::implements::{Company, CompanyCurt};
 use shared_lib::alias_types::implements::{InnKppAccMap, InnKppAccVec};
 use shared_lib::service::api_routes::implements::ApiRoutes;
-use shared_lib::service::auth_service::implements::AppState;
+use shared_lib::service::auth_service::client_state::ClientState;
 
 use crate::parsers::bank_statement::parser::bank_parser;
 use crate::config::Config;
@@ -15,7 +15,7 @@ use crate::POOL;
 
 
 pub(crate) async fn process_statement<P: AsRef<Path>>(
-    state: &AppState,
+    state: &ClientState,
     path: P
 ) -> Result<BankStatementProceedResult, Status> {
     let mut result = BankStatementProceedResult::default();

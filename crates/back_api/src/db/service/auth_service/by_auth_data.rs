@@ -16,10 +16,10 @@ use crate::db::sql_queries::users::get_user::by_authdata::get_auth_password_chec
 use crate::db::sql_queries::call_cf::set::new_cf::new_cf;
 use crate::db::service::auth_service::by_device_token::get_user;
 use crate::db::service::auth_service::smsru_phone_query::smsru_get_phone;
-use crate::config::ApiState;
+use crate::config::BackApiState;
 
 pub(crate) async fn restore_user_by_authdata(
-    state: &Arc<ApiState>,
+    state: &Arc<BackApiState>,
     data: &RestoreByAuthDataRequest
 ) -> Result<RegisterResponse, Status> {
 

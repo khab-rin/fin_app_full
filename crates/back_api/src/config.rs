@@ -39,19 +39,12 @@ pub(crate) struct Config {
     pub(crate) smsru: SmsRu,
     pub(crate) email_sender: EmailSender,
     #[serde(skip)]
+    pub(crate) crypto_servise: CryptoService,
+    #[serde(skip)]
     pub(crate) client: OnceLock<Client>,
     #[serde(skip)]
     pub(crate) headers: Headers
 }
-
-#[derive(Deserialize, Debug)]
-pub(crate) struct EmailSender {
-    pub(crate) base_url: String,
-    pub(crate) from: String,
-    #[serde(skip, default)]
-    pub(crate) api: String
-}
-
 
 #[derive(Deserialize, Debug, Default)]
 pub(crate) struct DataBase {
@@ -88,12 +81,26 @@ pub(crate) struct SmsRu {
     pub(crate) api: String 
 }
 
+#[derive(Deserialize, Debug)]
+pub(crate) struct EmailSender {
+    pub(crate) base_url: String,
+    pub(crate) from: String,
+    #[serde(skip, default)]
+    pub(crate) api: String
+}
+
+#[derive(Deserialize, Debug, Default)]
+pub(crate) struct CryptoService {
+    #[serde(skip, default)]
+    pub(crate) url: String,
+}
+
 #[derive(Default, Debug)]
 pub(crate) struct Headers {
     pub(crate) dadata_header: OnceLock<HeaderMap>,
 }
 
-pub(crate) struct ApiState {
+pub(crate) struct BackApiState {
     pub(crate) pool: sqlx::PgPool,
     pub(crate) config: &'static Config
 }
@@ -122,6 +129,9 @@ impl Config {
 
             config.email_sender.api = std::env::var("EMAIL_SENDER_API_KEY")
                 .expect("MISS_EMAIL_SENDER_API_KEY");
+
+            config.crypto_servise.url = std::env::var("CRYPTO_SERVICE_URL")
+                .expect("MISS_CRYPTO_SERVICE_API_URL");
             
             let client = Client::builder()
                 .connect_timeout(config.network.conn_timeout)

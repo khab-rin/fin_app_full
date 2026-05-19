@@ -1,11 +1,12 @@
-pub mod static_re;
-pub(crate) mod const_var;
-pub(crate) use crate::static_data::static_re::init_static_regex;
+pub mod primitives_re;
+pub mod const_var;
+pub mod crypto_re;
 
+use crate::static_data::primitives_re::init_primitivrs_re;
+use crate::static_data::crypto_re::init_crypto_re;
 
-
-
-
-pub fn init() {
-    init_static_regex();
+pub fn init_re() {
+    init_primitivrs_re();
+    init_crypto_re();
 }
+

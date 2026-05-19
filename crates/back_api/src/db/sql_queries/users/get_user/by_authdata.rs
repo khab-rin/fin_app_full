@@ -8,11 +8,11 @@ use shared_lib::service::auth_service::implements::{
 use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::{BoxUuid, Phone};
 
-use crate::config::ApiState;
+use crate::config::BackApiState;
 
 
 pub(crate) async fn get_auth_password_check(
-    state: &Arc<ApiState>,
+    state: &Arc<BackApiState>,
     data: &RestoreByAuthDataRequest
 ) -> Result<Vec<AuthCheckPassword>, Status> {
     

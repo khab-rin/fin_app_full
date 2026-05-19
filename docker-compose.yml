@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: fin_app_server
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - fin_app_server_data:/var/lib/postgresql/data
     healthcheck:
@@ -27,7 +27,7 @@ services:
     container_name: crypto_service
     restart: always
     ports:
-      - "8081:8081"
+      - "127.0.0.1:8081:8081"
 
     environment:
       - CRYPTCP_PATH=/opt/cprocsp/bin/amd64/cryptcp

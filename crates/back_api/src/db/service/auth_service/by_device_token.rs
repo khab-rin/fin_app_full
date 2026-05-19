@@ -1,15 +1,17 @@
 use std::sync::Arc;
 
 use shared_lib::Status;
-use shared_lib::service::auth_service::implements::{RegisterResponse, RestoreByTokenRequest, SessionUser, SessionUserToken, VerifyData, VerifyMethod};
+use shared_lib::service::auth_service::client_state::SessionUser;
+use shared_lib::service::auth_service::implements::{RegisterResponse, RestoreByTokenRequest, SessionUserToken, VerifyData, VerifyMethod};
 
-use crate::config::ApiState;
+
+use crate::config::BackApiState;
 use crate::db::service::auth_service::delete_token::delete_warn_token_device;
 use crate::db::sql_queries::users::get_user::by_device_token::get_user_by_device_token;
 
 
 pub(crate) async fn get_user(
-    state: &Arc<ApiState>,
+    state: &Arc<BackApiState>,
     payload: &RestoreByTokenRequest
 ) -> Result<RegisterResponse, Status> {
 

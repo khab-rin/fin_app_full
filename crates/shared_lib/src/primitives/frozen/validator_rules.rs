@@ -2,7 +2,7 @@ use std::{str::FromStr};
 use chrono::{NaiveDate, Datelike};
 use rust_decimal::Decimal;
 
-use crate::static_data::static_re::*;
+use crate::static_data::primitives_re::*;
 use crate::static_data::const_var::DATE_FORMATS;
 use crate::Status;
 

@@ -4,7 +4,7 @@ use std::fs;
 use shared_lib::parsers::bank_statement::implements::{*};
 use shared_lib::err_models::implements::Status;
 use shared_lib::primitives::frozen::implements::{Date, DocNum, RubF, RasAcc};
-use shared_lib::static_data::static_re::*;
+use shared_lib::static_data::primitives_re::*;
 use encoding_rs::WINDOWS_1251;
 
 use crate::config::Config;

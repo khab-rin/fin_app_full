@@ -10,6 +10,7 @@ use tower_http::trace::TraceLayer;
 use tracing_subscriber::{fmt, prelude::*, EnvFilter};
 
 use shared_lib::service::api_routes::implements::ApiRoutes;
+use shared_lib::static_data::init_re;
 
 use crate::handlers::service::process::bank_statement::handler::auto_add_company_handler;
 use crate::handlers::service::auth_service::handler::{restore_user_by_token_handler};
@@ -52,6 +53,7 @@ async fn main() {
         .with(file_formatter)
         .init();
 
+    init_re();
 
     let base_url = &config::Config::global().data_base.database_url;
 
@@ -73,7 +75,7 @@ async fn main() {
         }
     };
 
-    let state = Arc::new(config::ApiState {
+    let state = Arc::new(config::BackApiState {
         pool,
         config: config::Config::global()
     });

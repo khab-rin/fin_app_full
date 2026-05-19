@@ -4,10 +4,10 @@ use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::{Inn, Kpp};
 use shared_lib::parsers::dadata::implements::*;
 
-use crate::config::ApiState;
+use crate::config::BackApiState;
 
 pub async fn dadata_reqwest_func(
-    state: &Arc<ApiState>, 
+    state: &Arc<BackApiState>, 
     inn: &Inn, 
     kpp: &Kpp
 ) -> Result<CtrprtyMetadata, Status> {

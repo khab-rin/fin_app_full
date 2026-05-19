@@ -12,7 +12,7 @@ use serde::{Deserialize, Deserializer};
 use directories::ProjectDirs;
 
 use shared_lib::primitives::frozen::implements::{Inn, Bic, RasAcc};
-use shared_lib::service::auth_service::implements::{AppState, ActiveSession};
+use shared_lib::service::auth_service::client_state::{ClientState, ActiveSession};
 
 macro_rules! make_header {
     ( [ $($key:expr => $val:expr),* $(,)? ] ) => {
@@ -172,7 +172,7 @@ pub(crate) struct SqliteOptions {
 
 
 pub(crate) async fn init_session(
-    state: &AppState,
+    state: &ClientState,
     user_data: SessionUserToken
 ) -> Result<Status, Status> {
     dotenvy::dotenv().ok();

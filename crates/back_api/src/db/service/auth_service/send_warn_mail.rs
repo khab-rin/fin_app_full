@@ -3,10 +3,10 @@ use std::sync::Arc;
 use shared_lib::Status;
 use shared_lib::service::auth_service::implements::WarnEmailData;
 
-use crate::config::ApiState;
+use crate::config::BackApiState;
 
 pub(crate) async fn send_warn_mail(
-    state_clone: Arc<ApiState>,
+    state_clone: Arc<BackApiState>,
     warn_data: WarnEmailData
 ) -> Result<Status, Status> {
     let WarnEmailData { email, pers_inn, comp_inn, kpp } = warn_data;

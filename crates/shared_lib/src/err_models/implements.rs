@@ -178,6 +178,8 @@ pub enum Status {
     BackFunSmsRuCfFailed = 1006,
     BackSqlQuerySessions = 1007,
     BackSqlQueryUsers = 1008,
+
+    CryptoServerError = 2001
 }
 
 

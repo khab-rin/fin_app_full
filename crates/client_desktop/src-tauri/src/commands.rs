@@ -1,5 +1,6 @@
 use shared_lib::Status;
-use shared_lib::service::auth_service::implements::{AppState, AuthData};
+use shared_lib::service::auth_service::implements::AuthData;
+use shared_lib::service::auth_service::client_state::ClientState;
 use shared_lib::primitives::frozen::implements::{Inn, Kpp};
 
 use crate::service::auth_service::login::login;
@@ -7,7 +8,7 @@ use crate::service::process::bank_statement::proceed::process_statement;
 
 #[tauri::command]
 pub async fn cmd_process_bank_statement(
-    state: tauri::State<'_, AppState>,
+    state: tauri::State<'_, ClientState>,
     path: String
 ) -> Result<(), Status> {
 
@@ -24,7 +25,7 @@ pub async fn cmd_process_bank_statement(
 
 #[tauri::command]
 pub(crate) async  fn is_state_active(
-    state: tauri::State<'_, AppState>
+    state: tauri::State<'_, ClientState>
 ) -> Result<bool, Status> {
 
     let session_ref = state.session.lock().await;
@@ -46,7 +47,7 @@ pub(crate) async  fn is_state_active(
 
 #[tauri::command]
 pub(crate) async fn logout(
-    state: tauri::State<'_, AppState>
+    state: tauri::State<'_, ClientState>
 ) -> Result<(), Status> {
 
     let mut session_ref = state.session.lock().await;
@@ -56,7 +57,7 @@ pub(crate) async fn logout(
 
 #[tauri::command]
 pub(crate) async fn get_state(
-    state: tauri::State<'_, AppState>,
+    state: tauri::State<'_, ClientState>,
     pers_inn: Inn, 
     password: String, 
     comp_inn: Inn, 
