@@ -1,9 +1,11 @@
-use std::default;
 use std::sync::OnceLock;
 use std::time::Duration;
-use reqwest::Client;
+
 use reqwest::header::{HeaderMap, HeaderName, CONTENT_TYPE, ACCEPT, AUTHORIZATION};
-use serde::{Deserialize, Deserializer, Serialize};
+use serde::{Deserialize, Deserializer};
+use reqwest_retry::policies::ExponentialBackoff;
+use reqwest_middleware::ClientWithMiddleware;
+use retry_policies::RetryPolicy;
 
 macro_rules! make_header {
     ( [ $($key:expr => $val:expr),* $(,)? ] ) => {
@@ -41,9 +43,25 @@ pub(crate) struct Config {
     #[serde(skip)]
     pub(crate) crypto_servise: CryptoService,
     #[serde(skip)]
-    pub(crate) client: OnceLock<Client>,
+    pub(crate) clients: Clients,
+    #[serde(skip)]
+    pub(crate) policies: RetryPolicies,
     #[serde(skip)]
     pub(crate) headers: Headers
+}
+
+#[derive(Default, Debug)]
+pub(crate) struct Clients {
+    pub(crate) instant: OnceLock<reqwest_middleware::ClientWithMiddleware>,
+    pub(crate) standard: OnceLock<reqwest_middleware::ClientWithMiddleware>,
+    pub(crate) relaxed: OnceLock<reqwest_middleware::ClientWithMiddleware>
+}
+
+#[derive(Default, Debug)]
+pub(crate) struct RetryPolicies {
+    pub(crate) instant: OnceLock<ExponentialBackoff>,
+    pub(crate) standard: OnceLock<ExponentialBackoff>,
+    pub(crate) relaxed: OnceLock<ExponentialBackoff>,
 }
 
 #[derive(Deserialize, Debug, Default)]
@@ -55,12 +73,34 @@ pub(crate) struct DataBase {
 #[derive(Deserialize, Debug)]
 pub(crate) struct NetWork {
     #[serde(deserialize_with = "time_parser::duration_from_u64")]
-    pub(crate) conn_timeout: Duration,
+    pub(crate) inst_conn_timeout: Duration,
     #[serde(deserialize_with = "time_parser::duration_from_u64")]
-    pub(crate) tot_timeout: Duration,
+    pub(crate) inst_tot_timeout: Duration,
     #[serde(deserialize_with = "time_parser::duration_from_u64")]
-    pub(crate) poll_intervals: Duration,
-    pub(crate) connect_retrys: u8
+    pub(crate) inst_request_interval: Duration,
+    pub(crate) inst_retries: u32,
+    #[serde(deserialize_with = "time_parser::duration_from_u64")]
+    pub(crate) inst_poll_intervals: Duration,
+
+    #[serde(deserialize_with = "time_parser::duration_from_u64")]
+    pub(crate) std_conn_timeout: Duration,
+    #[serde(deserialize_with = "time_parser::duration_from_u64")]
+    pub(crate) std_tot_timeout: Duration,
+    #[serde(deserialize_with = "time_parser::duration_from_u64")]
+    pub(crate) std_request_interval: Duration,
+    pub(crate) std_retries: u32,
+    #[serde(deserialize_with = "time_parser::duration_from_u64")]
+    pub(crate) std_poll_intervals: Duration,
+
+    #[serde(deserialize_with = "time_parser::duration_from_u64")]
+    pub(crate) rel_conn_timeout: Duration,
+    #[serde(deserialize_with = "time_parser::duration_from_u64")]
+    pub(crate) rel_tot_timeout: Duration,
+    #[serde(deserialize_with = "time_parser::duration_from_u64")]
+    pub(crate) rel_request_interval: Duration,
+    pub(crate) rel_retries: u32,
+    #[serde(deserialize_with = "time_parser::duration_from_u64")]
+    pub(crate) rel_poll_intervals: Duration
 }
 
 #[derive(Deserialize, Debug)]
@@ -132,15 +172,31 @@ impl Config {
 
             config.crypto_servise.url = std::env::var("CRYPTO_SERVICE_URL")
                 .expect("MISS_CRYPTO_SERVICE_API_URL");
+
+            let inst_client = make_client(
+                config.network.inst_conn_timeout, 
+                config.network.inst_tot_timeout, 
+                config.network.inst_request_interval, 
+                config.network.inst_retries);
             
-            let client = Client::builder()
-                .connect_timeout(config.network.conn_timeout)
-                .timeout(config.network.tot_timeout)
-                .build()
-                .expect("FATAL: Failed to build reqwest::Client");
-
-            config.client.set(client).expect("STATIC_MEMORY_ERROR!!!");
-
+            config.clients.instant.set(inst_client).expect("STATIC_MEMORY_ERROR!!!");
+            
+            let std_client = make_client(
+                config.network.std_conn_timeout, 
+                config.network.std_tot_timeout, 
+                config.network.std_request_interval, 
+                config.network.std_retries);
+            
+            config.clients.standard.set(std_client).expect("STATIC_MEMORY_ERROR!!!");
+            
+            let rel_client = make_client(
+                config.network.rel_conn_timeout, 
+                config.network.rel_tot_timeout, 
+                config.network.rel_request_interval, 
+                config.network.rel_retries);
+            
+            config.clients.relaxed.set(rel_client).expect("STATIC_MEMORY_ERROR!!!");
+   
             let dadata_header = make_header!([
                 CONTENT_TYPE => "application/json",
                 ACCEPT => "application/json",
@@ -155,12 +211,71 @@ impl Config {
         })
     }
 
-    pub(crate) fn get_client(&self) -> &'static Client {
-        Self::global().client.get().expect("STATIC_MEMORY_ERROR!!!")
+    pub fn get_inst_client(&self) -> &'static reqwest_middleware::ClientWithMiddleware {
+        Self::global().clients.instant.get().expect("STATIC_MEMORY_ERROR!!!")
+    }
+
+    pub fn get_std_client(&self) -> &'static reqwest_middleware::ClientWithMiddleware {
+        Self::global().clients.standard.get().expect("STATIC_MEMORY_ERROR!!!")
+    }
+
+    pub fn get_rel_client(&self) -> &'static reqwest_middleware::ClientWithMiddleware {
+        Self::global().clients.relaxed.get().expect("STATIC_MEMORY_ERROR!!!")
     }
 
     pub(crate) fn get_dadata_header(&self) -> &'static HeaderMap {
         Self::global().headers.dadata_header.get().expect("STATIC_MEMORY_ERROR!!!")
     }
 
+}
+
+
+// pub(crate) fn make_client(
+//     conn_timeout: Duration,
+//     tot_timeout: Duration,
+//     request_interval: Duration,
+//     retries: u32,
+// ) -> (reqwest::Client, ExponentialBackoff) {
+    
+//     let client= reqwest::Client::builder()
+//         .connect_timeout(conn_timeout)
+//         .timeout(tot_timeout)
+//         .build()
+//         .expect("FATAL: Failed to build reqwest::Client");
+
+//     let policy = ExponentialBackoff::builder()
+//         .jitter(reqwest_retry::Jitter::None)
+//         .retry_bounds(request_interval, request_interval * 100)
+//         .base(2)
+//         .build_with_max_retries(retries);
+
+//     (client, policy)
+        
+// }
+
+
+
+pub(crate) fn make_client(
+    conn_timeout: Duration,
+    tot_timeout: Duration,
+    request_interval: Duration,
+    retries: u32,
+) -> ClientWithMiddleware {
+    
+    let client= reqwest::Client::builder()
+        .connect_timeout(conn_timeout)
+        .timeout(tot_timeout)
+        .build()
+        .expect("FATAL: Failed to build reqwest::Client");
+
+    let retry_policy = reqwest_retry::policies::ExponentialBackoff::builder()
+        .jitter(reqwest_retry::Jitter::None)
+        .retry_bounds(request_interval, request_interval * 100)
+        .base(2)
+        .build_with_max_retries(retries);
+
+    reqwest_middleware::ClientBuilder::new(client)
+        .with(reqwest_retry::RetryTransientMiddleware::new_with_policy(retry_policy))
+        .build()
+        
 }

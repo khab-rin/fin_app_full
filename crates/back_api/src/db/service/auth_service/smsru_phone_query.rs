@@ -13,7 +13,7 @@ pub(crate) async fn smsru_get_phone(
 
     let url = &state.config.smsru.call_add_url;
     let api_key = &state.config.smsru.api;
-    let client = state.config.get_client();
+    let client = state.config.get_std_client();
      
     let response = client
         .get(url)
@@ -27,9 +27,10 @@ pub(crate) async fn smsru_get_phone(
         .inspect_err(|err| {
             tracing::error!(
                 tech_err = ?err,
-                local_err = ?Status::BackAuthSmsRuQuery
+                local_err = ?Status::QueryGetRequestErr,
+                "FUN smsru_get_phone FAILED BY GET TEL QUERY"
             )
-        }).map_err(|_| Status::BackAuthSmsRuQuery)?;
+        }).map_err(|_| Status::QueryGetRequestErr)?;
 
     let data: SmsruCallResponse = response
         .json()
@@ -37,18 +38,21 @@ pub(crate) async fn smsru_get_phone(
         .inspect_err(|err| {
             tracing::error!(
                 tech_err = ?err,
-                local_err = ?Status::BackAuthSmsruResponseMapping
+                local_err = ?Status::SmsruCallResponseMappingErr,
+                "FUN smsru_get_phone FAILED BY MAPPING SmsruCallResponse"
+
             )
-        }).map_err(|_| Status::BackAuthSmsruResponseMapping)?;
+        }).map_err(|_| Status::SmsruCallResponseMappingErr)?;
 
     if data.status == "OK" && data.status_code == 100 {
         
         let check_id = data
             .check_id
             .ok_or(Status::BackAuthSmsRuWrongResponse)
-            .inspect_err(|_| {
+            .inspect_err(|err| {
                 tracing::warn!(
-                    teck_err = ?Status::BackAuthSmsRuWrongResponse,
+                    loacl_err = ?err,
+                    "FUN smsru_get_phone FAILED BY MISSING check_id IN RESPONSE"
                 )
             })?;
         
@@ -57,12 +61,13 @@ pub(crate) async fn smsru_get_phone(
             .ok_or(Status::BackAuthSmsRuWrongResponse)
             .inspect_err(|err| {
                 tracing::warn!(
-                    local_warn = ?err,
+                    local_err = ?err,
+                    "FUN smsru_get_phone FAILED BY MISSING check_id IN RESPONSE"
                 )
             })?;
         
         Ok((check_id, call_phone))
 
-    } else { Err(Status::BackAuthSmsRuQuery)}   
+    } else { Err(Status::BackSmsRuBalance)}   
 
 }

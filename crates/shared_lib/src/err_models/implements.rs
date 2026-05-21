@@ -127,8 +127,6 @@ pub enum Status {
     BackAuthGetCheckPasswQueryLogic = 319,
     BackAuthWrongPassword = 320,
     BackAuthDeviceMiss = 321,
-    BackAuthSmsRuQuery = 322,
-    BackAuthSmsruResponseMapping = 323,
     BackAuthSmsRuWrongResponse = 324,
     BackAuthDelTokenMissUser = 325,
     BackAuthDelWarnTokenDevice = 326,
@@ -154,7 +152,7 @@ pub enum Status {
     AuthCompanyMiss = 365,
     
 
-    PersonWrongMetadataMap = 400,
+    
     CompanyWrongMetadataMap = 401,
     
 
@@ -168,18 +166,28 @@ pub enum Status {
     ClientInitSqlxMigrate = 507,
     ClientLoginWronTokenInSystem = 508,
 
-    UserWrongMapping = 1000,
-    PersonWrongMapping = 1001,
-    CompanyWrongMapping = 1002,
-    
-    BackSmsRuBalance = 1003,
-    BackSqlQueryCallCf = 1004,
-    SmsruGetResResponseStructWrongMapping = 1005,
-    BackFunSmsRuCfFailed = 1006,
-    BackSqlQuerySessions = 1007,
-    BackSqlQueryUsers = 1008,
+    QueryGetRequestErr = 1001,
+    QueryBodyReadErr = 1002,
 
-    CryptoServerError = 2001
+    UserWrongMapping = 2000,
+    PersonWrongMapping = 2001,
+    CompanyWrongMapping = 2002,
+    
+    BackSmsRuBalance = 2003,
+    BackSqlQueryCallCf = 2004,
+    SmsruGetResResponseStructWrongMapping = 2005,
+    BackFunSmsRuCfFailed = 2006,
+    BackSqlQuerySessions = 2007,
+    BackSqlQueryUsers = 2008,
+    BackQueryGetErr = 2009,
+
+    CryptoServerError = 3001,
+
+    SmsruGetResResponseMappigErr = 4001,
+    SmsruCallResponseMappingErr = 4002,
+    CryptoVerifyPersonResponseMappingErr = 4003,
+    PersonMappingError = 4004,
+
 }
 
 

@@ -41,7 +41,9 @@ pub enum VerifyMethod {
     NeedRegistrtion {},
     TryLater {},
     WrongPassword {},
-
+    MissedFile {},
+    WrongSignFile {},
+    WrongPerson {}
 }
 
 
@@ -119,23 +121,6 @@ pub struct SmsruGetResResponse {
 
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct RegistrationRequestDto {
-    pub person: Person,
-    pub comp_inn: Inn,
-    pub kpp: Kpp,
-    pub password: String,
-    pub device_id: BoxUuid,
-    pub doc_hash: String,
-    
-    #[serde(with = "serde_bytes")]
-    pub document: Vec<u8>,  
-    
-    #[serde(with = "serde_bytes")]
-    pub signature: Vec<u8>, 
-}
-
-
-#[derive(Debug, Serialize, Deserialize)]
 pub struct RegistrationRequest {
     pub person: Person,
     pub comp_inn: Inn,
@@ -143,24 +128,12 @@ pub struct RegistrationRequest {
     pub password: String,
     pub device_id: BoxUuid,
     pub doc_hash: String,
-    pub document: Vec<u8>,
-    pub signature: Vec<u8>,
+    #[serde(with = "serde_bytes")]
+    pub document: Vec<u8>,  
+    #[serde(with = "serde_bytes")]
+    pub signature: Vec<u8>, 
 }
 
-impl From<RegistrationRequestDto> for RegistrationRequest {
-    fn from(dto: RegistrationRequestDto) -> Self {
-        Self { 
-            person: dto.person, 
-            comp_inn: dto.comp_inn, 
-            kpp: dto.kpp, 
-            password: dto.password, 
-            device_id: dto.device_id, 
-            doc_hash: dto.doc_hash,
-            document: dto.document, 
-            signature: dto.signature 
-        }
-    }
-}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CryptoVerifyRequest {

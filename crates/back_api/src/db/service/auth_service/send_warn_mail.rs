@@ -9,7 +9,12 @@ pub(crate) async fn send_warn_mail(
     state_clone: Arc<BackApiState>,
     warn_data: WarnEmailData
 ) -> Result<Status, Status> {
-    let WarnEmailData { email, pers_inn, comp_inn, kpp } = warn_data;
+
+    let WarnEmailData { 
+        email, 
+        pers_inn, 
+        comp_inn, 
+        kpp } = warn_data;
 
     let html_body = format!(
         "<h3>Служба безопасности: уведомление о входе</h3>\
@@ -24,7 +29,7 @@ pub(crate) async fn send_warn_mail(
          Если это были не вы — немедленно смените пароль.</p>"
     );
 
-    let client = state_clone.config.get_client();
+    let client = state_clone.config.get_std_client();
 
     let payload = serde_json::json!({
         "from": state_clone.config.email_sender.from,

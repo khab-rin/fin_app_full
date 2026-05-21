@@ -12,7 +12,7 @@ pub async fn dadata_reqwest_func(
     kpp: &Kpp
 ) -> Result<CtrprtyMetadata, Status> {
     
-    let client = state.config.get_client();
+    let client = state.config.get_std_client();
     let header = state.config.get_dadata_header();
     let url =  &state.config.dadata.dadata_comp_url;
 

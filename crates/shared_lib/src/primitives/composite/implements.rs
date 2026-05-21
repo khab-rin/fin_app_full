@@ -5,7 +5,7 @@ use crate::primitives::frozen::implements::{Bic, RasAcc, CorAcc, SurName, MidNam
 use crate::primitives::composite::validator_rules::*;
 
 
-#[derive(Debug, Serialize, Deserialize, Clone, sqlx::Type)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, sqlx::Type)]
 pub struct Fio {
     #[serde(rename = "@Фамилия")]
     pub sur_name: SurName,

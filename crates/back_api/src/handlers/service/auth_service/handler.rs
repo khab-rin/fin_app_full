@@ -2,7 +2,11 @@ use axum::{Json, extract::State};
 use std::sync::Arc;
 
 use shared_lib::Status;
-use shared_lib::service::auth_service::implements::{RegisterResponse, RestoreByTokenRequest, RegistrationRequestDto};
+use shared_lib::service::auth_service::implements::{
+    RegisterResponse, 
+    RestoreByTokenRequest,
+    RegistrationRequest
+};
 
 use crate::config::BackApiState;
 use crate::db::service::auth_service::by_device_token::get_user;
@@ -20,7 +24,7 @@ pub async fn restore_user_by_token_handler(
 
 pub async fn register_user_by_crypto_handler(
     State(state): State<Arc<BackApiState>>,
-    Json(payload): Json<RegistrationRequestDto>
+    Json(payload): Json<RegistrationRequest>
 ) -> Result<Json<RegisterResponse>, Status> {
 
     let res = register_new_user(&state, payload).await?;
