@@ -5,7 +5,6 @@ use reqwest::header::{HeaderMap, HeaderName, CONTENT_TYPE, ACCEPT, AUTHORIZATION
 use serde::{Deserialize, Deserializer};
 use reqwest_retry::policies::ExponentialBackoff;
 use reqwest_middleware::ClientWithMiddleware;
-use retry_policies::RetryPolicy;
 
 macro_rules! make_header {
     ( [ $($key:expr => $val:expr),* $(,)? ] ) => {

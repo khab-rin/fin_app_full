@@ -7,7 +7,7 @@ use shared_lib::service::auth_service::implements::{RegisterResponse, RestoreByT
 
 use crate::config::BackApiState;
 use crate::db::service::auth_service::delete_token::delete_warn_token_device;
-use crate::db::sql_queries::users::get_user::by_device_token::get_user_by_device_token;
+use crate::db::sql_queries::users::get::by_device_token::get_user_by_device_token;
 
 
 pub(crate) async fn get_user(

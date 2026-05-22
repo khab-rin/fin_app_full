@@ -3,12 +3,14 @@ use futures::stream::{self, StreamExt};
 
 use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::{Inn, Kpp, CompType, CompStatus};
-use shared_lib::sql_models::company_models::implements::{Company, CompanyDto};
+use shared_lib::sql_models::company::implements::{Company, CompanyDto};
 use shared_lib::alias_types::implements::{InnKppAccMap, InnKppAccVec};
 
 use crate::config::BackApiState;
 use crate::db::parsers::dadata::parser::dadata_reqwest_func;
-use crate::db::sql_queries::companys::add_company::helper::{
+use crate::db::sql_queries::companys::get::companys_by_inn_kpp::get_companys_by_inn_kpp;
+
+use crate::db::sql_queries::companys::add::helper::{
     make_inn_kpp_pairs,
     fresh_bank_acc,
     make_company,
@@ -23,26 +25,18 @@ pub(crate) async fn sync_server_companys(
 
     let mut data:InnKppAccMap = data_vec.into_iter().collect();
 
-    let (inn_data, kpp_data) = make_inn_kpp_pairs(&data);
+    let inn_kpp_data = make_inn_kpp_pairs(&data);
 
-    let mut seen_companys_dto = sqlx::
-        query_file_as!(
-            CompanyDto,
-            "src/db/sql_queries/companys/add_company/query_get_company.sql",
-            &inn_data[..],
-            &kpp_data[..]
-        ).fetch_all(&state.pool)
-        .await
-        .inspect_err(|err| {
+    let mut companys = match get_companys_by_inn_kpp(state, &inn_kpp_data).await {
+        Ok(c) => c,
+        Err(err) => {
             tracing::error!(
-                tech_err = ?err,
-                stat_err = ?Status::BackSqlQrySyncServerCompanysGetCopmQry
+                err = ?err,
+                "FUN sync_server_companys FAILED BY get_companys_by_inn_kpp FUN"
             );
-        })
-        .map_err(|_| Status::BackSqlQrySyncServerCompanysGetCopmQry)?;
-    
-
-    let mut companys: Vec<Company> = dto_to_company_vec(seen_companys_dto);
+            return Err(err);
+        }
+    };
 
     fresh_bank_acc(&mut data, &mut companys); 
 
@@ -76,10 +70,10 @@ pub(crate) async fn sync_server_companys(
         mt_d
         ) = make_insert_data(companys);
 
-    seen_companys_dto = sqlx::
+    let seen_companys_dto = sqlx::
         query_file_as!(
             CompanyDto,
-            "src/db/sql_queries/companys/add_company/query_insert_company.sql",
+            "src/db/sql_queries/companys/add/by_cimpays.sql",
             &inn_d[..],
             &kpp_d[..],
             &type_d[..],

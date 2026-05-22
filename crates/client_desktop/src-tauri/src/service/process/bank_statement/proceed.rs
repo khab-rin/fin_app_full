@@ -2,7 +2,7 @@ use std::path::Path;
 
 use shared_lib::Status;
 use shared_lib::service::process::bank_statement::implements::BankStatementProceedResult;
-use shared_lib::sql_models::company_models::implements::{Company, CompanyCurt};
+use shared_lib::sql_models::company::implements::{Company, CompanyCurt};
 use shared_lib::alias_types::implements::{InnKppAccMap, InnKppAccVec};
 use shared_lib::service::api_routes::implements::ApiRoutes;
 use shared_lib::service::auth_service::client_state::ClientState;

@@ -1,7 +1,7 @@
 use sqlx::SqlitePool;
 use uuid::Uuid;
 
-use shared_lib::sql_models::company_models::implements::{Company, CompanyCurt};
+use shared_lib::sql_models::company::implements::{Company, CompanyCurt};
 use shared_lib::primitives::frozen::implements::{Inn, Kpp};
 use shared_lib::err_models::implements::Status;
 

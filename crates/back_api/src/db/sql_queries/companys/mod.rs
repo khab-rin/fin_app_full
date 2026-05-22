@@ -1,3 +1,3 @@
-pub(crate) mod add_company;
-pub(crate) mod get_company;
+pub(crate) mod add;
+pub(crate) mod get;
 pub(crate) mod helper;

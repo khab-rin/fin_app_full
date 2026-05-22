@@ -1,7 +1,13 @@
 use std::sync::Arc;
+use argon2::{
+    password_hash::{rand_core::OsRng, PasswordHasher, SaltString},
+    Argon2
+};
 
 use shared_lib::service::api_routes::implements::CryptoApiRoutes;
-use shared_lib::sql_models::person_models::implements::Person;
+use shared_lib::sql_models::person::implements::Person;
+use shared_lib::sql_models::company::implements::Company;
+use shared_lib::alias_types::implements::InnKppAccVec;
 use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{
     CryptoVerifyRequest, 
@@ -14,6 +20,11 @@ use shared_lib::service::auth_service::implements::{
 
 use crate::config::BackApiState;
 use crate::db::service::auth_service::validate_fields::validate_field;
+use crate::db::sql_queries::persons::add::by_person::add_person;
+use crate::db::sql_queries::companys::get::company_by_inn_kpp::get_company_by_inn_kpp;
+use crate::db::sql_queries::companys::helper::make_new_company;
+
+
 
 pub(crate) async fn register_new_user(
     state: &Arc<BackApiState>,
@@ -137,6 +148,66 @@ pub(crate) async fn register_new_user(
         &device_id,
         &failed_data
     ) { return Ok(res);};
+
+
+    let salt = SaltString::generate(&mut OsRng);
+
+    let argon2 = Argon2::default();
+
+    let server_password_hash = match argon2
+        .hash_password(password.as_bytes(), &salt) {
+        Ok(h) => h.to_string(),
+        Err(err) => {
+            tracing::error!(
+                err = ?err,
+                failed_data = ?failed_data,
+                "FUN register_new_user FAILED BY ARGON2 HASHING PASSWORD"
+            );
+            return Ok(failed_result);
+        }
+    };
+
+    let person = match add_person(state, &person).await {
+        Ok(p) => p,
+        Err(err) => {
+            tracing::error!(
+                err = ?err,
+                "FUN register_new_user FAILED BY ADD PERSON SQL QUERY"
+            );
+            return Ok(failed_result);
+        }
+    };
+
+    let comp_opt = match get_company_by_inn_kpp(state, &comp_inn, &kpp).await {
+        Ok(c_o) => c_o,
+        Err(err) => {
+            tracing::error!(
+                err = ?err,
+                failed_data = ?failed_data,
+                "FUN get_company_by_inn_kpp FAILED IN FUN get_company_by_inn_kpp"
+            );
+            None
+        }
+    };
+
+    let comp = match comp_opt {
+        Some(c) => c,
+        None => {
+            match make_new_company(state, &comp_inn, &kpp).await {
+                Ok(c) => c,
+                Err(err) => {
+                    tracing::error!(
+                        err = ?err,
+                        failed_data = ?failed_data,
+                        "FUN register_new_user FAILED BY FUN make_new_company"
+                    );
+                    return Ok(failed_result);
+                }
+            }
+        }
+    };
+
+    
 
 
     Err(Status::Unknown)

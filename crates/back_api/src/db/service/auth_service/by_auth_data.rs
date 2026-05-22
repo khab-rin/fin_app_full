@@ -12,7 +12,7 @@ use shared_lib::service::auth_service::implements::{
     RestoreByTokenRequest
 };
 
-use crate::db::sql_queries::users::get_user::by_authdata::get_auth_password_check;
+use crate::db::sql_queries::users::get::by_authdata::get_auth_password_check;
 use crate::db::sql_queries::call_cf::set::new_cf::new_cf;
 use crate::db::service::auth_service::by_device_token::get_user;
 use crate::db::service::auth_service::smsru_phone_query::smsru_get_phone;
@@ -29,17 +29,21 @@ pub(crate) async fn restore_user_by_authdata(
             method: VerifyMethod::TryLater {} 
         }));
 
+    let failed_data = &data.auth_data;
+
     let auth_vec = match get_auth_password_check(state, data).await {
         Ok(vec) => vec,
-        Err(_) => {
+        Err(err) => {
             tracing::error!(
+                err = ?err,
+                failed_data = ?failed_data,
                 "Fun restore_user_by_authdata failed on users query"
             );
             return failed_result;
         }
     };
 
-    let RestoreByAuthDataRequest { auth_data, device_id } = &data;
+    let RestoreByAuthDataRequest { auth_data, device_id } = data;
     let password = &auth_data.password;
 
     let AuthCheckPassword { 
@@ -50,6 +54,7 @@ pub(crate) async fn restore_user_by_authdata(
             Some(elem) => elem,
             None => {
                 tracing::error!(
+                    failed_data = ?failed_data,
                     "WRONG LOGIC IN FUN restore_user_by_authdata AND SQL QUERYS"
                 );
                 return failed_result;

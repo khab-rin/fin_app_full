@@ -1,3 +1,3 @@
-pub mod company_models;
-pub mod person_models;
-pub mod user_models;
+pub mod company;
+pub mod person;
+pub mod user;

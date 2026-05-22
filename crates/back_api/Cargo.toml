@@ -30,7 +30,6 @@ reqwest = { workspace = true, features = ["json", "rustls", "query"] }
 tower-http = { workspace = true, features = ["trace"] }
 reqwest-middleware = { workspace = true, features = ["json", "query"]  }
 reqwest-retry = { workspace = true }
-retry-policies = {workspace = true}
 
 argon2 = { workspace = true }
 password-hash = { workspace = true }

@@ -1,6 +1,6 @@
 
 use shared_lib::primitives::frozen::implements::{Inn, Kpp, BoxUuid};
-use shared_lib::sql_models::person_models::implements::Person;
+use shared_lib::sql_models::person::implements::Person;
 use shared_lib::service::auth_service::implements::{
     RegisterResponse,
     VerifyData,

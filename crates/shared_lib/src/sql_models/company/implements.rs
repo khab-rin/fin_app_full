@@ -44,7 +44,7 @@ impl std::convert::TryFrom<CompanyDto> for Company {
             comp_status: dto.comp_status.clone(),
             metadata: serde_json::
                 from_value(dto.metadata.clone())
-                .map_err(|_| Status::CompanyWrongMetadataMap)?,
+                .map_err(|_| Status::CompanyWrongMapping)?,
             last_update: dto.last_update
          })
     }

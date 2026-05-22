@@ -1,4 +1,4 @@
-use shared_lib::sql_models::person_models::implements::{Person, PersonDto};
+use shared_lib::sql_models::person::implements::{Person, PersonDto};
 use shared_lib::Status;
 
 

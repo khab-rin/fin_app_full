@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use serde::{Serialize, Deserialize};
 
-use crate::sql_models::company_models::implements::{Company, CompanyCurt};
+use crate::sql_models::company::implements::{Company, CompanyCurt};
 use crate::Status;
 
 

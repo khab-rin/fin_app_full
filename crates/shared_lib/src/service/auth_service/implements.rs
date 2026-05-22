@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 
 use crate::Status;
-use crate::sql_models::person_models::implements::Person;
+use crate::sql_models::person::implements::Person;
 use crate::primitives::frozen::implements::{BoxUuid, Email, Inn, Kpp, Phone, Snils};
 use crate::primitives::composite::implements::Fio;
 use crate::service::auth_service::client_state::SessionUser;

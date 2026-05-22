@@ -2,7 +2,7 @@ use sqlx::PgPool;
 
 use shared_lib::primitives::frozen::implements::{Inn, BoxUuid, DateTime};
 use shared_lib::Status;
-use shared_lib::sql_models::person_models::implements::{Person, PersonDto};
+use shared_lib::sql_models::person::implements::{Person, PersonDto};
 use uuid::Uuid;
 
 use crate::db::sql_queries::persons::get_person::helper::dto_to_person;

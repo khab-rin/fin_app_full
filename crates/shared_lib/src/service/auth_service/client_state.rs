@@ -2,9 +2,9 @@ use serde::{Serialize, Deserialize};
 
 use crate::Status;
 use crate::primitives::frozen::implements::BoxUuid;
-use crate::sql_models::company_models::implements::Company;
-use crate::sql_models::person_models::implements::Person;
-use crate::sql_models::user_models::implements::User;
+use crate::sql_models::company::implements::Company;
+use crate::sql_models::person::implements::Person;
+use crate::sql_models::user::implements::User;
 
 pub struct ClientState {
     pub client: reqwest::Client,

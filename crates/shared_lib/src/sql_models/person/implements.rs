@@ -35,13 +35,12 @@ impl std::convert::TryFrom<PersonDto> for Person {
             inn: dto.inn,
             metadata: serde_json::
                 from_value(dto.metadata)
-                .map_err(|_| Status::PersonMappingError)?,
+                .map_err(|_| Status::PersonWrongMapping)?,
             last_update: dto.last_update
         })
     }
 }
-
-#[derive(Serialize, Deserialize, Debug, sqlx::Type, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, sqlx::Type,)]
 #[sqlx(type_name = "jsonb")]
 pub struct PersonMetadata {
     pub snils: Snils,

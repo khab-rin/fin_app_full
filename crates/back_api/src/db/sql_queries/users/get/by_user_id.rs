@@ -14,7 +14,7 @@ pub(crate) async fn get_user_by_user_id(
     let session_user_dto: SessionUserDto = match sqlx::
         query_file_as!(
             SessionUserDto,
-            "src/db/sql_queries/users/get_user/by_user_id.sql",
+            "src/db/sql_queries/users/get/by_user_id.sql",
             user_id.as_ref()
         ).fetch_one(&state.pool).await {
             Ok(dto) => dto,

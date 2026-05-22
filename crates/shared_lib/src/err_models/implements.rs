@@ -150,11 +150,7 @@ pub enum Status {
     AuthGetCompany = 363,
     AuthGetPerson = 364,
     AuthCompanyMiss = 365,
-    
 
-    
-    CompanyWrongMetadataMap = 401,
-    
 
     ClientAuthRestoreByToken = 500,
     ClientAuthRestoreResponseMap = 501,
@@ -166,27 +162,38 @@ pub enum Status {
     ClientInitSqlxMigrate = 507,
     ClientLoginWronTokenInSystem = 508,
 
-    QueryGetRequestErr = 1001,
-    QueryBodyReadErr = 1002,
-
-    UserWrongMapping = 2000,
-    PersonWrongMapping = 2001,
-    CompanyWrongMapping = 2002,
-    
-    BackSmsRuBalance = 2003,
-    BackSqlQueryCallCf = 2004,
-    SmsruGetResResponseStructWrongMapping = 2005,
-    BackFunSmsRuCfFailed = 2006,
-    BackSqlQuerySessions = 2007,
-    BackSqlQueryUsers = 2008,
-    BackQueryGetErr = 2009,
+    BackSmsRuBalance = 12003,
+    BackSqlQueryCallCf = 12004,
+    SmsruGetResResponseStructWrongMapping = 12005,
+    BackFunSmsRuCfFailed = 12006,
+    BackSqlQuerySessions = 12007,
+    BackSqlQueryUsers = 12008,
+    BackQueryGetErr = 12009,
 
     CryptoServerError = 3001,
 
+
+
+    // Общие ошибки - запросы и так далее   
+    QueryGetRequestErr = 1001,
+    QueryBodyReadErr = 1002,
+
+    // Общие ошибки - структуры
+    UserWrongMapping = 2000,
+    PersonWrongMapping = 2001,
+    CompanyWrongMapping = 2002,
+    CtrprtyMetadataWrongMapping = 2003,
+
+    
+    
+
+    //BACK API 4000 - 4999
     SmsruGetResResponseMappigErr = 4001,
     SmsruCallResponseMappingErr = 4002,
     CryptoVerifyPersonResponseMappingErr = 4003,
     PersonMappingError = 4004,
+    SqlPersonsQueryLogicErr = 4005,
+    SqlCompanysQueryLogicErr = 4006
 
 }
 
