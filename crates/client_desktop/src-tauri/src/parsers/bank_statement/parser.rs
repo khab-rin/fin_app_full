@@ -89,12 +89,22 @@ pub(crate) fn parse_comment(operation: &OperationReadFields) -> OperationParseDa
 
 
 
-pub(crate) fn  bank_parser<P: AsRef<Path>>(path: P) -> Result<ParseBankStatRes, Status> {
+pub(crate) fn bank_parser<P: AsRef<Path>>(path: P) -> Result<ParseBankStatRes, Status> {
     let own_ras_acc = RasAcc::new("40802810629370001827").expect("123");
 
     let mut parse_result = ParseBankStatRes::default();
 
-    let bytes = fs::read(path).map_err(|_| Status::BankParserReadFile)?;
+    let bytes = match fs::read(path).map_err(|_| Status::BankParserReadFile) {
+        Ok(b) => b,
+        Err(err) => {
+            log::error!(
+                "tech_err = {}, local_err = {}
+                FUN bank_parser FAILED BY READING FILE",
+                err, Status::FileReadError
+            );
+            return Err(Status::FileReadError);
+        }
+    };
 
     let (buffer, wr_bytes) = match String::from_utf8(bytes) {
         Ok(good_utf8) => { (good_utf8, false) }
@@ -106,18 +116,18 @@ pub(crate) fn  bank_parser<P: AsRef<Path>>(path: P) -> Result<ParseBankStatRes, 
     };
 
 
-    if wr_bytes { parse_result.status.insert(Status::BankParserWrongBytes); }
+    if wr_bytes { parse_result.status.insert(Status::FileReadError); }
 
     let mut data_iter = buffer.split("СекцияДокумент=");
 
     let mut head_block_iter = data_iter
         .next()
-        .ok_or(Status::BankParserGetHead)?
+        .ok_or(Status::MappingError)?
         .trim()
         .split("СекцияРасчСчет");
 
-    head_block_iter.next().ok_or(Status::BankParserGetBlock1)?;
-    let block_head = head_block_iter.next().ok_or(Status::BankParserGetBlock2)?.trim();
+    head_block_iter.next().ok_or(Status::MappingError)?;
+    let block_head = head_block_iter.next().ok_or(Status::MappingError)?.trim();
     let mut block_map:HashMap<&str, &str> = HashMap::new();
 
     for s in block_head.lines() {
@@ -127,9 +137,9 @@ pub(crate) fn  bank_parser<P: AsRef<Path>>(path: P) -> Result<ParseBankStatRes, 
     }
 
     let head = StatementHead::from_map(&block_map)
-        .map_err(|_| Status::BankParserGetBlock2)?;
+        .map_err(|_| Status::MappingError)?;
 
-    if head.head_acc != own_ras_acc { return Err(Status::BankParseHeadAccIsNotOwn); }
+    if head.head_acc != own_ras_acc { return Err(Status::InvalideFileData); }
 
     parse_result.st_head = Some(head);
 

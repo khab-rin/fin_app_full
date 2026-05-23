@@ -1,13 +1,12 @@
 use std::collections::HashSet;
 use shared_lib::parsers::dadata::implements::CtrprtyMetadata;
-use uuid::Uuid;
 use chrono::DateTime;
 use serde_json::Value;
 
 
 use shared_lib::Status;
 use shared_lib::primitives::composite::implements::RasBicAcc;
-use shared_lib::primitives::frozen::implements::{Inn, Kpp, CompType, Date};
+use shared_lib::primitives::frozen::implements::{BoxUuid,Inn, Kpp, CompType, Date};
 use shared_lib::sql_models::company::implements::Company;
 use shared_lib::alias_types::implements::{InnKppAccMap, InsertData};
 
@@ -149,8 +148,20 @@ pub(crate) fn make_company(
         kpp = new_kpp.clone();
     }
 
+    let comp_id = match BoxUuid::new(uuid::Uuid::new_v4().to_string().as_str()) {
+        Ok(u) => u,
+        Err(err) => {
+            tracing::error!(
+                tech_err = ?err,
+                local_err = ?Status::BoxUuidParsingErr,
+                "FUN make_company FAILED BY PARSING BoxUuid"
+            );
+            return Err(Status::BoxUuidParsingErr);
+        }
+    };
+
     Ok(Company {
-        comp_id: Uuid::new_v4(),
+        comp_id,
         inn,
         kpp,
         comp_type,  

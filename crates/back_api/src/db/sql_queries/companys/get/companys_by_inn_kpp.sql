@@ -1,5 +1,5 @@
 SELECT 
-    comp_id, 
+    comp_id AS "comp_id: BoxUuid", 
     inn AS "inn: Inn", 
     kpp AS "kpp: Kpp", 
     comp_type AS "comp_type: CompType", 

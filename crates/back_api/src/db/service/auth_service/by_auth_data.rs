@@ -5,14 +5,15 @@ use argon2::{
     Argon2
 };
 
-use shared_lib::{Status, service::auth_service::implements::{AuthCheckPassword, VerifyData, VerifyMethod}};
+use shared_lib::Status;
+use shared_lib::service::auth_service::implements::{AuthCheckPassword, VerifyData, VerifyMethod};
 use shared_lib::service::auth_service::implements::{
     RestoreByAuthDataRequest,
     RegisterResponse,
     RestoreByTokenRequest
 };
 
-use crate::db::sql_queries::users::get::by_authdata::get_auth_password_check;
+use crate::db::sql_queries::users::get::auth_check_passw_by_authdata::get_auth_password_check;
 use crate::db::sql_queries::call_cf::set::new_cf::new_cf;
 use crate::db::service::auth_service::by_device_token::get_user;
 use crate::db::service::auth_service::smsru_phone_query::smsru_get_phone;

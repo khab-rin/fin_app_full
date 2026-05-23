@@ -32,11 +32,11 @@ impl RasBicAcc {
             B: TryInto<Bic>,
             A: TryInto<RasAcc>
             {
-                let bic:Bic = bic.try_into().map_err(|_| Status::ValidWrongBicValue)?;
-                let ras_acc:RasAcc = ras_acc.try_into().map_err(|_| Status::ValidWrongBanAccValue)?;
+                let bic:Bic = bic.try_into().map_err(|_| Status::ValidBic)?;
+                let ras_acc:RasAcc = ras_acc.try_into().map_err(|_| Status::ValidBankAcc)?;
                 validate_ras_bic_acc(&bic, &ras_acc)
                     .then_some(Self{ bic, ras_acc })
-                    .ok_or(Status::ValidWrongRasBicAccPair)
+                    .ok_or(Status::ValidRasBicAcc)
             }
     
     pub fn label() -> &'static str {
@@ -64,11 +64,11 @@ impl CorBicAcc {
         B: TryInto<Bic>,
         C: TryInto<CorAcc>
         {
-            let bic:Bic = bic.try_into().map_err(|_| Status::ValidWrongBicValue)?;
-            let cor_acc:CorAcc = cor_acc.try_into().map_err(|_| Status::ValidWrongBanAccValue)?;
+            let bic:Bic = bic.try_into().map_err(|_| Status::ValidBic)?;
+            let cor_acc:CorAcc = cor_acc.try_into().map_err(|_| Status::ValidBankAcc)?;
             validate_cor_bic_acc(&bic, &cor_acc)
                 .then_some(Self { bic, cor_acc})
-                .ok_or(Status::ValidWrongCorBiccAccPair)
+                .ok_or(Status::ValidCorBiccAcc)
         }
 }
 

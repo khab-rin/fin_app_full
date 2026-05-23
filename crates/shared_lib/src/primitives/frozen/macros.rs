@@ -117,7 +117,7 @@ macro_rules! frozen_primitives {
 
         impl ParseFromStrMapValue for $name {
             fn parse_from_str_map_value(map_value: Option<&&str>) -> Result<Self, Status> {
-                map_value.ok_or(Status::BankParserMissingFields)?
+                map_value.ok_or(Status::MappingError)?
                     .parse::<Self>()
             }
         }
@@ -175,7 +175,7 @@ macro_rules! make_enum_frozen {
                             $alias => Ok(Self::$l_name),
                         )*
                     )*
-                    _ => Err($crate::err_models::implements::Status::ValidWrongEnumValue)
+                    _ => Err($crate::err_models::implements::Status::ValidEnum)
                 }
             }
         }

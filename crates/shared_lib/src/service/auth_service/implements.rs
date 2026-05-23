@@ -9,11 +9,6 @@ use crate::service::auth_service::client_state::SessionUser;
 
 
 
-
-
-
-
-
 #[derive(Serialize, Deserialize)]
 pub enum RegisterResponse {
     Success(Box<SessionUserToken>),
@@ -43,7 +38,8 @@ pub enum VerifyMethod {
     WrongPassword {},
     MissedFile {},
     WrongSignFile {},
-    WrongPerson {}
+    WrongPerson {},
+    UserAlreadyExists {}
 }
 
 
@@ -127,6 +123,8 @@ pub struct RegistrationRequest {
     pub kpp: Kpp,
     pub password: String,
     pub device_id: BoxUuid,
+    pub phone: Phone,
+    pub email: Email,
     pub doc_hash: String,
     #[serde(with = "serde_bytes")]
     pub document: Vec<u8>,  

@@ -22,7 +22,7 @@ pub(crate) async fn get_auth_password_check(
     sqlx::
         query_file_as!(
             AuthCheckPassword,
-            "src/db/sql_queries/users/get/by_authdata.sql",
+            "src/db/sql_queries/users/get/auth_check_passw_by_authdata.sql",
             pers_inn.as_ref(),
             comp_inn.as_ref(),
             kpp.as_ref(),

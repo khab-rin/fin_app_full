@@ -25,11 +25,11 @@ pub async fn dadata_reqwest_func(
         .inspect_err(|err| {
             tracing::error!(
                 tech_error = ?err,
-                status_err = ?Status::DadaSendQuery,
+                status_err = ?Status::QueryPostRequestErr,
                 inn = %inn, 
                 kpp = %kpp);
         })
-        .map_err(|_| Status::DadaSendQuery)?;
+        .map_err(|_| Status::QueryPostRequestErr)?;
 
     let resp_wrap:DadaRespWrap = response
         .json()
@@ -37,17 +37,17 @@ pub async fn dadata_reqwest_func(
         .inspect_err(|err| {
             tracing::error!(
                 tech_error = ?err,
-                status_err = ?Status::DadaMapPatternWr,
+                status_err = ?Status::DadaRespWrapMappingErr,
                 inn = %inn, 
                 kpp = %kpp);
         })
-        .map_err(|_| Status::DadaMapPatternWr)?;
+        .map_err(|_| Status::DadaRespWrapMappingErr)?;
 
     let mut iterator = resp_wrap.suggestions.into_iter();
 
     let mut main_metadata = iterator
         .next()
-        .ok_or(Status::DadaFullMissData)
+        .ok_or(Status::InvalideResponseFormat)
         .inspect_err(|err| {
             tracing::error!(
                 status_err = ?err,
@@ -55,7 +55,7 @@ pub async fn dadata_reqwest_func(
                 kpp = %kpp);
         })?
         .data
-        .ok_or(Status::DadaFullMissData)
+        .ok_or(Status::InvalideResponseFormat)
         .inspect_err(|err| {
             tracing::error!(
                 status_err = ?err,

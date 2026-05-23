@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::{Inn, Kpp, CompStatus, CompType, Date};
+use shared_lib::primitives::frozen::implements::{BoxUuid, Inn, Kpp, CompType, Date};
 use shared_lib::sql_models::company::implements::{Company, CompanyDto};
 
 use crate::config::BackApiState;
@@ -115,8 +115,19 @@ pub(crate) async fn make_new_company(
         }
     }
 
+    let comp_id = match BoxUuid::new(uuid::Uuid::new_v4().to_string().as_str()) {
+        Ok(u) => u,
+        Err(err) => {
+            tracing::error!(
+                tech_err = ?err,
+                local_err = ?Status::BoxUuidParsingErr,
+                "FUN make_company FAILED BY PARSING BoxUuid"
+            );
+            return Err(Status::BoxUuidParsingErr);
+        }
+    };
     Ok(Company {
-        comp_id: uuid::Uuid::new_v4(),
+        comp_id,
         inn: inn.clone(),
         kpp: kpp.clone(),
         comp_type,  

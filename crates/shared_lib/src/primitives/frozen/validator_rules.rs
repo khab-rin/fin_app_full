@@ -34,7 +34,7 @@ fn validate_mod11_rosstat(s: &str) -> bool {
 pub(crate) fn init_inn_from_str(inn: &str) -> Result<Box<str>, Status> {
     let inn = inn.trim();
     if !get_is_inn_reg().is_match(inn) {
-        return Err(Status::ValidWrongInnValue);
+        return Err(Status::ValidInn);
     }
     let d: Vec<u8> = inn.bytes().map(|b| b - b'0').collect();
     let is_ok = match d.len() {
@@ -71,7 +71,7 @@ pub(crate) fn init_inn_from_str(inn: &str) -> Result<Box<str>, Status> {
         _ => false,
     };
     if is_ok { Ok(inn.into()) } 
-    else { Err(Status::ValidWrongInnValue)}
+    else { Err(Status::ValidInn)}
 }
 
 pub(crate) fn init_kpp_from_str(kpp: &str) -> Result<Box<str>, Status> {
@@ -81,36 +81,36 @@ pub(crate) fn init_kpp_from_str(kpp: &str) -> Result<Box<str>, Status> {
     }
     get_is_kpp_reg().is_match(&kpp)
         .then(|| kpp.into_boxed_str())
-        .ok_or(Status::ValidWrongKppValue)
+        .ok_or(Status::ValidKpp)
 }
 
 pub(crate) fn init_cor_ras_acc_from_str(bank_acc: &str) -> Result<Box<str>, Status> {
     let bank_acc = bank_acc.trim();
     get_is_corr_ras_acc_reg().is_match(bank_acc)
         .then(|| bank_acc.into())
-        .ok_or(Status::ValidWrongBanAccValue)
+        .ok_or(Status::ValidBankAcc)
 }
 
 pub(crate) fn init_bic_from_str(bic: &str) -> Result<Box<str>, Status> {
     let bic = bic.trim();
     get_is_bic_reg().is_match(bic)
     .then(|| bic.into())
-    .ok_or(Status::ValidWrongBicValue)
+    .ok_or(Status::ValidBic)
 }
 
 pub(crate) fn init_ogrn_from_str(ogrn: &str) -> Result<Box<str>, Status> {
     let ogrn = ogrn.trim();
     if !get_is_ogrn_reg().is_match(ogrn) {
-        return Err(Status::ValidWrongOgrnValue);
+        return Err(Status::ValidOgrn);
     }
     let n = ogrn.len();
-    let head: u64 = ogrn[..n-1].parse().map_err(|_| Status::ValidWrongOgrnValue)?;
+    let head: u64 = ogrn[..n-1].parse().map_err(|_| Status::ValidOgrn)?;
     let last: u8 = ogrn.as_bytes()[n-1] - b'0';
     let divider = if n == 13 { 11 } else { 13 };
     let expected = ((head % divider) % 10) as u8;
 
     if expected == last { Ok(ogrn.into()) } 
-    else { Err(Status::ValidWrongOgrnValue) }
+    else { Err(Status::ValidOgrn) }
 }
 
 pub(crate) fn str_to_decimal(value: &str) -> Result<Decimal, Status> {
@@ -119,14 +119,14 @@ pub(crate) fn str_to_decimal(value: &str) -> Result<Decimal, Status> {
         .replace(',', ".");
     match Decimal::from_str(&clean) {
         Ok(res) => Ok(res),
-        Err(_) => Err(Status::ValidatorDecimalParsErr)
+        Err(_) => Err(Status::ValidDecimalParser)
     } 
 }
 
 pub(crate) fn init_rubf_from_str(amount: &str) -> Result<Decimal, Status> {
     let v = str_to_decimal(amount.trim())?;
-    if v < Decimal::ZERO { return Err(Status::ValidWrongRubFValue) }
-    if v.normalize().scale() > 2 { return Err(Status::ValidWrongRubFValue ) }
+    if v < Decimal::ZERO { return Err(Status::ValidRubFParser) }
+    if v.normalize().scale() > 2 { return Err(Status::ValidRubFParser ) }
     Ok(v)
 }
 
@@ -140,11 +140,11 @@ pub(crate) fn str_to_date(value: &str) -> Result<NaiveDate, Status> {
             if (1900..2100).contains(&date.year()) {
                 return Ok(date);           
             } else {
-                return Err(Status::ValideWrongDateYear);
+                return Err(Status::ValidDate);
             }
         }
     }
-    Err(Status::ValidWrongDateValue)
+    Err(Status::ValidDate)
 }
 
 pub(crate) fn init_doc_num_from_str(val: &str) -> Result<Box<str>, Status> {
@@ -159,25 +159,25 @@ pub(crate) fn init_branch_type_from_str(val: &str) -> Result<Box<str>, Status> {
     let val = val.trim().to_uppercase();
     match val.as_str() {
         "MAIN" | "BRANCH" => Ok(val.into_boxed_str()),
-        _ => Err(Status::ValidWrongBranchValue)
+        _ => Err(Status::ValidBranchType)
     }
 }
 
 pub(crate) fn init_okpo_from_str(val: &str) -> Result<Box<str>, Status> {
     let s = val.trim();
     if s.is_empty() || !s.chars().all(|c| c.is_ascii_digit()) || (s.len() != 8 && s.len() != 10) {
-        return Err(Status::ValidWrongOkpoValue);
+        return Err(Status::ValidOkpo);
     }
     match validate_mod11_rosstat(s) {
         true => { Ok(s.into())}
-        false => { Err(Status::ValidWrongOkpoCheckSum)}
+        false => { Err(Status::ValidOkpo)}
     }
 }
 
 pub(crate) fn init_oktmo_from_str(oktmo: &str) -> Result<Box<str>, Status> {
     let s = oktmo.trim();
     if s.is_empty() || !s.chars().all(|c| c.is_ascii_digit()) || (s.len() != 8 && s.len() != 11) {
-        return Err(Status::ValidWrongOktmoValue);
+        return Err(Status::ValidOktmo);
     }
     Ok(s.into())
 }
@@ -185,7 +185,7 @@ pub(crate) fn init_oktmo_from_str(oktmo: &str) -> Result<Box<str>, Status> {
 pub(crate) fn init_okogu_from_str(okogu: &str) -> Result<Box<str>, Status> {
     let s = okogu.trim();
     if s.is_empty() || !s.chars().all(|c| c.is_ascii_digit()) || s.len() != 7 {
-        return Err(Status::ValidWrongOkoguValue);
+        return Err(Status::ValidOkogu);
     }
     Ok(s.into())
 }
@@ -198,7 +198,7 @@ pub(crate) fn init_opf_code_from_str(val: &str) -> Result<Box<str>, Status> {
     {
         Ok(s.into())
     } else {
-        Err(Status::ValidWrongOpfValue)
+        Err(Status::ValidOpf)
     }
 }
 
@@ -207,7 +207,7 @@ pub(crate) fn init_okfs_from_str(val: &str) -> Result<Box<str>, Status> {
     if s.len() == 2 && s.chars().all(|c| c.is_ascii_digit()) {
         Ok(s.into())
     } else {
-        Err(Status::ValidWrongOkfsValue)
+        Err(Status::ValidOkfs)
     }
 }
 
@@ -215,13 +215,13 @@ pub(crate) fn init_okved_from_str(val: &str) -> Result<Box<str>, Status> {
     let val = val.trim();
     get_is_okveg_reg().is_match(val)
         .then(|| val.into())
-        .ok_or(Status::ValidWrongOkvedValue)
+        .ok_or(Status::ValidOkved)
 }
 
 pub(crate) fn init_phone_from_str(val: &str) -> Result<Box<str>, Status> {
     let n = val.chars().count();
     if !(1..=50).contains(&n) {
-        return Err(Status::ValidWrongPhoneValue);
+        return Err(Status::ValidPhone);
     }
     let mut digits: String = val
         .chars()
@@ -240,20 +240,20 @@ pub(crate) fn init_uuid_from_str(val: &str) -> Result<uuid::Uuid, Status> {
         Ok(uuid::Uuid::new_v4())
     } else {
         uuid::Uuid::parse_str(trimmed)
-            .map_err(|_| Status::ValidWrongUuid)
+            .map_err(|_| Status::ValidUuid)
     }
 }
 
 pub(crate) fn init_fio(val: &str) -> Result<Box<str>, Status> {
     let mut s: Vec<char> = val.trim().to_lowercase().chars().collect();
-    if s.is_empty() || s.len() > 200 { return Err(Status::ValidWrongFio) }
+    if s.is_empty() || s.len() > 200 { return Err(Status::ValidFio) }
     if !s.iter().all(|&c| c.is_alphabetic() || c == '-') {
-        return Err(Status::ValidWrongFio);
+        return Err(Status::ValidFio);
     }
-    s[0] = s[0].to_uppercase().next().ok_or(Status::ValidWrongFio)?;
+    s[0] = s[0].to_uppercase().next().ok_or(Status::ValidFio)?;
     for i in 1..s.len() {
         if s[i - 1] == '-' {
-            s[i] = s[i].to_uppercase().next().ok_or(Status::ValidWrongFio)?;
+            s[i] = s[i].to_uppercase().next().ok_or(Status::ValidFio)?;
         }
     }
     Ok(s.iter().collect())  
@@ -264,7 +264,7 @@ pub(crate) fn init_region(val: &str) -> Result<Box<str>, Status> {
     if s.len() == 2 && s.chars().all(|c| c.is_ascii_digit()) {
         Ok(s.into())
     } else {
-        Err(Status::ValidWrongRegionNumber) 
+        Err(Status::ValidRegionNumber) 
     }
 }
 
@@ -274,11 +274,11 @@ pub(crate) fn init_snils_from_str(val: &str) -> Result<Box<str>, Status> {
         c.is_ascii_digit() || 
         matches!(c, '-' | '.' | ',' | '\\' | '|' | '/' | '\'' | '`' | ' ' | '\u{A0}')
     }) {
-        return Err(Status::ValidWrongSnils);
+        return Err(Status::ValidSnils);
     }
     let digits: String = s.chars().filter(|c| c.is_ascii_digit()).collect();
     if digits.len() != 11 {
-        return Err(Status::ValidWrongSnils);
+        return Err(Status::ValidSnils);
     }
     let snils_num: u64 = digits.parse().unwrap_or(0);
     if snils_num > 1001998 {
@@ -296,7 +296,7 @@ pub(crate) fn init_snils_from_str(val: &str) -> Result<Box<str>, Status> {
         };
         let actual_checksum = d[9] * 10 + d[10];
         if calculated_checksum != actual_checksum {
-            return Err(Status::ValidWrongSnils);
+            return Err(Status::ValidSnils);
         }
     }
     Ok(digits.into_boxed_str())
@@ -335,19 +335,19 @@ pub(crate) fn init_flag_str(val: &str) -> Result<Box<str>, Status> {
 pub(crate) fn init_email_from_str(val: &str) -> Result<Box<str>, Status> {
     let n = val.chars().count();
     if !(3..=129).contains(&n) {
-        return Err(Status::ValidWrongEmailValue);
+        return Err(Status::ValidEmail);
     }
 
     let parts: Vec<&str> = val.split('@').collect();
     
     if parts.len() != 2 || parts[0].is_empty() || parts[1].is_empty() {
-        return Err(Status::ValidWrongEmailValue);
+        return Err(Status::ValidEmail);
     }
 
     let domain_parts: Vec<&str> = parts[1].split('.').collect();
     
     if domain_parts.len() < 2 || domain_parts.iter().any(|p| p.is_empty()) {
-        return Err(Status::ValidWrongEmailValue);
+        return Err(Status::ValidEmail);
     }
 
     Ok(val.to_lowercase().into_boxed_str())

@@ -43,10 +43,10 @@ pub(crate) async fn process_statement<P: AsRef<Path>>(
             log::error!(
                 "tech_err = {}, stat_err = {}",
                 err,
-                Status::FrontBackPostError
+                Status::QueryPostRequestErr
             );
         })
-        .map_err(|_| Status::FrontBackPostError)?;
+        .map_err(|_| Status::QueryPostRequestErr)?;
     
 
     let companys: Vec<Company> = response

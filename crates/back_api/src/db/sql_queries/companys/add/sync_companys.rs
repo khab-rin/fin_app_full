@@ -2,7 +2,7 @@ use std::sync::Arc;
 use futures::stream::{self, StreamExt};
 
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::{Inn, Kpp, CompType, CompStatus};
+use shared_lib::primitives::frozen::implements::{BoxUuid, Inn, Kpp, CompType, CompStatus};
 use shared_lib::sql_models::company::implements::{Company, CompanyDto};
 use shared_lib::alias_types::implements::{InnKppAccMap, InnKppAccVec};
 
@@ -84,10 +84,10 @@ pub(crate) async fn sync_server_companys(
         .inspect_err(|err| {
             tracing::error!(
                 tech_err = ?err,
-                stat_err = ?Status::BackSqlQrySyncServerCompanysGetCopmQry
+                stat_err = ?Status::SqlQueryWrongLogic
             );
         })
-        .map_err(|_| Status::BackSqlQrySyncServerCompanysInsertCompanyQry)?;
+        .map_err(|_| Status::SqlQueryWrongLogic)?;
 
     
     

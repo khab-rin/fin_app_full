@@ -2,7 +2,7 @@ use uuid::Uuid;
 use serde::{Serialize, Deserialize};
 use chrono::Utc;
 
-use crate::primitives::frozen::implements::{CompType, CompStatus, Inn, Kpp};
+use crate::primitives::frozen::implements::{BoxUuid, CompStatus, CompType, Inn, Kpp};
 use crate::parsers::dadata::implements::CtrprtyMetadata;
 
 use crate::Status;
@@ -11,7 +11,7 @@ use crate::Status;
 #[derive(Serialize, Deserialize, Clone)]
 #[derive(sqlx::FromRow, Debug)]
 pub struct CompanyDto {
-    pub comp_id: Uuid,
+    pub comp_id: BoxUuid,
     pub inn: Inn,
     pub kpp: Kpp,
     pub comp_type: CompType,
@@ -24,7 +24,7 @@ pub struct CompanyDto {
 #[derive(Serialize, Deserialize)]
 #[derive(sqlx::FromRow, Debug)]
 pub struct Company {
-    pub comp_id: Uuid,
+    pub comp_id: BoxUuid,
     pub inn: Inn,
     pub kpp: Kpp,
     pub comp_type: CompType,

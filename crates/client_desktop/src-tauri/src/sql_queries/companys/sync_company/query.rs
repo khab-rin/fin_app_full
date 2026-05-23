@@ -15,9 +15,9 @@ pub(crate) async fn sync_local_companys(pool: &SqlitePool, companys: &[Company])
         .inspect_err(|err| {
             log::error!("tech_err = {:?}, stat_err = {:?}",
             err,
-            Status::FrontSqlQrySyncCompanysGetPoolBegin)
+            Status::SqlLiterPoolErr)
         })
-        .map_err(|_| Status::FrontSqlQrySyncCompanysGetPoolBegin)?;
+        .map_err(|_| Status::SqlLiterPoolErr)?;
 
     let mut id_inn_kpp_pairs:Vec<CompanyCurt> = vec!();
 

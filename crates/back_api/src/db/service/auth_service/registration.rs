@@ -4,12 +4,11 @@ use argon2::{
     Argon2
 };
 
-use shared_lib::service::api_routes::implements::CryptoApiRoutes;
-use shared_lib::sql_models::person::implements::Person;
-use shared_lib::sql_models::company::implements::Company;
-use shared_lib::alias_types::implements::InnKppAccVec;
+use shared_lib::service::{api_routes::implements::CryptoApiRoutes, auth_service::client_state::SessionUser};
+use shared_lib::sql_models::user::implements::UserSetData;
 use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{
+    SessionUserToken,
     CryptoVerifyRequest, 
     RegisterResponse, 
     RegistrationRequest, 
@@ -20,9 +19,12 @@ use shared_lib::service::auth_service::implements::{
 
 use crate::config::BackApiState;
 use crate::db::service::auth_service::validate_fields::validate_field;
+use crate::db::sql_queries::users::get::exists_user_by_pers_comp::exists_user_by_pers_comp;
 use crate::db::sql_queries::persons::add::by_person::add_person;
 use crate::db::sql_queries::companys::get::company_by_inn_kpp::get_company_by_inn_kpp;
 use crate::db::sql_queries::companys::helper::make_new_company;
+use crate::db::sql_queries::users::set::user::set_user;
+use crate::db::sql_queries::sessions::set::new_session::new_session;
 
 
 
@@ -37,6 +39,8 @@ pub(crate) async fn register_new_user(
         kpp, 
         password, 
         device_id, 
+        phone,
+        email,
         doc_hash, 
         document, 
         signature } = payload;
@@ -150,23 +154,6 @@ pub(crate) async fn register_new_user(
     ) { return Ok(res);};
 
 
-    let salt = SaltString::generate(&mut OsRng);
-
-    let argon2 = Argon2::default();
-
-    let server_password_hash = match argon2
-        .hash_password(password.as_bytes(), &salt) {
-        Ok(h) => h.to_string(),
-        Err(err) => {
-            tracing::error!(
-                err = ?err,
-                failed_data = ?failed_data,
-                "FUN register_new_user FAILED BY ARGON2 HASHING PASSWORD"
-            );
-            return Ok(failed_result);
-        }
-    };
-
     let person = match add_person(state, &person).await {
         Ok(p) => p,
         Err(err) => {
@@ -190,7 +177,7 @@ pub(crate) async fn register_new_user(
         }
     };
 
-    let comp = match comp_opt {
+    let company = match comp_opt {
         Some(c) => c,
         None => {
             match make_new_company(state, &comp_inn, &kpp).await {
@@ -207,8 +194,92 @@ pub(crate) async fn register_new_user(
         }
     };
 
-    
+    let exist_flag = match exists_user_by_pers_comp(
+        state, 
+        &person.pers_id, 
+        &company.comp_id).await {
+            Ok(f) => f,
+            Err(err) => {
+                tracing::error!(
+                    err =?err,
+                    failed_data = ?failed_data,
+                    "FUN get_session_user_by_company FAILED IN FUN register_new_user"
+                );
+                false
+            }
+        };
 
+    if exist_flag {
+        return Ok(RegisterResponse::Verify(VerifyData { 
+            device_id, 
+            method: VerifyMethod::UserAlreadyExists { } }));
+    }
 
-    Err(Status::Unknown)
+    let salt = SaltString::generate(&mut OsRng);
+
+    let argon2 = Argon2::default();
+
+    let server_password_hash = match argon2
+        .hash_password(password.as_bytes(), &salt) {
+        Ok(h) => h.to_string(),
+        Err(err) => {
+            tracing::error!(
+                err = ?err,
+                failed_data = ?failed_data,
+                "FUN register_new_user FAILED BY ARGON2 HASHING PASSWORD"
+            );
+            return Ok(failed_result);
+        }
+    };
+
+    let user_set_data = UserSetData {
+        pers_id: person.pers_id.clone(),
+        comp_id: company.comp_id.clone(),
+        phone,
+        password_hash: server_password_hash,
+        email,
+        mchd_tax_guid: None,
+        mchd_tax_file: None,
+        mchd_home_guid: None,
+        mchd_home_file: None,
+    };
+
+    let user = match set_user(state, &user_set_data).await {
+        Ok(u) => u,
+        Err(err) => {
+            tracing::error!(
+                err = ?err,
+                failed_data = ?failed_data,
+                "FUN register_new_user FAILED BY FUN set_user"
+            );
+            return Ok(failed_result);
+        }
+    };
+
+    let token = match new_session(state, &user.user_id, &device_id).await {
+        Ok(t) => t,
+        Err(err) => {
+            tracing::error!(
+                err = ?err,
+                failed_data = ?failed_data,
+                "FUN register_new_user FAILED BY new_session FUN"
+            );
+            return Ok(failed_result);
+        }
+    };
+
+    let session_user = SessionUser {
+        user,
+        person,
+        company
+    };
+
+    let session_user_token = SessionUserToken {
+        user: session_user,
+        token
+    };
+
+    let ok_result = RegisterResponse::Success(Box::new(session_user_token));
+
+    Ok(ok_result) 
 }
