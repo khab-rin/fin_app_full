@@ -22,7 +22,7 @@ pub(crate) async fn process_statement<P: AsRef<Path>>(
 
     let client = Config::get_client();
     
-    let pool = POOL.get().ok_or(Status::MainPoolGetError)?;
+    let pool = POOL.get().ok_or(Status::SystemErr)?;
 
     let parse_result = bank_parser(path)?;
 
@@ -56,10 +56,10 @@ pub(crate) async fn process_statement<P: AsRef<Path>>(
             log::error!(
                 "tech_err = {}, stat_err = {}",
                 err,
-                Status::FrontBackPostResponseParseError
+                Status::QueryBodyReadErr
             );
         })
-        .map_err(|_| Status::FrontBackPostResponseParseError)?;
+        .map_err(|_| Status::QueryBodyReadErr)?;
 
     
     let id_inn_kpp_pairs:Vec<CompanyCurt> = sync_local_companys(pool, &companys).await?;

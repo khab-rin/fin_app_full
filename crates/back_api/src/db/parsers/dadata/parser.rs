@@ -37,17 +37,17 @@ pub async fn dadata_reqwest_func(
         .inspect_err(|err| {
             tracing::error!(
                 tech_error = ?err,
-                status_err = ?Status::DadaRespWrapMappingErr,
+                status_err = ?Status::MappingError,
                 inn = %inn, 
                 kpp = %kpp);
         })
-        .map_err(|_| Status::DadaRespWrapMappingErr)?;
+        .map_err(|_| Status::MappingError)?;
 
     let mut iterator = resp_wrap.suggestions.into_iter();
 
     let mut main_metadata = iterator
         .next()
-        .ok_or(Status::InvalideResponseFormat)
+        .ok_or(Status::QueryResponseFormatErr)
         .inspect_err(|err| {
             tracing::error!(
                 status_err = ?err,
@@ -55,7 +55,7 @@ pub async fn dadata_reqwest_func(
                 kpp = %kpp);
         })?
         .data
-        .ok_or(Status::InvalideResponseFormat)
+        .ok_or(Status::QueryResponseFormatErr)
         .inspect_err(|err| {
             tracing::error!(
                 status_err = ?err,

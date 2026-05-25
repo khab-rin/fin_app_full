@@ -9,14 +9,8 @@ pub enum Status {
     #[default]
     Success = 0,
     Unknown = 1,
-    DecimalParse = 2,
-    ChronoParse = 3,
-    FromToJson = 4,
 
-    MainPoolGetError = 51,
-
-    
-
+    ValideInput = 120,
     ValidDate = 121,
     ValidDecimalParser = 122,
     ValidRubFParser = 123,
@@ -70,108 +64,32 @@ pub enum Status {
     ValidDateTime = 180,
     ValidMchdDig10_10 = 181,
     ValidEmail = 182,
+    ValidBoxUuid = 183,
 
-    FrontBackPostResponseParseError = 304,
-    FrontCommitSuncCompanysQryErr = 305,
-    FrontSqlGetIdInnKppPair = 306,
-    BackGetUserIdsQuery = 307,
-    BackSqlGetPersonTryFromDto = 308,
-    BackSqlGetPersonWrongQueryLogic = 309,
-    BackSqlAddHelperDtoToCompany = 310,
-    BackGetCompanyQuery = 311,
-    BackGetCheckPasswDataQuery = 312,
-    BackAuthMissUser = 313,
-    BackAuthWrongDbUserPassword = 314,
-    BackAuthSqlGetUserQueryLogic = 315,
-    BackAuthGetSeeionUserQuery = 316,
-    BackAuthUserTryFromDto = 317,
-    BackAuthSessionUserMiss = 318,
-    BackAuthGetCheckPasswQueryLogic = 319,
-    BackAuthWrongPassword = 320,
-    BackAuthDeviceMiss = 321,
-    BackAuthSmsRuWrongResponse = 324,
-    BackAuthDelTokenMissUser = 325,
-    BackAuthDelWarnTokenDevice = 326,
-    BackAuthSendWarnMail = 327,
-    BackAuthRestoreSessionLogicErr = 328,
-    BackAuthNewCfQuery = 329,
-    BackCallCfGetByDeviceExternQuery = 330,
+    FileCreateError = 201,
+    FileReadError = 202,
+    FileWriteError = 203,
+    FileInvalideFormat = 204,
+    FileInvalideData = 205,
 
-    AuthShartPassword = 350,
-    AuthDeviceIdErr = 351,
-    AuthSendQuery = 352,
-    AuthMapRegisterResponse = 353,
-    AuthBackGetCompanyErr = 354,
-    AuthWrongQueryLogic = 355,
-    AuthBackGetPersonErr = 356,
-    AuthClientCommandIsStateActiveDbErr = 357,
-    AuthLoginGetToken = 358,
-    AuthMissToken = 359,
-    AuthGetUserIds = 361,
-    AuthPersonMiss = 362,
-    AuthGetCompany = 363,
-    AuthGetPerson = 364,
-    AuthCompanyMiss = 365,
-
-
-    ClientAuthRestoreByToken = 500,
-    ClientAuthRestoreResponseMap = 501,
-    ClientAuthRestoreResponseStatus = 502,
-    ClientInitSessionError = 503,
-    ClientInitSessionGetPathParrent = 504,
-    ClientInitSessionInitSqlOptions = 505,
-    ClientInitSessionInitPool = 506,
-    ClientInitSqlxMigrate = 507,
-    ClientLoginWronTokenInSystem = 508,
-
-    BackSmsRuBalance = 12003,
-    BackSqlQueryCallCf = 12004,
-    SmsruGetResResponseStructWrongMapping = 12005,
-    BackFunSmsRuCfFailed = 12006,
-    BackSqlQuerySessions = 12007,
-    BackSqlQueryUsers = 12008,
-    BackQueryGetErr = 12009,
-
-    CryptoServerError = 3001,
-
-
-
-    // Общие ошибки - запросы и так далее   
-    QueryGetRequestErr = 1001,
-    QueryBodyReadErr = 1002,
-    QueryPostRequestErr = 1007,
-    InvalideResponseFormat = 1008,
-
-    FileReadError = 1003,
-    InvalideFileFormat = 1005,
-    InvalideFileData = 1006,
-
-    MappingError = 1004,
+    MappingError = 301,
     
-    SqlLiterPoolErr = 1009,
+    SqlLiterPoolErr = 401,
+    SqlQueryWrongLogic = 402,
+    SqliteCommitErr = 403,
 
-    SqlQueryWrongLogic = 10010,
-    
+    SystemErr = 404,
+    DataCorruptionErr = 405,
 
-    // Общие ошибки - структуры
-    UserWrongMapping = 2000,
-    PersonWrongMapping = 2001,
-    CompanyWrongMapping = 2002,
-    CtrprtyMetadataWrongMapping = 2003,
-    BoxUuidParsingErr = 2004,
-    DadaRespWrapMappingErr = 2005,
+    BackSmsRuBalance = 501,
+    BackApiError = 502,
 
-    
-    
+    CryptoServerError = 601,
 
-    //BACK API 4000 - 4999
-    SmsruGetResResponseMappigErr = 4001,
-    SmsruCallResponseMappingErr = 4002,
-    CryptoVerifyPersonResponseMappingErr = 4003,
-    PersonMappingError = 4004,
-    SqlPersonsQueryLogicErr = 4005,
-    SqlCompanysQueryLogicErr = 4006,
-
+    QueryGetRequestErr = 701,
+    QueryBodyReadErr = 702,
+    QueryPostRequestErr = 703,
+    QueryResponseFormatErr = 704,
 }
 
 
@@ -182,10 +100,10 @@ impl std::fmt::Display for Status {
 }
 
 map_errors! {
-    rust_decimal::Error     => Status::DecimalParse,
-    chrono::ParseError      => Status::ChronoParse,
+    rust_decimal::Error     => Status::ValidDecimalParser,
+    chrono::ParseError      => Status::ValidDate,
     std::num::ParseIntError => Status::Unknown,
-    serde_json::Error       => Status::FromToJson
+    serde_json::Error       => Status::MappingError
 }
 
 

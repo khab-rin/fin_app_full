@@ -5,7 +5,10 @@ use shared_lib::sql_models::company::implements::{Company, CompanyCurt};
 use shared_lib::primitives::frozen::implements::{Inn, Kpp};
 use shared_lib::err_models::implements::Status;
 
-pub(crate) async fn sync_local_companys(pool: &SqlitePool, companys: &[Company]) -> Result<Vec<CompanyCurt>, Status> {
+pub(crate) async fn sync_local_companys(
+    pool: &SqlitePool, 
+    companys: &[Company]
+) -> Result<Vec<CompanyCurt>, Status> {
 
     log::info!("Запуск синхронизации локальных контрагентов (количество: {})", companys.len());
 
@@ -46,7 +49,7 @@ pub(crate) async fn sync_local_companys(pool: &SqlitePool, companys: &[Company])
             Err(err) => {
                 log::error!("tech_err = {:?}, stat_err = {:?}, inn = {:?}, kpp = {:?}",
                     err,
-                    Status::FrontSqlGetIdInnKppPair,
+                    Status::SqlQueryWrongLogic,
                     inn_ref,
                     kpp_ref);
             }
@@ -59,10 +62,10 @@ pub(crate) async fn sync_local_companys(pool: &SqlitePool, companys: &[Company])
             log::error!(
                 "tech_err = {:?}, stat_err = {:?}",
                 err,
-                Status::FrontCommitSuncCompanysQryErr
+                Status::SqliteCommitErr
             );
         })
-        .map_err(|_| Status::FrontCommitSuncCompanysQryErr)?;
+        .map_err(|_| Status::SqliteCommitErr)?;
 
     Ok(id_inn_kpp_pairs)
 

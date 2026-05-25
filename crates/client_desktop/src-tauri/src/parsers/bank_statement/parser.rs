@@ -94,7 +94,7 @@ pub(crate) fn bank_parser<P: AsRef<Path>>(path: P) -> Result<ParseBankStatRes, S
 
     let mut parse_result = ParseBankStatRes::default();
 
-    let bytes = match fs::read(path).map_err(|_| Status::BankParserReadFile) {
+    let bytes = match fs::read(path).map_err(|_| Status::FileReadError) {
         Ok(b) => b,
         Err(err) => {
             log::error!(
@@ -139,7 +139,7 @@ pub(crate) fn bank_parser<P: AsRef<Path>>(path: P) -> Result<ParseBankStatRes, S
     let head = StatementHead::from_map(&block_map)
         .map_err(|_| Status::MappingError)?;
 
-    if head.head_acc != own_ras_acc { return Err(Status::InvalideFileData); }
+    if head.head_acc != own_ras_acc { return Err(Status::FileInvalideData); }
 
     parse_result.st_head = Some(head);
 

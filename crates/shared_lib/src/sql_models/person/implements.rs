@@ -35,7 +35,7 @@ impl std::convert::TryFrom<PersonDto> for Person {
             inn: dto.inn,
             metadata: serde_json::
                 from_value(dto.metadata)
-                .map_err(|_| Status::PersonWrongMapping)?,
+                .map_err(|_| Status::MappingError)?,
             last_update: dto.last_update
         })
     }

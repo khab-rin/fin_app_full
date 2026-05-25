@@ -23,10 +23,10 @@ pub(crate) async fn get_person_by_inn(
         .inspect_err(|err| {
             tracing::error!(
                 tech_err = ?err,
-                stat_err = ?Status::BackSqlGetPersonWrongQueryLogic
+                stat_err = ?Status::SqlQueryWrongLogic
             );
         })
-        .map_err(|_| Status::BackSqlGetPersonWrongQueryLogic)?;
+        .map_err(|_| Status::SqlQueryWrongLogic)?;
     
     Ok(dto_to_person(persons_dto))
 
@@ -46,9 +46,9 @@ pub(crate) async fn get_person_by_id(
         .inspect_err(|err| {
             tracing::error!(
                 tech_err = ?err,
-                stat_err = ?Status::BackSqlGetPersonWrongQueryLogic
+                stat_err = ?Status::SqlQueryWrongLogic
             );
-        }).map_err(|_| Status::BackSqlGetPersonWrongQueryLogic)?;
+        }).map_err(|_| Status::SqlQueryWrongLogic)?;
     
     Ok(dto_to_person(persons_dto))
 }

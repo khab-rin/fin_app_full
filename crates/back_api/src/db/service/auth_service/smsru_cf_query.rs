@@ -77,10 +77,10 @@ pub(crate) async fn smsru_get_cf(
                 Err(err) => {
                     tracing::error!(
                         tech_err = ?err,
-                        local_err = ?Status::SmsruGetResResponseMappigErr,
+                        local_err = ?Status::MappingError,
                         "SmsruGetResResponse_MAPPING_ERR"
                     );
-                    return Err(Status::SmsruGetResResponseMappigErr);
+                    return Err(Status::MappingError);
                 }
             };
 

@@ -22,10 +22,10 @@ pub(crate) async fn new_session(
             Err(err) => {
                 tracing::error!(
                     tech_err = ?err,
-                    local_err = ?Status::BackSqlQuerySessions,
+                    local_err = ?Status::SqlQueryWrongLogic,
                     "FUN new_session FAILED"
                 );
-                Err(Status::BackSqlQuerySessions)
+                Err(Status::SqlQueryWrongLogic)
             }
         }
 }

@@ -22,9 +22,9 @@ pub(crate) async fn get_companys_by_id(
         .inspect(|err| {
             tracing::error!(
                 tech_err = ?err,
-                local_err = ?Status::BackGetCompanyQuery
+                local_err = ?Status::SqlQueryWrongLogic
             )
-        }).map_err(|_| Status::BackGetCompanyQuery)?;
+        }).map_err(|_| Status::SqlQueryWrongLogic)?;
 
     Ok(dto_to_company_vec(companys_dto))
 }

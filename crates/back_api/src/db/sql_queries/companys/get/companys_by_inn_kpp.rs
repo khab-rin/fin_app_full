@@ -26,9 +26,9 @@ pub(crate) async fn get_companys_by_inn_kpp(
             Err(err) => {
                 tracing::error!(
                     tech_err = ?err,
-                    local_err = ?Status::SqlCompanysQueryLogicErr,
+                    local_err = ?Status::SqlQueryWrongLogic,
                 );
-                return Err(Status::SqlCompanysQueryLogicErr);
+                return Err(Status::SqlQueryWrongLogic);
             }
         };
 

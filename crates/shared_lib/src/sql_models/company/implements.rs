@@ -21,7 +21,7 @@ pub struct CompanyDto {
 }
 
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 #[derive(sqlx::FromRow, Debug)]
 pub struct Company {
     pub comp_id: BoxUuid,
@@ -44,7 +44,7 @@ impl std::convert::TryFrom<CompanyDto> for Company {
             comp_status: dto.comp_status.clone(),
             metadata: serde_json::
                 from_value(dto.metadata.clone())
-                .map_err(|_| Status::CompanyWrongMapping)?,
+                .map_err(|_| Status::MappingError)?,
             last_update: dto.last_update
          })
     }

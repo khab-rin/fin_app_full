@@ -24,10 +24,10 @@ pub(crate) async fn add_person(
             Err(err) => {
                 tracing::error!(
                     tech_err = ?err,
-                    local_err = ?Status::SqlPersonsQueryLogicErr,
+                    local_err = ?Status::SqlQueryWrongLogic,
                     "FUN add_person FAILED BY WRONG QUERY LOGIC"
                 );
-                return Err(Status::SqlPersonsQueryLogicErr);
+                return Err(Status::SqlQueryWrongLogic);
             }
         };
 
@@ -35,10 +35,10 @@ pub(crate) async fn add_person(
         Some(r) => r,
         None => {
             tracing::error!(
-                local_err = ?Status::SqlPersonsQueryLogicErr,
+                local_err = ?Status::SqlQueryWrongLogic,
                 "FUN add_person FAILED BY WRONG QUERY LOGIC"
             );
-            return Err(Status::SqlPersonsQueryLogicErr);
+            return Err(Status::SqlQueryWrongLogic);
         }
     };
 

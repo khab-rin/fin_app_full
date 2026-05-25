@@ -12,8 +12,7 @@ use shared_lib::service::auth_service::implements::{
     CryptoVerifyRequest, 
     RegisterResponse, 
     RegistrationRequest, 
-    VerifyData, 
-    VerifyMethod,
+    AuthStep,
     CryptoVerifyPersonResponse
 };
 
@@ -45,9 +44,10 @@ pub(crate) async fn register_new_user(
         document, 
         signature } = payload;
     
-    let failed_result = RegisterResponse::Verify(VerifyData { 
-        device_id: device_id.clone(), 
-        method: VerifyMethod::TryLater {} });
+    let failed_result = RegisterResponse {
+        device_id: device_id.clone(),
+        step: AuthStep::TryLater {}
+    };
     
     let failed_data = (
         &person, 
@@ -62,9 +62,11 @@ pub(crate) async fn register_new_user(
             failed_data = ?failed_data,
             "PERSON LEND ANOTHER FILE"
         );
-        return Ok(RegisterResponse::Verify(VerifyData {
+        let result = RegisterResponse {
             device_id,
-            method: VerifyMethod::MissedFile {}}));
+            step: AuthStep::MissedFile {}
+        };
+        return Ok(result);
     }
 
     let crypto_verify_request = CryptoVerifyRequest {
@@ -111,7 +113,7 @@ pub(crate) async fn register_new_user(
         Err(err) => {
             tracing::error!(
                 tech_err = ?err,
-                local_err = ?Status::CryptoVerifyPersonResponseMappingErr,
+                local_err = ?Status::MappingError,
                 failed_data = ?failed_data,
                 "FUN register_new_user FAILED BY MAPPING CryptoVerifyPersonResponse"
             );
@@ -124,9 +126,11 @@ pub(crate) async fn register_new_user(
             failed_data = ?failed_data,
             "FUN register_new_user FAILED BY WRONG SIGNATURE FILE"
         );
-        return Ok(RegisterResponse::Verify(VerifyData { 
-            device_id, 
-            method: VerifyMethod::WrongSignFile { }}));
+        let result = RegisterResponse {
+            device_id,
+            step: AuthStep::WrongSignFile {}
+        };
+        return Ok(result);
     }
 
     if let Err(res) = validate_field(
@@ -210,9 +214,11 @@ pub(crate) async fn register_new_user(
         };
 
     if exist_flag {
-        return Ok(RegisterResponse::Verify(VerifyData { 
-            device_id, 
-            method: VerifyMethod::UserAlreadyExists { } }));
+        let result = RegisterResponse {
+            device_id,
+            step: AuthStep::UserAlreadyExists{}
+        };
+        return Ok(result);
     }
 
     let salt = SaltString::generate(&mut OsRng);
@@ -279,7 +285,11 @@ pub(crate) async fn register_new_user(
         token
     };
 
-    let ok_result = RegisterResponse::Success(Box::new(session_user_token));
+    
+    let ok_result = RegisterResponse {
+        device_id,
+        step: AuthStep::SuccessFull { session_user_token: Box::new(session_user_token) }
+    };
 
     Ok(ok_result) 
 }

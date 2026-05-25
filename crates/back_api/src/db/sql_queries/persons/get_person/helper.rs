@@ -11,7 +11,7 @@ pub(crate) fn dto_to_person(persons_dto: Vec<PersonDto> ) -> Vec<Person> {
             Err(err) => {
                 tracing::error!(
                     tech_err = ?err,
-                    custom_err = ?Status::BackSqlGetPersonTryFromDto,
+                    custom_err = ?Status::MappingError,
                     person = ?dto
                 )
             }

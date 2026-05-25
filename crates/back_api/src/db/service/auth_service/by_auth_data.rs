@@ -6,7 +6,7 @@ use argon2::{
 };
 
 use shared_lib::Status;
-use shared_lib::service::auth_service::implements::{AuthCheckPassword, VerifyData, VerifyMethod};
+use shared_lib::service::auth_service::implements::{AuthCheckPassword, AuthStep};
 use shared_lib::service::auth_service::implements::{
     RestoreByAuthDataRequest,
     RegisterResponse,
@@ -24,23 +24,33 @@ pub(crate) async fn restore_user_by_authdata(
     data: &RestoreByAuthDataRequest
 ) -> Result<RegisterResponse, Status> {
 
-    let failed_result = Ok(RegisterResponse::
-        Verify(VerifyData { 
-            device_id: data.device_id.clone(), 
-            method: VerifyMethod::TryLater {} 
-        }));
+    let failed_result = RegisterResponse {
+        device_id: data.device_id.clone(),
+        step: AuthStep::TryLater {}
+    };
 
     let failed_data = &data.auth_data;
 
-    let auth_vec = match get_auth_password_check(state, data).await {
-        Ok(vec) => vec,
+    let auth_check_password_option = match get_auth_password_check(state, data).await {
+        Ok(opt) => opt,
         Err(err) => {
             tracing::error!(
                 err = ?err,
                 failed_data = ?failed_data,
-                "Fun restore_user_by_authdata failed on users query"
+                "FUN restore_user_by_authdata FAILED BY get_auth_password_check FUN"
             );
-            return failed_result;
+            return Ok(failed_result);
+        }
+    };
+
+    let auth_check_password = match auth_check_password_option {
+        Some(a) => a,
+        None => {
+            let result = RegisterResponse {
+                device_id: data.device_id.clone(),
+                step: AuthStep::NeedRegistrtion {}
+            };
+            return Ok(result);
         }
     };
 
@@ -51,16 +61,7 @@ pub(crate) async fn restore_user_by_authdata(
         user_id, 
         phone, 
         password_hash, 
-        token } = match auth_vec.into_iter().next() {
-            Some(elem) => elem,
-            None => {
-                tracing::error!(
-                    failed_data = ?failed_data,
-                    "WRONG LOGIC IN FUN restore_user_by_authdata AND SQL QUERYS"
-                );
-                return failed_result;
-            }
-        };
+        token } = auth_check_password;
     
     let server_parsed_hash = match PasswordHash::new(&password_hash) {
         Ok(hash) => hash,
@@ -70,7 +71,7 @@ pub(crate) async fn restore_user_by_authdata(
                 user = %user_id,
                 "WRONG PASSWORD DATA IN SQL Users"
             );
-            return failed_result;
+            return Ok(failed_result);
         }
     };
 
@@ -82,12 +83,12 @@ pub(crate) async fn restore_user_by_authdata(
                 user_id = %user_id,
                 "USER_SENDED_WRONG_PASSWORD!!!"
             );
-            let verify = VerifyData {
+            let result = RegisterResponse {
                 device_id: device_id.clone(),
-                method: VerifyMethod::WrongPassword {}
+                step: AuthStep::WrongPassword {}
             };
-            return Ok(RegisterResponse::Verify(verify));
-            }
+            return Ok(result);
+            }  
         };
     
     if let Some(t) = token {
@@ -106,24 +107,25 @@ pub(crate) async fn restore_user_by_authdata(
                 user_id = %user_id,
                 "FUN restore_user_by_authdata FAILED ON GETTING CALL BACK PHONE BY FUN smsru_get_phone"
             );
-            return failed_result;
+            return Ok(failed_result);
         }
     };
 
     match new_cf(state, &user_id, device_id, &external_id).await {
         Ok(true) => {
-            let verify = VerifyData {
+            let result = RegisterResponse {
                 device_id: device_id.clone(),
-                method: VerifyMethod::CallIn { phone: call_phone, external_id }
+                step: AuthStep::CallIn { phone: call_phone, external_id }
             };
-            Ok(RegisterResponse::Verify(verify))
+
+            Ok(result)
         }
         Ok(false) => {
             tracing::error!(
                 user_id = %user_id,
                 "WRONG LOGIC IN FUN new_cf AND SQL QUERYS" 
             );
-            failed_result
+            Ok(failed_result)
         }
         Err(err) => {
             tracing::error!(
@@ -131,7 +133,7 @@ pub(crate) async fn restore_user_by_authdata(
                 err = ?err,
                 "WRONG LOGIC IN FUN new_cf AND SQL QUERYS" 
             );
-            failed_result
+            Ok(failed_result)
         } 
     }
     

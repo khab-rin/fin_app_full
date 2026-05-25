@@ -47,10 +47,10 @@ pub(crate) async fn make_new_company(
         Some(o) => o,
         None => {
             tracing::error!(
-                err = ?Status::CtrprtyMetadataWrongMapping,
+                err = ?Status::MappingError,
                 "FUN make_new_company FAILED CtrprtyMetadata MISS okved"
             );
-            return Err(Status::CtrprtyMetadataWrongMapping);
+            return Err(Status::MappingError);
         }
     };
 
@@ -58,10 +58,10 @@ pub(crate) async fn make_new_company(
         Some(o_d) => o_d,
         None => {
             tracing::error!(
-                err = ?Status::CtrprtyMetadataWrongMapping,
+                err = ?Status::MappingError,
                 "FUN make_new_company FAILED CtrprtyMetadata MISS opf_data"
             );
-            return Err(Status::CtrprtyMetadataWrongMapping);
+            return Err(Status::MappingError);
         }
     };
 
@@ -69,10 +69,10 @@ pub(crate) async fn make_new_company(
         Some(code) => code,
         None => {
             tracing::error!(
-                err = ?Status::CtrprtyMetadataWrongMapping,
+                err = ?Status::MappingError,
                 "FUN make_new_company FAILED CtrprtyMetadata MISS opf_code"
             );
-            return Err(Status::CtrprtyMetadataWrongMapping);
+            return Err(Status::MappingError);
         }
     };
 
@@ -90,10 +90,10 @@ pub(crate) async fn make_new_company(
         Some(d) => d,
         None => {
             tracing::error!(
-                err = ?Status::CtrprtyMetadataWrongMapping,
+                err = ?Status::MappingError,
                 "FUN make_new_company FAILED CtrprtyMetadata MISS is_active_data"
             );
-            return Err(Status::CtrprtyMetadataWrongMapping);
+            return Err(Status::MappingError);
         }
     };
 
@@ -101,10 +101,10 @@ pub(crate) async fn make_new_company(
         Some(s) => s,
         None => {
             tracing::error!(
-                err = ?Status::CtrprtyMetadataWrongMapping,
+                err = ?Status::MappingError,
                 "FUN make_new_company FAILED CtrprtyMetadata MISS comp_state"
             );
-            return Err(Status::CtrprtyMetadataWrongMapping);
+            return Err(Status::MappingError);
         }
     };
 
@@ -120,10 +120,10 @@ pub(crate) async fn make_new_company(
         Err(err) => {
             tracing::error!(
                 tech_err = ?err,
-                local_err = ?Status::BoxUuidParsingErr,
+                local_err = ?Status::ValidBoxUuid,
                 "FUN make_company FAILED BY PARSING BoxUuid"
             );
-            return Err(Status::BoxUuidParsingErr);
+            return Err(Status::ValidBoxUuid);
         }
     };
     Ok(Company {

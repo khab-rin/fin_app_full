@@ -1,4 +1,3 @@
-use futures::executor::enter;
 use keyring::Entry;
 
 use shared_lib::Status;
@@ -25,9 +24,9 @@ pub(crate) async fn login(
         .inspect(|err| {
             log::error!(
                 "tecn_err - {:?}, cust_err - {}",
-                err, Status::AuthLoginGetToken
+                err, Status::SystemErr
             )
-        }).map_err(|_| Status::AuthLoginGetToken)?;
+        }).map_err(|_| Status::SystemErr)?;
 
     if let Ok(token_str) = entry.get_password() {
 
@@ -35,9 +34,9 @@ pub(crate) async fn login(
         .inspect_err(|_| {
             log::error!(
                 "Wrong_token_in_system_for_persinn_{}_compinn_{}_kpp_{}: {}",
-                pers_inn, comp_inn, kpp, Status::ClientLoginWronTokenInSystem
+                pers_inn, comp_inn, kpp, Status::DataCorruptionErr
             )
-        }).map_err(|_| Status::ClientLoginWronTokenInSystem)?;
+        }).map_err(|_| Status::DataCorruptionErr)?;
 
         return restore_session(state, token).await;
 
@@ -55,7 +54,7 @@ pub(crate) async fn login(
             device_id
         };
 
-        return Ok(Status::AuthMissToken);
+        return Ok(Status::Unknown);
     }
     
     

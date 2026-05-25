@@ -1,7 +1,7 @@
 use crate::primitives::frozen::implements::{BoxUuid, DateTime, Email, Phone};
 use serde::{Serialize, Deserialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct User {
     pub user_id: BoxUuid,
 

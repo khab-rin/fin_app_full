@@ -10,9 +10,9 @@ use crate::service::auth_service::client_state::SessionUser;
 
 
 #[derive(Serialize, Deserialize)]
-pub enum RegisterResponse {
-    Success(Box<SessionUserToken>),
-    Verify(VerifyData)
+pub struct RegisterResponse {
+    pub device_id: BoxUuid,
+    pub step: AuthStep,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -22,13 +22,9 @@ pub struct SessionUserToken {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct VerifyData {
-    pub device_id: BoxUuid,
-    pub method: VerifyMethod
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum VerifyMethod {
+pub enum AuthStep {
+    SuccessFull { session_user_token: Box<SessionUserToken> },
+    SuccessShort {},
     CallIn { phone: Phone, external_id: String },
     NeedPassword {},
     Unpossible {status: Status},
@@ -39,7 +35,8 @@ pub enum VerifyMethod {
     MissedFile {},
     WrongSignFile {},
     WrongPerson {},
-    UserAlreadyExists {}
+    UserAlreadyExists {},
+    TokenDevicePairMiss { token: BoxUuid }
 }
 
 

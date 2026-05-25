@@ -36,6 +36,15 @@ pub async fn run_lib() {
 
     tauri::Builder::default()
         .plugin(tauri_plugin_log::Builder::new()
+            .format(|out, message, record| {
+                out.finish(format_args!(
+                    "[{file}:{line}] {level}: {message}",
+                    file = record.file().unwrap_or("unknown"),
+                    line = record.line().unwrap_or(0),
+                    level = record.level(),
+                    message = message
+                ))
+            })
             .targets([
                 Target::new(TargetKind::Stdout),
                 Target::new(TargetKind::LogDir { file_name: Some("app_logs".to_string()) }),

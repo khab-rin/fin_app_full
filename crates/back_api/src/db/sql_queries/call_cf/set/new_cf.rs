@@ -23,10 +23,10 @@ pub(crate) async fn new_cf(
         .inspect_err(|err| {
             tracing::error!(
                 tech_err = ?err,
-                local_err = ?Status::BackAuthNewCfQuery
+                local_err = ?Status::SqlQueryWrongLogic
             )
         })
-        .map_err(|_| Status::BackAuthNewCfQuery)?;
+        .map_err(|_| Status::SqlQueryWrongLogic)?;
 
     Ok(insert_res.is_some())
 }

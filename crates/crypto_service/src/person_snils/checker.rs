@@ -29,40 +29,40 @@ pub async fn verify_signature_handler (
         .inspect_err(|err| {
             tracing::error!(
                 tech_err = ?err,
-                local_err = ?Status::CryptoServerError,
+                local_err = ?Status::FileCreateError,
                 "FUN verify_signature_handler FAILED BY CREATING DOC FILE"
             );
-        }).map_err(|_| Status::CryptoServerError)?;
+        }).map_err(|_| Status::FileCreateError)?;
 
     doc_file.write_all(&payload.document)
         .await
         .inspect_err(|err| {
             tracing::error!(
                 tech_err = ?err,
-                local_err = ?Status::CryptoServerError,
+                local_err = ?Status::FileWriteError,
                 "FUN verify_signature_handler FAILED BY WRITING DOC FILE"
             );
-        }).map_err(|_| Status::CryptoServerError)?;
+        }).map_err(|_| Status::FileWriteError)?;
 
     let mut sig_file = tokio::fs::File::create(&sig_path)
         .await
         .inspect_err(|err| {
             tracing::error!(
                 tech_err = ?err,
-                local_err = ?Status::CryptoServerError,
+                local_err = ?Status::FileCreateError,
                 "FUN verify_signature_handler FAILED BY CREATING SIG FILE"
             );
-        }).map_err(|_| Status::CryptoServerError)?;
+        }).map_err(|_| Status::FileCreateError)?;
 
     sig_file.write_all(&payload.signature)
         .await
         .inspect_err(|err| {
             tracing::error!(
                 tech_err = ?err,
-                local_err = ?Status::CryptoServerError,
+                local_err = ?Status::FileWriteError,
                 "FUN verify_signature_handler FAILED BY WRITING SIG FILE"
             );
-        }).map_err(|_| Status::CryptoServerError)?;
+        }).map_err(|_| Status::FileWriteError)?;
 
     let output = tokio::process::Command::new(&state.cryptcp_path)
         .arg("-vfy")

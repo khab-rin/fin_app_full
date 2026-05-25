@@ -1,10 +1,20 @@
 use serde::{Serialize, Deserialize};
 
 use crate::Status;
-use crate::primitives::frozen::implements::BoxUuid;
+use crate::primitives::frozen::implements::{BoxUuid, Inn, Kpp};
 use crate::sql_models::company::implements::Company;
 use crate::sql_models::person::implements::Person;
 use crate::sql_models::user::implements::User;
+
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct UserLogInfo {
+    pub label: String,
+    pub pers_inn: Inn,
+    pub comp_inn: Inn,
+    pub kpp: Kpp, 
+    pub token: BoxUuid
+}
 
 pub struct ClientState {
     pub client: reqwest::Client,
@@ -21,7 +31,7 @@ pub struct ActiveSession {
     pub token: BoxUuid
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct SessionUser {
     pub user: User,
     pub person: Person,
@@ -41,15 +51,15 @@ impl std::convert::TryFrom<SessionUserDto> for SessionUser {
         Ok(Self { 
             user: serde_json::
                 from_value(dto.user)
-                .map_err(|_| Status::UserWrongMapping)?,
+                .map_err(|_| Status::MappingError)?,
             
             person: serde_json::
                 from_value(dto.person)
-                .map_err(|_| Status::PersonWrongMapping)?,
+                .map_err(|_| Status::MappingError)?,
             
             company: serde_json::
                 from_value(dto.company)
-                .map_err(|_| Status::CompanyWrongMapping)?
+                .map_err(|_| Status::MappingError)?
          })
     }
 }

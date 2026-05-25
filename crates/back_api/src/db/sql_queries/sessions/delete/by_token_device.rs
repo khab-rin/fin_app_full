@@ -23,10 +23,10 @@ pub(crate) async fn delete_session_by_token(
         .inspect_err(|err| {
             tracing::error!(
                 tech_err = ?err,
-                local_err = ?Status::BackAuthDelWarnTokenDevice
+                local_err = ?Status::SqlQueryWrongLogic
             )
         })
-        .map_err(|_| Status::BackAuthDelWarnTokenDevice)?;
+        .map_err(|_| Status::SqlQueryWrongLogic)?;
     
     Ok(row)
 }

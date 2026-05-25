@@ -24,11 +24,11 @@ pub(crate) async fn get_company_by_inn_kpp(
         Err(err) => {
             tracing::error!(
                 err = ?err,
-                local_err = ?Status::SqlCompanysQueryLogicErr,
+                local_err = ?Status::SqlQueryWrongLogic,
                 failed_data = ?(inn, kpp),
                 "FUN get_companys_by_inn_kpp FAILED BY SQL QUERY GET COMPANY"
             );
-            return Err(Status::SqlCompanysQueryLogicErr);
+            return Err(Status::SqlQueryWrongLogic);
         }
     };
 

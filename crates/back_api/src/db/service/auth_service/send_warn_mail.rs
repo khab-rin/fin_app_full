@@ -47,9 +47,9 @@ pub(crate) async fn send_warn_mail(
         .inspect_err(|err| {
             tracing::error!(
                 tech_err = ?err,
-                local_err = ?Status::BackAuthSendWarnMail
+                local_err = ?Status::QueryPostRequestErr
             )
-        }).map_err(|_| Status::BackAuthSendWarnMail)?;
+        }).map_err(|_| Status::QueryPostRequestErr)?;
 
     if !response.status().is_success() {
         let err = response.text().await.unwrap_or_default();

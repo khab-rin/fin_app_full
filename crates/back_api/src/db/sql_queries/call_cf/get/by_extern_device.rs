@@ -25,10 +25,10 @@ pub(crate) async fn get_user_time_by_device_external(
                     device_id = %device_id,
                     external_id = %external_id,
                     tech_err = ?err,
-                    local_err = ?Status::BackSqlQueryCallCf,
+                    local_err = ?Status::SqlQueryWrongLogic,
                     "FUN get_user_time_by_device_external WRONG SQL QUERY call_cf"
                 );
-                return Err(Status::BackSqlQueryCallCf);
+                return Err(Status::SqlQueryWrongLogic);
             }
         };
 

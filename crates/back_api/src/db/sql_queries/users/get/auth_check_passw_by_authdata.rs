@@ -14,12 +14,12 @@ use crate::config::BackApiState;
 pub(crate) async fn get_auth_password_check(
     state: &Arc<BackApiState>,
     data: &RestoreByAuthDataRequest
-) -> Result<Vec<AuthCheckPassword>, Status> {
+) -> Result<Option<AuthCheckPassword>, Status> {
     
     let RestoreByAuthDataRequest { auth_data, device_id } = data;
     let AuthData { pers_inn, comp_inn, kpp, .. } = auth_data;
 
-    sqlx::
+    match sqlx::
         query_file_as!(
             AuthCheckPassword,
             "src/db/sql_queries/users/get/auth_check_passw_by_authdata.sql",
@@ -27,12 +27,15 @@ pub(crate) async fn get_auth_password_check(
             comp_inn.as_ref(),
             kpp.as_ref(),
             device_id.as_ref()
-        ).fetch_all(&state.pool)
-        .await
-        .inspect_err(|err| {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::BackAuthGetCheckPasswQueryLogic
-            )
-        }).map_err(|_| Status::BackAuthGetCheckPasswQueryLogic)
+        ).fetch_optional(&state.pool).await {
+            Ok(o) => Ok(o),
+            Err(err) => {
+                tracing::error!(
+                    tech_err = ?err,
+                    local_err = ?Status::SqlQueryWrongLogic,
+                    "FUN get_auth_password_check FAILED BY SQL QUERY"
+                );
+                Err(Status::SqlQueryWrongLogic)
+            }
+        }
 }   

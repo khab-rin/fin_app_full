@@ -24,7 +24,7 @@ pub async fn cmd_process_bank_statement(
 
 
 #[tauri::command]
-pub(crate) async  fn is_state_active(
+pub(crate) async  fn is_state_active_init(
     state: tauri::State<'_, ClientState>
 ) -> Result<bool, Status> {
 
@@ -35,7 +35,7 @@ pub(crate) async  fn is_state_active(
             Err(err) => {
                 log::error!(
                     "tech_err = {}, local_err = {}",
-                    err, Status::AuthClientCommandIsStateActiveDbErr
+                    err, Status::SystemErr
                 );
                 Ok(false)
             }
@@ -43,6 +43,15 @@ pub(crate) async  fn is_state_active(
     } else {
         Ok(false)
     }
+}
+
+#[tauri::command]
+pub(crate) async  fn is_state_active_fast(
+    state: tauri::State<'_, ClientState>
+) -> Result<bool, Status> {
+
+    let session = state.session.lock().await;
+    Ok(session.is_some())
 }
 
 #[tauri::command]

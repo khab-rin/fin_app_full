@@ -38,17 +38,17 @@ pub(crate) async fn smsru_get_phone(
         .inspect_err(|err| {
             tracing::error!(
                 tech_err = ?err,
-                local_err = ?Status::SmsruCallResponseMappingErr,
+                local_err = ?Status::MappingError,
                 "FUN smsru_get_phone FAILED BY MAPPING SmsruCallResponse"
 
             )
-        }).map_err(|_| Status::SmsruCallResponseMappingErr)?;
+        }).map_err(|_| Status::MappingError)?;
 
     if data.status == "OK" && data.status_code == 100 {
         
         let check_id = data
             .check_id
-            .ok_or(Status::BackAuthSmsRuWrongResponse)
+            .ok_or(Status::QueryResponseFormatErr)
             .inspect_err(|err| {
                 tracing::warn!(
                     loacl_err = ?err,
@@ -58,7 +58,7 @@ pub(crate) async fn smsru_get_phone(
         
         let call_phone:Phone = data
             .call_phone
-            .ok_or(Status::BackAuthSmsRuWrongResponse)
+            .ok_or(Status::QueryResponseFormatErr)
             .inspect_err(|err| {
                 tracing::warn!(
                     local_err = ?err,

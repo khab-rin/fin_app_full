@@ -173,10 +173,12 @@ pub(crate) struct SqliteOptions {
 
 pub(crate) async fn init_session(
     state: &ClientState,
-    user_data: SessionUserToken
+    user_data: &SessionUserToken
 ) -> Result<Status, Status> {
+    
     dotenvy::dotenv().ok();
     let toml_str = include_str!("../config.toml");
+    
     let toml_config: TomlConfig = toml::from_str(toml_str)
         .expect("CONFIG_TOML_WRONG_MAPPING!!!");
     
@@ -200,9 +202,9 @@ pub(crate) async fn init_session(
         .inspect_err(|err| {
             log::error!(
                 "MAKE_LOCAL_DB_DIR_ERROR, {}, {}",
-                err, Status::ClientInitSessionGetPathParrent
+                err, Status::SystemErr
             )
-        }).map_err(|_| Status::ClientInitSessionGetPathParrent)?
+        }).map_err(|_| Status::SystemErr)?
     }
 
 
@@ -211,9 +213,9 @@ pub(crate) async fn init_session(
         .inspect_err(|err| {
             log::error!(
                 "LOCAL_DB_URL_ERROR: {}, {}",
-                err, Status::ClientInitSessionInitSqlOptions
+                err, Status::SystemErr
             )
-        }).map_err(|_| Status::ClientInitSessionInitSqlOptions)?
+        }).map_err(|_| Status::SystemErr)?
         .create_if_missing(true)
         .journal_mode(SqliteJournalMode::Wal)
         .foreign_keys(true);
@@ -228,9 +230,9 @@ pub(crate) async fn init_session(
         .inspect_err(|err| {
             log::error!(
                 "INIT_POOL_ERROR: {}, {}",
-                err, Status::ClientInitSessionInitPool
+                err, Status::SystemErr
             )
-        }).map_err(|_| Status::ClientInitSessionInitPool)?;
+        }).map_err(|_| Status::SystemErr)?;
 
     
     sqlx::migrate!("./migrations")
@@ -239,15 +241,15 @@ pub(crate) async fn init_session(
         .inspect_err(|err| {
             log::error!(
                 "SQLX_MIGRATE_ERROR: {}, {}",
-                err, Status::ClientInitSqlxMigrate
+                err, Status::SystemErr
             )
-        }).map_err(|_| Status::ClientInitSqlxMigrate)?;
+        }).map_err(|_| Status::SystemErr)?;
     
     
     let session = ActiveSession {
-        user: user_data.user,
+        user: user_data.user.clone(),
         local_db: pool,
-        token: user_data.token
+        token: user_data.token.clone()
     };
 
     let mut session_ref = state.session.lock().await;

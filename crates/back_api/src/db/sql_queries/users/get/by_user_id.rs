@@ -22,9 +22,9 @@ pub(crate) async fn get_user_by_user_id(
                 tracing::error!(
                     user_id = %user_id,
                     tech_err = ?err,
-                    local_err = ?Status::BackSqlQueryUsers
+                    local_err = ?Status::SqlQueryWrongLogic
                 );
-                return Err(Status::BackSqlQueryUsers);
+                return Err(Status::SqlQueryWrongLogic);
             }
         };
 

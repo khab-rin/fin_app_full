@@ -14,7 +14,7 @@ pub async fn register_user(
     let AuthData { pers_inn, password, comp_inn, kpp } = auth_data;
 
 
-    if password.len() < 8 { return Err(Status::AuthShartPassword) }
+    if password.len() < 8 { return Err(Status::ValideInput) }
 
     let device_id = get_device_id()?;
 
@@ -40,9 +40,9 @@ pub async fn register_user(
         .inspect_err(|err| {
             log::error!(
                 "tech_err = {}, stat_err = {}",
-                err, Status::AuthSendQuery
+                err, Status::QueryPostRequestErr
             )
-        }).map_err(|_| Status::AuthSendQuery)?;
+        }).map_err(|_| Status::QueryPostRequestErr)?;
         
     
     if response.status().is_success() {
@@ -52,9 +52,9 @@ pub async fn register_user(
             .inspect_err(|err| {
                 log::error!(
                     "tech_err = {}, stat_err = {}",
-                    err, Status::AuthMapRegisterResponse
+                    err, Status::MappingError
                 )
-            }).map_err(|_| Status::AuthMapRegisterResponse)?;
+            }).map_err(|_| Status::MappingError)?;
         
         
         

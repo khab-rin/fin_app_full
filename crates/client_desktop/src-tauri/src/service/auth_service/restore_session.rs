@@ -12,7 +12,15 @@ pub(crate) async fn restore_session(
     token: BoxUuid
 ) -> Result<Status, Status> {
 
-    let device_id = get_device_id()?;
+    let device_id = match get_device_id() {
+        Ok(d) => d,
+        Err(err) => {
+            log::error!(
+                "FUN restore_session FAILED BY GETTING device_id, err = {:?}", err
+            );
+            return Err(err);
+        }
+    };
     
     let payload = serde_json::json!({
         "token": token,
@@ -33,12 +41,12 @@ pub(crate) async fn restore_session(
         .inspect_err(|err| {
             log::error!(
                 "tech_err = {}, stat_err = {}",
-                err, Status::ClientAuthRestoreByToken
+                err, Status::QueryPostRequestErr
             )
-        }).map_err(|_| Status::ClientAuthRestoreByToken)?;
+        }).map_err(|_| Status::QueryPostRequestErr)?;
     
     if !response.status().is_success() {
-        return Err(Status::ClientAuthRestoreResponseStatus);
+        return Err(Status::BackApiError);
     }
 
     let user_data: SessionUserToken = response
@@ -47,11 +55,11 @@ pub(crate) async fn restore_session(
         .inspect_err(|err| {
             log::error!(
                 "tech_err = {}, stat_err = {}",
-                err, Status::ClientAuthRestoreResponseMap
+                err, Status::MappingError
             )
-        }).map_err(|_| Status::ClientAuthRestoreResponseMap)?;
+        }).map_err(|_| Status::MappingError)?;
     
 
-    init_session(state, user_data).await
+    init_session(state, &user_data).await
 
 }

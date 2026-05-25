@@ -6,9 +6,9 @@ pub(crate) fn get_device_id() -> Result<BoxUuid, Status> {
         get().inspect_err(|err| {
             log::error!(
                 "tech_err = {}, stat_err = {}",
-                err, Status::AuthDeviceIdErr
+                err, Status::SystemErr
             )
-        }).map_err(|_| Status::AuthDeviceIdErr)?;
+        }).map_err(|_| Status::SystemErr)?;
 
     let id_uuid_str = uuid::Uuid::new_v5(
         &uuid::Uuid::NAMESPACE_DNS,
