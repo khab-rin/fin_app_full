@@ -1,11 +1,9 @@
 use std::sync::Arc;
 
 use shared_lib::Status;
-use shared_lib::service::auth_service::implements::{
-    RegisterResponse, 
-    RestoreByTelCallRequest, 
+use shared_lib::service::auth_service::implements::{ 
+    PhoneDeviceData, 
     SessionUserToken, 
-    SmsruCallResponse, 
     AuthStep
 };
 
@@ -18,15 +16,10 @@ use crate::db::sql_queries::users::get::by_user_id::get_user_by_user_id;
 
 pub(crate) async fn restore_user_by_tel_call(
     state: &Arc<BackApiState>,
-    data: &RestoreByTelCallRequest
-) -> Result<RegisterResponse, Status> {
-    
-    let failed_result = RegisterResponse {
-        device_id: data.device_id.clone(),
-        step: AuthStep::TryLater {}
-    };
+    data: &PhoneDeviceData
+) -> Result<AuthStep, Status> {
 
-    let RestoreByTelCallRequest {external_id, device_id} = data;
+    let PhoneDeviceData {external_id, device_id} = data;
 
     let (user_id, expires_t) = match get_user_time_by_device_external(state, data).await {
         Ok(wrap) => wrap,
@@ -36,7 +29,7 @@ pub(crate) async fn restore_user_by_tel_call(
                 tech_err = ?err,
                 "FUN restore_user_by_tel_call FAILED BY FUN get_user_time_by_device_external"
             );
-            return Ok(failed_result);
+            return Ok(AuthStep::TryLater {});
         }
     };
 
@@ -48,15 +41,12 @@ pub(crate) async fn restore_user_by_tel_call(
                 err = ?err,
                 "FUN restore_user_by_tel_call FAILED IN CALL FUN smsru_get_cf"
             );
-            return Ok(failed_result);
+            return Ok(AuthStep::TryLater {});
         }
     };
 
     if !phone_cf {
-        return Ok(RegisterResponse { 
-            device_id: device_id.clone(), 
-            step: AuthStep::NeedPassword {} }
-        );
+        return Ok(AuthStep::NeedPassword {});
     }
 
     let token = match new_session(state, &user_id, device_id).await {
@@ -67,7 +57,7 @@ pub(crate) async fn restore_user_by_tel_call(
                 err = ?err,
                 "FUN restore_user_by_tel_call FAILED BY FUN new_session"
             );
-            return Ok(failed_result);
+            return Ok(AuthStep::TryLater {});
         }
     };
 
@@ -79,14 +69,12 @@ pub(crate) async fn restore_user_by_tel_call(
                 err = ?err,
                 "FUN restore_user_by_tel_call FAILED BY FUN get_user_by_user_id"
             );
-            return Ok(failed_result);
+            return Ok(AuthStep::TryLater {});
         }
     };
 
     let session_user = SessionUserToken {user,token};
 
-    Ok(RegisterResponse { 
-        device_id: device_id.clone(), 
-        step: AuthStep::SuccessFull { session_user_token: Box::new(session_user)}})
+    Ok(AuthStep::SuccessFull { session_user_token: Box::new(session_user)})
 
 }

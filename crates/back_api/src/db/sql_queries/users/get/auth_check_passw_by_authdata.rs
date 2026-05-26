@@ -1,9 +1,8 @@
 use std::sync::Arc;
 
 use shared_lib::service::auth_service::implements::{
-    AuthData, 
-    RestoreByAuthDataRequest,
-    AuthCheckPassword
+    PasswordData,
+    CheckPasswordData
 };
 use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::{BoxUuid, Phone};
@@ -11,17 +10,20 @@ use shared_lib::primitives::frozen::implements::{BoxUuid, Phone};
 use crate::config::BackApiState;
 
 
-pub(crate) async fn get_auth_password_check(
+pub(crate) async fn get_restore_password_data(
     state: &Arc<BackApiState>,
-    data: &RestoreByAuthDataRequest
-) -> Result<Option<AuthCheckPassword>, Status> {
-    
-    let RestoreByAuthDataRequest { auth_data, device_id } = data;
-    let AuthData { pers_inn, comp_inn, kpp, .. } = auth_data;
+    data: &PasswordData
+) -> Result<Option<CheckPasswordData>, Status> {
+
+    let PasswordData {  
+        device_id, 
+        pers_inn, 
+        comp_inn, 
+        kpp, .. } = data;
 
     match sqlx::
         query_file_as!(
-            AuthCheckPassword,
+            CheckPasswordData,
             "src/db/sql_queries/users/get/auth_check_passw_by_authdata.sql",
             pers_inn.as_ref(),
             comp_inn.as_ref(),

@@ -2,16 +2,16 @@ use std::sync::Arc;
 
 use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::{Email, Inn, Kpp};
-use shared_lib::service::auth_service::implements::{RestoreByTokenRequest, WarnEmailData};
+use shared_lib::service::auth_service::implements::{TokenDeviceData, WarnEmailData};
 
 use crate::config::BackApiState;
 
 pub(crate) async fn delete_session_by_token(
     state: &Arc<BackApiState>,
-    payload: &RestoreByTokenRequest
+    payload: &TokenDeviceData
 ) -> Result<Vec<WarnEmailData>, Status> {
 
-    let &RestoreByTokenRequest { token, device_id } = &payload;
+    let &TokenDeviceData { token, device_id } = &payload;
     let row = sqlx::
         query_file_as!(
             WarnEmailData,

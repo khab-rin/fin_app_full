@@ -1,17 +1,20 @@
+use crate::service::api_routes::implements::ApiRoutes::AuthRestorePassword;
+
 pub enum ApiRoutes {
-    Register,
-    Login,
-    AuthRestoreToken,
     AutoAddCompany,
+    AuthRestoreToken,
+    AuthRestorePassword,
+    AuthRegister,
+    
 }
 
 impl ApiRoutes {
     pub fn get_path(&self) -> &str {
         match self {
-            Self::Register => "/api/auth/register",
-            Self::Login => "/api/auth/login",
-            Self::AuthRestoreToken => "/api/auth/RestoreToken",
             Self::AutoAddCompany => "/api/companys/auto-add",
+            Self::AuthRestoreToken => "/api/auth/restore_by_token",
+            Self::AuthRestorePassword => "/api/auth/restore_by_password",
+            Self::AuthRegister => "/api/auth/register_user"
         }
     }
 }

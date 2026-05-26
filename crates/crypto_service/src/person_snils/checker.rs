@@ -9,13 +9,13 @@ use crate::person_snils::helper::parse_snils_from_stdout;
 
 use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{
-    CryptoVerifyRequest,
+    CryptoVerifyData,
     CryptoVerifyPersonResponse
 };
 
 pub async fn verify_signature_handler (
     State(state): State<Arc<AppState>>,
-    Json(payload): Json<CryptoVerifyRequest> 
+    Json(payload): Json<CryptoVerifyData> 
 ) -> Result<Json<CryptoVerifyPersonResponse>, Status> {
 
     let run_id = uuid::Uuid::new_v4().to_string();

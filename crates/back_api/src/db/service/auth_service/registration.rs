@@ -9,9 +9,8 @@ use shared_lib::sql_models::user::implements::UserSetData;
 use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{
     SessionUserToken,
-    CryptoVerifyRequest, 
-    RegisterResponse, 
-    RegistrationRequest, 
+    CryptoVerifyData, 
+    RegistrationData, 
     AuthStep,
     CryptoVerifyPersonResponse
 };
@@ -29,10 +28,10 @@ use crate::db::sql_queries::sessions::set::new_session::new_session;
 
 pub(crate) async fn register_new_user(
     state: &Arc<BackApiState>,
-    payload: RegistrationRequest
-) -> Result<RegisterResponse, Status> {
+    payload: RegistrationData
+) -> Result<AuthStep, Status> {
 
-    let RegistrationRequest { 
+    let RegistrationData { 
         person, 
         comp_inn,
         kpp, 
@@ -43,11 +42,6 @@ pub(crate) async fn register_new_user(
         doc_hash, 
         document, 
         signature } = payload;
-    
-    let failed_result = RegisterResponse {
-        device_id: device_id.clone(),
-        step: AuthStep::TryLater {}
-    };
     
     let failed_data = (
         &person, 
@@ -62,14 +56,10 @@ pub(crate) async fn register_new_user(
             failed_data = ?failed_data,
             "PERSON LEND ANOTHER FILE"
         );
-        let result = RegisterResponse {
-            device_id,
-            step: AuthStep::MissedFile {}
-        };
-        return Ok(result);
+        return Ok(AuthStep::MissedFile {});
     }
 
-    let crypto_verify_request = CryptoVerifyRequest {
+    let crypto_verify_request = CryptoVerifyData {
         document,
         signature
     };
@@ -93,7 +83,7 @@ pub(crate) async fn register_new_user(
                     failed_data = ?failed_data,
                     "FUN register_new_user FAILED BY REQUEST TO CRYPTO SERVICE"
                 );
-                return Ok(failed_result);
+                return Ok(AuthStep::TryLater {});
             }
         };
 
@@ -103,7 +93,7 @@ pub(crate) async fn register_new_user(
             failed_data = ?failed_data,
             "FUN register_new_user FAILED BY REQUEST TO CRYPTO SERVICE - CONNECTION PROBLEMS"
         );
-        return Ok(failed_result);
+        return Ok(AuthStep::TryLater {});
     }
 
     let verify_person: CryptoVerifyPersonResponse = match response
@@ -117,7 +107,7 @@ pub(crate) async fn register_new_user(
                 failed_data = ?failed_data,
                 "FUN register_new_user FAILED BY MAPPING CryptoVerifyPersonResponse"
             );
-            return Ok(failed_result);
+            return Ok(AuthStep::TryLater {});
         }
     };
 
@@ -126,11 +116,7 @@ pub(crate) async fn register_new_user(
             failed_data = ?failed_data,
             "FUN register_new_user FAILED BY WRONG SIGNATURE FILE"
         );
-        let result = RegisterResponse {
-            device_id,
-            step: AuthStep::WrongSignFile {}
-        };
-        return Ok(result);
+        return Ok(AuthStep::WrongSignFile {});
     }
 
     if let Err(res) = validate_field(
@@ -165,7 +151,7 @@ pub(crate) async fn register_new_user(
                 err = ?err,
                 "FUN register_new_user FAILED BY ADD PERSON SQL QUERY"
             );
-            return Ok(failed_result);
+            return Ok(AuthStep::TryLater {});
         }
     };
 
@@ -192,7 +178,7 @@ pub(crate) async fn register_new_user(
                         failed_data = ?failed_data,
                         "FUN register_new_user FAILED BY FUN make_new_company"
                     );
-                    return Ok(failed_result);
+                    return Ok(AuthStep::TryLater {});
                 }
             }
         }
@@ -214,11 +200,7 @@ pub(crate) async fn register_new_user(
         };
 
     if exist_flag {
-        let result = RegisterResponse {
-            device_id,
-            step: AuthStep::UserAlreadyExists{}
-        };
-        return Ok(result);
+        return Ok(AuthStep::UserAlreadyExists{});
     }
 
     let salt = SaltString::generate(&mut OsRng);
@@ -234,7 +216,7 @@ pub(crate) async fn register_new_user(
                 failed_data = ?failed_data,
                 "FUN register_new_user FAILED BY ARGON2 HASHING PASSWORD"
             );
-            return Ok(failed_result);
+            return Ok(AuthStep::TryLater {});
         }
     };
 
@@ -258,7 +240,7 @@ pub(crate) async fn register_new_user(
                 failed_data = ?failed_data,
                 "FUN register_new_user FAILED BY FUN set_user"
             );
-            return Ok(failed_result);
+            return Ok(AuthStep::TryLater {});
         }
     };
 
@@ -270,7 +252,7 @@ pub(crate) async fn register_new_user(
                 failed_data = ?failed_data,
                 "FUN register_new_user FAILED BY new_session FUN"
             );
-            return Ok(failed_result);
+            return Ok(AuthStep::TryLater {});
         }
     };
 
@@ -285,11 +267,7 @@ pub(crate) async fn register_new_user(
         token
     };
 
-    
-    let ok_result = RegisterResponse {
-        device_id,
-        step: AuthStep::SuccessFull { session_user_token: Box::new(session_user_token) }
-    };
+    let ok_result = AuthStep::SuccessFull { session_user_token: Box::new(session_user_token) };
 
     Ok(ok_result) 
 }

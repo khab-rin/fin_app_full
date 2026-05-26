@@ -12,22 +12,10 @@ use serde::{Deserialize, Deserializer};
 use directories::ProjectDirs;
 
 use shared_lib::primitives::frozen::implements::{Inn, Bic, RasAcc};
-use shared_lib::service::auth_service::client_state::{ClientState, ActiveSession};
+use shared_lib::service::auth_service::client_state::{ActiveSession};
+use shared_lib::service::auth_service::client_state::Headers;
 
-macro_rules! make_header {
-    ( [ $($key:expr => $val:expr),* $(,)? ] ) => {
-        {
-            let mut new_header = reqwest::header::HeaderMap::new();
-            $(
-                new_header.insert($key,
-                    reqwest::header::HeaderValue::from_str(&$val.to_string())
-                        .expect("HEADER_VALUE_ERROR!!!")
-                );
-            )*
-            new_header
-        }       
-    };
-}
+
 
 
 #[derive(Deserialize, Debug)]
@@ -43,10 +31,7 @@ pub(crate) struct Config {
 }
 
 
-#[derive(Default, Debug)]
-pub(crate) struct Headers {
-    pub(crate) back_api_header: HeaderMap
-}
+
 
 
 #[derive(Deserialize, Debug)]
@@ -131,14 +116,6 @@ impl Config {
 }
 
 
-pub(crate) mod time_parser {
-    use super::*;
-    pub(crate) fn duration_from_u64<'de, D>(func: D) -> Result<Duration, D::Error> 
-    where D: Deserializer<'de>  {
-        let secs = u64::deserialize(func)?;
-        Ok(Duration::from_secs(secs))
-    }  
-}
 
 #[derive(Deserialize, Debug)]
 pub(crate) struct TomlConfig {

@@ -1,6 +1,10 @@
 use serde::{Serialize, Deserialize};
 
-use axum::response::{IntoResponse, Response};
+use axum::{
+    http::StatusCode,
+    response::{IntoResponse, Response},
+    Json,
+};
 
 #[derive(Serialize, Deserialize)]
 #[repr(u16)]
@@ -10,86 +14,111 @@ pub enum Status {
     Success = 0,
     Unknown = 1,
 
-    ValideInput = 120,
-    ValidDate = 121,
-    ValidDecimalParser = 122,
-    ValidRubFParser = 123,
-    ValidInn = 124,
-    ValidKpp = 125,
-    ValidBankAcc = 126,
-    ValidOgrn = 127,
-    ValidBic = 128,
-    ValidNds = 129,
-    ValidBranchType = 130,
-    ValidOkpo = 132,
-    ValidOktmo = 134,
-    ValidOkogu = 136,
-    ValidOkfs = 138,
-    ValidOkved = 139,
-    ValidPhone = 140,
-    ValidOpf = 141,
-    ValidRasBicAcc = 143,
-    ValidCorBiccAcc = 144,
-    ValidEnum = 145,
-    ValidRegionNumber = 146,
-    ValidUuid = 147,
-    ValidNotarRegNum = 148,
-    ValidFio = 149,
-    ValidMchdStr3_8 = 150,
-    ValidMchdStr11_11 = 151,
-    ValidMchdStr3_13 = 152,
-    ValidMchdStr1_80 = 153,
-    ValidMchdStr1_120 = 154,
-    ValidMchdStr3_129 = 155,
-    ValidMchdStr1_255 = 156,
-    ValidMchdStr1_1000 = 157,
-    ValidMchdPartStatus = 158,
-    ValidMchdDig2_2 = 159,
-    ValidMchdDig3_3 = 160,
-    ValidMchdStr1_25 = 161,
-    ValidMchdStr7_7 = 162,
-    ValidMchdStr1_4000 = 163,
-    ValidMchdDig12_12 = 164,
-    ValidMchdStr1_250 = 165,
-    ValidSnils = 166,
-    ValidMchdMissManager = 167,
-    ValidMchdStr1_50 = 168,
-    ValidMchdStr1_28 = 169,
-    ValidMchdDig4_4 = 170,
-    ValidMchdStr1_16000 = 172,
-    ValidMchdStr1_2500 = 173,
-    ValidMchdStr6_255 = 174,
-    ValidMchdStr1_10000 = 175,
-    ValidMchdStr1_5000 = 179,
-    ValidDateTime = 180,
-    ValidMchdDig10_10 = 181,
-    ValidEmail = 182,
-    ValidBoxUuid = 183,
+    // ==========================================
+    // 100-я группа: Ошибки валидации входных данных
+    // (Превращаются в 400 Bad Request)
+    // ==========================================
+    ValideInput = 100,
+    ValidDate = 101,
+    ValidDecimalParser = 102,
+    ValidRubFParser = 103,
+    ValidInn = 104,
+    ValidKpp = 105,
+    ValidBankAcc = 106,
+    ValidOgrn = 107,
+    ValidBic = 108,
+    ValidNds = 109,
+    ValidBranchType = 110,
+    ValidOkpo = 111,
+    ValidOktmo = 112,
+    ValidOkogu = 113,
+    ValidOkfs = 114,
+    ValidOkved = 115,
+    ValidPhone = 116,
+    ValidOpf = 117,
+    ValidRasBicAcc = 118,
+    ValidCorBiccAcc = 119,
+    ValidEnum = 120,
+    ValidRegionNumber = 121,
+    ValidUuid = 122,
+    ValidNotarRegNum = 123,
+    ValidFio = 124,
+    ValidMchdStr3_8 = 125,
+    ValidMchdStr11_11 = 126,
+    ValidMchdStr3_13 = 127,
+    ValidMchdStr1_80 = 128,
+    ValidMchdStr1_120 = 129,
+    ValidMchdStr3_129 = 130,
+    ValidMchdStr1_255 = 131,
+    ValidMchdStr1_1000 = 132,
+    ValidMchdPartStatus = 133,
+    ValidMchdDig2_2 = 134,
+    ValidMchdDig3_3 = 135,
+    ValidMchdStr1_25 = 136,
+    ValidMchdStr7_7 = 137,
+    ValidMchdStr1_4000 = 138,
+    ValidMchdDig12_12 = 139,
+    ValidMchdStr1_250 = 140,
+    ValidSnils = 141,
+    ValidMchdMissManager = 142,
+    ValidMchdStr1_50 = 143,
+    ValidMchdStr1_28 = 144,
+    ValidMchdDig4_4 = 145,
+    ValidMchdStr1_16000 = 146,
+    ValidMchdStr1_2500 = 147,
+    ValidMchdStr6_255 = 148,
+    ValidMchdStr1_10000 = 149,
+    ValidMchdStr1_5000 = 150,
+    ValidDateTime = 151,
+    ValidMchdDig10_10 = 152,
+    ValidEmail = 153,
+    ValidBoxUuid = 154,
 
-    FileCreateError = 201,
-    FileReadError = 202,
-    FileWriteError = 203,
-    FileInvalideFormat = 204,
-    FileInvalideData = 205,
+    // ==========================================
+    // 200-я группа: Ошибки при работе с файлами и структуры данных
+    // (Превращаются в 400 Bad Request / 500 Internal Server Error)
+    // ==========================================
+    FileInvalideFormat = 200,
+    FileInvalideData = 201,
+    MappingError = 202,
 
-    MappingError = 301,
-    
-    SqlLiterPoolErr = 401,
-    SqlQueryWrongLogic = 402,
-    SqliteCommitErr = 403,
 
-    SystemErr = 404,
-    DataCorruptionErr = 405,
 
-    BackSmsRuBalance = 501,
-    BackApiError = 502,
+    FileCreateError = 250,
+    FileReadError = 251,
+    FileWriteError = 252,
 
-    CryptoServerError = 601,
+    // ==========================================
+    // 300-я группа: Ошибки Баз Данных (Sqlite)
+    // (Превращаются в 500 Internal Server Error)
+    // ==========================================
+    SqlLiterPoolErr = 300,
+    SqlQueryWrongLogic = 301,
+    SqliteCommitErr = 302,
 
-    QueryGetRequestErr = 701,
-    QueryBodyReadErr = 702,
-    QueryPostRequestErr = 703,
-    QueryResponseFormatErr = 704,
+    // ==========================================
+    // 400-я группа: Системные ошибки бэкенда
+    // (Превращаются в 500 Internal Server Error)
+    // ==========================================
+    SystemErr = 400,
+    DataCorruptionErr = 401,
+
+    // ==========================================
+    // 500-я группа: Ошибки интеграции с внешними API и сервисами
+    // (Превращаются в 500 Internal Server Error)
+    // ==========================================
+    BackSmsRuBalance = 500,
+    BackApiError = 501,
+    CryptoServerError = 502,
+
+    // ==========================================
+    // 600-я группа: Ошибки выполнения HTTP/сетевых запросов
+    // (Превращаются в 500 Internal Server Error)
+    // ==========================================
+    QueryGetRequestErr = 600,
+    QueryBodyReadErr = 601,
+    QueryPostRequestErr = 602,
+    QueryResponseFormatErr = 603,
 }
 
 
@@ -109,18 +138,31 @@ map_errors! {
 
 impl IntoResponse for Status {
     fn into_response(self) -> Response {
-        match serde_json::to_string(&self) {
-            Ok(json_str) => json_str.into_response(),
-            Err(_) => "Unknown".into_response(), // Запасной вариант
-        }
+        let code = self as u16;
+
+        let status_code = match code {
+
+            100..250 => StatusCode::BAD_REQUEST,
+
+            _ => StatusCode::INTERNAL_SERVER_ERROR,
+        };
+        (status_code, Json(self)).into_response()
     }
 }
 
 impl Status {
     pub fn from_u16(n: u16) -> Self {
+        if n == 0 { return Status::Success; }
+        if n == 1 { return Status::Unknown; }
+        
         match n {
-            0 => Status::Success,
-            167 => Status::ValidMchdMissManager,
+            100..=154 => unsafe { std::mem::transmute::<u16, Status>(n) },
+            200..=202 => unsafe { std::mem::transmute::<u16, Status>(n) },
+            250..=252 => unsafe { std::mem::transmute::<u16, Status>(n) },
+            300..=302 => unsafe { std::mem::transmute::<u16, Status>(n) },
+            400..=401 => unsafe { std::mem::transmute::<u16, Status>(n) },
+            500..=502 => unsafe { std::mem::transmute::<u16, Status>(n) },
+            600..=603 => unsafe { std::mem::transmute::<u16, Status>(n) },
             _ => Status::Unknown,
         }
     }

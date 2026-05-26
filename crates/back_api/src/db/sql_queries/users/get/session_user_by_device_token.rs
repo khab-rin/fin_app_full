@@ -1,12 +1,13 @@
 use shared_lib::Status;
-use shared_lib::service::auth_service::implements::RestoreByTokenRequest;
+use shared_lib::service::auth_service::implements::TokenDeviceData;
 use shared_lib::service::auth_service::client_state::{SessionUser, SessionUserDto};
 
 use crate::config::BackApiState;
 
 pub(crate) async fn get_user_by_device_token(
     state: &BackApiState,
-    payload: &RestoreByTokenRequest
+    payload: &TokenDeviceData
+    
 ) -> Result<Option<SessionUser>, Status> {
 
     let session_users_dto_opt = match sqlx::

@@ -1,29 +1,24 @@
+use std::time::Duration;
+use std::sync::OnceLock;
+
 use serde::{Serialize, Deserialize};
+use reqwest::header::HeaderMap;
 
 use crate::Status;
 use crate::primitives::frozen::implements::{BoxUuid, Inn, Kpp};
 use crate::sql_models::company::implements::Company;
 use crate::sql_models::person::implements::Person;
 use crate::sql_models::user::implements::User;
+use crate::service::auth_service::general::time_parser;
 
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct UserLogInfo {
-    pub label: String,
     pub pers_inn: Inn,
     pub comp_inn: Inn,
     pub kpp: Kpp, 
     pub token: BoxUuid
 }
-
-pub struct ClientState {
-    pub client: reqwest::Client,
-    pub api_url: String,
-    pub app_name: String,
-    pub app_path: std::path::PathBuf,
-    pub session: tokio::sync::Mutex<Option<ActiveSession>>
-}
-
 
 pub struct ActiveSession {
     pub user: SessionUser,
@@ -63,3 +58,22 @@ impl std::convert::TryFrom<SessionUserDto> for SessionUser {
          })
     }
 }
+
+
+
+
+#[derive(Default, Debug)]
+pub struct Headers {
+    pub back_api_header: OnceLock<HeaderMap>
+}
+
+#[derive(Deserialize, Debug)]
+pub struct SqliteOptions {
+    pub max_connections: u32,
+    #[serde(deserialize_with = "time_parser::duration_from_u64")]
+    pub duration: Duration
+}
+
+
+
+

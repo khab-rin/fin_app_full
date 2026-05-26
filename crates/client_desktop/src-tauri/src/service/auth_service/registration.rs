@@ -1,17 +1,22 @@
 use shared_lib::service::auth_service::implements::*;
 use shared_lib::Status;
 use shared_lib::service::api_routes::implements::ApiRoutes;
-use shared_lib::service::auth_service::implements::{AuthData, SessionUserToken};
-use shared_lib::service::auth_service::client_state::ClientState;
+use shared_lib::service::auth_service::implements::{PasswordData, SessionUserToken};
 
+use crate::state::ClientState;
 use crate::service::auth_service::helper::get_device_id;
 
 
 pub async fn register_user(
-    auth_data: AuthData, 
-    state: &ClientState
+    state: &ClientState,
+    data: &PasswordData
 ) -> Result<(), Status> {
-    let AuthData { pers_inn, password, comp_inn, kpp } = auth_data;
+    let PasswordData { 
+        password, 
+        device_id, 
+        pers_inn, 
+        comp_inn, 
+        kpp } = data;
 
 
     if password.len() < 8 { return Err(Status::ValideInput) }
@@ -29,7 +34,7 @@ pub async fn register_user(
     let api_url = format!(
         "{}/{}", 
         state.api_url.trim_end_matches('/'), 
-        ApiRoutes::Register.get_path().trim_start_matches('/'));
+        ApiRoutes::AuthRegister.get_path().trim_start_matches('/'));
         
     let response = state
         .client

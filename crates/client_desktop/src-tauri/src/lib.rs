@@ -4,6 +4,7 @@ pub mod config;
 pub mod service;
 pub mod parsers;
 pub mod commands;
+pub mod state;
 
 use std::sync::OnceLock;
 use sqlx::{SqlitePool};

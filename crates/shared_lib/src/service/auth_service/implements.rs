@@ -8,13 +8,6 @@ use crate::primitives::composite::implements::Fio;
 use crate::service::auth_service::client_state::SessionUser;
 
 
-
-#[derive(Serialize, Deserialize)]
-pub struct RegisterResponse {
-    pub device_id: BoxUuid,
-    pub step: AuthStep,
-}
-
 #[derive(Serialize, Deserialize)]
 pub struct SessionUserToken {
     pub user: SessionUser,
@@ -41,27 +34,31 @@ pub enum AuthStep {
 
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct RestoreByTokenRequest {
+pub struct TokenDeviceData {
     pub token: BoxUuid,
     pub device_id: BoxUuid
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct RestoreByAuthDataRequest {
-    pub auth_data: AuthData,
-    pub device_id: BoxUuid
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct AuthData {
-    pub pers_inn: Inn,
+pub struct PasswordDataShort {
+    pub nik: String,
     pub password: String,
+    pub pers_inn: Inn,
     pub comp_inn: Inn,
     pub kpp: Kpp
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct AuthCheckPassword {
+pub struct PasswordData {
+    pub password: String,
+    pub device_id: BoxUuid,
+    pub pers_inn: Inn,
+    pub comp_inn: Inn,
+    pub kpp: Kpp
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct CheckPasswordData {
     pub user_id: BoxUuid, 
     pub phone: Phone,
     pub password_hash: String,
@@ -77,7 +74,7 @@ pub struct WarnEmailData {
 }
 
 #[derive(Deserialize, Debug)]
-pub struct RestoreByTelCallRequest {
+pub struct PhoneDeviceData {
     pub device_id: BoxUuid,
     pub external_id: String 
 }
@@ -114,7 +111,7 @@ pub struct SmsruGetResResponse {
 
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct RegistrationRequest {
+pub struct RegistrationData {
     pub person: Person,
     pub comp_inn: Inn,
     pub kpp: Kpp,
@@ -131,7 +128,7 @@ pub struct RegistrationRequest {
 
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct CryptoVerifyRequest {
+pub struct CryptoVerifyData {
     pub document: Vec<u8>,
     pub signature: Vec<u8>,
 }

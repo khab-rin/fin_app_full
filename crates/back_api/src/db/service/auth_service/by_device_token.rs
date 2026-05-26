@@ -2,8 +2,7 @@ use std::sync::Arc;
 
 use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{
-    RegisterResponse, 
-    RestoreByTokenRequest, 
+    TokenDeviceData, 
     SessionUserToken, 
     AuthStep
 };
@@ -14,13 +13,8 @@ use crate::db::sql_queries::users::get::session_user_by_device_token::get_user_b
 
 pub(crate) async fn get_user(
     state: &Arc<BackApiState>,
-    payload: &RestoreByTokenRequest
-) -> Result<RegisterResponse, Status> {
-
-    let failed_result = RegisterResponse {
-        device_id: payload.device_id.clone(),
-        step: AuthStep::TryLater {}
-    };
+    payload: &TokenDeviceData
+) -> Result<AuthStep, Status> {
 
     let session_user_option = match get_user_by_device_token(state, payload).await {
         Ok(o) => o,
@@ -30,7 +24,7 @@ pub(crate) async fn get_user(
                 failed_data = ?payload,
                 "FUN get_user FAILED BY FUN get_user_by_device_token"
             );
-            return Ok(failed_result);
+            return Ok(AuthStep::TryLater {});
         }
     };
 
@@ -46,22 +40,15 @@ pub(crate) async fn get_user(
                     )
                 }
             };
-            let result = RegisterResponse {
-                device_id: payload.device_id.clone(),
-                step: AuthStep::TokenDevicePairMiss { token: payload.token.clone() }
-            };
-            return Ok(result);
+            return Ok(AuthStep::TokenDevicePairMiss { token: payload.token.clone() });
         }
     };
 
-    let RestoreByTokenRequest { token, ..} = payload;
+    let TokenDeviceData { token, ..} = payload;
     
     let user_token = SessionUserToken {user: session_user, token: token.clone()};
 
-    let result = RegisterResponse {
-        device_id: payload.device_id.clone(),
-        step: AuthStep::SuccessFull { session_user_token: Box::new(user_token) }
-    };
+    let result = AuthStep::SuccessFull { session_user_token: Box::new(user_token) };
     
     Ok(result)
     

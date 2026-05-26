@@ -13,7 +13,10 @@ use shared_lib::service::api_routes::implements::ApiRoutes;
 use shared_lib::static_data::init_re;
 
 use crate::handlers::service::process::bank_statement::handler::auto_add_company_handler;
-use crate::handlers::service::auth_service::handler::{restore_user_by_token_handler};
+use crate::handlers::service::auth_service::handler::{
+    restore_by_token_handler,
+    restore_by_password_handler
+};
 
 
 #[tokio::main]
@@ -87,7 +90,10 @@ async fn main() {
         )
         .route(
             ApiRoutes::AuthRestoreToken.get_path(),
-            post(restore_user_by_token_handler)
+            post(restore_by_token_handler)
+        ).route(
+            ApiRoutes::AuthRestorePassword.get_path(),
+            post(restore_by_password_handler)
         )
         .layer(TraceLayer::new_for_http())
         .with_state(state);

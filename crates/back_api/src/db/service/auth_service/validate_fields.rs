@@ -2,7 +2,6 @@
 use shared_lib::primitives::frozen::implements::{Inn, Kpp, BoxUuid};
 use shared_lib::sql_models::person::implements::Person;
 use shared_lib::service::auth_service::implements::{
-    RegisterResponse,
     AuthStep
 };
 
@@ -14,7 +13,7 @@ pub(crate) fn validate_field<'a, T: PartialEq + std::fmt::Debug>(
     actual_val: &T,
     device_id: &BoxUuid,
     failed_data: &'a FailedData<'a>,
-) -> Result<(), RegisterResponse> {
+) -> Result<(), AuthStep> {
     
     match verify_val {
         Some(v) => {
@@ -23,9 +22,7 @@ pub(crate) fn validate_field<'a, T: PartialEq + std::fmt::Debug>(
                     failed_data = ?failed_data,
                     "FUN register_new_user FAILED - ANOTHER {field_name}"
                 );
-                return Err(RegisterResponse { 
-                    device_id: device_id.clone(), 
-                    step: AuthStep::WrongPerson {}});
+                return Err(AuthStep::WrongPerson {});
             }
         }
         None => {
@@ -33,9 +30,7 @@ pub(crate) fn validate_field<'a, T: PartialEq + std::fmt::Debug>(
                 failed_data = ?failed_data,
                 "FUN register_new_user FAILED - MISSING {field_name}"
             );
-            return Err(RegisterResponse { 
-                device_id: device_id.clone(), 
-                step: AuthStep::TryLater {}});
+            return Err(AuthStep::TryLater {});
             }
     }
     Ok(())

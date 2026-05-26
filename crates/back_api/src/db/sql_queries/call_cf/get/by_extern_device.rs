@@ -2,16 +2,16 @@ use std::sync::Arc;
 
 use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::{DateTime, BoxUuid};
-use shared_lib::service::auth_service::implements::{RestoreByTelCallRequest};
+use shared_lib::service::auth_service::implements::{PhoneDeviceData};
 
 use crate::config::BackApiState;
 
 pub(crate) async fn get_user_time_by_device_external(
     state: &Arc<BackApiState>,
-    data: &RestoreByTelCallRequest
+    data: &PhoneDeviceData
 ) -> Result<(BoxUuid, DateTime), Status> {
 
-    let RestoreByTelCallRequest {device_id, external_id } = data;
+    let PhoneDeviceData {device_id, external_id } = data;
 
     let record = match sqlx::
         query_file!(

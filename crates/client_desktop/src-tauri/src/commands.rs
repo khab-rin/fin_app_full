@@ -1,9 +1,14 @@
 use shared_lib::Status;
-use shared_lib::service::auth_service::implements::AuthData;
-use shared_lib::service::auth_service::client_state::ClientState;
+use shared_lib::service::auth_service::implements::{
+    PasswordDataShort, 
+    PasswordData,
+    AuthStep
+};
+
 use shared_lib::primitives::frozen::implements::{Inn, Kpp};
 
-use crate::service::auth_service::login::login;
+use crate::state::ClientState;
+use crate::service::auth_service::restore_by_password::restore_by_password;
 use crate::service::process::bank_statement::proceed::process_statement;
 
 #[tauri::command]
@@ -67,11 +72,7 @@ pub(crate) async fn logout(
 #[tauri::command]
 pub(crate) async fn get_state(
     state: tauri::State<'_, ClientState>,
-    pers_inn: Inn, 
-    password: String, 
-    comp_inn: Inn, 
-    kpp: Kpp) -> Result<Status, Status> {
-        let auth_data = AuthData {pers_inn, password, comp_inn, kpp};
-
-        login(&state, auth_data).await
+    data: &PasswordDataShort
+) -> Result<AuthStep, Status> {
+    restore_by_password(&state, &data).await
 }

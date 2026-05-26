@@ -16,7 +16,11 @@ serde_bytes = { workspace = true }
 chrono = { workspace = true }
 uuid = { workspace = true }
 regex = { workspace = true }
-reqwest = { workspace = true }
+
+reqwest = { workspace = true, features = ["json", "rustls", "query"] }
+tower-http = { workspace = true, features = ["trace"] }
+reqwest-middleware = { workspace = true, features = ["json", "query"]  }
+reqwest-retry = { workspace = true }
 
 sqlx = { workspace = true, default-features = false, features = ["macros", "chrono", "rust_decimal", "json", "uuid", "sqlite", "postgres"] }
 rust_decimal = { workspace = true, features = ["db-postgres"] }

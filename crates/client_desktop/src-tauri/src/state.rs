@@ -1,60 +1,47 @@
 use std::sync::OnceLock;
 
-use reqwest::header::{HeaderMap, HeaderName, CONTENT_TYPE, ACCEPT, AUTHORIZATION};
 use serde::Deserialize;
+use reqwest::header::{CONTENT_TYPE, ACCEPT, HeaderMap};
 
 use shared_lib::service::auth_service::general::*;
-use shared_lib::service::auth_service::back_api_state::*;
+use shared_lib::service::auth_service::client_state::*;
 use shared_lib::make_header;
 
-pub struct BackApiState {
-    pub pool: sqlx::PgPool,
-    pub config: &'static Config
+
+pub struct ClientState {
+    pub config: &'static Config,
+    pub session: tokio::sync::Mutex<Option<ActiveSession>>
 }
 
 #[derive(Deserialize, Debug)]
 pub struct Config {
     #[serde(skip)]
-    pub data_base: DataBase,
-    pub network: NetWork,
-    pub dadata: Dadata,
-    pub smsru: SmsRu,
-    pub email_sender: EmailSender,
-    #[serde(skip)]
-    pub crypto_servise: CryptoService,
-    #[serde(skip)]
     pub clients: Clients,
     #[serde(skip)]
-    pub headers: Headers
+    pub headers: Headers,
+    #[serde(skip)]
+    pub data_base: String,
+    pub sqlite_options: SqliteOptions,
+    pub network: NetWork,
 }
+
+
 
 impl Config {
     pub fn global() -> &'static Self {
         static INSTANCE: OnceLock<Config> = OnceLock::new();
         INSTANCE.get_or_init(|| {
             dotenvy::dotenv().ok();
-            let toml_str = include_str!("../config.toml"); 
-
+            let toml_str = include_str!("../config.toml");
             let mut config: Config = toml::from_str(toml_str)
-                .expect("CONFIG_TOML_PARSE_ERROR!!!");
+                .expect("CONFIG MAPPING ERROR");
 
-            config.data_base.database_url = std::env::var("DATABASE_URL")
-                .expect("MISSING_ENV_DATABASE_URL!!");
+            let back_api_header = make_header!([
+                CONTENT_TYPE => "application/json",
+                ACCEPT => "application/json"
+            ]);
 
-            config.dadata.comp_free_api = std::env::var("DADATA_COMP_FREE_API")
-                .expect("MISSING_ENV_DADATA_API_KEY!!!");
-
-            config.dadata.paid_api_key = std::env::var("DADATA_PAID_KEY")
-                .expect("MISSING_ENV_DADATA_PAID_KEY");
-            
-            config.smsru.api = std::env::var("SMSRU_API_KEY")
-                .expect("MISS_SMSRU_API_KEY");
-
-            config.email_sender.api = std::env::var("EMAIL_SENDER_API_KEY")
-                .expect("MISS_EMAIL_SENDER_API_KEY");
-
-            config.crypto_servise.url = std::env::var("CRYPTO_SERVICE_URL")
-                .expect("MISS_CRYPTO_SERVICE_API_URL");
+            config.headers.back_api_header.set(back_api_header).expect("STATIC_MEMORY_ERROR!!!");
 
             let inst_client = make_client(
                 config.network.inst_conn_timeout, 
@@ -79,16 +66,6 @@ impl Config {
                 config.network.rel_retries);
             
             config.clients.relaxed.set(rel_client).expect("STATIC_MEMORY_ERROR!!!");
-   
-            let dadata_header = make_header!([
-                CONTENT_TYPE => "application/json",
-                ACCEPT => "application/json",
-                AUTHORIZATION => format!("Token {}", config.dadata.comp_free_api),
-                HeaderName::from_static("x-secret") =>
-                    config.dadata.paid_api_key
-            ]);
-
-            config.headers.dadata_header.set(dadata_header).expect("STATIC_MEMORY_ERROR!!!");
 
             config
         })
@@ -106,8 +83,7 @@ impl Config {
         Self::global().clients.relaxed.get().expect("STATIC_MEMORY_ERROR!!!")
     }
 
-    pub(crate) fn get_dadata_header(&self) -> &'static HeaderMap {
-        Self::global().headers.dadata_header.get().expect("STATIC_MEMORY_ERROR!!!")
+    pub(crate) fn back_api_header(&self) -> &'static HeaderMap {
+        Self::global().headers.back_api_header.get().expect("STATIC_MEMORY_ERROR!!!")
     }
-
 }
