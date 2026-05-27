@@ -5,9 +5,12 @@ use shared_lib::service::auth_service::implements::{
     PasswordDataShort,
     AuthStep
 };
-use crate::state::ClientState;
-use crate::service::auth_service::helper::get_device_id;
-use crate::config::init_session;
+use shared_lib::service::auth_service::client_state::UserLogInfo;
+
+
+use crate::state::{ClientState, init_session};
+use crate::service::auth_service::helper::{get_device_id, write_log_info};
+
 
 pub(crate) async fn restore_by_password(
     state: &ClientState,
@@ -33,12 +36,13 @@ pub(crate) async fn restore_by_password(
     };
 
     let back_api_url = format!("{}/{}",
-        state.api_url.trim_end_matches('/'),
+        state.config.back_api_url().trim_end_matches('/'),
         ApiRoutes::AuthRestorePassword.get_path().trim_start_matches('/')
     );
 
     let response = match state
-        .client
+        .config
+        .get_std_client()
         .post(&back_api_url)
         .json(&password_data)
         .send()
@@ -76,13 +80,32 @@ pub(crate) async fn restore_by_password(
         }
     };
 
-    if let AuthStep::SuccessFull {session_user_token} = &auth_step {
-        match init_session(state, session_user_token.as_ref()).await {
-            Ok(_) => return Ok(AuthStep::SuccessShort {}),
-            Err(_) => return Err(Status::SystemErr)
-        }   
+    let success_result = match auth_step {
+        AuthStep::SuccessFull {session_user_token} => session_user_token,
+        _ => return Ok(auth_step)
+    };
+
+    let log_info = UserLogInfo {
+        pers_inn: data.pers_inn.clone(),
+        comp_inn: data.comp_inn.clone(),
+        kpp: data.kpp.clone(),
+        token: success_result.token.clone()
+    };
+
+    match write_log_info(state, &data.nik, &log_info) {
+        Ok(_) => {},
+        Err(err) => {
+            log::error!("FUN restore_by_password FAILED by writing UserLogInfo, err = {}", err);
+        }
     }
 
-    Ok(auth_step)
+    match init_session(state, success_result.as_ref()).await {
+        Ok(_) => Ok(AuthStep::SuccessShort {  }),
+        Err(err) => {
+            log::error!("FUN restore_by_password FAILED BY init_session, err = {}",err);
+            Err(err)
+        }
+    }
+
     
 }

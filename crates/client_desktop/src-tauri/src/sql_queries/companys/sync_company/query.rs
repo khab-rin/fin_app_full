@@ -1,26 +1,37 @@
-use sqlx::SqlitePool;
 use uuid::Uuid;
 
 use shared_lib::sql_models::company::implements::{Company, CompanyCurt};
 use shared_lib::primitives::frozen::implements::{Inn, Kpp};
 use shared_lib::err_models::implements::Status;
 
+use crate::state::ClientState;
+
 pub(crate) async fn sync_local_companys(
-    pool: &SqlitePool, 
+    state: &ClientState, 
     companys: &[Company]
 ) -> Result<Vec<CompanyCurt>, Status> {
 
     log::info!("Запуск синхронизации локальных контрагентов (количество: {})", companys.len());
 
-    let mut session = pool
+    let session = match state.get_session().await {
+        Ok(s) => s,
+        Err(err) => {
+            log::error!("MISS SEESION IN FUN sync_local_companys");
+            return Err(err)
+        }
+    };
+
+    let pool = &session.local_db;
+
+    let mut sqlite_session = pool
         .begin()
         .await
         .inspect_err(|err| {
             log::error!("tech_err = {:?}, stat_err = {:?}",
             err,
-            Status::SqlLiterPoolErr)
+            Status::SqLitePoolErr)
         })
-        .map_err(|_| Status::SqlLiterPoolErr)?;
+        .map_err(|_| Status::SqLitePoolErr)?;
 
     let mut id_inn_kpp_pairs:Vec<CompanyCurt> = vec!();
 
@@ -41,7 +52,7 @@ pub(crate) async fn sync_local_companys(
             comp_status_ref,            
             metadata_text,
             company.last_update
-        ).fetch_one(&mut *session)
+        ).fetch_one(&mut *sqlite_session)
         .await;
 
         match res {
@@ -56,7 +67,7 @@ pub(crate) async fn sync_local_companys(
         }
     }
 
-    session.commit()
+    sqlite_session.commit()
         .await
         .inspect_err(|err| {
             log::error!(

@@ -1,5 +1,4 @@
 use shared_lib::Status;
-use shared_lib::service::auth_service::client_state::{ClientState, UserLogInfo};
 use shared_lib::service::api_routes::implements::ApiRoutes;
 use shared_lib::service::auth_service::implements::{AuthStep, TokenDeviceData};
 
@@ -7,7 +6,7 @@ use crate::service::auth_service::helper::{
     get_device_id,
     get_keyring_data
 };
-use crate::config::init_session;
+use crate::state::{init_session, ClientState};
 
 pub(crate) async fn restore_session_by_nik(
     state: &ClientState,
@@ -39,13 +38,15 @@ pub(crate) async fn restore_session_by_nik(
 
 
     let back_api_url = format!("{}/{}",
-        state.api_url.trim_end_matches('/'),
+        state.config.back_api_url().trim_end_matches('/'),
         ApiRoutes::AuthRestoreToken.get_path().trim_start_matches('/')
     );
 
     let response = match state
-        .client
+        .config
+        .get_std_client()
         .post(&back_api_url)
+        .headers(state.config.back_api_header().clone())
         .json(&token_device_data)
         .send()
         .await {

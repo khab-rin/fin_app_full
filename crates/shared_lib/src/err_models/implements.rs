@@ -92,7 +92,7 @@ pub enum Status {
     // 300-я группа: Ошибки Баз Данных (Sqlite)
     // (Превращаются в 500 Internal Server Error)
     // ==========================================
-    SqlLiterPoolErr = 300,
+    SqLitePoolErr = 300,
     SqlQueryWrongLogic = 301,
     SqliteCommitErr = 302,
 
@@ -119,6 +119,8 @@ pub enum Status {
     QueryBodyReadErr = 601,
     QueryPostRequestErr = 602,
     QueryResponseFormatErr = 603,
+
+    ClientSessionMissError = 700
 }
 
 

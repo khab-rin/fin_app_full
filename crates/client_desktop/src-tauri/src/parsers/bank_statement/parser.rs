@@ -7,11 +7,23 @@ use shared_lib::primitives::frozen::implements::{Date, DocNum, RubF, RasAcc};
 use shared_lib::static_data::primitives_re::*;
 use encoding_rs::WINDOWS_1251;
 
-use crate::config::Config;
+use crate::state::ClientState;
 
 
-pub(crate) fn parse_comment(operation: &OperationReadFields) -> OperationParseData {
-    let own_inn = &Config::global().own_company.own_inn;
+pub(crate) async fn parse_comment(
+    state: &ClientState,
+    operation: &OperationReadFields
+) -> Result<OperationParseData, Status> {
+
+    let session = match state.get_session().await {
+        Ok(s) => s,
+        Err(err) => {
+            log::error!("FUN parse_comment FAILED BY MISSING state");
+            return Err(err);
+        }
+    };
+
+    let own_inn = &session.user.company.inn;
     
     let comment = &*operation.doc_comment;
     let low = comment.to_lowercase();
@@ -84,12 +96,15 @@ pub(crate) fn parse_comment(operation: &OperationReadFields) -> OperationParseDa
             }
         }
     
-    parse_data
+    Ok(parse_data)
 }
 
 
 
-pub(crate) fn bank_parser<P: AsRef<Path>>(path: P) -> Result<ParseBankStatRes, Status> {
+pub(crate) async fn bank_parser<P: AsRef<Path>>(
+    state: &ClientState,
+    path: P
+) -> Result<ParseBankStatRes, Status> {
     let own_ras_acc = RasAcc::new("40802810629370001827").expect("123");
 
     let mut parse_result = ParseBankStatRes::default();
@@ -155,7 +170,10 @@ pub(crate) fn bank_parser<P: AsRef<Path>>(path: P) -> Result<ParseBankStatRes, S
 
         match OperationReadFields::from_map(&block_map) {
             Ok(read_fields) => {
-                let parse_data = parse_comment(&read_fields);
+                let parse_data = match parse_comment(state, &read_fields).await {
+                    Ok(p) => p,
+                    Err(err) => OperationParseData::default() 
+                };
                 parse_result.correct_lines.push(
                     ParsedOperation {
                         read_fields, parse_data

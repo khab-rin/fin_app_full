@@ -5,35 +5,39 @@ use shared_lib::service::process::bank_statement::implements::BankStatementProce
 use shared_lib::sql_models::company::implements::{Company, CompanyCurt};
 use shared_lib::alias_types::implements::{InnKppAccMap, InnKppAccVec};
 use shared_lib::service::api_routes::implements::ApiRoutes;
-use shared_lib::service::auth_service::client_state::ClientState;
 
+use crate::state::ClientState;
 use crate::parsers::bank_statement::parser::bank_parser;
-use crate::config::Config;
 use crate::sql_queries::companys::sync_company::query::sync_local_companys;
 use crate::service::process::bank_statement::make_inn_kpp_vec::{make_inn_kpp_map_func};
-use crate::POOL;
 
 
 pub(crate) async fn process_statement<P: AsRef<Path>>(
     state: &ClientState,
     path: P
 ) -> Result<BankStatementProceedResult, Status> {
+
     let mut result = BankStatementProceedResult::default();
 
-    let client = Config::get_client();
-    
-    let pool = POOL.get().ok_or(Status::SystemErr)?;
+    let parse_result = bank_parser(state, path).await?;
 
-    let parse_result = bank_parser(path)?;
-
-    let companys_map:InnKppAccMap = make_inn_kpp_map_func(&parse_result.correct_lines);
+    let companys_map:InnKppAccMap = match make_inn_kpp_map_func(state, &parse_result.correct_lines).await {
+        Ok(c) => c,
+        Err(err) => {
+            log::error!("FUN process_statement FAILED BY make_inn_kpp_map_func, err={}", err);
+            return Err(err);
+        }
+    };
 
     let companys_vec:InnKppAccVec = companys_map.into_iter().collect();
 
+
     let api_url = format!(
         "{}/{}", 
-        state.api_url.trim_end_matches('/'), 
+        state.config.back_api_url().trim_end_matches('/'), 
         ApiRoutes::AutoAddCompany.get_path().trim_start_matches('/'));
+    
+    let client = state.config.get_std_client();
 
     let response = client.post(api_url)
         .json(&companys_vec)
@@ -62,7 +66,7 @@ pub(crate) async fn process_statement<P: AsRef<Path>>(
         .map_err(|_| Status::QueryBodyReadErr)?;
 
     
-    let id_inn_kpp_pairs:Vec<CompanyCurt> = sync_local_companys(pool, &companys).await?;
+    let id_inn_kpp_pairs:Vec<CompanyCurt> = sync_local_companys(state, &companys).await?;
 
     result.companys_curt = id_inn_kpp_pairs;
 

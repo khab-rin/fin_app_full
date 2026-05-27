@@ -1,28 +1,35 @@
-use std::sync::OnceLock;
+use tauri::Manager;
+use std::str::FromStr;
+use std::sync::{OnceLock, Arc};
 
 use serde::Deserialize;
 use reqwest::header::{CONTENT_TYPE, ACCEPT, HeaderMap};
+use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions};
 
+use shared_lib::Status;
+use shared_lib::make_header;
 use shared_lib::service::auth_service::general::*;
 use shared_lib::service::auth_service::client_state::*;
-use shared_lib::make_header;
+use shared_lib::service::auth_service::implements::SessionUserToken;
+
+
 
 
 pub struct ClientState {
     pub config: &'static Config,
-    pub session: tokio::sync::Mutex<Option<ActiveSession>>
+    pub app_handle: tauri::AppHandle,
+    pub session: tokio::sync::Mutex<Option<Arc<ActiveSession>>>
 }
 
 #[derive(Deserialize, Debug)]
 pub struct Config {
+    back_api_url: String,
+    pub network: NetWork,
+    pub sqlite_options: SqliteOptions,
     #[serde(skip)]
     pub clients: Clients,
     #[serde(skip)]
     pub headers: Headers,
-    #[serde(skip)]
-    pub data_base: String,
-    pub sqlite_options: SqliteOptions,
-    pub network: NetWork,
 }
 
 
@@ -85,5 +92,116 @@ impl Config {
 
     pub(crate) fn back_api_header(&self) -> &'static HeaderMap {
         Self::global().headers.back_api_header.get().expect("STATIC_MEMORY_ERROR!!!")
+    }
+
+    pub(crate) fn back_api_url(&self) -> &str {
+        &Self::global().back_api_url
+    }
+}
+
+
+pub(crate) async fn init_session(
+    state: &ClientState,
+    user_data: &SessionUserToken
+) -> Result<Status, Status> {
+    dotenvy::dotenv().ok();
+
+    let pers_inn = &user_data.user.person.inn;
+    let comp_inn = &user_data.user.company.inn;
+    let kpp = &user_data.user.company.kpp;
+
+    let app_handle = state.app_handle.clone();
+
+    let app_path = match app_handle.path().app_data_dir() {
+        Ok(b) => b,
+        Err(err) => {
+            log::error!(
+                "FUN init_session FAILED BY tauri::AppHandle.path().app_data_dir(), tech_err = {}, local_err = {}",
+                err, Status::SystemErr
+            );
+            return Err(Status::SystemErr);
+        }
+    };
+
+    let user_path = app_path
+        .join(pers_inn.to_string())
+        .join(comp_inn.to_string())
+        .join(kpp.to_string());
+
+    match std::fs::create_dir_all(&user_path) {
+        Ok(_) => {},
+        Err(err) => {
+            log::error!(
+                "FAILED TO CREATE DIRECTORY: {}, tech_err = {}",
+                user_path.display(), err
+            );
+            return Err(Status::SystemErr);
+        }
+    }
+    
+    let dp_path = user_path.join("database.db");
+
+    let path_str = dp_path.to_string_lossy();
+
+    let mut db_url = format!("sqlite://{}", path_str);
+
+    if let Ok(env_db_url) = std::env::var("DATABASE_URL_TEMP") {
+        db_url = env_db_url;
+    }
+
+    let connect_options = SqliteConnectOptions::
+        from_str(&db_url)
+        .inspect_err(|err| {
+            log::error!(
+                "LOCAL_DB_URL_ERROR: {}, {}",
+                err, Status::SystemErr
+            )
+        }).map_err(|_| Status::SystemErr)?
+        .create_if_missing(true)
+        .journal_mode(SqliteJournalMode::Wal)
+        .foreign_keys(true);
+
+    let pool = match SqlitePoolOptions::new()
+        .max_connections(Config::global().sqlite_options.max_connections)
+        .acquire_timeout(Config::global().sqlite_options.duration)
+        .connect_with(connect_options)
+        .await {
+            Ok(p) => p,
+            Err(err) => {
+                log::error!(
+                    "INIT_POOL_ERROR: {}, {}",
+                    err, Status::SystemErr
+                );
+                return Err(Status::SystemErr);
+            }
+        };
+    
+    sqlx::migrate!("./migrations")
+        .run(&pool)
+        .await
+        .inspect_err(|err| {
+            log::error!(
+                "SQLX_MIGRATE_ERROR: {}, {}",
+                err, Status::SystemErr
+            )
+        }).map_err(|_| Status::SystemErr)?;
+
+    let session = Arc::new(ActiveSession {
+        user: user_data.user.clone(),
+        local_db: pool,
+        token: user_data.token.clone(),
+    });
+
+    let mut session_ref = state.session.lock().await;
+    *session_ref = Some(session);
+
+    Ok(Status::Success)
+
+}
+
+
+impl ClientState {
+    pub async fn get_session(&self) -> Result<Arc<ActiveSession>, Status> {
+        self.session.lock().await.clone().ok_or(Status::ClientSessionMissError)
     }
 }

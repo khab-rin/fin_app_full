@@ -1,7 +1,8 @@
 use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::BoxUuid;
-use shared_lib::service::auth_service::client_state::{ClientState, UserLogInfo};
-use shared_lib::service::auth_service::implements::AuthStep;
+use shared_lib::service::auth_service::client_state::UserLogInfo;
+
+use crate::state::ClientState;
 
 pub(crate) fn get_device_id() -> Result<BoxUuid, Status> {
     let id_string = machine_uid::
@@ -25,7 +26,9 @@ pub(crate) fn get_keyring_data(
     nik: &str
 ) -> Result<Option<UserLogInfo>, Status> {
 
-    let entry = match keyring::Entry::new(&state.app_name, nik) {
+    let app_name = state.app_handle.package_info().name.as_str();
+
+    let entry = match keyring::Entry::new(app_name, nik) {
         Ok(e) => e,
         Err(err) => {
             log::error!(
@@ -61,3 +64,48 @@ pub(crate) fn get_keyring_data(
 
     Ok(Some(user_log_data))
 } 
+
+
+pub(crate) fn write_log_info(
+    state: &ClientState,
+    nik: &str,
+    log_info: &UserLogInfo
+) -> Result<Status, Status> {
+
+    let app_name = state.app_handle.package_info().name.as_str();
+
+    let log_info_json = match serde_json::to_string(log_info) {
+        Ok(l) => l,
+        Err(err) => {
+            log::error!(
+                "FUN write_log_info FAILED BY MAPPING UserLogInfo, tech_err = {}, local_err = {}",
+                err, Status::MappingError
+            );
+            return Err(Status::MappingError);
+        }
+    };
+
+    let entry = match keyring::Entry::new(app_name, nik) {
+        Ok(e) => e,
+        Err(err) => {
+            log::error!(
+                "FUN write_log_info failed BY keyring::Entry::new, tech_err = {}, local_err = {}",
+                err, Status::SystemErr
+            );
+            return Err(Status::SystemErr);
+        }
+    };
+
+    match entry.set_password(&log_info_json) {
+        Ok(_) => Ok(Status::Success),
+        Err(err) => {
+            log::error!(
+                "FUN write_log_info failed BY keyring::entry.set_password, tech_err = {}, local_err = {}",
+                err, Status::SystemErr
+            );
+            Err(Status::SystemErr)
+        }
+    }
+
+
+}
