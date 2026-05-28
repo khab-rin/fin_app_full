@@ -6,13 +6,15 @@ use shared_lib::service::auth_service::implements::{
     TokenDeviceData,
     RegistrationData,
     AuthStep,
-    PasswordData
+    PasswordData,
+    PhoneDeviceData
 };
 
 use crate::config::BackApiState;
-use crate::db::service::auth_service::by_device_token::get_user;
+use crate::db::service::auth_service::by_device_token::restore_session_by_token;
 use crate::db::service::auth_service::by_password::restore_session_by_passord;
 use crate::db::service::auth_service::registration::register_new_user;
+use crate::db::service::auth_service::make_token_by_tel_call::make_session_token_by_tel_call;
 
 
 pub async fn restore_by_token_handler(
@@ -20,7 +22,7 @@ pub async fn restore_by_token_handler(
     Json(payload): Json<TokenDeviceData>
 ) -> Result<Json<AuthStep>, Status> {
 
-    let res = get_user(&state, &payload).await?;
+    let res = restore_session_by_token(&state, &payload).await?;
     Ok(Json(res))
 }
 
@@ -39,6 +41,15 @@ pub async fn restore_by_password_handler(
     Json(payload): Json<PasswordData>
 ) -> Result<Json<AuthStep>, Status> {
     let res = restore_session_by_passord(&state, &payload).await?;
+
+    Ok(Json(res))
+}
+
+pub async fn make_session_token_by_tell_call_handler(
+    State(state) : State<Arc<BackApiState>>,
+    Json(payload) : Json<PhoneDeviceData>
+) -> Result<Json<AuthStep>, Status> {
+    let res = make_session_token_by_tel_call(&state, &payload).await?;
 
     Ok(Json(res))
 }

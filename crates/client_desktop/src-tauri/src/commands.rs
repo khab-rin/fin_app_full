@@ -8,6 +8,7 @@ use shared_lib::service::auth_service::implements::{
 use shared_lib::primitives::frozen::implements::{Inn, Kpp};
 
 use crate::state::ClientState;
+use crate::service::auth_service::restore_by_nik::restore_session_by_nik;
 use crate::service::auth_service::restore_by_password::restore_by_password;
 use crate::service::process::bank_statement::proceed::process_statement;
 
@@ -75,4 +76,15 @@ pub(crate) async fn get_state(
     data: &PasswordDataShort
 ) -> Result<AuthStep, Status> {
     restore_by_password(&state, &data).await
+}
+
+#[tauri::command]
+pub(crate) async fn auth_restore_nick(
+    state: tauri::State<'_, ClientState>,
+    nik: String
+) -> Result<AuthStep, Status> {
+    match restore_session_by_nik(&state, &nik).await {
+        Ok(res) => Ok(res),
+        Err(err) => Ok(AuthStep::TryLater { status: err })
+    }
 }

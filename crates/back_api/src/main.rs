@@ -15,7 +15,8 @@ use shared_lib::static_data::init_re;
 use crate::handlers::service::process::bank_statement::handler::auto_add_company_handler;
 use crate::handlers::service::auth_service::handler::{
     restore_by_token_handler,
-    restore_by_password_handler
+    restore_by_password_handler,
+    make_session_token_by_tell_call_handler
 };
 
 
@@ -94,6 +95,9 @@ async fn main() {
         ).route(
             ApiRoutes::AuthRestorePassword.get_path(),
             post(restore_by_password_handler)
+        ).route(
+            ApiRoutes::AuthMakeTokenTelCall.get_path(),
+            post(make_session_token_by_tell_call_handler)
         )
         .layer(TraceLayer::new_for_http())
         .with_state(state);

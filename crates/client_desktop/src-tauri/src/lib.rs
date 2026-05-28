@@ -8,6 +8,8 @@ pub mod state;
 use tauri_plugin_log::{Target, TargetKind};
 use tauri::Manager;
 
+use shared_lib::service::auth_service::client_state::TempInfo;
+
 use crate::state::ClientState;
 
 pub async fn run_lib() {
@@ -41,6 +43,11 @@ pub async fn run_lib() {
             config: state::Config::global(),
             app_handle: app.handle().clone(),
             session: tokio::sync::Mutex::new(None),
+            temp_info: tokio::sync::Mutex::new(TempInfo {
+                file_hash: None,
+                phone: None,
+                nik: None
+            })
         };
         app.manage(state);
 

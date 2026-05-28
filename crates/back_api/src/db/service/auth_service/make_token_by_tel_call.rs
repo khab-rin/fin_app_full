@@ -14,7 +14,7 @@ use crate::db::sql_queries::sessions::set::new_session::new_session;
 use crate::db::sql_queries::users::get::by_user_id::get_user_by_user_id;
 
 
-pub(crate) async fn restore_user_by_tel_call(
+pub(crate) async fn make_session_token_by_tel_call(
     state: &Arc<BackApiState>,
     data: &PhoneDeviceData
 ) -> Result<AuthStep, Status> {
@@ -29,7 +29,7 @@ pub(crate) async fn restore_user_by_tel_call(
                 tech_err = ?err,
                 "FUN restore_user_by_tel_call FAILED BY FUN get_user_time_by_device_external"
             );
-            return Ok(AuthStep::TryLater {});
+            return Ok(AuthStep::TryLater {status:Status::BackApiError});
         }
     };
 
@@ -41,7 +41,7 @@ pub(crate) async fn restore_user_by_tel_call(
                 err = ?err,
                 "FUN restore_user_by_tel_call FAILED IN CALL FUN smsru_get_cf"
             );
-            return Ok(AuthStep::TryLater {});
+            return Ok(AuthStep::TryLater {status:Status::BackApiError});
         }
     };
 
@@ -57,11 +57,11 @@ pub(crate) async fn restore_user_by_tel_call(
                 err = ?err,
                 "FUN restore_user_by_tel_call FAILED BY FUN new_session"
             );
-            return Ok(AuthStep::TryLater {});
+            return Ok(AuthStep::TryLater {status:Status::BackApiError});
         }
     };
 
-    let user = match get_user_by_user_id(state, &user_id).await {
+    let session_user = match get_user_by_user_id(state, &user_id).await {
         Ok(u) => u,
         Err(err) => {
             tracing::error!(
@@ -69,12 +69,12 @@ pub(crate) async fn restore_user_by_tel_call(
                 err = ?err,
                 "FUN restore_user_by_tel_call FAILED BY FUN get_user_by_user_id"
             );
-            return Ok(AuthStep::TryLater {});
+            return Ok(AuthStep::TryLater {status:Status::BackApiError});
         }
     };
 
-    let session_user = SessionUserToken {user,token};
+    let session_user_token = SessionUserToken {user: session_user, token};
 
-    Ok(AuthStep::SuccessFull { session_user_token: Box::new(session_user)})
+    Ok(AuthStep::SuccessFull { session_user_token: Box::new(session_user_token)})
 
 }

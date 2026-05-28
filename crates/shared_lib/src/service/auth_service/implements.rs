@@ -20,10 +20,9 @@ pub enum AuthStep {
     SuccessShort {},
     CallIn { phone: Phone, external_id: String },
     NeedPassword {},
-    Unpossible {status: Status},
     WarnConnectTry {token: BoxUuid},
     NeedRegistrtion {},
-    TryLater {},
+    TryLater { status: Status },
     WrongPassword {},
     MissedFile {},
     WrongSignFile {},
@@ -73,7 +72,7 @@ pub struct WarnEmailData {
     pub kpp: Kpp
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct PhoneDeviceData {
     pub device_id: BoxUuid,
     pub external_id: String 
@@ -109,6 +108,18 @@ pub struct SmsruGetResResponse {
     pub check_status_text: Option<String>,
 }
 
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct SvelteRegistrationData {
+    pub person: Person,
+    pub comp_inn: Inn,
+    pub kpp: Kpp,
+    pub password: String,
+    pub phone: Phone,
+    pub email: Email,
+    pub document_path: String,  
+    pub signature_path: String, 
+}
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RegistrationData {

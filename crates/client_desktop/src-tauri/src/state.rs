@@ -18,8 +18,10 @@ use shared_lib::service::auth_service::implements::SessionUserToken;
 pub struct ClientState {
     pub config: &'static Config,
     pub app_handle: tauri::AppHandle,
-    pub session: tokio::sync::Mutex<Option<Arc<ActiveSession>>>
+    pub session: tokio::sync::Mutex<Option<Arc<ActiveSession>>>,
+    pub temp_info: tokio::sync::Mutex<TempInfo>
 }
+
 
 #[derive(Deserialize, Debug)]
 pub struct Config {

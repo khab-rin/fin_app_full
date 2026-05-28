@@ -11,7 +11,7 @@ use crate::config::BackApiState;
 use crate::db::service::auth_service::delete_token::delete_warn_token_device;
 use crate::db::sql_queries::users::get::session_user_by_device_token::get_user_by_device_token;
 
-pub(crate) async fn get_user(
+pub(crate) async fn restore_session_by_token(
     state: &Arc<BackApiState>,
     payload: &TokenDeviceData
 ) -> Result<AuthStep, Status> {
@@ -24,7 +24,7 @@ pub(crate) async fn get_user(
                 failed_data = ?payload,
                 "FUN get_user FAILED BY FUN get_user_by_device_token"
             );
-            return Ok(AuthStep::TryLater {});
+            return Ok(AuthStep::TryLater {status:err});
         }
     };
 

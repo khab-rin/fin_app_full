@@ -83,7 +83,7 @@ pub(crate) async fn register_new_user(
                     failed_data = ?failed_data,
                     "FUN register_new_user FAILED BY REQUEST TO CRYPTO SERVICE"
                 );
-                return Ok(AuthStep::TryLater {});
+                return Ok(AuthStep::TryLater {status:Status::BackApiError});
             }
         };
 
@@ -93,7 +93,7 @@ pub(crate) async fn register_new_user(
             failed_data = ?failed_data,
             "FUN register_new_user FAILED BY REQUEST TO CRYPTO SERVICE - CONNECTION PROBLEMS"
         );
-        return Ok(AuthStep::TryLater {});
+        return Ok(AuthStep::TryLater {status:Status::BackApiError});
     }
 
     let verify_person: CryptoVerifyPersonResponse = match response
@@ -107,7 +107,7 @@ pub(crate) async fn register_new_user(
                 failed_data = ?failed_data,
                 "FUN register_new_user FAILED BY MAPPING CryptoVerifyPersonResponse"
             );
-            return Ok(AuthStep::TryLater {});
+            return Ok(AuthStep::TryLater {status:Status::BackApiError});
         }
     };
 
@@ -151,7 +151,7 @@ pub(crate) async fn register_new_user(
                 err = ?err,
                 "FUN register_new_user FAILED BY ADD PERSON SQL QUERY"
             );
-            return Ok(AuthStep::TryLater {});
+            return Ok(AuthStep::TryLater {status:Status::BackApiError});
         }
     };
 
@@ -178,7 +178,7 @@ pub(crate) async fn register_new_user(
                         failed_data = ?failed_data,
                         "FUN register_new_user FAILED BY FUN make_new_company"
                     );
-                    return Ok(AuthStep::TryLater {});
+                    return Ok(AuthStep::TryLater {status:Status::BackApiError});
                 }
             }
         }
@@ -216,7 +216,7 @@ pub(crate) async fn register_new_user(
                 failed_data = ?failed_data,
                 "FUN register_new_user FAILED BY ARGON2 HASHING PASSWORD"
             );
-            return Ok(AuthStep::TryLater {});
+            return Ok(AuthStep::TryLater {status:Status::BackApiError});
         }
     };
 
@@ -240,7 +240,7 @@ pub(crate) async fn register_new_user(
                 failed_data = ?failed_data,
                 "FUN register_new_user FAILED BY FUN set_user"
             );
-            return Ok(AuthStep::TryLater {});
+            return Ok(AuthStep::TryLater {status:Status::BackApiError});
         }
     };
 
@@ -252,7 +252,7 @@ pub(crate) async fn register_new_user(
                 failed_data = ?failed_data,
                 "FUN register_new_user FAILED BY new_session FUN"
             );
-            return Ok(AuthStep::TryLater {});
+            return Ok(AuthStep::TryLater {status:Status::BackApiError});
         }
     };
 

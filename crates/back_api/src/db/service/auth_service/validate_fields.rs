@@ -1,4 +1,5 @@
 
+use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::{Inn, Kpp, BoxUuid};
 use shared_lib::sql_models::person::implements::Person;
 use shared_lib::service::auth_service::implements::{
@@ -30,7 +31,7 @@ pub(crate) fn validate_field<'a, T: PartialEq + std::fmt::Debug>(
                 failed_data = ?failed_data,
                 "FUN register_new_user FAILED - MISSING {field_name}"
             );
-            return Err(AuthStep::TryLater {});
+            return Err(AuthStep::TryLater {status:Status::BackApiError});
             }
     }
     Ok(())

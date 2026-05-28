@@ -44,6 +44,7 @@ pub(crate) async fn restore_by_password(
         .config
         .get_std_client()
         .post(&back_api_url)
+        .headers(state.config.back_api_header().clone())
         .json(&password_data)
         .send()
         .await {
@@ -53,7 +54,7 @@ pub(crate) async fn restore_by_password(
                     "FUN restore_by_password FAILED BY POST QUERY TO BACK API, teck_err = {:?}, local_err = {:?}",
                     err, Status::QueryPostRequestErr 
                 );
-                return Ok(AuthStep::TryLater {});
+                return Ok(AuthStep::TryLater {status: Status::QueryPostRequestErr});
             }
         };
     
@@ -66,7 +67,7 @@ pub(crate) async fn restore_by_password(
             "FUN restore_session_by_nik FAILED BY POST QUERY TO BACK API. Backend error code: {}, local_err = {:?}",
             back_err, Status::BackApiError
         );
-        return Ok(AuthStep::TryLater {});
+        return Ok(AuthStep::TryLater { status: Status::BackApiError});
     }
 
     let auth_step:AuthStep = match response.json().await {
@@ -76,7 +77,7 @@ pub(crate) async fn restore_by_password(
                 "FUN restore_by_password FAILED BY POST QUERY TO BACK API, err = {:?}, local_err = {:?}",
                 err, Status::MappingError
             );
-            return Ok(AuthStep::TryLater {});
+            return Ok(AuthStep::TryLater {status: Status::MappingError});
         }
     };
 
@@ -100,7 +101,7 @@ pub(crate) async fn restore_by_password(
     }
 
     match init_session(state, success_result.as_ref()).await {
-        Ok(_) => Ok(AuthStep::SuccessShort {  }),
+        Ok(_) => Ok(AuthStep::SuccessShort {}),
         Err(err) => {
             log::error!("FUN restore_by_password FAILED BY init_session, err = {}",err);
             Err(err)

@@ -56,7 +56,7 @@ pub(crate) async fn restore_session_by_nik(
                     "FUN restore_session_by_nik FAILED BY POST QUERY TO BACK API, teck_err = {:?}, local_err = {:?}",
                     err, Status::QueryPostRequestErr 
                 );
-                return Ok(AuthStep::TryLater {});
+                return Ok(AuthStep::TryLater {status:Status::QueryPostRequestErr});
             }
         };
 
@@ -70,7 +70,7 @@ pub(crate) async fn restore_session_by_nik(
             "FUN restore_session_by_nik FAILED BY POST QUERY TO BACK API. Backend error code: {}, local_err = {:?}",
             back_err, Status::BackApiError 
         );
-        return Ok(AuthStep::TryLater {});
+        return Ok(AuthStep::TryLater {status:Status::BackApiError});
     }
 
     let auth_step: AuthStep = match response.json().await {
@@ -80,7 +80,7 @@ pub(crate) async fn restore_session_by_nik(
                 "FUN restore_session_by_nik FAILED BY POST QUERY TO BACK API, err = {:?}, local_err = {:?}",
                 err, Status::MappingError
             );
-            return Ok(AuthStep::TryLater {});
+            return Ok(AuthStep::TryLater {status:Status::MappingError});
         }
     };
 

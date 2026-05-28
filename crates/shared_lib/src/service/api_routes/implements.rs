@@ -1,10 +1,9 @@
-use crate::service::api_routes::implements::ApiRoutes::AuthRestorePassword;
-
 pub enum ApiRoutes {
     AutoAddCompany,
     AuthRestoreToken,
     AuthRestorePassword,
     AuthRegister,
+    AuthMakeTokenTelCall
     
 }
 
@@ -14,7 +13,8 @@ impl ApiRoutes {
             Self::AutoAddCompany => "/api/companys/auto-add",
             Self::AuthRestoreToken => "/api/auth/restore_by_token",
             Self::AuthRestorePassword => "/api/auth/restore_by_password",
-            Self::AuthRegister => "/api/auth/register_user"
+            Self::AuthRegister => "/api/auth/register_user",
+            Self::AuthMakeTokenTelCall => "/api/auth/restore_by_tel_call"
         }
     }
 }

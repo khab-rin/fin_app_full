@@ -45,3 +45,5 @@ encoding_rs = { workspace = true }
 
 sqlx = { workspace = true, features = ["sqlite"] }
 uuid = { workspace = true, features = ["v5"] }
+
+blake3 = { workspace = true }

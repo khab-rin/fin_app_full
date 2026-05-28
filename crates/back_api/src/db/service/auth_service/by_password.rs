@@ -17,7 +17,7 @@ use shared_lib::service::auth_service::implements::{
 
 use crate::db::sql_queries::users::get::auth_check_passw_by_authdata::get_restore_password_data;
 use crate::db::sql_queries::call_cf::set::new_cf::new_cf;
-use crate::db::service::auth_service::by_device_token::get_user;
+use crate::db::service::auth_service::by_device_token::restore_session_by_token;
 use crate::db::service::auth_service::smsru_phone_query::smsru_get_phone;
 use crate::config::BackApiState;
 
@@ -36,7 +36,7 @@ pub(crate) async fn restore_session_by_passord(
                 failed_data = ?failed_data,
                 "FUN restore_user_by_authdata FAILED BY get_auth_password_check FUN"
             );
-            return Ok(AuthStep::TryLater {});
+            return Ok(AuthStep::TryLater {status:err});
         }
     };
 
@@ -61,7 +61,7 @@ pub(crate) async fn restore_session_by_passord(
                 user = %user_id,
                 "WRONG PASSWORD DATA IN SQL Users"
             );
-            return Ok(AuthStep::TryLater {});
+            return Ok(AuthStep::TryLater {status:Status::BackApiError});
         }
     };
 
@@ -78,11 +78,11 @@ pub(crate) async fn restore_session_by_passord(
         };
     
     if let Some(t) = token {
-        let restore_by_token_request = TokenDeviceData {
+        let token_device_data = TokenDeviceData {
             token: t,
             device_id: data.device_id.clone()
         };
-        return get_user(state, &restore_by_token_request).await;
+        return restore_session_by_token(state, &token_device_data).await;
     } 
 
     let (external_id, call_phone) = match smsru_get_phone(state, &phone).await {
@@ -93,7 +93,7 @@ pub(crate) async fn restore_session_by_passord(
                 user_id = %user_id,
                 "FUN restore_user_by_authdata FAILED ON GETTING CALL BACK PHONE BY FUN smsru_get_phone"
             );
-            return Ok(AuthStep::TryLater {});
+            return Ok(AuthStep::TryLater {status:Status::BackApiError});
         }
     };
 
@@ -106,7 +106,7 @@ pub(crate) async fn restore_session_by_passord(
                 user_id = %user_id,
                 "WRONG LOGIC IN FUN new_cf AND SQL QUERYS" 
             );
-            Ok(AuthStep::TryLater {})
+            Ok(AuthStep::TryLater {status:Status::BackApiError})
         }
         Err(err) => {
             tracing::error!(
@@ -114,7 +114,7 @@ pub(crate) async fn restore_session_by_passord(
                 err = ?err,
                 "WRONG LOGIC IN FUN new_cf AND SQL QUERYS" 
             );
-            Ok(AuthStep::TryLater {})
+            Ok(AuthStep::TryLater {status:Status::BackApiError})
         } 
     }
     
