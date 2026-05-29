@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-use crate::primitives::frozen::implplemets_base::{String1_255, String1_5000};
+use crate::primitives::frozen::implements_base::{String1_255, String1_5000};
 use crate::primitives::frozen::implements::PoaReqElemsFlag;
 use crate::parsers::mchd::implements::{FormatVersion, PoaWrap};
 

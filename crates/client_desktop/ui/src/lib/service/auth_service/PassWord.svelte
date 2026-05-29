@@ -15,7 +15,7 @@
     let errorMessage = $state('');
 
     // Поле никнейма для локального keyring на клиенте
-    let nik = $state('');
+    let nick = $state('');
 
     // Данные формы в точном соответствии со структурой PasswordData в Rust
     let passwordData = $state({
@@ -36,7 +36,7 @@
             // Метод возвращает enum AuthStep
             const authStep = await invoke<unknown>('cmd_restore_by_password', { 
                 data: passwordData,
-                nik: nik
+                nick: nick
             });
 
             console.log('Ответ авторизации:', authStep);
@@ -63,11 +63,11 @@
 
     <form onsubmit={handlePasswordAuth}>
         <div>
-            <label for="nik-input">Никнейм (для локального профиля):</label>
+            <label for="nick-input">Никнейм (для локального профиля):</label>
             <input 
-                id="nik-input"
+                id="nick-input"
                 type="text" 
-                bind:value={nik} 
+                bind:value={nick} 
                 placeholder="Ваш никнейм" 
                 disabled={isProcessing}
                 required 

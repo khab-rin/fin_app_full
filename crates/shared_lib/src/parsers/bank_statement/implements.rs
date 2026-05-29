@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use crate::Status;
 use crate::primitives::frozen::implements::*;
-use crate::primitives::frozen::implplemets_base::{PayType, CompanyName, IdentStatus};
+use crate::primitives::frozen::implements_base::{PayType, CompanyName, IdentStatus};
 
 make_struct!(pub OperationReadFields, [
     (doc_number, DocNum, "Номер"),

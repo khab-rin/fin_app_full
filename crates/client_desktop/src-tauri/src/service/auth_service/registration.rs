@@ -28,7 +28,7 @@ pub async fn register_user(
         None => return Ok(AuthStep::NeedRegistrtion {})
     };
 
-    let nik = match (*state.temp_info.lock().await).clone().nik {
+    let nick = match (*state.temp_info.lock().await).clone().nick {
         Some(n) => n,
         None => return Ok(AuthStep::NeedRegistrtion {})
     };
@@ -141,7 +141,7 @@ pub async fn register_user(
         token: success_result.token.clone()
     };
 
-    match write_log_info(state, &nik, &log_info) {
+    match write_log_info(state, &nick, &log_info) {
         Ok(_) => {},
         Err(err) => {
             log::error!("FUN register_user FAILED by writing UserLogInfo, err = {}", err);

@@ -9,7 +9,7 @@ use crate::service::auth_service::helper::write_log_info;
 pub(crate) async fn make_session_token_by_tel_call(
     state: &ClientState,
     data: &PhoneDeviceData,
-    nik: &str
+    nick: &str
 ) -> Result<AuthStep, Status> {
     
     let back_api_url = format!("{}/{}",
@@ -70,7 +70,7 @@ pub(crate) async fn make_session_token_by_tel_call(
         token: success_result.token.clone()
     };
 
-    match write_log_info(state, nik, &log_info) {
+    match write_log_info(state, nick, &log_info) {
         Ok(_) => {},
         Err(err) => {
             log::error!("FUN restore_by_password FAILED by writing UserLogInfo, err = {}", err);

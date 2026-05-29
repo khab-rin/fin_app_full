@@ -8,7 +8,7 @@ use axum::{
 
 #[derive(Serialize, Deserialize)]
 #[repr(u16)]
-#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash, ts_rs::TS)]
 pub enum Status {
     #[default]
     Success = 0,

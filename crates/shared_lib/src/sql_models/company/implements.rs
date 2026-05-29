@@ -1,8 +1,7 @@
 use uuid::Uuid;
 use serde::{Serialize, Deserialize};
-use chrono::Utc;
 
-use crate::primitives::frozen::implements::{BoxUuid, CompStatus, CompType, Inn, Kpp};
+use crate::primitives::frozen::implements::{BoxUuid, CompStatus, CompType, DateTime, Inn, Kpp};
 use crate::parsers::dadata::implements::CtrprtyMetadata;
 
 use crate::Status;
@@ -17,11 +16,11 @@ pub struct CompanyDto {
     pub comp_type: CompType,
     pub comp_status: CompStatus,
     pub metadata: serde_json::Value,
-    pub last_update: chrono::DateTime<Utc>
+    pub last_update: DateTime
 }
 
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, ts_rs::TS)]
 #[derive(sqlx::FromRow, Debug)]
 pub struct Company {
     pub comp_id: BoxUuid,
@@ -30,7 +29,7 @@ pub struct Company {
     pub comp_type: CompType,
     pub comp_status: CompStatus,
     pub metadata: CtrprtyMetadata,
-    pub last_update: chrono::DateTime<Utc>
+    pub last_update: DateTime
 }
 
 impl std::convert::TryFrom<CompanyDto> for Company {

@@ -23,12 +23,12 @@ pub(crate) fn get_device_id() -> Result<BoxUuid, Status> {
 
 pub(crate) fn get_keyring_data(
     state: &ClientState,
-    nik: &str
+    nick: &str
 ) -> Result<Option<UserLogInfo>, Status> {
 
     let app_name = state.app_handle.package_info().name.as_str();
 
-    let entry = match keyring::Entry::new(app_name, nik) {
+    let entry = match keyring::Entry::new(app_name, nick) {
         Ok(e) => e,
         Err(err) => {
             log::error!(
@@ -68,7 +68,7 @@ pub(crate) fn get_keyring_data(
 
 pub(crate) fn write_log_info(
     state: &ClientState,
-    nik: &str,
+    nick: &str,
     log_info: &UserLogInfo
 ) -> Result<Status, Status> {
 
@@ -85,7 +85,7 @@ pub(crate) fn write_log_info(
         }
     };
 
-    let entry = match keyring::Entry::new(app_name, nik) {
+    let entry = match keyring::Entry::new(app_name, nick) {
         Ok(e) => e,
         Err(err) => {
             log::error!(

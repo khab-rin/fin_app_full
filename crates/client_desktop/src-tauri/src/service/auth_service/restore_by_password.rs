@@ -64,7 +64,7 @@ pub(crate) async fn restore_by_password(
             .await
             .unwrap_or(Status::Unknown);
         log::error!(
-            "FUN restore_session_by_nik FAILED BY POST QUERY TO BACK API. Backend error code: {}, local_err = {:?}",
+            "FUN restore_session_by_nick FAILED BY POST QUERY TO BACK API. Backend error code: {}, local_err = {:?}",
             back_err, Status::BackApiError
         );
         return Ok(AuthStep::TryLater { status: Status::BackApiError});
@@ -93,7 +93,7 @@ pub(crate) async fn restore_by_password(
         token: success_result.token.clone()
     };
 
-    match write_log_info(state, &data.nik, &log_info) {
+    match write_log_info(state, &data.nick, &log_info) {
         Ok(_) => {},
         Err(err) => {
             log::error!("FUN restore_by_password FAILED by writing UserLogInfo, err = {}", err);

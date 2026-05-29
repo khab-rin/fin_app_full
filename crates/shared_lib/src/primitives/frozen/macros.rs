@@ -1,7 +1,8 @@
 macro_rules! frozen_primitives {
     ($avail:vis $name:ident, $validator:expr, $data_type:ty, $label:literal) => {
-        #[derive(Debug, Clone, Ord, PartialOrd, Serialize, Deserialize)]
+        #[derive(Debug, Clone, Ord, PartialOrd, Serialize, Deserialize, ts_rs::TS)]
         #[serde(try_from = "String", into = "String")]
+        #[ts(as = "String")] 
         pub struct $name {
             $avail data: $data_type
         }
@@ -18,7 +19,7 @@ macro_rules! frozen_primitives {
                 Self::LABEL
             }
 
-            pub(crate) fn unchecked<T>(val: T) -> Self
+            pub fn unchecked<T>(val: T) -> Self
             where T: Into<$data_type>
             {
                 Self { data: val.into() }
@@ -148,7 +149,7 @@ macro_rules! impl_as_str {
 #[macro_export]
 macro_rules! make_enum_frozen {
     ($name:ident, { $($l_name:ident, $r_name:expr, { $($alias:expr),* $(,)? }),* $(,)? }) => {
-        #[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, Eq, sqlx::Type)]
+        #[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, Eq, sqlx::Type, ts_rs::TS)]
         #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
         #[sqlx(type_name = "text", rename_all = "SCREAMING_SNAKE_CASE")]
         pub enum $name {

@@ -8,19 +8,19 @@ use crate::primitives::composite::implements::Fio;
 use crate::service::auth_service::client_state::SessionUser;
 
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, ts_rs::TS)]
 pub struct SessionUserToken {
     pub user: SessionUser,
     pub token: BoxUuid
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, ts_rs::TS)]
 pub enum AuthStep {
+    Init {},
     SuccessFull { session_user_token: Box<SessionUserToken> },
     SuccessShort {},
     CallIn { phone: Phone, external_id: String },
     NeedPassword {},
-    WarnConnectTry {token: BoxUuid},
     NeedRegistrtion {},
     TryLater { status: Status },
     WrongPassword {},
@@ -40,7 +40,7 @@ pub struct TokenDeviceData {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PasswordDataShort {
-    pub nik: String,
+    pub nick: String,
     pub password: String,
     pub pers_inn: Inn,
     pub comp_inn: Inn,
@@ -151,3 +151,5 @@ pub struct CryptoVerifyPersonResponse {
     pub inn: Option<Inn>,
     pub fio: Option<Fio>
 }
+
+

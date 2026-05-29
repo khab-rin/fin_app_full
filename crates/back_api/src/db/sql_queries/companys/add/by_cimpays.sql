@@ -21,4 +21,4 @@ RETURNING
     comp_type as "comp_type:CompType", 
     comp_status as "comp_status:CompStatus", 
     metadata,
-    last_update as "last_update!";
+    last_update as "last_update: DateTime";

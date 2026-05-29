@@ -26,3 +26,5 @@ sqlx = { workspace = true, default-features = false, features = ["macros", "chro
 rust_decimal = { workspace = true, features = ["db-postgres"] }
 
 axum = { workspace = true, optional = true, default-features = false }
+
+ts-rs = { workspace = true }

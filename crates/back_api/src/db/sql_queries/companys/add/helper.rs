@@ -1,12 +1,11 @@
 use std::collections::HashSet;
 use shared_lib::parsers::dadata::implements::CtrprtyMetadata;
-use chrono::DateTime;
 use serde_json::Value;
 
 
 use shared_lib::Status;
 use shared_lib::primitives::composite::implements::RasBicAcc;
-use shared_lib::primitives::frozen::implements::{BoxUuid,Inn, Kpp, CompType, Date};
+use shared_lib::primitives::frozen::implements::{BoxUuid,Inn, Kpp, CompType, Date, DateTime};
 use shared_lib::sql_models::company::implements::Company;
 use shared_lib::alias_types::implements::{InnKppAccMap, InsertData};
 
@@ -138,7 +137,7 @@ pub(crate) fn make_company(
     };
 
     if let Some(ms) = meta_d.ogrn_date_dadata {
-        if let Some(dt) = DateTime::from_timestamp_millis(ms) {
+        if let Some(dt) = chrono::DateTime::from_timestamp_millis(ms) {
             let date_str = dt.naive_utc().date().to_string();
             meta_d.ogrn_date_date = Some(Date::new(date_str.as_str())?);
         }
@@ -167,7 +166,7 @@ pub(crate) fn make_company(
         comp_type,  
         comp_status:comp_state.clone(),
         metadata: meta_d,
-        last_update: chrono::Utc::now()
+        last_update: DateTime::unchecked(chrono::Utc::now())
     })
 
 }

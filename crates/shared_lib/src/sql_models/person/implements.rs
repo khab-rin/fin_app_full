@@ -3,14 +3,14 @@ use serde::{Serialize, Deserialize};
 
 
 use crate::primitives::frozen::implements::*;
-use crate::primitives::frozen::implplemets_base::*;
+use crate::primitives::frozen::implements_base::*;
 use crate::primitives::composite::implements::Fio;
 use crate::parsers::dadata::implements::AdrWrap;
 use crate::parsers::mchd::implements::Gender;
 use crate::Status;
 
 
-#[derive(Serialize, Deserialize, sqlx::FromRow, Debug, Clone)]
+#[derive(Serialize, Deserialize, sqlx::FromRow, Debug, Clone, ts_rs::TS)]
 pub struct Person {
     pub pers_id: BoxUuid,
     pub inn: Inn,
@@ -40,7 +40,7 @@ impl std::convert::TryFrom<PersonDto> for Person {
         })
     }
 }
-#[derive(Serialize, Deserialize, Debug, Clone, sqlx::Type,)]
+#[derive(Serialize, Deserialize, Debug, Clone, sqlx::Type, ts_rs::TS)]
 #[sqlx(type_name = "jsonb")]
 pub struct PersonMetadata {
     pub snils: Snils,

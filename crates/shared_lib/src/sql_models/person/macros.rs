@@ -1,6 +1,6 @@
 macro_rules! make_doc_type {
     ($enum_name: ident, $type_name: ident, $number: expr) => {
-        #[derive(Serialize, Deserialize, Default, Clone, Debug, PartialEq, sqlx::Type)]
+        #[derive(Serialize, Deserialize, Default, Clone, Debug, PartialEq, sqlx::Type, ts_rs::TS)]
         pub enum $enum_name {
             #[serde(rename = $number)]
             #[default]
@@ -12,7 +12,7 @@ macro_rules! make_doc_type {
 
 macro_rules! make_document  {
     ($doc_name: ident, $doc_code: ident, $doc_num: ident) => {
-        #[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
+        #[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type, ts_rs::TS)]
         pub struct $doc_name {
             pub doc_code: $doc_code,
 

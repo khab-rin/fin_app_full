@@ -6,7 +6,7 @@ use reqwest::header::HeaderMap;
 
 use crate::Status;
 use crate::primitives::frozen::implements::{BoxUuid, Inn, Kpp, Phone};
-use crate::primitives::frozen::implplemets_base::String1_50;
+use crate::primitives::frozen::implements_base::String1_50;
 use crate::sql_models::company::implements::Company;
 use crate::sql_models::person::implements::Person;
 use crate::sql_models::user::implements::User;
@@ -21,11 +21,16 @@ pub struct UserLogInfo {
     pub token: BoxUuid
 }
 
+#[derive(Serialize, Deserialize, Default, ts_rs::TS)]
+pub struct NickData{
+    pub nick_names: Vec<String1_50>
+}
+
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct TempInfo {
     pub file_hash: Option<String>,
     pub phone: Option<Phone>,
-    pub nik: Option<String1_50>
+    pub nick: Option<String1_50>
 }
 
 pub struct ActiveSession {
@@ -34,7 +39,7 @@ pub struct ActiveSession {
     pub token: BoxUuid
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct SessionUser {
     pub user: User,
     pub person: Person,

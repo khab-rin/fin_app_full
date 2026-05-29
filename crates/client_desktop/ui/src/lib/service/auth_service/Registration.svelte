@@ -32,7 +32,7 @@
     });
 
     // Дополнительное поле для никнейма, которое мы пишем в стейт Tauri
-    let reg_nik = $state('');
+    let reg_nick = $state('');
 
     // Функция входа (для чипсов и ручного ввода)
     async function handleLogin(targetNick: string) {
@@ -56,9 +56,9 @@
         isProcessing = true;
         errorMessage = '';
         try {
-            // ВАЖНО: Передаем 'data' (структура) и 'nik' (строка) отдельно, 
+            // ВАЖНО: Передаем 'data' (структура) и 'nick' (строка) отдельно, 
             // как ожидает ваша функция в Rust
-            await invoke('auth_register_user', { data: reg, nik: reg_nik });
+            await invoke('auth_register_user', { data: reg, nick: reg_nick });
             alert('Регистрация прошла успешно!');
         } catch (e) {
             errorMessage = 'Ошибка регистрации: ' + e;
@@ -109,8 +109,8 @@
         <form onsubmit={handleRegister}>
             <div>
                 <p><b>Аккаунт:</b></p>
-                <!-- Привязываем никнейм к отдельной переменной reg_nik -->
-                <input type="text" bind:value={reg_nik} placeholder="Придумайте никнейм" required />
+                <!-- Привязываем никнейм к отдельной переменной reg_nick -->
+                <input type="text" bind:value={reg_nick} placeholder="Придумайте никнейм" required />
                 <input type="password" bind:value={reg.password} placeholder="Пароль" required />
             </div>
 

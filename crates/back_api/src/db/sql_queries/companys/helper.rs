@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::{BoxUuid, Inn, Kpp, CompType, Date};
+use shared_lib::primitives::frozen::implements::{BoxUuid, Inn, Kpp, CompType, Date, DateTime};
 use shared_lib::sql_models::company::implements::{Company, CompanyDto};
 
 use crate::config::BackApiState;
@@ -126,6 +126,7 @@ pub(crate) async fn make_new_company(
             return Err(Status::ValidBoxUuid);
         }
     };
+
     Ok(Company {
         comp_id,
         inn: inn.clone(),
@@ -133,7 +134,7 @@ pub(crate) async fn make_new_company(
         comp_type,  
         comp_status:comp_state.clone(),
         metadata: meta_d,
-        last_update: chrono::Utc::now()
+        last_update: DateTime::unchecked(chrono::Utc::now())
     })
 
 }

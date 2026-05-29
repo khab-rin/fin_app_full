@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 
 use crate::primitives::frozen::implements::{BoxUuid, Date, Inn, Kpp, Ogrn, Phone, Region, RubF, Snils, ParticipantStatus};
-use crate::primitives::frozen::implplemets_base::*;
+use crate::primitives::frozen::implements_base::*;
 use crate::primitives::composite::implements::Fio;
 
 
@@ -812,7 +812,7 @@ pub struct PoaWrap {
 
 
 
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, sqlx::Type)]
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, sqlx::Type, ts_rs::TS)]
 pub enum Gender {
     #[serde(rename = "1")]
     Male,

@@ -5,15 +5,19 @@
 	import { goTo } from '$lib/rules/navigation';
 	import { onMount } from 'svelte';
 	import { checkSessionInit } from '$lib/service/auth_service/check_state';
+	import { currAuthStep } from '$lib/service/auth_service/SvelteAuthStep.svelte';
+	import AuthManager from '$lib/service/auth_service/AuthManager.svelte';
 
 	let { children } = $props<{ children: import('svelte').Snippet }>();
 
-	let is_auth = $state(false);
-	let is_loading = $state(true);
 
 	onMount(async () => {
-		is_auth = await checkSessionInit();
-		is_loading = false;
+		if (await checkSessionInit()) {
+			currAuthStep.step = { SuccessShort: {}} ;
+		} else {
+			currAuthStep.step = { Init: {} };
+		}
+		currAuthStep.isLoading = false;
 	});
 
 
@@ -25,7 +29,7 @@
 </svelte:head>
 
 
-{#if is_loading}
+{#if currAuthStep.isLoading}
 	<div class = "loading_screen">
 		<p>Инициализация защищенного соединения...</p>
 	</div>
@@ -45,13 +49,14 @@
 
 		<main class="main-content">
 			
-			{#if !is_auth}
-				<div class="denied-conteiner">
-					<h2>Доступ ограничен</h2>
-					<p>Вы не авторизованы, идите нахуй</p>
+			{#if currAuthStep.isLoading}
+				<div class="loading_screen_sub">
+					<p>Инициализация защищенного соединения...</p>
 				</div>
-			{:else}
+			{:else if 'SuccessShort' in currAuthStep.step }
 				{@render children()}
+			{:else}
+				<AuthManager/>
 			{/if}
 		</main>
 
@@ -78,9 +83,6 @@
 				<span class="nav-label">Справка</span>
 			</button>
 		</footer>
-
-
-
 	</div>
 {/if}
 

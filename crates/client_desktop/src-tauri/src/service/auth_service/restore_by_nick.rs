@@ -8,22 +8,22 @@ use crate::service::auth_service::helper::{
 };
 use crate::state::{init_session, ClientState};
 
-pub(crate) async fn restore_session_by_nik(
+pub(crate) async fn restore_session_by_nick(
     state: &ClientState,
-    nik: &str
+    nick: &str
 ) -> Result<AuthStep, Status> {
 
     let device_id = match get_device_id() {
         Ok(d) => d,
         Err(err) => {
             log::error!(
-                "FUN restore_session_by_nik FAILED BY FUN get_device_id, err = {:?}", err
+                "FUN restore_session_by_nick FAILED BY FUN get_device_id, err = {:?}", err
             );
             return Err(err);
         }
     };
 
-    let user_log_data = match get_keyring_data(state, nik) {
+    let user_log_data = match get_keyring_data(state, nick) {
         Ok(None) => return Ok(AuthStep::NeedPassword {}),
         Ok(Some(u)) => u,
         Err(err) => return Err(err)
@@ -53,7 +53,7 @@ pub(crate) async fn restore_session_by_nik(
             Ok(r) => r,
             Err(err) => {
                 log::error!(
-                    "FUN restore_session_by_nik FAILED BY POST QUERY TO BACK API, teck_err = {:?}, local_err = {:?}",
+                    "FUN restore_session_by_nick FAILED BY POST QUERY TO BACK API, teck_err = {:?}, local_err = {:?}",
                     err, Status::QueryPostRequestErr 
                 );
                 return Ok(AuthStep::TryLater {status:Status::QueryPostRequestErr});
@@ -67,7 +67,7 @@ pub(crate) async fn restore_session_by_nik(
             .unwrap_or(Status::Unknown);
 
         log::error!(
-            "FUN restore_session_by_nik FAILED BY POST QUERY TO BACK API. Backend error code: {}, local_err = {:?}",
+            "FUN restore_session_by_nick FAILED BY POST QUERY TO BACK API. Backend error code: {}, local_err = {:?}",
             back_err, Status::BackApiError 
         );
         return Ok(AuthStep::TryLater {status:Status::BackApiError});
@@ -77,7 +77,7 @@ pub(crate) async fn restore_session_by_nik(
         Ok(s) => s,
         Err(err) => {
             log::error!(
-                "FUN restore_session_by_nik FAILED BY POST QUERY TO BACK API, err = {:?}, local_err = {:?}",
+                "FUN restore_session_by_nick FAILED BY POST QUERY TO BACK API, err = {:?}, local_err = {:?}",
                 err, Status::MappingError
             );
             return Ok(AuthStep::TryLater {status:Status::MappingError});

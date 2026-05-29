@@ -6,7 +6,7 @@
     let { 
         phone = '', 
         external_id = '', 
-        nik = '',
+        nick = '',
         onSuccess = () => {} 
     } = $props();
 
@@ -49,7 +49,7 @@
 
         try {
             await invoke('auth_verify_call_code', { 
-                nik, 
+                nick, 
                 externalId: external_id, 
                 code 
             });
@@ -67,7 +67,7 @@
         isProcessing = true;
         errorMessage = '';
         try {
-            await invoke('auth_retry_tel_call', { nik });
+            await invoke('auth_retry_tel_call', { nick });
             startTimer();
             code = '';
         } catch (e) {

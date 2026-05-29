@@ -1,9 +1,9 @@
 use serde::{Serialize, Deserialize};
 
 use crate::primitives::frozen::implements::*;
-use crate::primitives::frozen::implplemets_base::String3_129;
+use crate::primitives::frozen::implements_base::String3_129;
 use crate::primitives::composite::implements::RasBicAcc;
-use crate::primitives::frozen::implplemets_base::CompanyName;
+use crate::primitives::frozen::implements_base::CompanyName;
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct DadaRespWrap {
@@ -20,7 +20,7 @@ pub struct DadaElem {
 }
 
 
-#[derive(Serialize, Deserialize, Debug, Clone, sqlx::Type)]
+#[derive(Serialize, Deserialize, Debug, Clone, sqlx::Type, ts_rs::TS)]
 #[sqlx(type_name = "jsonb")]
 pub struct CtrprtyMetadata {
     pub kpp: Option<Kpp>,
@@ -56,7 +56,7 @@ pub struct CtrprtyMetadata {
     pub ogrn_date_date: Option<Date>
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, sqlx::Type)]
+#[derive(Serialize, Deserialize, Debug, Clone, sqlx::Type, ts_rs::TS)]
 #[sqlx(type_name = "jsonb")]
 pub struct AddressData {
     #[serde(alias = "source")]
@@ -130,7 +130,7 @@ pub struct AddressData {
 }
 
 
-#[derive(Serialize, Deserialize, Debug, Clone, sqlx::Type)]
+#[derive(Serialize, Deserialize, Debug, Clone, sqlx::Type, ts_rs::TS)]
 #[sqlx(type_name = "jsonb")]
 pub struct AdrWrap {
     #[serde(alias = "value")]
@@ -141,7 +141,7 @@ pub struct AdrWrap {
     pub address_data: Option<AddressData>
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, sqlx::Type)]
+#[derive(Serialize, Deserialize, Debug, Clone, sqlx::Type, ts_rs::TS)]
 #[sqlx(type_name = "jsonb")]
 pub struct DadaCompName {
     #[serde(alias = "full_with_opf")]
@@ -150,7 +150,7 @@ pub struct DadaCompName {
     pub short_egrul_name: Option<CompanyName>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, sqlx::Type)]
+#[derive(Serialize, Deserialize, Debug, Clone, sqlx::Type, ts_rs::TS)]
 #[sqlx(type_name = "jsonb")]
 pub struct OpfData {
     #[serde(alias = "full")]
@@ -161,14 +161,14 @@ pub struct OpfData {
     pub opf_code: Option<OpfCode>
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, sqlx::Type)]
+#[derive(Serialize, Deserialize, Debug, Clone, sqlx::Type, ts_rs::TS)]
 #[sqlx(type_name = "jsonb")]
 pub struct IsCompActive {
     pub status: Option<CompStatus>,
     pub code: Option<String>
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, sqlx::Type)]
+#[derive(Serialize, Deserialize, Debug, Clone, sqlx::Type, ts_rs::TS)]
 #[sqlx(type_name = "jsonb")]
 pub struct MainManager {
     #[serde(alias = "name")]
