@@ -1,7 +1,7 @@
 <script>
-    import { currAuthStep } from "./SvelteAuthStep.svelte";
+    import { currAuthStep } from "$lib/models/svelte_models/auth_service/SvelteAuthStep.svelte";
     import CallIn from '$lib/service/auth_service/CallIn.svelte';
-    import NickName from '$lib/service/auth_service/NikName.svelte';
+    import NickName from '$lib/service/auth_service/NickName.svelte';
     import PassWord from '$lib/service/auth_service/PassWord.svelte';
     import Registration from '$lib/service/auth_service/Registration.svelte'
 

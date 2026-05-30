@@ -36,9 +36,13 @@ pub async fn run_lib() {
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![
             commands::cmd_process_bank_statement,
-            commands::cmd_get_nick_names,
             commands::cmd_is_state_active_init,
-            commands::cmd_auth_restore_nick
+            commands::cmd_is_state_active_fast,
+            commands::cmd_logout,
+            commands::cmd_session_by_password,
+            commands::cmd_session_by_nick,
+            commands::cmd_validate_field,
+            commands::cmd_get_nick_names
         ]).build(tauri::generate_context!())
         .expect("error while building tauri application");
         

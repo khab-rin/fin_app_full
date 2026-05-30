@@ -1,30 +1,30 @@
 <script lang='ts'>
     import { onMount } from "svelte";
     import { invoke } from "@tauri-apps/api/core";
-    import { currAuthStep } from "./SvelteAuthStep.svelte";
+    import { currAuthStep } from "$lib/models/svelte_models/auth_service/SvelteAuthStep.svelte";
 
-    import type {NickData} from '$lib/models/NickData';
-    import type {AuthStep} from '$lib/models/AuthStep'
+    import type { NickData } from '$lib/models/NickData';
+    import type { AuthStep } from '$lib/models/AuthStep';
 
     let inputName = $state('');
     let savedNames = $state<string[]>([]);
-    let isLoading = $state(true);
+  
+    let isLocalLoading = $state(true); 
 
     onMount(async() => {
         try {
             const data = await invoke<NickData>('cmd_get_nick_names');
-            if (!data.nick_names || data.nick_names.length == 0) {
-                isLoading = false;
-                currAuthStep.step = { NeedPassword: {} }
+            if (!data.nick_names || data.nick_names.length === 0) {
+                currAuthStep.step = { NeedPassword: {} };
             } else {
                 savedNames = data.nick_names;
-                isLoading = false;
                 inputName = savedNames[0];
             }
         } catch (e) {
-            currAuthStep.step = { TryLater: {status: "SystemErr"} };
+            currAuthStep.step = { TryLater: { status: "SystemErr" } };
             console.error("Error:", e);
-            isLoading = false;
+        } finally {
+            isLocalLoading = false;
         }
     });
 
@@ -35,19 +35,12 @@
     );
 
     function handleBeforeInput(e: InputEvent) {
-
         const char = e.data || "";
         const target = e.target as HTMLInputElement;
-
-        // Используем оператор ?? (nullish coalescing)
-        // Если selectionStart равен null, подставится 0
         const start = target.selectionStart ?? 0;
         const end = target.selectionEnd ?? 0;
 
-        const nextChar = target.value.slice(0, start) + 
-            char +
-            target.value.slice(end);
-        
+        const nextChar = target.value.slice(0, start) + char + target.value.slice(end);
         const isPossible = savedNames.some(name => 
             name.toLowerCase().startsWith(nextChar.toLowerCase())
         );
@@ -58,22 +51,26 @@
     }
 
     async function call_nick_handle() {
-        if (inputName.trim() == '') return;
+        if (inputName.trim() === '') return;
+        
+        // Включаем глобальный статус Loading. 
+        // Layout сразу покажет «Страница загружается...» вместо этой формы.
+        currAuthStep.step = { Loading: {} }; 
+        
         try {
-            currAuthStep.step = await invoke<AuthStep>('cmd_auth_restore_nick', {nickname: inputName});
+            currAuthStep.step = await invoke<AuthStep>('cmd_session_by_nick', { nickname: inputName });
         } catch (err) {
-            currAuthStep.step = { TryLater: {status: "SystemErr"}}
-            console.error(console.error("tech_err =", err, "local_err =", "SystemErr"));
+            currAuthStep.step = { TryLater: { status: "SystemErr" } };
+            console.error("tech_err =", err);
         }
     }
 </script>
 
 <div>
-    <h2>
-        Вход в систему
-    </h2>
-    {#if isLoading}
-        <p>Загрузка данных</p>
+    <h2>Вход в систему</h2>
+    
+    {#if isLocalLoading}
+        <p>Загрузка данных пользователей...</p>
     {:else}
         <div class="drop-down-list">
             <label for="drop-down">Выберите пользователя</label>
@@ -91,7 +88,6 @@
 
             {#if inputName.length > 0 && filteredNames.length > 0}
                 <ul class="suggestions">
-                    <!-- Добавляем (name) как ключ для производительности Svelte -->
                     {#each filteredNames as name (name)}
                         <li>
                             <button 
@@ -108,7 +104,6 @@
                     {/each}
                 </ul>
             {/if}
-
         </div>
     {/if}
 </div>

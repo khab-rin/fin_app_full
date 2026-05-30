@@ -51,8 +51,8 @@ pub(crate) async fn restore_by_password(
             Ok(r) => r,
             Err(err) => {
                 log::error!(
-                    "FUN restore_by_password FAILED BY POST QUERY TO BACK API, teck_err = {:?}, local_err = {:?}",
-                    err, Status::QueryPostRequestErr 
+                    "FUN restore_by_password FAILED BY POST QUERY TO BACK API, teck_err = {:?}, local_err = {:?}, url = {:?}",
+                    err, Status::QueryPostRequestErr, back_api_url
                 );
                 return Ok(AuthStep::TryLater {status: Status::QueryPostRequestErr});
             }

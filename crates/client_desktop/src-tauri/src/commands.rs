@@ -8,6 +8,7 @@ use shared_lib::primitives::frozen::implements::{Inn, Kpp};
 use shared_lib::service::auth_service::client_state::NickData;
 
 use crate::state::ClientState;
+use shared_lib::primitives::svelte_validate::SvelteValidator;
 use crate::service::auth_service::restore_by_nick::restore_session_by_nick;
 use crate::service::auth_service::restore_by_password::restore_by_password;
 use crate::service::process::bank_statement::proceed::process_statement;
@@ -33,27 +34,27 @@ pub async fn cmd_process_bank_statement(
 #[tauri::command]
 pub async  fn cmd_is_state_active_init(
     state: tauri::State<'_, ClientState>
-) -> Result<bool, Status> {
+) -> Result<AuthStep, Status> {
 
     let session_ref = state.session.lock().await;
     if let Some(ref session) = *session_ref {
         match session.local_db.acquire().await {
-            Ok(_) => Ok(true),
+            Ok(_) => Ok(AuthStep::SuccessShort {  }),
             Err(err) => {
                 log::error!(
                     "tech_err = {}, local_err = {}",
                     err, Status::SystemErr
                 );
-                Ok(false)
+                Ok(AuthStep::Init {  })
             }
         }
     } else {
-        Ok(false)
+        Ok(AuthStep::Init { })
     }
 }
 
 #[tauri::command]
-pub async  fn is_state_active_fast(
+pub async  fn cmd_is_state_active_fast(
     state: tauri::State<'_, ClientState>
 ) -> Result<bool, Status> {
 
@@ -62,7 +63,7 @@ pub async  fn is_state_active_fast(
 }
 
 #[tauri::command]
-pub async fn logout(
+pub async fn cmd_logout(
     state: tauri::State<'_, ClientState>
 ) -> Result<(), Status> {
 
@@ -72,7 +73,7 @@ pub async fn logout(
 }
 
 #[tauri::command]
-pub async fn get_state(
+pub async fn cmd_session_by_password(
     state: tauri::State<'_, ClientState>,
     data: PasswordDataShort
 ) -> Result<AuthStep, Status> {
@@ -80,7 +81,7 @@ pub async fn get_state(
 }
 
 #[tauri::command]
-pub async fn cmd_auth_restore_nick(
+pub async fn cmd_session_by_nick(
     state: tauri::State<'_, ClientState>,
     nick: String
 ) -> Result<AuthStep, Status> {
@@ -89,6 +90,14 @@ pub async fn cmd_auth_restore_nick(
         Err(err) => Ok(AuthStep::TryLater { status: err })
     }
 }
+
+#[tauri::command]
+pub fn cmd_validate_field(
+    type_value: SvelteValidator
+) -> Result<bool, Status> {
+    type_value.validate_svelte_field()
+}
+
 
 #[tauri::command]
 pub fn cmd_get_nick_names(

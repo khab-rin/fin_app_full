@@ -1,11 +1,11 @@
 import { invoke } from "@tauri-apps/api/core";
+import type {AuthStep} from "$lib/models/AuthStep"
 
-export async function checkSessionInit(): Promise<boolean> {
+export async function checkSessionInit(): Promise<AuthStep> {
     try {
-        const isActive = await invoke<boolean>("is_state_active_init");
-        return isActive;
+        return await invoke<AuthStep>("cmd_is_state_active_init");
     } catch (error) {
         console.error("COMMAND is_state_active_init FAILED, ERR = ", error);
-        return false;
+        return {Init: {}};
     }
 }

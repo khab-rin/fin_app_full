@@ -12,7 +12,8 @@ use shared_lib::service::auth_service::implements::{
 };
 use shared_lib::service::auth_service::implements::{
     PasswordData,
-    TokenDeviceData
+    TokenDeviceData,
+    TextInfo
 };
 
 use crate::db::sql_queries::users::get::auth_check_passw_by_authdata::get_restore_password_data;
@@ -43,7 +44,7 @@ pub(crate) async fn restore_session_by_passord(
     let auth_check_password = match auth_check_password_option {
         Some(a) => a,
         None => {
-            return Ok(AuthStep::NeedRegistrtion {});
+            return Ok(AuthStep::NeedRegistrtion {text: TextInfo::MissUserNeedRegistration});
         }
     };
 

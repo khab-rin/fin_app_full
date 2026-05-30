@@ -1,5 +1,10 @@
 use shared_lib::Status;
-use shared_lib::service::auth_service::implements::{AuthStep, RegistrationData, SvelteRegistrationData};
+use shared_lib::service::auth_service::implements::{
+    AuthStep, 
+    RegistrationData, 
+    SvelteRegistrationData,
+    TextInfo
+};
 use shared_lib::service::auth_service::client_state::UserLogInfo;
 use shared_lib::service::api_routes::implements::ApiRoutes;
 
@@ -25,12 +30,12 @@ pub async fn register_user(
 
     let doc_hash = match (*state.temp_info.lock().await).clone().file_hash {
         Some(t) => t,
-        None => return Ok(AuthStep::NeedRegistrtion {})
+        None => return Ok(AuthStep::NeedRegistrtion {text: TextInfo::ClientApiSystemError})
     };
 
     let nick = match (*state.temp_info.lock().await).clone().nick {
         Some(n) => n,
-        None => return Ok(AuthStep::NeedRegistrtion {})
+        None => return Ok(AuthStep::NeedRegistrtion {text: TextInfo::ClientApiSystemError})
     };
 
     let mut quard = state.temp_info.lock().await;
@@ -102,7 +107,7 @@ pub async fn register_user(
                     "FUN register_user FAILED BY POST QUERY TO BACK API, teck_err = {:?}, local_err = {:?}",
                     err, Status::QueryPostRequestErr 
                 );
-                return Ok(AuthStep::TryLater {status:Status::QueryPostRequestErr});
+                return Ok(AuthStep::TryLater {text: TextInfo::ClientApiQueryError});
             }
         };
     
@@ -115,7 +120,7 @@ pub async fn register_user(
             "FUN register_user FAILED BY POST QUERY TO BACK API. Backend error code: {}, local_err = {:?}",
             back_err, Status::BackApiError
         );
-        return Ok(AuthStep::TryLater {status:Status::BackApiError});
+        return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
     }
 
     let auth_step:AuthStep = match response.json().await {
@@ -125,7 +130,7 @@ pub async fn register_user(
                 "FUN register_user FAILED BY POST QUERY TO BACK API, err = {:?}, local_err = {:?}",
                 err, Status::MappingError
             );
-            return Ok(AuthStep::TryLater {status:Status::MappingError});
+            return Ok(AuthStep::TryLater {text: TextInfo::ClientApiSystemError});
         }
     };
 

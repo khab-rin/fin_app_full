@@ -10,3 +10,5 @@ pub mod tax_frozen;
 pub(crate) mod traits;
 
 pub mod composite;
+
+pub mod svelte_validate;

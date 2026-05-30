@@ -202,5 +202,5 @@ frozen_primitives!(
     PoaReqElemsFlag,
     init_flag_str,
     Box<str>,
-    "Флаги_обязательности_элеменотов"
+    "Флаги_обязательности_элементов"
 );

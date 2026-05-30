@@ -7,12 +7,9 @@ pub mod  sql_models;
 pub mod alias_types;
 
 pub use crate::err_models::implements::Status;
-use crate::service::auth_service::implements::AuthStep;
-use crate::service::auth_service::client_state::UserLogInfo;
 
 #[cfg(test)]
 mod ts_tests {
-    use crate::service::auth_service::client_state::NickData;
 
 use super::*;
     use ts_rs::TS;
@@ -22,10 +19,17 @@ use super::*;
 
         let output_dir = "/home/khabipovrinat/dev/fin_app_full/crates/client_desktop/ui/src/lib/models";
 
-        AuthStep::export_all_to(output_dir)
+        service::auth_service::implements::AuthStep::export_all_to(output_dir)
             .expect("Не удалось экспортировать AuthStep");
-        NickData::export_all_to(output_dir)
-            .expect("Не удалось экспортировать AuthStep");
+
+        service::auth_service::client_state::NickData::export_all_to(output_dir)
+            .expect("Не удалось экспортировать UserLogInfo");
+
+        service::auth_service::implements::PasswordDataShort::export_all_to(output_dir)
+            .expect("Не удалось экспортировать PasswordDataShort");
+
+        primitives::svelte_validate::SvelteValidator::export_all_to(output_dir)
+            .expect("Не удалось экспортировать SvelteValidator");
     }
 }
 

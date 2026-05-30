@@ -1,6 +1,10 @@
 use shared_lib::Status;
 use shared_lib::service::api_routes::implements::ApiRoutes;
-use shared_lib::service::auth_service::implements::{AuthStep, TokenDeviceData};
+use shared_lib::service::auth_service::implements::{
+    AuthStep, 
+    TokenDeviceData,
+    TextInfo
+};
 
 use crate::service::auth_service::helper::{
     get_device_id,
@@ -56,7 +60,7 @@ pub(crate) async fn restore_session_by_nick(
                     "FUN restore_session_by_nick FAILED BY POST QUERY TO BACK API, teck_err = {:?}, local_err = {:?}",
                     err, Status::QueryPostRequestErr 
                 );
-                return Ok(AuthStep::TryLater {status:Status::QueryPostRequestErr});
+                return Ok(AuthStep::TryLater {text: TextInfo::ClientApiQueryError});
             }
         };
 
@@ -70,7 +74,7 @@ pub(crate) async fn restore_session_by_nick(
             "FUN restore_session_by_nick FAILED BY POST QUERY TO BACK API. Backend error code: {}, local_err = {:?}",
             back_err, Status::BackApiError 
         );
-        return Ok(AuthStep::TryLater {status:Status::BackApiError});
+        return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
     }
 
     let auth_step: AuthStep = match response.json().await {
@@ -80,7 +84,7 @@ pub(crate) async fn restore_session_by_nick(
                 "FUN restore_session_by_nick FAILED BY POST QUERY TO BACK API, err = {:?}, local_err = {:?}",
                 err, Status::MappingError
             );
-            return Ok(AuthStep::TryLater {status:Status::MappingError});
+            return Ok(AuthStep::TryLater {text: TextInfo::ClientApiSystemError});
         }
     };
 

@@ -12,7 +12,8 @@ use shared_lib::service::auth_service::implements::{
     CryptoVerifyData, 
     RegistrationData, 
     AuthStep,
-    CryptoVerifyPersonResponse
+    CryptoVerifyPersonResponse,
+    TextInfo
 };
 
 use crate::config::BackApiState;
@@ -83,7 +84,7 @@ pub(crate) async fn register_new_user(
                     failed_data = ?failed_data,
                     "FUN register_new_user FAILED BY REQUEST TO CRYPTO SERVICE"
                 );
-                return Ok(AuthStep::TryLater {status:Status::BackApiError});
+                return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
             }
         };
 
@@ -93,7 +94,7 @@ pub(crate) async fn register_new_user(
             failed_data = ?failed_data,
             "FUN register_new_user FAILED BY REQUEST TO CRYPTO SERVICE - CONNECTION PROBLEMS"
         );
-        return Ok(AuthStep::TryLater {status:Status::BackApiError});
+        return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
     }
 
     let verify_person: CryptoVerifyPersonResponse = match response

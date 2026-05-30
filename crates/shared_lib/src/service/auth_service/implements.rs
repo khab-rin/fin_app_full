@@ -16,19 +16,34 @@ pub struct SessionUserToken {
 
 #[derive(Serialize, Deserialize, ts_rs::TS)]
 pub enum AuthStep {
+    Loading {},
     Init {},
     SuccessFull { session_user_token: Box<SessionUserToken> },
     SuccessShort {},
     CallIn { phone: Phone, external_id: String },
     NeedPassword {},
-    NeedRegistrtion {},
-    TryLater { status: Status },
+    NeedRegistrtion {text: TextInfo},
+    TryLater { text: TextInfo },
     WrongPassword {},
     MissedFile {},
     WrongSignFile {},
     WrongPerson {},
     UserAlreadyExists {},
     TokenDevicePairMiss { token: BoxUuid }
+}
+
+#[derive(Serialize, Deserialize, ts_rs::TS, Clone, Debug)]
+#[ts(export, export_to = "TextInfo.ts")]
+pub enum TextInfo {
+    #[serde(rename = "Пользователь не найден, требуется пройти регистрацию")]
+    MissUserNeedRegistration,
+    #[serde(rename = "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение")]
+    ClientApiSystemError,
+    #[serde(rename = "Ошибка при запросе в интернет, проверьте подключение к сети")]
+    ClientApiQueryError,
+    #[serde(rename = "Ошибка в работе серверной части приложения, попробуйте авторизоваться позже, либо сделайте запрос в техподдержку")]
+    BackApiError,
+    
 }
 
 
@@ -38,7 +53,7 @@ pub struct TokenDeviceData {
     pub device_id: BoxUuid
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub struct PasswordDataShort {
     pub nick: String,
     pub password: String,
