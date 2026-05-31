@@ -19,8 +19,8 @@
 
     // Функция сброса ошибки WrongPassword при изменении данных в полях
     function clearWrongPasswordStatus() {
-        if ('WrongPassword' in currAuthStep.step) {
-            currAuthStep.step = { NeedPassword: {} };
+        if ('NeedPassword' in currAuthStep.step) {
+            currAuthStep.step = {NeedPassword: {text: "Пароль к связке входных параметров неверный"}}
         }
     }
 
@@ -58,7 +58,7 @@
 
             
         } catch (err) {
-            currAuthStep.step = { TryLater: { status: "SystemErr" } };
+            currAuthStep.step = { TryLater: { text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение" } };
             console.error("Критическая ошибка cmd_auth_with_password:", err);
         }
     }

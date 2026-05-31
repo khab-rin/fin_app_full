@@ -30,12 +30,12 @@ pub async fn register_user(
 
     let doc_hash = match (*state.temp_info.lock().await).clone().file_hash {
         Some(t) => t,
-        None => return Ok(AuthStep::NeedRegistrtion {text: TextInfo::ClientApiSystemError})
+        None => return Ok(AuthStep::TryLater {text: TextInfo::ClientApiSystemError})
     };
 
     let nick = match (*state.temp_info.lock().await).clone().nick {
         Some(n) => n,
-        None => return Ok(AuthStep::NeedRegistrtion {text: TextInfo::ClientApiSystemError})
+        None => return Ok(AuthStep::TryLater {text: TextInfo::ClientApiSystemError})
     };
 
     let mut quard = state.temp_info.lock().await;
@@ -47,7 +47,7 @@ pub async fn register_user(
             log::error!(
                 "FUN register_user FAILED BY FUN get_device_id, err = {:?}", err
             );
-            return Err(err);
+            return Ok(AuthStep::TryLater {text: TextInfo::ClientApiSystemError});
         }
     };
 
@@ -58,7 +58,7 @@ pub async fn register_user(
                 "FUN register_user FAILED BY FILE READ, tech_err = {}, local_err = {}",
                 err, Status::FileReadError
             );
-            return Err(Status::FileReadError);
+            return Ok(AuthStep::TryLater {text: TextInfo::ClientApiSystemError});
         }
     };
 
@@ -69,7 +69,7 @@ pub async fn register_user(
                 "FUN register_user FAILED BY FILE READ, tech_err = {}, local_err = {}",
                 err, Status::FileReadError
             );
-            return Err(Status::FileReadError);
+            return Ok(AuthStep::TryLater {text: TextInfo::ClientApiSystemError});
         }
     };
 
@@ -157,7 +157,7 @@ pub async fn register_user(
         Ok(_) => Ok(AuthStep::SuccessShort {}),
         Err(err) => {
             log::error!("FUN register_user FAILED BY init_session, err = {}",err);
-            Err(err)
+            return Ok(AuthStep::TryLater {text: TextInfo::ClientApiSystemError});
         }
     }
 

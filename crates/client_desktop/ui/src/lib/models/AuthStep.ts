@@ -2,6 +2,6 @@
 import type { BoxUuid } from "./BoxUuid";
 import type { Phone } from "./Phone";
 import type { SessionUserToken } from "./SessionUserToken";
-import type { Status } from "./Status";
+import type { TextInfo } from "./TextInfo";
 
-export type AuthStep = { "Loading": Record<string, never> } | { "Init": Record<string, never> } | { "SuccessFull": { session_user_token: SessionUserToken, } } | { "SuccessShort": Record<string, never> } | { "CallIn": { phone: Phone, external_id: string, } } | { "NeedPassword": Record<string, never> } | { "NeedRegistrtion": Record<string, never> } | { "TryLater": { status: Status, } } | { "WrongPassword": Record<string, never> } | { "MissedFile": Record<string, never> } | { "WrongSignFile": Record<string, never> } | { "WrongPerson": Record<string, never> } | { "UserAlreadyExists": Record<string, never> } | { "TokenDevicePairMiss": { token: BoxUuid, } };
+export type AuthStep = { "Loading": Record<string, never> } | { "Init": Record<string, never> } | { "SuccessFull": { session_user_token: SessionUserToken, } } | { "SuccessShort": Record<string, never> } | { "CallIn": { phone: Phone, external_id: string, text: TextInfo, } } | { "NeedPassword": { text: TextInfo, } } | { "NeedRegistration": { text: TextInfo, } } | { "TryLater": { text: TextInfo, } } | { "TokenDevicePairMiss": { token: BoxUuid, text: TextInfo, } };

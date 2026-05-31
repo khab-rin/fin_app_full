@@ -13,7 +13,7 @@
     <PassWord/>
 {:else if 'CallIn' in currAuthStep.step }
     <CallIn/>
-{:else if 'NeedRegistrtion' in currAuthStep.step }
+{:else if 'NeedRegistration' in currAuthStep.step }
     <Registration/>
 {:else}
     <p>

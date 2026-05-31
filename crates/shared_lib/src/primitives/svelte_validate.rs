@@ -5,7 +5,6 @@ use crate::primitives::frozen::implements::*;
 use crate::primitives::frozen::implements_base::*;
 
 #[derive(Serialize, Deserialize, ts_rs::TS, Debug)]
-#[ts(export, export_to = "Validator.ts")]
 pub enum SvelteValidator {
     Inn(String),
     Kpp(String),

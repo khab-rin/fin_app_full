@@ -4,7 +4,8 @@ use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{
     TokenDeviceData, 
     SessionUserToken, 
-    AuthStep
+    AuthStep,
+    TextInfo
 };
 
 use crate::config::BackApiState;
@@ -13,7 +14,7 @@ use crate::db::sql_queries::users::get::session_user_by_device_token::get_user_b
 
 pub(crate) async fn restore_session_by_token(
     state: &Arc<BackApiState>,
-    payload: &TokenDeviceData
+    payload: &TokenDeviceData 
 ) -> Result<AuthStep, Status> {
 
     let session_user_option = match get_user_by_device_token(state, payload).await {
@@ -24,7 +25,7 @@ pub(crate) async fn restore_session_by_token(
                 failed_data = ?payload,
                 "FUN get_user FAILED BY FUN get_user_by_device_token"
             );
-            return Ok(AuthStep::TryLater {status:err});
+            return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
         }
     };
 
@@ -40,7 +41,10 @@ pub(crate) async fn restore_session_by_token(
                     )
                 }
             };
-            return Ok(AuthStep::TokenDevicePairMiss { token: payload.token.clone() });
+            return Ok(AuthStep::TokenDevicePairMiss { 
+                token: payload.token.clone(), 
+                text: TextInfo::Nothing 
+            });
         }
     };
 

@@ -1,7 +1,8 @@
 use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{
     PasswordDataShort, 
-    AuthStep
+    AuthStep,
+    TextInfo
 };
 
 use shared_lib::primitives::frozen::implements::{Inn, Kpp};
@@ -87,7 +88,7 @@ pub async fn cmd_session_by_nick(
 ) -> Result<AuthStep, Status> {
     match restore_session_by_nick(&state, &nick).await {
         Ok(res) => Ok(res),
-        Err(err) => Ok(AuthStep::TryLater { status: err })
+        Err(err) => Ok(AuthStep::TryLater { text: TextInfo::ClientApiSystemError })
     }
 }
 

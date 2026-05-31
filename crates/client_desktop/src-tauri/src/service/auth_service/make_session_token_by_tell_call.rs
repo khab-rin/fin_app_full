@@ -1,6 +1,10 @@
 use shared_lib::Status;
 use shared_lib::service::api_routes::implements::{ApiRoutes};
-use shared_lib::service::auth_service::implements::{AuthStep, PhoneDeviceData};
+use shared_lib::service::auth_service::implements::{
+    AuthStep, 
+    PhoneDeviceData,
+    TextInfo
+};
 use shared_lib::service::auth_service::client_state::UserLogInfo;
 
 use crate::state::{ClientState, init_session};
@@ -31,7 +35,7 @@ pub(crate) async fn make_session_token_by_tel_call(
                     "FUN make_session_token_by_tel_call FAILED BY POST QUERY TO BACK API, teck_err = {:?}, local_err = {:?}",
                     err, Status::QueryPostRequestErr 
                 );
-                return Ok(AuthStep::TryLater {status:Status::QueryPostRequestErr});
+                return Ok(AuthStep::TryLater {text: TextInfo::ClientApiQueryError});
             }
         };
     
@@ -44,7 +48,7 @@ pub(crate) async fn make_session_token_by_tel_call(
             "FUN make_session_token_by_tel_call FAILED BY POST QUERY TO BACK API. Backend error code: {}, local_err = {:?}",
             back_err, Status::BackApiError
         );
-        return Ok(AuthStep::TryLater {status:Status::BackApiError});
+        return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
     }
 
     let auth_step: AuthStep = match response.json().await {
@@ -54,7 +58,7 @@ pub(crate) async fn make_session_token_by_tel_call(
                 "FUN restore_by_password FAILED BY POST QUERY TO BACK API, err = {:?}, local_err = {:?}",
                 err, Status::MappingError
             );
-            return Ok(AuthStep::TryLater {status:Status::MappingError});
+            return Ok(AuthStep::TryLater {text: TextInfo::ClientApiSystemError});
         }
     };
 
@@ -78,10 +82,10 @@ pub(crate) async fn make_session_token_by_tel_call(
     }
 
     match init_session(state, &success_result).await {
-        Ok(_) => Ok(AuthStep::SuccessShort {  }),
+        Ok(_) => Ok(AuthStep::SuccessShort {}),
         Err(err) => {
             log::error!("FUN restore_by_password FAILED BY init_session, err = {}",err);
-            Err(err)
+            Ok(AuthStep::TryLater { text: TextInfo::ClientApiSystemError })
         }
     }
 }

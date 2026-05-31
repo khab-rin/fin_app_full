@@ -23,12 +23,12 @@ pub(crate) async fn restore_session_by_nick(
             log::error!(
                 "FUN restore_session_by_nick FAILED BY FUN get_device_id, err = {:?}", err
             );
-            return Err(err);
+            return Ok(AuthStep::TryLater {text: TextInfo::ClientApiSystemError});
         }
     };
 
     let user_log_data = match get_keyring_data(state, nick) {
-        Ok(None) => return Ok(AuthStep::NeedPassword {}),
+        Ok(None) => return Ok(AuthStep::NeedPassword {text: TextInfo::NewUserInSystem}),
         Ok(Some(u)) => u,
         Err(err) => return Err(err)
     };

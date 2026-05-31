@@ -15,13 +15,13 @@
         try {
             const data = await invoke<NickData>('cmd_get_nick_names');
             if (!data.nick_names || data.nick_names.length === 0) {
-                currAuthStep.step = { NeedPassword: {} };
+                currAuthStep.step = { NeedPassword: {text: "Пользователь не найден на устройстве, требуется авторизоваться по паролю или пройти регистрацию"} };
             } else {
                 savedNames = data.nick_names;
                 inputName = savedNames[0];
             }
         } catch (e) {
-            currAuthStep.step = { TryLater: { status: "SystemErr" } };
+            currAuthStep.step = { TryLater: { text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение" } };
             console.error("Error:", e);
         } finally {
             isLocalLoading = false;
@@ -52,15 +52,13 @@
 
     async function call_nick_handle() {
         if (inputName.trim() === '') return;
-        
-        // Включаем глобальный статус Loading. 
-        // Layout сразу покажет «Страница загружается...» вместо этой формы.
+
         currAuthStep.step = { Loading: {} }; 
         
         try {
             currAuthStep.step = await invoke<AuthStep>('cmd_session_by_nick', { nickname: inputName });
         } catch (err) {
-            currAuthStep.step = { TryLater: { status: "SystemErr" } };
+            currAuthStep.step = { TryLater: { text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение" } };
             console.error("tech_err =", err);
         }
     }

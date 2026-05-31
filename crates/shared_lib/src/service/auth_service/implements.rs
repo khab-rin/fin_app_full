@@ -20,30 +20,56 @@ pub enum AuthStep {
     Init {},
     SuccessFull { session_user_token: Box<SessionUserToken> },
     SuccessShort {},
-    CallIn { phone: Phone, external_id: String },
-    NeedPassword {},
-    NeedRegistrtion {text: TextInfo},
+    CallIn { phone: Phone, external_id: String, text: TextInfo },
+    NeedPassword {text: TextInfo},
+    NeedRegistration {text: TextInfo},
     TryLater { text: TextInfo },
-    WrongPassword {},
-    MissedFile {},
-    WrongSignFile {},
-    WrongPerson {},
-    UserAlreadyExists {},
-    TokenDevicePairMiss { token: BoxUuid }
+    TokenDevicePairMiss { token: BoxUuid, text: TextInfo }
 }
 
-#[derive(Serialize, Deserialize, ts_rs::TS, Clone, Debug)]
-#[ts(export, export_to = "TextInfo.ts")]
+#[derive(Serialize, Deserialize, Clone, Debug, ts_rs::TS,)]
 pub enum TextInfo {
     #[serde(rename = "Пользователь не найден, требуется пройти регистрацию")]
     MissUserNeedRegistration,
+
     #[serde(rename = "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение")]
     ClientApiSystemError,
+
     #[serde(rename = "Ошибка при запросе в интернет, проверьте подключение к сети")]
     ClientApiQueryError,
+
     #[serde(rename = "Ошибка в работе серверной части приложения, попробуйте авторизоваться позже, либо сделайте запрос в техподдержку")]
     BackApiError,
+
+    #[serde(rename = "Возможная попытка несанкцианированного доступа")]
+    IllegalAccess,
+
+    #[serde(rename = "Пароль к связке входных параметров неверный")]
+    WrongPassword,
+
+    #[serde(rename = "Звонок с указанного телефона по указанному номеру не был получен, повторите процесс заново")]
+    SmsRuCallMiss,
+
+    #[serde(rename = "Некорректные файлы подписи, пройдите процесс заново")]
+    WrongSignFile,
+
+    #[serde(rename = "Пользователь с данными входными данными уже существует, введите пароль")]
+    UserAlreadyExists,
+
+    #[serde(rename = "Выявлены различия в файле заявлении и подписанном файле, пройдите регистрацию заново")]
+    MissedFile,
+
+    #[serde(rename = "Выявлены различия в данных пользователя и данных владельца подписи, пройдите регистрацию заново")]
+    WrongPerson,
     
+    #[serde(rename = "Пользователь не найден на устройстве, требуется авторизоваться по паролю или пройти регистрацию")]
+    NewUserInSystem,
+
+    #[serde(rename = "Вход пользователя с нового устройста, для подтверждения позвоните с указанного при регистрации номера по указанному номеру в течение 5 минут, затем нажмите далее. Звонок бесплатный и скинется после первого гудка")]
+    CallIn,
+
+    #[serde(rename = "")]
+    Nothing,
 }
 
 

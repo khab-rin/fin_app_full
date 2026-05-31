@@ -4,7 +4,8 @@ use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{ 
     PhoneDeviceData, 
     SessionUserToken, 
-    AuthStep
+    AuthStep,
+    TextInfo
 };
 
 use crate::config::BackApiState;
@@ -29,7 +30,7 @@ pub(crate) async fn make_session_token_by_tel_call(
                 tech_err = ?err,
                 "FUN restore_user_by_tel_call FAILED BY FUN get_user_time_by_device_external"
             );
-            return Ok(AuthStep::TryLater {status:Status::BackApiError});
+            return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
         }
     };
 
@@ -41,12 +42,12 @@ pub(crate) async fn make_session_token_by_tel_call(
                 err = ?err,
                 "FUN restore_user_by_tel_call FAILED IN CALL FUN smsru_get_cf"
             );
-            return Ok(AuthStep::TryLater {status:Status::BackApiError});
+            return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
         }
     };
 
     if !phone_cf {
-        return Ok(AuthStep::NeedPassword {});
+        return Ok(AuthStep::NeedPassword {text: TextInfo::SmsRuCallMiss});
     }
 
     let token = match new_session(state, &user_id, device_id).await {
@@ -57,7 +58,7 @@ pub(crate) async fn make_session_token_by_tel_call(
                 err = ?err,
                 "FUN restore_user_by_tel_call FAILED BY FUN new_session"
             );
-            return Ok(AuthStep::TryLater {status:Status::BackApiError});
+            return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
         }
     };
 
@@ -69,7 +70,7 @@ pub(crate) async fn make_session_token_by_tel_call(
                 err = ?err,
                 "FUN restore_user_by_tel_call FAILED BY FUN get_user_by_user_id"
             );
-            return Ok(AuthStep::TryLater {status:Status::BackApiError});
+            return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
         }
     };
 
