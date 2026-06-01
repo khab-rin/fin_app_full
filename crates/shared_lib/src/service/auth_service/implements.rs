@@ -16,15 +16,15 @@ pub struct SessionUserToken {
 
 #[derive(Serialize, Deserialize, ts_rs::TS)]
 pub enum AuthStep {
-    Loading {},
-    Init {},
-    SuccessFull { session_user_token: Box<SessionUserToken> },
-    SuccessShort {},
-    CallIn { phone: Phone, external_id: String, text: TextInfo },
+    Loading { text: TextInfo },
+    NickName { text: TextInfo },
     NeedPassword {text: TextInfo},
     NeedRegistration {text: TextInfo},
+    CallIn { phone: Phone, external_id: String, text: TextInfo },
+    SuccessFull { session_user_token: Box<SessionUserToken> },
+    SuccessShort {},
     TryLater { text: TextInfo },
-    TokenDevicePairMiss { token: BoxUuid, text: TextInfo }
+    TokenDevicePairMiss { text: TextInfo }
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, ts_rs::TS,)]
@@ -67,6 +67,12 @@ pub enum TextInfo {
 
     #[serde(rename = "Вход пользователя с нового устройста, для подтверждения позвоните с указанного при регистрации номера по указанному номеру в течение 5 минут, затем нажмите далее. Звонок бесплатный и скинется после первого гудка")]
     CallIn,
+
+    #[serde(rename = "Выберите из списка нужного пользователя, в случае отсутствия авторизуйтесь через пароль, либо зарегистрируйтесь")]
+    InitInfo,
+
+    #[serde(rename = "Страница загружается, подождите пожалуйста. В случае зависания попробуйте обновить или перезагрузить приложение")]
+    LoadingInfo,
 
     #[serde(rename = "")]
     Nothing,

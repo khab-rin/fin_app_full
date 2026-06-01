@@ -5,136 +5,147 @@
     import type { AuthStep } from '$lib/models/AuthStep';
     import type {PasswordDataShort} from "$lib/models/PasswordDataShort"
 
-    // Текстовые значения полей ввода (двухсторонняя привязка)
-    let nickname = $state('');
-    let innPhys = $state('');
-    let innOrg = $state('');
-    let kppOrg = $state('');
+    let nick = $state('');
+    let persInn = $state('');
+    let compInn = $state('');
+    let kpp = $state('');
     let password = $state('');
 
-    // СОЗДАЕМ ИЗОЛИРОВАННЫЕ ВАЛИДАТОРЫ ДЛЯ КАЖДОГО ПОЛЯ
-    const innPhysValidator = new FieldValidator();
-    const innOrgValidator = new FieldValidator();
-    const kppOrgValidator = new FieldValidator();
+    let isPushed = $state(false);
 
-    // Функция сброса ошибки WrongPassword при изменении данных в полях
-    function clearWrongPasswordStatus() {
-        if ('NeedPassword' in currAuthStep.step) {
-            currAuthStep.step = {NeedPassword: {text: "Пароль к связке входных параметров неверный"}}
-        }
-    }
+    const nickNameValid = new FieldValidator();
+    const persInnValid = new FieldValidator();
+    const compInnValid = new FieldValidator();
+    const kppValid = new FieldValidator();
+    const passwordValid = new FieldValidator();
 
-    // Функция отправки всей формы в Rust
+    $effect(() => {
+        nickNameValid.validate({ String1_50: nick }); 
+    });
+
+    $effect(() => {
+        persInnValid.validate({ Inn: persInn });
+    });
+
+    $effect(() => {
+        compInnValid.validate({ Inn: compInn });
+    });
+
+    $effect(() => {
+        kppValid.validate({ Kpp: kpp });
+    });
+
+    $effect(() => {
+        passwordValid.validate({ Password: password });
+    });
+
+
+
     async function handleAuthSubmit() {
-        // Жесткая проверка: все обязательные поля должны быть заполнены
-        if (!nickname || !innPhys || !innOrg || !kppOrg || !password) return;
-        
-        // Защита: если хотя бы один из личных валидаторов вернул false, отменяем отправку
-        if (!innPhysValidator.isValid || !innOrgValidator.isValid || !kppOrgValidator.isValid) return;
-
-        // Переводим глобальное состояние в Loading, чтобы Layout показал экран загрузки
-        currAuthStep.step = { Loading: {} }; 
+        if (isPushed) return;
+       
+        if (
+            !nickNameValid.isValid || 
+            !persInnValid.isValid || 
+            !compInnValid.isValid ||
+            !kppValid.isValid ||
+            !passwordValid.isValid
+        ) return;
 
         const sendData: PasswordDataShort = {
-            nick: nickname,
+            nick: nick,
             password: password,
-            pers_inn: innPhys,
-            comp_inn: innOrg,
-            kpp: kppOrg
+            pers_inn: persInn,
+            comp_inn: compInn,
+            kpp: kpp
         };
 
         try {
-            const nextStep = await invoke<AuthStep>('cmd_session_by_password', {
+
+            currAuthStep.step = await invoke<AuthStep>('cmd_session_by_password', {
                 data: sendData
             });
-
-            if (!('WrongPassword' in nextStep)) {
-                innPhysValidator.reset();
-                innOrgValidator.reset();
-                kppOrgValidator.reset();
-            }
-
-            currAuthStep.step = nextStep;
-
             
         } catch (err) {
             currAuthStep.step = { TryLater: { text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение" } };
             console.error("Критическая ошибка cmd_auth_with_password:", err);
+            isPushed = false;
         }
     }
 </script>
 
 <div class="auth-card">
-    <h2>Вход по учетным данным</h2>
-
-    {#if 'WrongPassword' in currAuthStep.step}
-        <div class="global-error">
-            ⚠️ Неверный пароль или учетные данные. Повторите попытку.
-        </div>
-    {/if}
+    <p>
+        {currAuthStep.currentText}
+    </p>
 
     <!-- Поле: Никнейм -->
     <div class="form-group">
-        <label for="nickname">Никнейм</label>
+        <label for="nick">Имя пользователя</label>
         <input 
-            id="nickname" 
+            id="nick" 
             type="text" 
-            bind:value={nickname} 
-            oninput={clearWrongPasswordStatus}
+            bind:value={nick} 
+            disabled={isPushed}
             placeholder="Введите ваш никнейм"
             class="input-field" 
+            class:input-error={!nickNameValid.isValid} 
         />
+        
+        {#if !nickNameValid.isValid}
+            <span class="error-message">Некорректный никнейм</span>
+        {/if}
     </div>
 
     <!-- Поле: ИНН Физического лица -->
     <div class="form-group">
-        <label for="innPhys">ИНН физического лица</label>
+        <label for="persInn">ИНН физического лица</label>
         <input 
-            id="innPhys" 
+            id="persInn" 
             type="text" 
-            bind:value={innPhys} 
-            oninput={() => {
-                clearWrongPasswordStatus();
-                innPhysValidator.validate({ Inn: innPhys }); // Вызов личного валидатора
-            }} 
+            bind:value={persInn} 
+            disabled={isPushed}
             placeholder="12 цифр ИНН ФЛ"
             class="input-field"
-            class:invalid={!innPhysValidator.isValid}
+            class:input-error={!persInnValid.isValid}
         />
+        {#if !persInnValid.isValid}
+            <span class="error-message">Некорректный инн физического лица</span>
+        {/if}
     </div>
 
     <!-- Поле: ИНН Организации -->
     <div class="form-group">
-        <label for="innOrg">ИНН организации</label>
+        <label for="compInn">ИНН организации</label>
         <input 
             id="innOrg" 
             type="text" 
-            bind:value={innOrg} 
-            oninput={() => {
-                clearWrongPasswordStatus();
-                innOrgValidator.validate({ Inn: innOrg }); // Вызов личного валидатора
-            }} 
+            bind:value={compInn}
+            disabled={isPushed}
             placeholder="10 цифр ИНН ЮЛ"
             class="input-field"
-            class:invalid={!innOrgValidator.isValid}
+            class:input-error={!compInnValid.isValid}
         />
+        {#if !compInnValid.isValid}
+            <span class="error-message">Некорректный инн юридического лица</span>
+        {/if}
     </div>
 
     <!-- Поле: КПП Организации -->
     <div class="form-group">
-        <label for="kppOrg">КПП организации</label>
+        <label for="kpp">КПП организации</label>
         <input 
             id="kppOrg" 
             type="text" 
-            bind:value={kppOrg} 
-            oninput={() => {
-                clearWrongPasswordStatus();
-                kppOrgValidator.validate({ Kpp: kppOrg }); // Вызов личного валидатора
-            }} 
+            bind:value={kpp}
+            disabled={isPushed} 
             placeholder="9 знаков КПП"
             class="input-field"
-            class:invalid={!kppOrgValidator.isValid}
+            class:input-error={!kppValid.isValid}
         />
+        {#if !kppValid.isValid}
+            <span class="error-message">Некорректный кпп</span>
+        {/if}
     </div>
 
     <!-- Поле: Пароль -->
@@ -143,26 +154,30 @@
         <input 
             id="password" 
             type="password" 
-            bind:value={password} 
-            oninput={clearWrongPasswordStatus}
+            bind:value={password}
+            disabled={isPushed} 
             placeholder="Введите пароль"
-            class="input-field" 
+            class="input-field"
+            class:input-error={!passwordValid.isValid}
         />
+        {#if !passwordValid.isValid}
+            <span class="error-message">Пароль некоректен в рамках прилжоения</span>
+        {/if}
     </div>
 
-    <!-- Кнопка автоматически блокируется, если поля пустые или хоть один валидатор вернул false -->
     <button 
         type="button" 
         onclick={handleAuthSubmit}
         disabled={
-            !nickname || !innPhys || !innOrg || !kppOrg || !password || 
-            !innPhysValidator.isValid || 
-            !innOrgValidator.isValid || 
-            !kppOrgValidator.isValid
+            isPushed || !nickNameValid.isValid || !persInnValid.isValid || !compInnValid.isValid || !kppValid.isValid || !passwordValid.isValid
         }
         class="submit-btn"
     >
-        Войти
+        {#if isPushed}
+            <span>Вход...</span>
+        {:else}
+            <span>Войти</span>
+        {/if}
     </button>
 </div>
 
@@ -205,17 +220,32 @@
         border-color: #007bff;
     }
 
-    /* Подсвечивает инпут красным, если isValid внутри инстанса равен false */
-    .input-field.invalid {
-        border-color: #ff4d4d;
-        background-color: #fff5f5;
+    /* ИСПРАВЛЕНО: Изменено название класса с .invalid на .input-error */
+    /* Сделали красный цвет чуть мягче для приятного UX */
+    .input-field.input-error {
+        border-color: #dc3545;
+        background-color: #fdf2f2;
+    }
+
+    /* ДОБАВЛЕНО: Стили для текста ошибок под инпутами */
+    .error-message {
+        font-size: 12px;
+        color: #dc3545;
+        margin-top: -2px;
+    }
+
+    /* ДОБАВЛЕНО: Визуальное состояние инпутов при отправке в Tauri */
+    .input-field:disabled {
+        background-color: #f5f5f5;
+        color: #888888;
+        cursor: not-allowed;
     }
 
     .global-error {
         padding: 12px;
-        background-color: #fff5f5;
-        border: 1px solid #ff4d4d;
-        color: #ff4d4d;
+        background-color: #fdf2f2;
+        border: 1px solid #dc3545;
+        color: #dc3545;
         border-radius: 4px;
         font-size: 14px;
     }

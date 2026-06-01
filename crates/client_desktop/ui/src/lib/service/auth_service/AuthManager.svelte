@@ -1,5 +1,6 @@
 <script>
     import { currAuthStep } from "$lib/models/svelte_models/auth_service/SvelteAuthStep.svelte";
+    import Loading from "$lib/service/auth_service/Loading.svelte";
     import CallIn from '$lib/service/auth_service/CallIn.svelte';
     import NickName from '$lib/service/auth_service/NickName.svelte';
     import PassWord from '$lib/service/auth_service/PassWord.svelte';
@@ -7,7 +8,9 @@
 
 </script>
 
-{#if 'Init' in currAuthStep.step }
+{#if "Loading" in currAuthStep.step}
+    <Loading/>
+{:else if 'NickName' in currAuthStep.step }
     <NickName/>
 {:else if 'NeedPassword' in currAuthStep.step }
     <PassWord/>

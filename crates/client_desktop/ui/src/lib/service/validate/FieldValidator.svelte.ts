@@ -1,9 +1,9 @@
 // src/lib/service/validate/FieldValidator.svelte.ts
 import { invoke } from "@tauri-apps/api/core";
-import type { SvelteValidator } from "$lib/models/Validator";
+import type { SvelteValidator } from "$lib/models/SvelteValidator";
 
 export class FieldValidator {
-    #isValid = $state(true);
+    #isValid = $state(false);
 
     get isValid(): boolean {
         return this.#isValid;
@@ -12,18 +12,16 @@ export class FieldValidator {
     async validate(payload: SvelteValidator) {
         const value = Object.values(payload)[0] as string;
 
-        // Если пользователь полностью очистил поле, мгновенно снимаем красную подсветку
         if (value.trim() === '') {
-            this.#isValid = true;
+            this.#isValid = false;
             return;
         }
 
         try {
-            const result = await invoke<boolean>('cmd_validate_field', {
-                typeValue: payload // В Rust превратится в аргумент type_value
-            });
 
-            this.#isValid = result;
+            this.#isValid = await invoke<boolean>('cmd_validate_field', {
+                    typeValue: payload // В Rust превратится в аргумент type_value
+                });
         } catch (err) {
             console.error(`[FieldValidator] Ошибка при вызове cmd_validate_field:`, err);
             this.#isValid = false;
@@ -31,6 +29,6 @@ export class FieldValidator {
     }
 
     reset() {
-        this.#isValid = true;
+        this.#isValid = false;
     }
 }

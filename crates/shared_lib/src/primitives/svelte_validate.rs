@@ -61,6 +61,7 @@ pub enum SvelteValidator {
     Digits4_4(String),
     Digits12_12(String),
     PasspRfNumber(String),
+    Password(String)
 }
 
 impl SvelteValidator {
@@ -229,6 +230,9 @@ impl SvelteValidator {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
             SvelteValidator::PasspRfNumber(value) => match PasspRfNumber::new(&value) {
+                Ok(_) => Ok(true), Err(_) => Ok(false)
+            },
+            SvelteValidator::Password(value) => match Password::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false)
             }
         }

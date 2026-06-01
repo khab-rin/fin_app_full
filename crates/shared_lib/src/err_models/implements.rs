@@ -73,6 +73,7 @@ pub enum Status {
     ValidMchdDig10_10 = 152,
     ValidEmail = 153,
     ValidBoxUuid = 154,
+    ValidPassword = 155,
 
     // ==========================================
     // 200-я группа: Ошибки при работе с файлами и структуры данных

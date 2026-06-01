@@ -204,3 +204,10 @@ frozen_primitives!(
     Box<str>,
     "Флаги_обязательности_элементов"
 );
+
+frozen_primitives!(
+    Password,
+    init_password_from_str,
+    Box<str>,
+    "Поле_пароля"
+);

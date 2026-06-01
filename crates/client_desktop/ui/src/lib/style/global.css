@@ -293,3 +293,11 @@ body {
   height: 100vh;
   font-family: sans-serif;
 }
+
+.info-text {
+    color: #555;
+    font-size: 1rem;
+    text-align: center;
+    padding: 1rem;
+    line-height: 1.4; /* чтобы длинный текст красиво читался */
+}

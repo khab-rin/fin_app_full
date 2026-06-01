@@ -37,6 +37,7 @@ pub async  fn cmd_is_state_active_init(
     state: tauri::State<'_, ClientState>
 ) -> Result<AuthStep, Status> {
 
+    std::println!("cmd_is_state_active_init running!!!!");
     let session_ref = state.session.lock().await;
     if let Some(ref session) = *session_ref {
         match session.local_db.acquire().await {
@@ -46,11 +47,11 @@ pub async  fn cmd_is_state_active_init(
                     "tech_err = {}, local_err = {}",
                     err, Status::SystemErr
                 );
-                Ok(AuthStep::Init {  })
+                Ok(AuthStep::Loading { text: TextInfo::LoadingInfo})
             }
         }
     } else {
-        Ok(AuthStep::Init { })
+        Ok(AuthStep::Loading { text: TextInfo::LoadingInfo})
     }
 }
 

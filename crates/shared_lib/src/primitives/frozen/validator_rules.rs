@@ -353,6 +353,16 @@ pub(crate) fn init_email_from_str(val: &str) -> Result<Box<str>, Status> {
     Ok(val.to_lowercase().into_boxed_str())
 }
 
+pub(crate) fn init_password_from_str(password: &str) -> Result<Box<str>, Status> {
+    let password = password.trim();
+    let len = password.chars().count();
+
+    // Проверяем диапазон от 8 до 20 символов включительно
+    (8..=20).contains(&len)
+        .then(|| password.into())
+        .ok_or(Status::ValidPassword)
+}
+
 
 
 

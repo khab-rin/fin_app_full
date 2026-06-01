@@ -42,8 +42,7 @@ pub(crate) async fn restore_session_by_token(
                 }
             };
             return Ok(AuthStep::TokenDevicePairMiss { 
-                token: payload.token.clone(), 
-                text: TextInfo::Nothing 
+                text: TextInfo::IllegalAccess 
             });
         }
     };
