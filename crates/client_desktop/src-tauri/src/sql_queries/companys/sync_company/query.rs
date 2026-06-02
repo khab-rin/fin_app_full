@@ -1,7 +1,7 @@
 use uuid::Uuid;
 
 use shared_lib::sql_models::company::implements::{Company, CompanyCurt};
-use shared_lib::primitives::frozen::implements::{Inn, Kpp};
+use shared_lib::primitives::frozen::implements::{CompInn, Kpp};
 use shared_lib::err_models::implements::Status;
 
 use crate::state::ClientState;
@@ -36,7 +36,7 @@ pub(crate) async fn sync_local_companys(
     let mut id_inn_kpp_pairs:Vec<CompanyCurt> = vec!();
 
     for company in companys.iter() {
-        let inn_ref = company.inn.as_ref();
+        let inn_ref = company.comp_inn.as_ref();
         let kpp_ref = company.kpp.as_ref();
         let copm_type_ref = company.comp_type.as_str();
         let comp_status_ref = company.comp_status.as_str();

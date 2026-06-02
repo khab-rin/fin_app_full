@@ -6,7 +6,8 @@ use crate::primitives::frozen::implements_base::*;
 
 #[derive(Serialize, Deserialize, ts_rs::TS, Debug)]
 pub enum SvelteValidator {
-    Inn(String),
+    PersInn(String),
+    CompInn(String),
     Kpp(String),
     CorAcc(String),
     RasAcc(String),
@@ -67,7 +68,10 @@ pub enum SvelteValidator {
 impl SvelteValidator {
     pub fn validate_svelte_field(self) -> Result<bool, Status> {
         match self {
-            SvelteValidator::Inn(value) => match Inn::new(&value) {
+            SvelteValidator::PersInn(value) => match PersInn::new(&value) {
+                Ok(_) => Ok(true), Err(_) => Ok(false),
+            },
+            SvelteValidator::CompInn(value) => match CompInn::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
             SvelteValidator::Kpp(value) => match Kpp::new(&value) {

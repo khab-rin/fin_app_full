@@ -1,7 +1,7 @@
 use axum::Json;
 
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::{Inn, Snils, MidName, FirstName, SurName};
+use shared_lib::primitives::frozen::implements::{PersInn, Snils, MidName, FirstName, SurName};
 use shared_lib::primitives::composite::implements::Fio;
 use shared_lib::service::auth_service::implements::CryptoVerifyPersonResponse;
 use shared_lib::static_data::crypto_re::*;
@@ -53,7 +53,7 @@ pub(crate) fn parse_snils_from_stdout(
         }
     };
 
-    result.inn = match Inn::new(&inn_str) {
+    result.inn = match PersInn::new(&inn_str) {
         Ok(s) => Some(s),
         Err(err) => {
             tracing::warn!(

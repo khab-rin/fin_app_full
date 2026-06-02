@@ -2,7 +2,7 @@ use std::sync::Arc;
 use futures::stream::{self, StreamExt};
 
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::{BoxUuid, Inn, Kpp, CompType, CompStatus, DateTime};
+use shared_lib::primitives::frozen::implements::{BoxUuid, CompInn, Kpp, CompType, CompStatus, DateTime};
 use shared_lib::sql_models::company::implements::{Company, CompanyDto};
 use shared_lib::alias_types::implements::{InnKppAccMap, InnKppAccVec};
 

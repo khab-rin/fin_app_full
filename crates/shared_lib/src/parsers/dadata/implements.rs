@@ -34,7 +34,7 @@ pub struct CtrprtyMetadata {
     pub opf: Option<OpfData>,
     #[serde(alias = "name")]
     pub comp_name: Option<DadaCompName>,
-    pub inn: Option<Inn>,
+    pub inn: Option<CompInn>,
     pub ogrn: Option<Ogrn>,
     pub okpo: Option<Okpo>,
     #[serde(alias = "oktmo")]

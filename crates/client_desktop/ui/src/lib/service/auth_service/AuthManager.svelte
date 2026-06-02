@@ -20,7 +20,7 @@
     <Registration/>
 {:else}
     <p>
-        На данный момент авторизация невозможна, попробуйте позже пожалуйста....
+        {currAuthStep.currentText}
     </p>
 {/if}
 

@@ -2,7 +2,7 @@ use axum::extract::State;
 use serde::{Serialize, Deserialize};
 
 
-use crate::primitives::frozen::implements::*;
+use crate::primitives::frozen::implements::{*};
 use crate::primitives::frozen::implements_base::*;
 use crate::primitives::composite::implements::Fio;
 use crate::parsers::dadata::implements::AdrWrap;
@@ -13,7 +13,7 @@ use crate::Status;
 #[derive(Serialize, Deserialize, sqlx::FromRow, Debug, Clone, ts_rs::TS)]
 pub struct Person {
     pub pers_id: BoxUuid,
-    pub inn: Inn,
+    pub pers_inn: PersInn,
     pub metadata: PersonMetadata,
     pub last_update: DateTime,
 }
@@ -22,7 +22,7 @@ pub struct Person {
 #[derive(Serialize, Deserialize, sqlx::FromRow, Debug, Clone)]
 pub struct PersonDto {
     pub pers_id: BoxUuid,
-    pub inn: Inn,
+    pub pers_inn: PersInn,
     pub metadata: serde_json::Value,
     pub last_update: DateTime,
 }
@@ -32,7 +32,7 @@ impl std::convert::TryFrom<PersonDto> for Person {
     fn try_from(dto: PersonDto) -> Result<Self, Self::Error> {
         Ok(Person { 
             pers_id: dto.pers_id,
-            inn: dto.inn,
+            pers_inn: dto.pers_inn,
             metadata: serde_json::
                 from_value(dto.metadata)
                 .map_err(|_| Status::MappingError)?,
@@ -49,7 +49,7 @@ pub struct PersonMetadata {
     pub address: Option<AdrWrap>,
     pub gender: Option<Gender>,
     pub birth_day: Option<Date>,
-    pub tel_number: Option<Phone>,
+    pub phone: Option<Phone>,
     pub email: Option<Email>,
 }
 

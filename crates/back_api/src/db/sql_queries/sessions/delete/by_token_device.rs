@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::{Email, Inn, Kpp};
+use shared_lib::primitives::frozen::implements::{Email, CompInn, PersInn, Kpp};
 use shared_lib::service::auth_service::implements::{TokenDeviceData, WarnEmailData};
 
 use crate::config::BackApiState;

@@ -28,6 +28,12 @@ use super::*;
         service::auth_service::implements::PasswordDataShort::export_all_to(output_dir)
             .expect("Не удалось экспортировать PasswordDataShort");
 
+        service::auth_service::implements::SvelteRegistrationData::export_all_to(output_dir)
+            .expect("Не удалось экспортировать SvelteRegistrationData");
+
+        service::auth_service::implements::IngoingData::export_all_to(output_dir)
+            .expect("Не удалось экспортировать IngoingData");
+
         primitives::svelte_validate::SvelteValidator::export_all_to(output_dir)
             .expect("Не удалось экспортировать SvelteValidator");
     }

@@ -5,6 +5,6 @@ DO UPDATE SET
     metadata = persons.metadata || EXCLUDED.metadata
 RETURNING
     pers_id as "pers_id: BoxUuid",
-    inn as "inn: Inn",
+    inn as "pers_inn: PersInn",
     metadata,
     last_update as "last_update: DateTime"

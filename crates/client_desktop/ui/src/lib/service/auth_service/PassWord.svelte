@@ -24,11 +24,11 @@
     });
 
     $effect(() => {
-        persInnValid.validate({ Inn: persInn });
+        persInnValid.validate({ PersInn: persInn });
     });
 
     $effect(() => {
-        compInnValid.validate({ Inn: compInn });
+        compInnValid.validate({ CompInn: compInn });
     });
 
     $effect(() => {
@@ -72,6 +72,15 @@
             isPushed = false;
         }
     }
+
+    function handleGoToRegister() {
+        currAuthStep.step = { NeedRegistration: {text: ""} }; 
+    }
+
+    function handleGoToNickName() {
+        currAuthStep.step = { Loading: {text: ""} }; 
+    }
+
 </script>
 
 <div class="auth-card">
@@ -165,20 +174,48 @@
         {/if}
     </div>
 
-    <button 
-        type="button" 
-        onclick={handleAuthSubmit}
-        disabled={
-            isPushed || !nickNameValid.isValid || !persInnValid.isValid || !compInnValid.isValid || !kppValid.isValid || !passwordValid.isValid
-        }
-        class="submit-btn"
-    >
-        {#if isPushed}
-            <span>Вход...</span>
-        {:else}
-            <span>Войти</span>
-        {/if}
-    </button>
+    <section class="grid-section">
+        <div class="quick-links">
+            
+            <button 
+                type="button" 
+                onclick={handleAuthSubmit}
+                disabled={isPushed || !nickNameValid.isValid || !persInnValid.isValid || !compInnValid.isValid || !kppValid.isValid || !passwordValid.isValid}
+                class="grid-item"
+                id="auth-submit-btn"
+            >
+                <span class="btn-icon">
+                    {#if isPushed}⏳{:else}🔑{/if}
+                </span>
+                <span class="btn-label">
+                    {#if isPushed}Вход...{:else}Войти{/if}
+                </span>
+            </button>
+
+            <button 
+                type="button" 
+                onclick={handleGoToRegister} 
+                disabled={isPushed} 
+                class="grid-item"
+                id="auth-register-btn"
+            >
+                <span class="btn-icon">📝</span>
+                <span class="btn-label">Регистрация</span>
+            </button>
+
+            <button 
+                type="button" 
+                onclick={handleGoToNickName} 
+                disabled={isPushed} 
+                class="grid-item"
+                id="auth-select-user-btn"
+            >
+                <span class="btn-icon">👤</span>
+                <span class="btn-label">Выбрать пользователя</span>
+            </button>
+
+        </div>
+    </section>
 </div>
 
 <style>

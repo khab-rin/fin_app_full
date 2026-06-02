@@ -5,7 +5,7 @@ use serde::{Serialize, Deserialize};
 use reqwest::header::HeaderMap;
 
 use crate::Status;
-use crate::primitives::frozen::implements::{BoxUuid, Inn, Kpp, Phone};
+use crate::primitives::frozen::implements::{BoxUuid, PersInn, CompInn, Kpp, Phone};
 use crate::primitives::frozen::implements_base::String1_50;
 use crate::sql_models::company::implements::Company;
 use crate::sql_models::person::implements::Person;
@@ -15,8 +15,8 @@ use crate::service::auth_service::general::time_parser;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct UserLogInfo {
-    pub pers_inn: Inn,
-    pub comp_inn: Inn,
+    pub pers_inn: PersInn,
+    pub comp_inn: CompInn,
     pub kpp: Kpp, 
     pub token: BoxUuid
 }

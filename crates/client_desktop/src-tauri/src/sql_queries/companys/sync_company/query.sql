@@ -18,5 +18,5 @@ ON CONFLICT(inn, kpp) DO UPDATE SET
     is_synced = 1
 RETURNING
     comp_id AS "comp_id: Uuid",
-    inn AS "inn:Inn",
+    inn AS "comp_inn:CompInn",
     kpp AS "kpp:Kpp"

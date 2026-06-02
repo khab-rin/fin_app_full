@@ -38,11 +38,7 @@
 	</section>
 
 	<main class="main-content">
-		{#if "Loading" in currAuthStep.step}
-			<p>
-				Страница загружается...
-			</p>
-		{:else if 'SuccessShort' in currAuthStep.step }
+		{#if 'SuccessShort' in currAuthStep.step }
 			{@render children()}
 		{:else}
 			<AuthManager/>

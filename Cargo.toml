@@ -46,7 +46,9 @@ encoding_rs = "0.8.35"
 tauri = { version = "2.10.3", features = [] }
 tauri-plugin-dialog = "2"
 tauri-plugin-shell = "2"
-tauri-plugin-log = "2.0.0-rc"
+tauri-plugin-fs = "2"
+tauri-plugin-log = "2"
+
 ts-rs = { version = "10.1" }
 
 directories = "6.0.0"

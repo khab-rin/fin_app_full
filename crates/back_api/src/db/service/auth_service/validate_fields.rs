@@ -1,13 +1,13 @@
 
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::{Inn, Kpp, BoxUuid};
+use shared_lib::primitives::frozen::implements::{CompInn, Kpp, BoxUuid};
 use shared_lib::sql_models::person::implements::Person;
 use shared_lib::service::auth_service::implements::{
     AuthStep,
     TextInfo
 };
 
-pub(crate) type FailedData<'a> = (&'a Person, &'a Inn, &'a Kpp, &'a BoxUuid);
+pub(crate) type FailedData<'a> = (&'a Person, &'a CompInn, &'a Kpp, &'a BoxUuid);
 
 pub(crate) fn validate_field<'a, T: PartialEq + std::fmt::Debug>(
     field_name: &str,

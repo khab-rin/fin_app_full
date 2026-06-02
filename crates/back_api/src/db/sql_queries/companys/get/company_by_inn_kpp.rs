@@ -1,14 +1,14 @@
 use std::sync::Arc;
 
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::{Inn, Kpp, BoxUuid, CompStatus, CompType, DateTime};
+use shared_lib::primitives::frozen::implements::{CompInn, Kpp, BoxUuid, CompStatus, CompType, DateTime};
 use shared_lib::sql_models::company::implements::{Company, CompanyDto};
 
 use crate::config::BackApiState;
 
 pub(crate) async fn get_company_by_inn_kpp(
     state: &Arc<BackApiState>,
-    inn: &Inn,
+    inn: &CompInn,
     kpp: &Kpp
 
 ) -> Result<Option<Company>, Status> {

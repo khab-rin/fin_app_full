@@ -30,10 +30,11 @@ pub async fn run_lib() {
                 Target::new(TargetKind::LogDir { file_name: Some("app_logs".to_string()) }),
                 Target::new(TargetKind::Webview),
             ])
-            .level(log::LevelFilter::Info)
+            .level(log::LevelFilter::Debug)
             .build())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_fs::init())
         .invoke_handler(tauri::generate_handler![
             commands::cmd_process_bank_statement,
             commands::cmd_is_state_active_init,
@@ -42,7 +43,9 @@ pub async fn run_lib() {
             commands::cmd_session_by_password,
             commands::cmd_session_by_nick,
             commands::cmd_validate_field,
-            commands::cmd_get_nick_names
+            commands::cmd_get_nick_names,
+            commands::cmd_make_ingoing_doc,
+            commands::cmd_register_user
         ]).build(tauri::generate_context!())
         .expect("error while building tauri application");
         

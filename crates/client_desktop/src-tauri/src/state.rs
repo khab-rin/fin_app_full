@@ -108,8 +108,8 @@ pub(crate) async fn init_session(
 ) -> Result<Status, Status> {
     dotenvy::dotenv().ok();
 
-    let pers_inn = &user_data.user.person.inn;
-    let comp_inn = &user_data.user.company.inn;
+    let pers_inn = &user_data.user.person.pers_inn;
+    let comp_inn = &user_data.user.company.comp_inn;
     let kpp = &user_data.user.company.kpp;
 
     let app_handle = state.app_handle.clone();

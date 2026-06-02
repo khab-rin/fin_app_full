@@ -16,7 +16,8 @@ use crate::handlers::service::process::bank_statement::handler::auto_add_company
 use crate::handlers::service::auth_service::handler::{
     restore_by_token_handler,
     restore_by_password_handler,
-    make_session_token_by_tell_call_handler
+    make_session_token_by_tell_call_handler,
+    register_user_by_crypto_handler
 };
 
 
@@ -98,7 +99,11 @@ async fn main() {
         ).route(
             ApiRoutes::AuthMakeTokenTelCall.get_path(),
             post(make_session_token_by_tell_call_handler)
+        ).route(
+            ApiRoutes::AuthRegister.get_path(), 
+            post(register_user_by_crypto_handler)
         )
+
         .layer(TraceLayer::new_for_http())
         .with_state(state);
 

@@ -1,11 +1,8 @@
 use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{
-    PasswordDataShort, 
-    AuthStep,
-    TextInfo
+    AuthStep, IngoingData, PasswordDataShort, SvelteRegistrationData, TextInfo
 };
 
-use shared_lib::primitives::frozen::implements::{Inn, Kpp};
 use shared_lib::service::auth_service::client_state::NickData;
 
 use crate::state::ClientState;
@@ -14,6 +11,8 @@ use crate::service::auth_service::restore_by_nick::restore_session_by_nick;
 use crate::service::auth_service::restore_by_password::restore_by_password;
 use crate::service::process::bank_statement::proceed::process_statement;
 use crate::service::auth_service::nick_data::get_nicknames;
+use crate::service::auth_service::ingoing_data::make_ingoing_doc;
+use crate::service::auth_service::registration::register_user;
 
 #[tauri::command]
 pub async fn cmd_process_bank_statement(
@@ -37,7 +36,7 @@ pub async  fn cmd_is_state_active_init(
     state: tauri::State<'_, ClientState>
 ) -> Result<AuthStep, Status> {
 
-    std::println!("cmd_is_state_active_init running!!!!");
+    log::debug!("cmd_is_state_active_init running!!!!");
     let session_ref = state.session.lock().await;
     if let Some(ref session) = *session_ref {
         match session.local_db.acquire().await {
@@ -106,4 +105,36 @@ pub fn cmd_get_nick_names(
     state: tauri::State<'_, ClientState>
 ) -> Result<NickData, Status> {
     get_nicknames(&state)
+}
+
+#[tauri::command]
+pub async  fn cmd_make_ingoing_doc(
+    state: tauri::State<'_, ClientState>,
+    data: IngoingData
+) -> Result<Vec<u8>, Status> {
+
+    log::debug!("cmd_make_ingoing_doc running");
+
+    let res = make_ingoing_doc(&state, &data).await;
+    if res.is_err() {
+        log::debug!("cmd_make_ingoing_doc failed");
+    }
+
+    res
+}
+
+#[tauri::command]
+pub async fn cmd_register_user(
+    state: tauri::State<'_, ClientState>,
+    data: SvelteRegistrationData
+) -> Result<AuthStep, Status> {
+
+    log::debug!("cmd_register_user running");
+    
+    let res = register_user(&state, data).await;
+    if res.is_err() {
+        log::debug!("cmd_register_user failed");
+    }
+
+    res
 }

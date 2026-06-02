@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::{BoxUuid, Inn, Kpp, CompType, Date, DateTime};
+use shared_lib::primitives::frozen::implements::{BoxUuid, CompInn, Kpp, CompType, Date, DateTime};
 use shared_lib::sql_models::company::implements::{Company, CompanyDto};
 
 use crate::config::BackApiState;
@@ -27,16 +27,16 @@ pub(crate) fn dto_to_company_vec(
 
 pub(crate) async fn make_new_company(
     state: &Arc<BackApiState>,
-    inn: &Inn,
+    comp_inn: &CompInn,
     kpp: &Kpp
 ) -> Result<Company, Status> {
 
-    let mut meta_d = match dadata_reqwest_func(state, inn, kpp).await {
+    let mut meta_d = match dadata_reqwest_func(state, comp_inn, kpp).await {
         Ok(m_d) => m_d,
         Err(err) => {
             tracing::error!(
                 err = ?err,
-                failed_data = ?(inn, kpp),
+                failed_data = ?(comp_inn, kpp),
                 "FUN make_new_company FAILED BY FUN dadata_reqwest_func"
             );
             return Err(err);
@@ -129,7 +129,7 @@ pub(crate) async fn make_new_company(
 
     Ok(Company {
         comp_id,
-        inn: inn.clone(),
+        comp_inn: comp_inn.clone(),
         kpp: kpp.clone(),
         comp_type,  
         comp_status:comp_state.clone(),

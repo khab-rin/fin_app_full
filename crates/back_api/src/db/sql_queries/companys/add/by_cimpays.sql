@@ -16,7 +16,7 @@ ON CONFLICT (inn, kpp) DO UPDATE SET
     last_update = CURRENT_TIMESTAMP
 RETURNING
     comp_id AS "comp_id: BoxUuid",
-    inn  AS "inn:Inn",
+    inn  AS "comp_inn:CompInn",
     kpp AS "kpp:Kpp",
     comp_type as "comp_type:CompType", 
     comp_status as "comp_status:CompStatus", 

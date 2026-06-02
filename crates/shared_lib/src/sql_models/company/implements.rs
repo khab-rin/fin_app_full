@@ -1,7 +1,7 @@
 use uuid::Uuid;
 use serde::{Serialize, Deserialize};
 
-use crate::primitives::frozen::implements::{BoxUuid, CompStatus, CompType, DateTime, Inn, Kpp};
+use crate::primitives::frozen::implements::{BoxUuid, CompStatus, CompType, DateTime, CompInn, Kpp};
 use crate::parsers::dadata::implements::CtrprtyMetadata;
 
 use crate::Status;
@@ -11,7 +11,7 @@ use crate::Status;
 #[derive(sqlx::FromRow, Debug)]
 pub struct CompanyDto {
     pub comp_id: BoxUuid,
-    pub inn: Inn,
+    pub comp_inn: CompInn,
     pub kpp: Kpp,
     pub comp_type: CompType,
     pub comp_status: CompStatus,
@@ -24,7 +24,7 @@ pub struct CompanyDto {
 #[derive(sqlx::FromRow, Debug)]
 pub struct Company {
     pub comp_id: BoxUuid,
-    pub inn: Inn,
+    pub comp_inn: CompInn,
     pub kpp: Kpp,
     pub comp_type: CompType,
     pub comp_status: CompStatus,
@@ -37,7 +37,7 @@ impl std::convert::TryFrom<CompanyDto> for Company {
     fn try_from(dto: CompanyDto) -> Result<Self, Self::Error> {
         Ok(Company { 
             comp_id: dto.comp_id,
-            inn: Inn::new(&dto.inn)?,
+            comp_inn: CompInn::new(&dto.comp_inn)?,
             kpp: Kpp::new(&dto.kpp)?,
             comp_type: dto.comp_type.clone(),
             comp_status: dto.comp_status.clone(),
@@ -53,6 +53,6 @@ impl std::convert::TryFrom<CompanyDto> for Company {
 #[derive(sqlx::FromRow, Debug)]
 pub struct CompanyCurt {
     pub comp_id: Uuid,
-    pub inn: Inn,
+    pub comp_inn: CompInn,
     pub kpp: Kpp
 }

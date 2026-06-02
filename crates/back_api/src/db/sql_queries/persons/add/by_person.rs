@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::{BoxUuid, Inn, DateTime};
+use shared_lib::primitives::frozen::implements::{BoxUuid, PersInn, DateTime};
 use shared_lib::sql_models::person::implements::{Person, PersonDto};
 
 use crate::config::BackApiState;
@@ -16,7 +16,7 @@ pub(crate) async fn add_person(
             PersonDto,
             "src/db/sql_queries/persons/add/by_person.sql",
             person.pers_id.as_ref(),
-            person.inn.as_ref(),
+            person.pers_inn.as_ref(),
             serde_json::to_value(&person.metadata).unwrap_or_default()
         ).fetch_optional(&state.pool)
         .await {

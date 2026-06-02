@@ -1,4 +1,5 @@
 use shared_lib::Status;
+use shared_lib::primitives::frozen::implements::{BoxUuid, DateTime};
 use shared_lib::service::auth_service::implements::{
     AuthStep, 
     RegistrationData, 
@@ -7,6 +8,9 @@ use shared_lib::service::auth_service::implements::{
 };
 use shared_lib::service::auth_service::client_state::UserLogInfo;
 use shared_lib::service::api_routes::implements::ApiRoutes;
+use shared_lib::sql_models::person::implements::{Person, PersonMetadata};
+use shared_lib::primitives::composite::implements::Fio;
+use sqlx::types::chrono;
 
 use crate::state::{ClientState, init_session};
 use crate::service::auth_service::helper::{get_device_id, write_log_info};
@@ -17,8 +21,16 @@ pub async fn register_user(
     state: &ClientState,
     data: SvelteRegistrationData
 ) -> Result<AuthStep , Status> {
+
+    log::debug!("register_user running");
+
     let SvelteRegistrationData { 
-        person, 
+        nick, 
+        sur_name, 
+        first_name, 
+        mid_name, 
+        pers_inn, 
+        snils, 
         comp_inn, 
         kpp, 
         password, 
@@ -28,18 +40,41 @@ pub async fn register_user(
         signature_path 
     } = data;
 
-    let doc_hash = match (*state.temp_info.lock().await).clone().file_hash {
-        Some(t) => t,
-        None => return Ok(AuthStep::TryLater {text: TextInfo::ClientApiSystemError})
-    };
-
-    let nick = match (*state.temp_info.lock().await).clone().nick {
-        Some(n) => n,
-        None => return Ok(AuthStep::TryLater {text: TextInfo::ClientApiSystemError})
-    };
-
     let mut quard = state.temp_info.lock().await;
-    quard.file_hash = None;
+    quard.nick = Some(nick.clone());
+
+    let fio = Fio { sur_name, first_name, mid_name: Some(mid_name) };
+    let metadata = PersonMetadata {
+        fio, 
+        snils, 
+        phone: Some(phone.clone()), 
+        email: Some(email.clone()), 
+        passport: None, 
+        address: None, 
+        gender: None, 
+        birth_day: None
+    };
+
+    log::debug!("register_user step1");
+
+    let person = Person {
+        pers_id: BoxUuid::unchecked(uuid::Uuid::new_v4()),
+        pers_inn,
+        metadata,
+        last_update: DateTime::unchecked(chrono::Utc::now())
+    };
+
+    log::debug!("register_user step2");
+
+    let doc_hash = match quard.file_hash.clone() {
+        Some(t) => t,
+        None => {
+            log::error!("DOC HASH MISSED");
+            return Ok(AuthStep::TryLater { text: TextInfo::ClientApiSystemError });
+        }
+    };
+
+    log::debug!("register_user step3");
 
     let device_id = match get_device_id() {
         Ok(d) => d,
@@ -140,7 +175,7 @@ pub async fn register_user(
     };
 
     let log_info = UserLogInfo {
-        pers_inn: person.inn,
+        pers_inn: person.pers_inn,
         comp_inn,
         kpp,
         token: success_result.token.clone()

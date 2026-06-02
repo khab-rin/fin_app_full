@@ -8,10 +8,16 @@ use crate::Status;
 use crate::primitives::traits::ParseFromStrMapValue;
 
 frozen_primitives!(
-    Inn,
-    init_inn_from_str,
+    PersInn,
+    init_pers_inn_from_str,
     Box<str>,
-    "ИНН");
+    "ИНН_физлица");
+
+frozen_primitives!(
+    CompInn,
+    init_comp_inn_from_str,
+    Box<str>,
+    "ИНН_юлица");
 
 frozen_primitives!(
     Kpp,

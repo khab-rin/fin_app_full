@@ -5,7 +5,7 @@ use serde_json::Value;
 
 use shared_lib::Status;
 use shared_lib::primitives::composite::implements::RasBicAcc;
-use shared_lib::primitives::frozen::implements::{BoxUuid,Inn, Kpp, CompType, Date, DateTime};
+use shared_lib::primitives::frozen::implements::{BoxUuid, CompInn, Kpp, CompType, Date, DateTime};
 use shared_lib::sql_models::company::implements::Company;
 use shared_lib::alias_types::implements::{InnKppAccMap, InsertData};
 
@@ -17,8 +17,8 @@ pub(crate) fn make_inn_kpp_pairs(
 
     let mut inn_data: Vec<String> = vec!();
     let mut kpp_data: Vec<String> = vec!();
-    for ((inn, kpp), _) in data.iter() {
-        inn_data.push(inn.to_string());
+    for ((comp_inn, kpp), _) in data.iter() {
+        inn_data.push(comp_inn.to_string());
         kpp_data.push(kpp.to_string());
     }
     (inn_data, kpp_data)
@@ -31,7 +31,7 @@ pub(crate) fn fresh_bank_acc(
     seen_companys: &mut [Company]
 ) {
     for company in seen_companys.iter_mut() {
-        let pair = (company.inn.clone(), company.kpp.clone());
+        let pair = (company.comp_inn.clone(), company.kpp.clone());
         if let Some(new_acc) = data.remove(&pair) {
             let mut prev_acc = company
                 .metadata
@@ -48,7 +48,7 @@ pub(crate) fn fresh_bank_acc(
 
 
 pub(crate) fn make_company(
-    inn:Inn, 
+    comp_inn:CompInn, 
     mut kpp:Kpp, 
     accounts:HashSet<RasBicAcc>, 
     func_res:Result<CtrprtyMetadata, Status>
@@ -161,7 +161,7 @@ pub(crate) fn make_company(
 
     Ok(Company {
         comp_id,
-        inn,
+        comp_inn,
         kpp,
         comp_type,  
         comp_status:comp_state.clone(),
@@ -176,7 +176,7 @@ pub(crate) fn make_insert_data(
     new_companys:Vec<Company>
 ) -> InsertData {
     
-    let mut seen_companys: HashSet<(Inn, Kpp)> = HashSet::new();
+    let mut seen_companys: HashSet<(CompInn, Kpp)> = HashSet::new();
     let n = new_companys.len();
     let mut inn_d:Vec<String> = Vec::with_capacity(n);
     let mut kpp_d:Vec<String> = Vec::with_capacity(n);
@@ -185,13 +185,13 @@ pub(crate) fn make_insert_data(
     let mut mt_d:Vec<Value> = Vec::with_capacity(n);
     
     for company in new_companys.into_iter() {
-        let pair:(Inn, Kpp) = (company.inn.clone(), company.kpp.clone());
+        let pair:(CompInn, Kpp) = (company.comp_inn.clone(), company.kpp.clone());
         
         if !seen_companys.insert(pair) {
             continue;
         }
 
-        inn_d.push(company.inn.to_string());
+        inn_d.push(company.comp_inn.to_string());
         kpp_d.push(company.kpp.to_string());
         type_d.push(company.comp_type.as_str().to_string());
         status_d.push(company.comp_status.as_str().to_string());

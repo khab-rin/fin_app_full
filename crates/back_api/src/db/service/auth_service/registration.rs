@@ -130,7 +130,7 @@ pub(crate) async fn register_new_user(
     if let Err(res) =  validate_field(
         "INN",
         verify_person.inn,
-        &person.inn,
+        &person.pers_inn,
         &failed_data
     ) { return Ok(res);};
 

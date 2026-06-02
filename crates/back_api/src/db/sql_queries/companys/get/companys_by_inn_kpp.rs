@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use shared_lib::Status;
 use shared_lib::sql_models::company::implements::{Company, CompanyDto};
-use shared_lib::primitives::frozen::implements::{BoxUuid, Inn, Kpp, CompType, CompStatus, DateTime};
+use shared_lib::primitives::frozen::implements::{BoxUuid, CompInn, Kpp, CompType, CompStatus, DateTime};
 
 use crate::config::BackApiState;
 use crate::db::sql_queries::companys::helper::dto_to_company_vec;

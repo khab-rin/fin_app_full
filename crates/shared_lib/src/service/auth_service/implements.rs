@@ -3,7 +3,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::Status;
 use crate::sql_models::person::implements::Person;
-use crate::primitives::frozen::implements::{BoxUuid, Email, Inn, Kpp, Phone, Snils};
+use crate::primitives::frozen::implements_base::String1_50;
+use crate::primitives::frozen::implements::{BoxUuid, CompInn, Email, FirstName, Kpp, MidName, Password, PersInn, Phone, Snils, SurName};
 use crate::primitives::composite::implements::Fio;
 use crate::service::auth_service::client_state::SessionUser;
 
@@ -89,8 +90,8 @@ pub struct TokenDeviceData {
 pub struct PasswordDataShort {
     pub nick: String,
     pub password: String,
-    pub pers_inn: Inn,
-    pub comp_inn: Inn,
+    pub pers_inn: PersInn,
+    pub comp_inn: CompInn,
     pub kpp: Kpp
 }
 
@@ -98,8 +99,8 @@ pub struct PasswordDataShort {
 pub struct PasswordData {
     pub password: String,
     pub device_id: BoxUuid,
-    pub pers_inn: Inn,
-    pub comp_inn: Inn,
+    pub pers_inn: PersInn,
+    pub comp_inn: CompInn,
     pub kpp: Kpp
 }
 
@@ -114,8 +115,8 @@ pub struct CheckPasswordData {
 #[derive(Deserialize, Debug)]
 pub struct WarnEmailData {
     pub email: Email,
-    pub pers_inn: Inn,
-    pub comp_inn: Inn,
+    pub pers_inn: PersInn,
+    pub comp_inn: CompInn,
     pub kpp: Kpp
 }
 
@@ -156,22 +157,41 @@ pub struct SmsruGetResResponse {
 }
 
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub struct SvelteRegistrationData {
-    pub person: Person,
-    pub comp_inn: Inn,
+    pub nick: String1_50,
+    pub sur_name: SurName,
+    pub first_name: FirstName,
+    pub mid_name: MidName,
+    pub pers_inn: PersInn,
+    pub snils: Snils,
+    pub comp_inn: CompInn,
     pub kpp: Kpp,
-    pub password: String,
+    pub password: Password,
     pub phone: Phone,
     pub email: Email,
     pub document_path: String,  
     pub signature_path: String, 
 }
 
+#[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
+pub struct IngoingData {
+    pub sur_name: SurName,
+    pub first_name: FirstName,
+    pub mid_name: Option<MidName>,
+    pub pers_inn: PersInn,
+    pub snils: Snils,
+    pub comp_inn: CompInn,
+    pub kpp: Kpp,
+    pub phone: Phone,
+    pub email: Email,
+}
+
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RegistrationData {
     pub person: Person,
-    pub comp_inn: Inn,
+    pub comp_inn: CompInn,
     pub kpp: Kpp,
     pub password: String,
     pub device_id: BoxUuid,
@@ -195,7 +215,7 @@ pub struct CryptoVerifyData {
 pub struct CryptoVerifyPersonResponse {
     pub is_signed: bool,
     pub snils: Option<Snils>,
-    pub inn: Option<Inn>,
+    pub inn: Option<PersInn>,
     pub fio: Option<Fio>
 }
 

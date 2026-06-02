@@ -1,6 +1,6 @@
 SELECT
     pers_id AS "pers_id: BoxUuid",
-    inn AS "inn: Inn",
+    inn AS "pers_inn: PersInn",
     metadata,
     last_update AS "last_update: DateTime"
 FROM persons

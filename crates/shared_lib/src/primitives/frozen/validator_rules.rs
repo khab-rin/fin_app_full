@@ -31,47 +31,59 @@ fn validate_mod11_rosstat(s: &str) -> bool {
     remainder == check_digit
 }
 
-pub(crate) fn init_inn_from_str(inn: &str) -> Result<Box<str>, Status> {
+pub fn init_pers_inn_from_str(inn: &str) -> Result<Box<str>, Status> {
     let inn = inn.trim();
-    if !get_is_inn_reg().is_match(inn) {
-        return Err(Status::ValidInn);
+    
+    if inn.len() != 12 || !inn.chars().all(|c| c.is_ascii_digit()) {
+        return Err(Status::PersInnValid);
     }
-    let d: Vec<u8> = inn.bytes().map(|b| b - b'0').collect();
-    let is_ok = match d.len() {
-        12 => {
-            let w1 = [7, 2, 4, 10, 3, 5, 9, 4, 6, 8, 0];
-            let sum1: usize = d
-                .iter()
-                .zip(w1.iter())
-                .map(|(&digit, &weight)| digit as usize * weight as usize)
-                .sum();
-            let control1 = (sum1 % 11) % 10;
+    
+    let digits: Vec<u32> = inn.chars().map(|c| c.to_digit(10).unwrap()).collect();
 
-            let w2 = [3, 7, 2, 4, 10, 3, 5, 9, 4, 6, 8, 0];
-            let sum2: usize = d
-                .iter()
-                .zip(w2.iter())
-                .map(|(&digit, &weight)| digit as usize * weight as usize)
-                .sum();
-            let control2 = (sum2 % 11) % 10;
+    let d11_weights = [7, 2, 4, 10, 3, 5, 9, 4, 6, 8, 0];
+    let d12_weights = [3, 7, 2, 4, 10, 3, 5, 9, 4, 6, 8, 0];
 
-            control1 == d[10] as usize && control2 == d[11] as usize
-        }
-        10 => {
-            let weights = [2, 4, 10, 3, 5, 9, 4, 6, 8, 0];
-            let sum: usize = d
-                .iter()
-                .zip(weights.iter())
-                .map(|(&digit, &weight)| digit as usize * weight as usize)
-                .sum();
-            let control = (sum % 11) % 10;
-            
-            control == d[9] as usize
-        }
-        _ => false,
-    };
-    if is_ok { Ok(inn.into()) } 
-    else { Err(Status::ValidInn)}
+    let mut sum11 = 0;
+    for i in 0..11 {
+        sum11 += digits[i] * d11_weights[i];
+    }
+    let check_digit11 = (sum11 % 11) % 10;
+
+    let mut sum12 = 0;
+    for i in 0..12 {
+        sum12 += digits[i] * d12_weights[i];
+    }
+    let check_digit12 = (sum12 % 11) % 10;
+
+    if digits[10] == check_digit11 && digits[11] == check_digit12 {
+        Ok(inn.to_string().into_boxed_str())
+    } else {
+        Err(Status::PersInnValid)
+    }
+}
+
+pub fn init_comp_inn_from_str(inn: &str) -> Result<Box<str>, Status> {
+    let inn = inn.trim();
+
+    if inn.len() != 10 || !inn.chars().all(|c| c.is_ascii_digit()) {
+        return Err(Status::CompInnValid);
+    }
+
+    let digits: Vec<u32> = inn.chars().map(|c| c.to_digit(10).unwrap()).collect();
+
+    let d10_weights = [2, 4, 10, 3, 5, 9, 4, 6, 8, 0];
+
+    let mut sum10 = 0;
+    for i in 0..9 {
+        sum10 += digits[i] * d10_weights[i];
+    }
+    let check_digit10 = (sum10 % 11) % 10;
+
+    if digits[9] == check_digit10 {
+        Ok(inn.to_string().into_boxed_str())
+    } else {
+        Err(Status::CompInnValid)
+    }
 }
 
 pub(crate) fn init_kpp_from_str(kpp: &str) -> Result<Box<str>, Status> {

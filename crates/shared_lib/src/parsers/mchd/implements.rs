@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-use crate::primitives::frozen::implements::{BoxUuid, Date, Inn, Kpp, Ogrn, Phone, Region, RubF, Snils, ParticipantStatus};
+use crate::primitives::frozen::implements::{BoxUuid, Date, CompInn, PersInn, Kpp, Ogrn, Phone, Region, RubF, Snils, ParticipantStatus};
 use crate::primitives::frozen::implements_base::*;
 use crate::primitives::composite::implements::Fio;
 
@@ -79,7 +79,7 @@ pub struct ForeignOrg {
     pub for_org_name: String1_1000,
 
     #[serde(rename = "@ИННЮЛ")]
-    pub inn: Option<Inn>,
+    pub inn: Option<CompInn>,
     
     #[serde(rename = "@КПП")]
     pub kpp: Option<Kpp>,
@@ -184,7 +184,7 @@ pub struct JuridicalWrapPerson {
     pub participant_status: Option<ParticipantStatus>,
 
     #[serde(rename = "@ИННФЛ")]
-    pub inn: Option<Inn>,
+    pub inn: Option<PersInn>,
 
     #[serde(rename = "@СНИЛС")]
     pub snils: Option<Snils>,
@@ -211,7 +211,7 @@ pub struct RussOrganization {
     pub name: String1_1000,
 
     #[serde(rename = "@ИННЮЛ")]
-    pub inn: Option<Inn>,
+    pub inn: Option<CompInn>,
 
     #[serde(rename = "@КПП")]
     pub kpp: Kpp,
@@ -265,7 +265,7 @@ pub struct Ip {
     pub ogrnip: Ogrn,
 
     #[serde(rename = "@ИННФЛ")]
-    pub inn: Inn,
+    pub inn: PersInn,
 
     #[serde(rename = "@СНИЛС")]
     pub snils: Snils,
@@ -475,7 +475,7 @@ pub struct PrincipalPerson {
     pub incapacity_proof_doc: Option<String1_255>,
 
     #[serde(rename = "@ИННФЛ")]
-    pub inn: Option<Inn>,
+    pub inn: Option<PersInn>,
 
     #[serde(rename = "@СНИЛС")]
     pub snils: Snils,
@@ -746,7 +746,7 @@ pub struct RedelegatePerson {
     pub signatory_flag: Option<Flag>,
 
     #[serde(rename = "@ИННФЛ")]
-    pub inn: Inn,
+    pub inn: PersInn,
 
     #[serde(rename = "@СНИЛС")]
     pub snils: Snils,

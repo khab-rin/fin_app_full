@@ -23,7 +23,7 @@ pub(crate) async fn parse_comment(
         }
     };
 
-    let own_inn = &session.user.company.inn;
+    let own_inn = &session.user.company.comp_inn;
     
     let comment = &*operation.doc_comment;
     let low = comment.to_lowercase();

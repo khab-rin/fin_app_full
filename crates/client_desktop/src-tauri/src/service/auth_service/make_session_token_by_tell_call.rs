@@ -68,8 +68,8 @@ pub(crate) async fn make_session_token_by_tel_call(
     };
 
     let log_info = UserLogInfo {
-        pers_inn: success_result.user.person.inn.clone(),
-        comp_inn: success_result.user.company.inn.clone(),
+        pers_inn: success_result.user.person.pers_inn.clone(),
+        comp_inn: success_result.user.company.comp_inn.clone(),
         kpp: success_result.user.company.kpp.clone(),
         token: success_result.token.clone()
     };

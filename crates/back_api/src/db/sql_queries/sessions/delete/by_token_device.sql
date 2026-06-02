@@ -6,8 +6,8 @@ USING
 WHERE (s.token = $1 OR s.device_id = $2) AND s.user_id = u.user_id
 RETURNING
     u.email AS "email: Email",
-    p.inn AS "pers_inn: Inn",
-    c.inn AS "comp_inn: Inn",
+    p.inn AS "pers_inn: PersInn",
+    c.inn AS "comp_inn: CompInn",
     c.kpp AS "kpp: Kpp"
 
     
