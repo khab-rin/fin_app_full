@@ -1,34 +1,36 @@
-// src/lib/service/validate/FieldValidator.svelte.ts
 import { invoke } from "@tauri-apps/api/core";
 import type { SvelteValidator } from "$lib/models/SvelteValidator";
 
 export class FieldValidator {
     #isValid = $state(false);
+    
+    value = $state(""); 
+    
+    private type_value: SvelteValidator;
+
+    constructor(type_value: SvelteValidator) {
+        this.type_value = type_value;
+    }
+
+    async validate() { // Добавлена фигурная скобка
+        try {
+            // Добавлена запятая после имени команды
+            this.#isValid = await invoke<boolean>("cmd_validate_field", {
+                type_value: this.type_value,
+                value: this.value
+            });
+        } catch (err) {
+            this.#isValid = false;
+            console.error("COMMAND cmd_validate_field FAILED, data = ", this.type_value, this.value, err);
+        }
+    }
 
     get isValid(): boolean {
         return this.#isValid;
     }
 
-    async validate(payload: SvelteValidator) {
-        const value = Object.values(payload)[0] as string;
-
-        if (value.trim() === '') {
-            this.#isValid = false;
-            return;
-        }
-
-        try {
-
-            this.#isValid = await invoke<boolean>('cmd_validate_field', {
-                    typeValue: payload // В Rust превратится в аргумент type_value
-                });
-        } catch (err) {
-            console.error(`[FieldValidator] Ошибка при вызове cmd_validate_field:`, err);
-            this.#isValid = false;
-        }
-    }
-
     reset() {
         this.#isValid = false;
+        this.value = "";
     }
 }

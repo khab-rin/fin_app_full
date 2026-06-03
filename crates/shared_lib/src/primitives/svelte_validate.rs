@@ -6,237 +6,237 @@ use crate::primitives::frozen::implements_base::*;
 
 #[derive(Serialize, Deserialize, ts_rs::TS, Debug)]
 pub enum SvelteValidator {
-    PersInn(String),
-    CompInn(String),
-    Kpp(String),
-    CorAcc(String),
-    RasAcc(String),
-    Bic(String),
-    Ogrn(String),
-    Date(String),
-    RubF(String),
-    DocNum(String),
-    TextInfo(String),
-    BranchType(String),
-    Okpo(String),
-    Oktmo(String),
-    Okogu(String),
-    Okfs(String),
-    Okved(String),
-    Phone(String),
-    OpfCode(String),
-    SurName(String),
-    FirstName(String),
-    MidName(String),
-    Region(String),
-    Snils(String),
-    BoxUuid(String),
-    DateTime(String),
-    Email(String),
-    ParticipantStatus(String),
-    PoaReqElemsFlag(String),
-    CompanyName(String),
-    IdentStatus(String),
-    PayType(String),
-    String7_7(String),
-    String3_8(String),
-    String11_11(String),
-    String3_13(String),
-    String1_25(String),
-    String1_28(String),
-    String1_50(String),
-    String1_80(String),
-    String1_120(String),
-    String3_129(String),
-    String1_250(String),
-    String1_255(String),
-    String6_255(String),
-    String1_1000(String),
-    String1_2500(String),
-    String1_4000(String),
-    String1_5000(String),
-    String1_10000(String),
-    String1_16000(String),
-    Digits2_2(String),
-    Digits3_3(String),
-    Digits4_4(String),
-    Digits12_12(String),
-    PasspRfNumber(String),
-    Password(String)
+    PersInn,
+    CompInn,
+    Kpp,
+    CorAcc,
+    RasAcc,
+    Bic,
+    Ogrn,
+    Date,
+    RubF,
+    DocNum,
+    TextInfo,
+    BranchType,
+    Okpo,
+    Oktmo,
+    Okogu,
+    Okfs,
+    Okved,
+    Phone,
+    OpfCode,
+    SurName,
+    FirstName,
+    MidName,
+    Region,
+    Snils,
+    BoxUuid,
+    DateTime,
+    Email,
+    ParticipantStatus,
+    PoaReqElemsFlag,
+    CompanyName,
+    IdentStatus,
+    PayType,
+    String7_7,
+    String3_8,
+    String11_11,
+    String3_13,
+    String1_25,
+    String1_28,
+    String1_50,
+    String1_80,
+    String1_120,
+    String3_129,
+    String1_250,
+    String1_255,
+    String6_255,
+    String1_1000,
+    String1_2500,
+    String1_4000,
+    String1_5000,
+    String1_10000,
+    String1_16000,
+    Digits2_2,
+    Digits3_3,
+    Digits4_4,
+    Digits12_12,
+    PasspRfNumber,
+    Password
 }
 
 impl SvelteValidator {
-    pub fn validate_svelte_field(self) -> Result<bool, Status> {
+    pub fn validate_svelte_field(self, value: &str) -> Result<bool, Status> {
         match self {
-            SvelteValidator::PersInn(value) => match PersInn::new(&value) {
+            SvelteValidator::PersInn => match PersInn::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::CompInn(value) => match CompInn::new(&value) {
+            SvelteValidator::CompInn=> match CompInn::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::Kpp(value) => match Kpp::new(&value) {
+            SvelteValidator::Kpp=> match Kpp::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::CorAcc(value) => match CorAcc::new(&value) {
+            SvelteValidator::CorAcc=> match CorAcc::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::RasAcc(value) => match RasAcc::new(&value) {
+            SvelteValidator::RasAcc=> match RasAcc::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::Bic(value) => match Bic::new(&value) {
+            SvelteValidator::Bic=> match Bic::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::Ogrn(value) => match Ogrn::new(&value) {
+            SvelteValidator::Ogrn=> match Ogrn::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::Date(value) => match Date::new(&value) {
+            SvelteValidator::Date=> match Date::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::RubF(value) => match RubF::new(&value) {
+            SvelteValidator::RubF=> match RubF::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::DocNum(value) => match DocNum::new(&value) {
+            SvelteValidator::DocNum=> match DocNum::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::TextInfo(value) => match TextInfo::new(&value) {
+            SvelteValidator::TextInfo=> match TextInfo::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::BranchType(value) => match BranchType::new(&value) {
+            SvelteValidator::BranchType=> match BranchType::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::Okpo(value) => match Okpo::new(&value) {
+            SvelteValidator::Okpo=> match Okpo::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::Oktmo(value) => match Oktmo::new(&value) {
+            SvelteValidator::Oktmo=> match Oktmo::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::Okogu(value) => match Okogu::new(&value) {
+            SvelteValidator::Okogu=> match Okogu::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::Okfs(value) => match Okfs::new(&value) {
+            SvelteValidator::Okfs=> match Okfs::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::Okved(value) => match Okved::new(&value) {
+            SvelteValidator::Okved=> match Okved::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::Phone(value) => match Phone::new(&value) {
+            SvelteValidator::Phone=> match Phone::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::OpfCode(value) => match OpfCode::new(&value) {
+            SvelteValidator::OpfCode=> match OpfCode::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::SurName(value) => match SurName::new(&value) {
+            SvelteValidator::SurName=> match SurName::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::FirstName(value) => match FirstName::new(&value) {
+            SvelteValidator::FirstName=> match FirstName::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::MidName(value) => match MidName::new(&value) {
+            SvelteValidator::MidName=> match MidName::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::Region(value) => match Region::new(&value) {
+            SvelteValidator::Region=> match Region::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::Snils(value) => match Snils::new(&value) {
+            SvelteValidator::Snils=> match Snils::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::BoxUuid(value) => match BoxUuid::new(&value) {
+            SvelteValidator::BoxUuid=> match BoxUuid::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::DateTime(value) => match DateTime::new(&value) {
+            SvelteValidator::DateTime=> match DateTime::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::Email(value) => match Email::new(&value) {
+            SvelteValidator::Email=> match Email::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::ParticipantStatus(value) => match ParticipantStatus::new(&value) {
+            SvelteValidator::ParticipantStatus=> match ParticipantStatus::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::PoaReqElemsFlag(value) => match PoaReqElemsFlag::new(&value) {
+            SvelteValidator::PoaReqElemsFlag=> match PoaReqElemsFlag::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::CompanyName(value) => match CompanyName::new(&value) {
+            SvelteValidator::CompanyName=> match CompanyName::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::IdentStatus(value) => match IdentStatus::new(&value) {
+            SvelteValidator::IdentStatus=> match IdentStatus::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::PayType(value) => match PayType::new(&value) {
+            SvelteValidator::PayType=> match PayType::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::String7_7(value) => match String7_7::new(&value) {
+            SvelteValidator::String7_7=> match String7_7::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::String3_8(value) => match String3_8::new(&value) {
+            SvelteValidator::String3_8=> match String3_8::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::String11_11(value) => match String11_11::new(&value) {
+            SvelteValidator::String11_11=> match String11_11::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::String3_13(value) => match String3_13::new(&value) {
+            SvelteValidator::String3_13=> match String3_13::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::String1_25(value) => match String1_25::new(&value) {
+            SvelteValidator::String1_25=> match String1_25::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::String1_28(value) => match String1_28::new(&value) {
+            SvelteValidator::String1_28=> match String1_28::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::String1_50(value) => match String1_50::new(&value) {
+            SvelteValidator::String1_50=> match String1_50::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::String1_80(value) => match String1_80::new(&value) {
+            SvelteValidator::String1_80=> match String1_80::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::String1_120(value) => match String1_120::new(&value) {
+            SvelteValidator::String1_120=> match String1_120::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::String3_129(value) => match String3_129::new(&value) {
+            SvelteValidator::String3_129=> match String3_129::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::String1_250(value) => match String1_250::new(&value) {
+            SvelteValidator::String1_250=> match String1_250::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::String1_255(value) => match String1_255::new(&value) {
+            SvelteValidator::String1_255=> match String1_255::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::String6_255(value) => match String6_255::new(&value) {
+            SvelteValidator::String6_255=> match String6_255::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::String1_1000(value) => match String1_1000::new(&value) {
+            SvelteValidator::String1_1000=> match String1_1000::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::String1_2500(value) => match String1_2500::new(&value) {
+            SvelteValidator::String1_2500=> match String1_2500::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::String1_4000(value) => match String1_4000::new(&value) {
+            SvelteValidator::String1_4000=> match String1_4000::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::String1_5000(value) => match String1_5000::new(&value) {
+            SvelteValidator::String1_5000=> match String1_5000::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::String1_10000(value) => match String1_10000::new(&value) {
+            SvelteValidator::String1_10000=> match String1_10000::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::String1_16000(value) => match String1_16000::new(&value) {
+            SvelteValidator::String1_16000=> match String1_16000::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::Digits2_2(value) => match Digits2_2::new(&value) {
+            SvelteValidator::Digits2_2=> match Digits2_2::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::Digits3_3(value) => match Digits3_3::new(&value) {
+            SvelteValidator::Digits3_3=> match Digits3_3::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::Digits4_4(value) => match Digits4_4::new(&value) {
+            SvelteValidator::Digits4_4=> match Digits4_4::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::Digits12_12(value) => match Digits12_12::new(&value) {
+            SvelteValidator::Digits12_12=> match Digits12_12::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::PasspRfNumber(value) => match PasspRfNumber::new(&value) {
+            SvelteValidator::PasspRfNumber=> match PasspRfNumber::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false)
             },
-            SvelteValidator::Password(value) => match Password::new(&value) {
+            SvelteValidator::Password=> match Password::new(&value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false)
             }
         }

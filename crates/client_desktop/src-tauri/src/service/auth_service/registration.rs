@@ -152,7 +152,7 @@ pub async fn register_user(
             .await
             .unwrap_or(Status::Unknown);
         log::error!(
-            "FUN register_user FAILED BY POST QUERY TO BACK API. Backend error code: {}, local_err = {:?}",
+            "FUN register_user FAILED, BACK API GIVE WRONG STATUS. Backend error code: {}, local_err = {:?}",
             back_err, Status::BackApiError
         );
         return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
@@ -162,7 +162,7 @@ pub async fn register_user(
         Ok(s) => s,
         Err(err) => {
             log::error!(
-                "FUN register_user FAILED BY POST QUERY TO BACK API, err = {:?}, local_err = {:?}",
+                "FUN register_user FAILED BY MAPPING RESPONSE, err = {:?}, local_err = {:?}",
                 err, Status::MappingError
             );
             return Ok(AuthStep::TryLater {text: TextInfo::ClientApiSystemError});

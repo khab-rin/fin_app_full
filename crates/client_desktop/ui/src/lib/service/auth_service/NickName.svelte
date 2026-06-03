@@ -2,6 +2,8 @@
     import { invoke } from "@tauri-apps/api/core";
     import { currAuthStep } from "$lib/models/svelte_models/auth_service/SvelteAuthStep.svelte";
     import type { AuthStep } from '$lib/models/AuthStep';
+    import type {TextInfo} from "$lib/models/TextInfo";
+	import AuthManager from "./AuthManager.svelte";
 
     let inputName = $state(currAuthStep.nick_names.nick_names[0] || '');
     let IsPushed = $state(false);
@@ -35,18 +37,20 @@
         IsPushed = true;
         
         try {
-            currAuthStep.step = await invoke<AuthStep>('cmd_session_by_nick', { nickname: inputName });
+            let next_step = await invoke<AuthStep>('cmd_session_by_nick', { nickname: inputName });
+            currAuthStep.add(next_step);
         } catch (err) {
-            currAuthStep.step = { 
-                TryLater: { text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение" } 
+            let next_step: AuthStep = { 
+                TryLater: { text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"} 
             };
             console.error("tech_err =", err);
             IsPushed = false; 
+            currAuthStep.add(next_step);
         }
     }
 
     function goToPassword() {
-        currAuthStep.step = { 
+        let next_step: AuthStep = currAuthStep.step = { 
             NeedPassword: { text: "Пользователь не найден на устройстве, требуется авторизоваться по паролю или пройти регистрацию" } 
         };
     }

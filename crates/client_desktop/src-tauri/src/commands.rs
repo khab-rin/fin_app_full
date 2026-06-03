@@ -94,9 +94,10 @@ pub async fn cmd_session_by_nick(
 
 #[tauri::command]
 pub fn cmd_validate_field(
-    type_value: SvelteValidator
+    type_value: SvelteValidator,
+    value: String
 ) -> Result<bool, Status> {
-    type_value.validate_svelte_field()
+    type_value.validate_svelte_field(&value)
 }
 
 

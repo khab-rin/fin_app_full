@@ -1,75 +1,45 @@
 <script lang='ts'>
     import { invoke } from "@tauri-apps/api/core";
     import { currAuthStep } from "$lib/models/svelte_models/auth_service/SvelteAuthStep.svelte";
-    import { FieldValidator } from "$lib/service/validate/FieldValidator.svelte";
     import type { AuthStep } from '$lib/models/AuthStep';
     import type {PasswordDataShort} from "$lib/models/PasswordDataShort"
 
-    let nick = $state('');
-    let persInn = $state('');
-    let compInn = $state('');
-    let kpp = $state('');
-    let password = $state('');
-
     let isPushed = $state(false);
-
-    const nickNameValid = new FieldValidator();
-    const persInnValid = new FieldValidator();
-    const compInnValid = new FieldValidator();
-    const kppValid = new FieldValidator();
-    const passwordValid = new FieldValidator();
-
-    $effect(() => {
-        nickNameValid.validate({ String1_50: nick }); 
-    });
-
-    $effect(() => {
-        persInnValid.validate({ PersInn: persInn });
-    });
-
-    $effect(() => {
-        compInnValid.validate({ CompInn: compInn });
-    });
-
-    $effect(() => {
-        kppValid.validate({ Kpp: kpp });
-    });
-
-    $effect(() => {
-        passwordValid.validate({ Password: password });
-    });
-
-
 
     async function handleAuthSubmit() {
         if (isPushed) return;
        
         if (
-            !nickNameValid.isValid || 
-            !persInnValid.isValid || 
-            !compInnValid.isValid ||
-            !kppValid.isValid ||
-            !passwordValid.isValid
+            !currAuthStep.data.nick.isValid || 
+            !currAuthStep.data.persInn.isValid || 
+            !currAuthStep.data.compInn.isValid ||
+            !currAuthStep.data.kpp.isValid ||
+            !currAuthStep.data.password.isValid
         ) return;
 
         const sendData: PasswordDataShort = {
-            nick: nick,
-            password: password,
-            pers_inn: persInn,
-            comp_inn: compInn,
-            kpp: kpp
+            nick: currAuthStep.data.nick.value,
+            password: currAuthStep.data.password.value,
+            pers_inn: currAuthStep.data.persInn.value,
+            comp_inn: currAuthStep.data.compInn.value,
+            kpp: currAuthStep.data.kpp.value
         };
 
-        try {
+        isPushed = true;
 
-            currAuthStep.step = await invoke<AuthStep>('cmd_session_by_password', {
+        let next_step: AuthStep = { TryLater: { text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение" } };
+    
+        try {
+            next_step = await invoke<AuthStep>('cmd_session_by_password', {
                 data: sendData
             });
-            
+
         } catch (err) {
-            currAuthStep.step = { TryLater: { text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение" } };
             console.error("Критическая ошибка cmd_auth_with_password:", err);
+
+        } finally {
             isPushed = false;
+            currAuthStep.add(next_step);
         }
     }
 
@@ -79,6 +49,14 @@
 
     function handleGoToNickName() {
         currAuthStep.step = { Loading: {text: ""} }; 
+    }
+
+    function handleGoBack() {
+        currAuthStep.back(); 
+    }
+
+    function handleGoNext() {
+        currAuthStep.next(); 
     }
 
 </script>
@@ -94,14 +72,14 @@
         <input 
             id="nick" 
             type="text" 
-            bind:value={nick} 
+            bind:value={currAuthStep.data.nick.value} 
             disabled={isPushed}
             placeholder="Введите ваш никнейм"
             class="input-field" 
-            class:input-error={!nickNameValid.isValid} 
+            class:input-error={!currAuthStep.data.nick.isValid} 
         />
         
-        {#if !nickNameValid.isValid}
+        {#if !currAuthStep.data.nick.isValid}
             <span class="error-message">Некорректный никнейм</span>
         {/if}
     </div>
@@ -112,13 +90,13 @@
         <input 
             id="persInn" 
             type="text" 
-            bind:value={persInn} 
+            bind:value={currAuthStep.data.persInn.value} 
             disabled={isPushed}
             placeholder="12 цифр ИНН ФЛ"
             class="input-field"
-            class:input-error={!persInnValid.isValid}
+            class:input-error={!currAuthStep.data.persInn.isValid}
         />
-        {#if !persInnValid.isValid}
+        {#if !currAuthStep.data.persInn.isValid}
             <span class="error-message">Некорректный инн физического лица</span>
         {/if}
     </div>
@@ -129,13 +107,13 @@
         <input 
             id="innOrg" 
             type="text" 
-            bind:value={compInn}
+            bind:value={currAuthStep.data.compInn.value}
             disabled={isPushed}
             placeholder="10 цифр ИНН ЮЛ"
             class="input-field"
-            class:input-error={!compInnValid.isValid}
+            class:input-error={!currAuthStep.data.compInn.isValid}
         />
-        {#if !compInnValid.isValid}
+        {#if !currAuthStep.data.compInn.isValid}
             <span class="error-message">Некорректный инн юридического лица</span>
         {/if}
     </div>
@@ -146,13 +124,13 @@
         <input 
             id="kppOrg" 
             type="text" 
-            bind:value={kpp}
+            bind:value={currAuthStep.data.kpp.value}
             disabled={isPushed} 
             placeholder="9 знаков КПП"
             class="input-field"
-            class:input-error={!kppValid.isValid}
+            class:input-error={!currAuthStep.data.kpp.isValid}
         />
-        {#if !kppValid.isValid}
+        {#if !currAuthStep.data.kpp.isValid}
             <span class="error-message">Некорректный кпп</span>
         {/if}
     </div>
@@ -163,13 +141,13 @@
         <input 
             id="password" 
             type="password" 
-            bind:value={password}
+            bind:value={currAuthStep.data.password.value}
             disabled={isPushed} 
             placeholder="Введите пароль"
             class="input-field"
-            class:input-error={!passwordValid.isValid}
+            class:input-error={!currAuthStep.data.password.isValid}
         />
-        {#if !passwordValid.isValid}
+        {#if !currAuthStep.data.password.isValid}
             <span class="error-message">Пароль некоректен в рамках прилжоения</span>
         {/if}
     </div>
@@ -180,7 +158,13 @@
             <button 
                 type="button" 
                 onclick={handleAuthSubmit}
-                disabled={isPushed || !nickNameValid.isValid || !persInnValid.isValid || !compInnValid.isValid || !kppValid.isValid || !passwordValid.isValid}
+                disabled={
+                    isPushed || 
+                    !currAuthStep.data.nick.isValid || 
+                    !currAuthStep.data.persInn.isValid || 
+                    !currAuthStep.data.compInn.isValid || 
+                    !currAuthStep.data.kpp.isValid || 
+                    !currAuthStep.data.password.isValid}
                 class="grid-item"
                 id="auth-submit-btn"
             >
@@ -212,6 +196,28 @@
             >
                 <span class="btn-icon">👤</span>
                 <span class="btn-label">Выбрать пользователя</span>
+            </button>
+
+            <button 
+                type="button" 
+                onclick={handleGoBack} 
+                disabled={isPushed} 
+                class="grid-item"
+                id="auth-select-user-btn"
+            >
+                <span class="btn-icon">👤</span>
+                <span class="btn-label">Назад</span>
+            </button>
+
+            <button 
+                type="button" 
+                onclick={handleGoNext} 
+                disabled={isPushed} 
+                class="grid-item"
+                id="auth-select-user-btn"
+            >
+                <span class="btn-icon">👤</span>
+                <span class="btn-label">Вперед</span>
             </button>
 
         </div>
