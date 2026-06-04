@@ -31,6 +31,8 @@ pub async fn register_user_by_crypto_handler(
     Json(payload): Json<RegistrationData>
 ) -> Result<Json<AuthStep>, Status> {
 
+    tracing::debug!("register_user_by_crypto_handler Running!!!!!!");
+
     let res = register_new_user(&state, payload).await?;
 
     Ok(Json(res))

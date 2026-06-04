@@ -11,6 +11,7 @@ class SvelteAuthStep {
 
     private steps: AuthStep[] = $state([]);
     private index = $state(0);
+    
     constructor() {
         this.steps.push(this.step);
     }
@@ -36,9 +37,9 @@ class SvelteAuthStep {
         this.step = next_step;
     }
 
-    data = ({
+    data = $state({
         nick: new FieldValidator("String1_50"),
-        surName: new FieldValidator("Snils"),
+        surName: new FieldValidator("SurName"),
         firstName: new FieldValidator("FirstName"),
         midName: new FieldValidator("MidName"),
         persInn: new FieldValidator("PersInn"),
@@ -53,6 +54,10 @@ class SvelteAuthStep {
     nick_names = $state<NickData>({ nick_names: [] });
 
     get currentText(): string {
+        if (!this.step || typeof this.step !== 'object') {
+            return '';
+        }
+
         const currentStepObj = Object.values(this.step)[0];
 
         if (

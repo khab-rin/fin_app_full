@@ -4,7 +4,8 @@
     import CallIn from '$lib/service/auth_service/CallIn.svelte';
     import NickName from '$lib/service/auth_service/NickName.svelte';
     import PassWord from '$lib/service/auth_service/PassWord.svelte';
-    import Registration from '$lib/service/auth_service/Registration.svelte'
+    import Registration from '$lib/service/auth_service/Registration.svelte';
+    import TryLater from "./TryLater.svelte";
 
 </script>
 
@@ -19,8 +20,6 @@
 {:else if 'NeedRegistration' in currAuthStep.step }
     <Registration/>
 {:else}
-    <p>
-        {currAuthStep.currentText}
-    </p>
+    <TryLater/>
 {/if}
 

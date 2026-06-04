@@ -2,35 +2,43 @@ import { invoke } from "@tauri-apps/api/core";
 import type { SvelteValidator } from "$lib/models/SvelteValidator";
 
 export class FieldValidator {
-    #isValid = $state(false);
+    _isValid = $state(false);
     
-    value = $state(""); 
+    private _value = $state(""); 
     
-    private type_value: SvelteValidator;
+    private typeValue: SvelteValidator;
 
     constructor(type_value: SvelteValidator) {
-        this.type_value = type_value;
+        this.typeValue = type_value;
     }
 
-    async validate() { // Добавлена фигурная скобка
+    get value(): string {
+        return this._value;
+    }
+
+    set value(newValue: string) {
+        this._value = newValue;
+        this.validate();
+    }
+
+    async validate() {
         try {
-            // Добавлена запятая после имени команды
-            this.#isValid = await invoke<boolean>("cmd_validate_field", {
-                type_value: this.type_value,
-                value: this.value
+            this._isValid = await invoke<boolean>("cmd_validate_field", {
+                typeValue: this.typeValue,
+                value: this._value
             });
         } catch (err) {
-            this.#isValid = false;
-            console.error("COMMAND cmd_validate_field FAILED, data = ", this.type_value, this.value, err);
+            this._isValid = false;
+            console.error("COMMAND cmd_validate_field FAILED, data = ", this.typeValue, this._value, err);
         }
     }
 
     get isValid(): boolean {
-        return this.#isValid;
+        return this._isValid;
     }
 
     reset() {
-        this.#isValid = false;
-        this.value = "";
+        this._isValid = false;
+        this._value = "";
     }
 }

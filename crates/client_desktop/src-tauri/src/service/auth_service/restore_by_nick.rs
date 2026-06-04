@@ -48,7 +48,7 @@ pub(crate) async fn restore_session_by_nick(
 
     let response = match state
         .config
-        .get_std_client()
+        .get_inst_client()
         .post(&back_api_url)
         .headers(state.config.back_api_header().clone())
         .json(&token_device_data)

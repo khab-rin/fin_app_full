@@ -6,6 +6,14 @@
 
     let isPushed = $state(false);
 
+    $effect(() => {
+        currAuthStep.data.nick.validate(); 
+    });
+
+    $effect(() => {
+        currAuthStep.data.persInn.validate(); 
+    });
+
     async function handleAuthSubmit() {
         if (isPushed) return;
        
@@ -44,11 +52,13 @@
     }
 
     function handleGoToRegister() {
-        currAuthStep.step = { NeedRegistration: {text: ""} }; 
+        let next_step: AuthStep = {NeedRegistration: {text: ""}};
+        currAuthStep.add(next_step);
     }
 
     function handleGoToNickName() {
-        currAuthStep.step = { Loading: {text: ""} }; 
+        let next_step: AuthStep = {NickName: {text: ""}};
+        currAuthStep.add(next_step);
     }
 
     function handleGoBack() {
@@ -76,15 +86,13 @@
             disabled={isPushed}
             placeholder="Введите ваш никнейм"
             class="input-field" 
-            class:input-error={!currAuthStep.data.nick.isValid} 
-        />
+            class:input-error={!currAuthStep.data.nick.isValid}/>
         
         {#if !currAuthStep.data.nick.isValid}
             <span class="error-message">Некорректный никнейм</span>
         {/if}
     </div>
 
-    <!-- Поле: ИНН Физического лица -->
     <div class="form-group">
         <label for="persInn">ИНН физического лица</label>
         <input 
@@ -111,8 +119,7 @@
             disabled={isPushed}
             placeholder="10 цифр ИНН ЮЛ"
             class="input-field"
-            class:input-error={!currAuthStep.data.compInn.isValid}
-        />
+            class:input-error={!currAuthStep.data.compInn.isValid}/>
         {#if !currAuthStep.data.compInn.isValid}
             <span class="error-message">Некорректный инн юридического лица</span>
         {/if}
@@ -128,8 +135,7 @@
             disabled={isPushed} 
             placeholder="9 знаков КПП"
             class="input-field"
-            class:input-error={!currAuthStep.data.kpp.isValid}
-        />
+            class:input-error={!currAuthStep.data.kpp.isValid}/>
         {#if !currAuthStep.data.kpp.isValid}
             <span class="error-message">Некорректный кпп</span>
         {/if}
@@ -145,8 +151,7 @@
             disabled={isPushed} 
             placeholder="Введите пароль"
             class="input-field"
-            class:input-error={!currAuthStep.data.password.isValid}
-        />
+            class:input-error={!currAuthStep.data.password.isValid}/>
         {#if !currAuthStep.data.password.isValid}
             <span class="error-message">Пароль некоректен в рамках прилжоения</span>
         {/if}
@@ -201,7 +206,6 @@
             <button 
                 type="button" 
                 onclick={handleGoBack} 
-                disabled={isPushed} 
                 class="grid-item"
                 id="auth-select-user-btn"
             >
@@ -212,7 +216,6 @@
             <button 
                 type="button" 
                 onclick={handleGoNext} 
-                disabled={isPushed} 
                 class="grid-item"
                 id="auth-select-user-btn"
             >
@@ -284,35 +287,4 @@
         cursor: not-allowed;
     }
 
-    .global-error {
-        padding: 12px;
-        background-color: #fdf2f2;
-        border: 1px solid #dc3545;
-        color: #dc3545;
-        border-radius: 4px;
-        font-size: 14px;
-    }
-
-    .submit-btn {
-        margin-top: 10px;
-        padding: 12px;
-        font-size: 16px;
-        font-weight: 600;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-
-    .submit-btn:hover:not(:disabled) {
-        background-color: #0056b3;
-    }
-
-    .submit-btn:disabled {
-        background-color: #cccccc;
-        color: #666666;
-        cursor: not-allowed;
-    }
 </style>

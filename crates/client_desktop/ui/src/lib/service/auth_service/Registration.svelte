@@ -3,13 +3,12 @@
     import {invoke} from "@tauri-apps/api/core";
     import { writeFile } from "@tauri-apps/plugin-fs";
     import { save, open as openFileDialog } from "@tauri-apps/plugin-dialog";
-    import {FieldValidator} from "$lib/service/validate/FieldValidator.svelte";
 
     import type {AuthStep} from "$lib/models/AuthStep";
     import type {IngoingData} from "$lib/models/IngoingData";
     import type {SvelteRegistrationData} from "$lib/models/SvelteRegistrationData"
 	
-
+    
 
     let isPushedReg = $state(false);
     let isPushedDoc = $state(false);
@@ -21,63 +20,6 @@
     let signPath = $state("");
     
 
-    let nick = $state('');
-    let surName = $state('');
-    let firstName = $state('');
-    let midName = $state('');
-    let persInn = $state('');
-    let snils = $state('');
-    let compInn = $state('');
-    let kpp = $state('');
-    let password = $state('');
-    let phone = $state('');
-    let email = $state('');
-
-    const nickValid = new FieldValidator();
-    const surNameValid = new FieldValidator();
-    const firstNameValid = new FieldValidator();
-    const midNameValid = new FieldValidator();
-    const persInnValid = new FieldValidator();
-    const snilsValid = new FieldValidator();
-    const compInnValid = new FieldValidator();
-    const kppValid = new FieldValidator();
-    const passwordValid = new FieldValidator();
-    const phoneValid = new FieldValidator();
-    const emailValid = new FieldValidator();
-
-    $effect(() => {
-        nickValid.validate({ String1_50: nick }); 
-    });
-    $effect(() => {
-        surNameValid.validate({ SurName: surName }); 
-    });
-    $effect(() => {
-        firstNameValid.validate({ FirstName: firstName }); 
-    });
-    $effect(() => {
-        midNameValid.validate({ MidName: midName }); 
-    });
-    $effect(() => {
-        persInnValid.validate({ PersInn: persInn }); 
-    });
-    $effect(() => {
-        snilsValid.validate({ Snils: snils }); 
-    });
-    $effect(() => {
-        compInnValid.validate({ CompInn: compInn }); 
-    });
-    $effect(() => {
-        kppValid.validate({ Kpp: kpp }); 
-    });
-    $effect(() => {
-        passwordValid.validate({ Password: password }); 
-    });
-    $effect(() => {
-        phoneValid.validate({ Phone: phone }); 
-    });
-    $effect(() => {
-        emailValid.validate({ Email: email }); 
-    });
 
     async function handleSelectSigFile() {
         try {
@@ -102,27 +44,27 @@
         if (isPushedDoc) return;
 
         if (
-            !surNameValid.isValid ||
-            !firstNameValid.isValid ||
-            !midNameValid.isValid ||
-            !persInnValid.isValid ||
-            !snilsValid.isValid ||
-            !compInnValid.isValid ||
-            !kppValid.isValid ||
-            !phoneValid.isValid ||
-            !emailValid.isValid
+            !currAuthStep.data.surName.isValid ||
+            !currAuthStep.data.firstName.isValid ||
+            !currAuthStep.data.midName.isValid ||
+            !currAuthStep.data.persInn.isValid ||
+            !currAuthStep.data.snils.isValid ||
+            !currAuthStep.data.compInn.isValid ||
+            !currAuthStep.data.kpp.isValid ||
+            !currAuthStep.data.phone.isValid ||
+            !currAuthStep.data.email.isValid
         ) return;
 
         const ingoingData: IngoingData = {
-            sur_name: surName,
-            first_name: firstName,
-            mid_name: midName.trim() === "" ? null : midName,
-            pers_inn: persInn,
-            snils: snils,
-            comp_inn: compInn,
-            kpp: kpp,
-            phone: phone,
-            email: email
+            sur_name: currAuthStep.data.surName.value,
+            first_name: currAuthStep.data.firstName.value,
+            mid_name: currAuthStep.data.midName.value.trim() || null,
+            pers_inn: currAuthStep.data.persInn.value,
+            snils: currAuthStep.data.snils.value,
+            comp_inn: currAuthStep.data.compInn.value,
+            kpp: currAuthStep.data.kpp.value,
+            phone: currAuthStep.data.phone.value,
+            email: currAuthStep.data.email.value
         };
 
         try {
@@ -160,33 +102,33 @@
         if (isPushedReg) return;
 
         if (
-            !nickValid.isValid ||
-            !surNameValid.isValid ||
-            !firstNameValid.isValid ||
-            !midNameValid.isValid ||
-            !persInnValid.isValid ||
-            !snilsValid.isValid ||
-            !compInnValid.isValid ||
-            !kppValid.isValid ||
-            !passwordValid.isValid ||
-            !phoneValid.isValid ||
-            !emailValid.isValid ||
+            !currAuthStep.data.nick.isValid ||
+            !currAuthStep.data.surName.isValid ||
+            !currAuthStep.data.firstName.isValid ||
+            !currAuthStep.data.midName.isValid ||
+            !currAuthStep.data.persInn.isValid ||
+            !currAuthStep.data.snils.isValid ||
+            !currAuthStep.data.compInn.isValid ||
+            !currAuthStep.data.kpp.isValid ||
+            !currAuthStep.data.password.isValid ||
+            !currAuthStep.data.phone.isValid ||
+            !currAuthStep.data.email.isValid ||
             docPathSaved.length == 0 ||
             signPath.length == 0
         ) return;
 
         const regData: SvelteRegistrationData = {
-            nick: nick,
-            sur_name: surName,
-            first_name: firstName,
-            mid_name: midName,
-            pers_inn: persInn,
-            snils: snils,
-            comp_inn: compInn,
-            kpp: kpp,
-            password: password,
-            phone: phone,
-            email: email,
+            nick: currAuthStep.data.nick.value,
+            sur_name: currAuthStep.data.surName.value,
+            first_name: currAuthStep.data.firstName.value,
+            mid_name: currAuthStep.data.midName.value,
+            pers_inn: currAuthStep.data.persInn.value,
+            snils: currAuthStep.data.snils.value,
+            comp_inn: currAuthStep.data.compInn.value,
+            kpp: currAuthStep.data.kpp.value,
+            password: currAuthStep.data.password.value,
+            phone: currAuthStep.data.phone.value,
+            email: currAuthStep.data.email.value,
             document_path: docPathSaved,  
             signature_path: signPath,
         }
@@ -197,6 +139,14 @@
             console.error("Registration FAILED, err = ", err);
             currAuthStep.step = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
         }
+    }
+
+    function handleGoBack() {
+        currAuthStep.back(); 
+    }
+
+    function handleGoNext() {
+        currAuthStep.next(); 
     }
 </script>
 
@@ -211,13 +161,13 @@
             <input 
                 id="surName" 
                 type="text" 
-                bind:value={surName} 
+                bind:value={currAuthStep.data.surName.value} 
                 disabled={isPushedDoc}
                 placeholder="Только русские буквы"
                 class="input-field"
-                class:input-error={!surNameValid.isValid}
+                class:input-error={!currAuthStep.data.surName.isValid}
             />
-            {#if !surNameValid.isValid}
+            {#if !currAuthStep.data.surName.isValid}
                 <span class="error-message">Некорректная фамилия</span>
             {/if}
         </div>
@@ -227,13 +177,13 @@
             <input 
                 id="firstName" 
                 type="text" 
-                bind:value={firstName} 
+                bind:value={currAuthStep.data.firstName.value} 
                 disabled={isPushedDoc}
                 placeholder="Только русские буквы"
                 class="input-field"
-                class:input-error={!firstNameValid.isValid}
+                class:input-error={!currAuthStep.data.firstName.isValid}
             />
-            {#if !firstNameValid.isValid}
+            {#if !currAuthStep.data.firstName.isValid}
                 <span class="error-message">Некорректное имя</span>
             {/if}
         </div>
@@ -243,13 +193,13 @@
             <input 
                 id="midName" 
                 type="text" 
-                bind:value={midName} 
+                bind:value={currAuthStep.data.midName.value} 
                 disabled={isPushedDoc}
                 placeholder="Только русские буквы"
                 class="input-field"
-                class:input-error={!midNameValid.isValid}
+                class:input-error={!currAuthStep.data.midName.isValid}
             />
-            {#if !midNameValid.isValid}
+            {#if !currAuthStep.data.midName.isValid}
                 <span class="error-message">Некорректное отчество</span>
             {/if}
         </div>
@@ -259,13 +209,13 @@
             <input 
                 id="persInn" 
                 type="text" 
-                bind:value={persInn} 
+                bind:value={currAuthStep.data.persInn.value} 
                 disabled={isPushedDoc}
                 placeholder="12 цифр"
                 class="input-field"
-                class:input-error={!persInnValid.isValid}
+                class:input-error={!currAuthStep.data.persInn.isValid}
             />
-            {#if !persInnValid.isValid}
+            {#if !currAuthStep.data.persInn.isValid}
                 <span class="error-message">Некорректный ИНН (должно быть 12 цифр)</span>
             {/if}
         </div>
@@ -275,13 +225,13 @@
             <input 
                 id="snils" 
                 type="text" 
-                bind:value={snils} 
+                bind:value={currAuthStep.data.snils.value} 
                 disabled={isPushedDoc}
                 placeholder="Формат: 000-000-000 00"
                 class="input-field"
-                class:input-error={!snilsValid.isValid}
+                class:input-error={!currAuthStep.data.snils.isValid}
             />
-            {#if !snilsValid.isValid}
+            {#if !currAuthStep.data.snils.isValid}
                 <span class="error-message">Некорректный СНИЛС</span>
             {/if}
         </div>
@@ -291,13 +241,13 @@
             <input 
                 id="compInn" 
                 type="text" 
-                bind:value={compInn} 
+                bind:value={currAuthStep.data.compInn.value} 
                 disabled={isPushedDoc}
                 placeholder="10 цифр"
                 class="input-field"
-                class:input-error={!compInnValid.isValid}
+                class:input-error={!currAuthStep.data.compInn.isValid}
             />
-            {#if !compInnValid.isValid}
+            {#if !currAuthStep.data.compInn.isValid}
                 <span class="error-message">Некорректный ИНН организации (должно быть 10 цифр)</span>
             {/if}
         </div>
@@ -307,13 +257,13 @@
             <input 
                 id="kpp" 
                 type="text" 
-                bind:value={kpp} 
+                bind:value={currAuthStep.data.kpp.value} 
                 disabled={isPushedDoc}
                 placeholder="9 цифр"
                 class="input-field"
-                class:input-error={!kppValid.isValid}
+                class:input-error={!currAuthStep.data.kpp.isValid}
             />
-            {#if !kppValid.isValid}
+            {#if !currAuthStep.data.kpp.isValid}
                 <span class="error-message">Некорректный КПП (должно быть 9 цифр)</span>
             {/if}
         </div>
@@ -323,13 +273,13 @@
             <input 
                 id="phone" 
                 type="tel" 
-                bind:value={phone} 
+                bind:value={currAuthStep.data.phone.value} 
                 disabled={isPushedDoc}
                 placeholder="+7 (900) 000-00-00"
                 class="input-field"
-                class:input-error={!phoneValid.isValid}
+                class:input-error={!currAuthStep.data.phone.isValid}
             />
-            {#if !phoneValid.isValid}
+            {#if !currAuthStep.data.phone.isValid}
                 <span class="error-message">Некорректный номер телефона</span>
             {/if}
         </div>
@@ -339,13 +289,13 @@
             <input 
                 id="email" 
                 type="email" 
-                bind:value={email} 
+                bind:value={currAuthStep.data.email.value} 
                 disabled={isPushedDoc}
                 placeholder="example@mail.ru"
                 class="input-field"
-                class:input-error={!emailValid.isValid}
+                class:input-error={!currAuthStep.data.email.isValid}
             />
-            {#if !emailValid.isValid}
+            {#if !currAuthStep.data.email.isValid}
                 <span class="error-message">Некорректный email</span>
             {/if}
         </div>
@@ -359,6 +309,26 @@
             {isPushedDoc ? 'Генерация файла...' : 'Сформировать заявление (.doc)'}
         </button>
 
+        <button 
+            type="button" 
+            onclick={handleGoBack} 
+            class="grid-item"
+            id="auth-select-user-btn"
+        >
+            <span class="btn-icon">👤</span>
+            <span class="btn-label">Назад</span>
+        </button>
+
+        <button 
+            type="button" 
+            onclick={handleGoNext} 
+            class="grid-item"
+            id="auth-select-user-btn"
+        >
+            <span class="btn-icon">👤</span>
+            <span class="btn-label">Вперед</span>
+        </button>
+
     {:else}
     <div class="success-container">
         <p class="success-notice">🎉 Шаг 1 завершен: заявление успешно сформировано и сохранено!</p>
@@ -370,13 +340,13 @@
             <input 
                 id="nick" 
                 type="text" 
-                bind:value={nick} 
+                bind:value={currAuthStep.data.nick.value} 
                 disabled={isPushedReg}
                 placeholder="Придумайте уникальный логин"
                 class="input-field"
-                class:input-error={!nickValid.isValid}
+                class:input-error={!currAuthStep.data.nick.isValid}
             />
-            {#if !nickValid.isValid}
+            {#if !currAuthStep.data.nick.isValid}
                 <span class="error-message">Некорректный никнейм (от 1 до 50 символов)</span>
             {/if}
         </div>
@@ -386,13 +356,13 @@
             <input 
                 id="password" 
                 type="password" 
-                bind:value={password} 
+                bind:value={currAuthStep.data.password.value} 
                 disabled={isPushedReg}
                 placeholder="Минимум 6 символов"
                 class="input-field"
-                class:input-error={!passwordValid.isValid}
+                class:input-error={!currAuthStep.data.password.isValid}
             />
-            {#if !passwordValid.isValid}
+            {#if !currAuthStep.data.password.isValid}
                 <span class="error-message">Слишком короткий или простой пароль</span>
             {/if}
         </div>
@@ -406,9 +376,9 @@
                 disabled={isPushedReg}
                 placeholder="Введите пароль еще раз"
                 class="input-field"
-                class:input-error={password !== passwordRepeat && passwordRepeat !== ''}
+                class:input-error={currAuthStep.data.password.value !== passwordRepeat && passwordRepeat !== ''}
             />
-            {#if password !== passwordRepeat && passwordRepeat !== ''}
+            {#if currAuthStep.data.password.value !== passwordRepeat && passwordRepeat !== ''}
                 <span class="error-message">Пароли не совпадают</span>
             {/if}
         </div>
@@ -416,9 +386,10 @@
         <hr class="divider" />
 
         <div class="form-group">
-            <label>Сформированное заявление (.doc)</label>
+            <label for="document">Сформированное заявление (.doc)</label>
             <div class="file-picker-wrapper">
                 <input 
+                    id="document"
                     type="text" 
                     value={docPathSaved} 
                     disabled 
@@ -463,10 +434,36 @@
         <button 
             type="button"
             onclick={handleRegistrationSubmit} 
-            disabled={isPushedReg || password !== passwordRepeat || password === '' || !signPath}
+            disabled={
+                !currAuthStep.data.nick.isValid ||
+                isPushedReg || 
+                currAuthStep.data.password.value !== passwordRepeat ||  
+                !docPathSaved ||
+                !signPath
+            }
             class="submit-btn register-btn"
         >
             {isPushedReg ? 'Регистрация...' : 'Завершить регистрацию'}
+        </button>
+
+        <button 
+            type="button" 
+            onclick={handleGoBack} 
+            class="grid-item"
+            id="auth-select-user-btn"
+        >
+            <span class="btn-icon">👤</span>
+            <span class="btn-label">Назад</span>
+        </button>
+
+        <button 
+            type="button" 
+            onclick={handleGoNext} 
+            class="grid-item"
+            id="auth-select-user-btn"
+        >
+            <span class="btn-icon">👤</span>
+            <span class="btn-label">Вперед</span>
         </button>
     </div>
 {/if}
@@ -513,56 +510,21 @@
         border-color: #007bff;
     }
 
-    /* ИСПРАВЛЕНО: Изменено название класса с .invalid на .input-error */
-    /* Сделали красный цвет чуть мягче для приятного UX */
+
     .input-field.input-error {
         border-color: #dc3545;
         background-color: #fdf2f2;
     }
 
-    /* ДОБАВЛЕНО: Стили для текста ошибок под инпутами */
     .error-message {
         font-size: 12px;
         color: #dc3545;
         margin-top: -2px;
     }
 
-    /* ДОБАВЛЕНО: Визуальное состояние инпутов при отправке в Tauri */
     .input-field:disabled {
         background-color: #f5f5f5;
         color: #888888;
-        cursor: not-allowed;
-    }
-
-    .global-error {
-        padding: 12px;
-        background-color: #fdf2f2;
-        border: 1px solid #dc3545;
-        color: #dc3545;
-        border-radius: 4px;
-        font-size: 14px;
-    }
-
-    .submit-btn {
-        margin-top: 10px;
-        padding: 12px;
-        font-size: 16px;
-        font-weight: 600;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-
-    .submit-btn:hover:not(:disabled) {
-        background-color: #0056b3;
-    }
-
-    .submit-btn:disabled {
-        background-color: #cccccc;
-        color: #666666;
         cursor: not-allowed;
     }
 </style>

@@ -1,3 +1,4 @@
+use serde_json::json;
 use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::{BoxUuid, DateTime};
 use shared_lib::service::auth_service::implements::{
@@ -124,13 +125,16 @@ pub async fn register_user(
         signature,
     };
 
+    let a = json!(&person.last_update);
+    std::println!("{}", a);
+
     let back_api_url = format!("{}/{}",
         state.config.back_api_url().trim_end_matches('/'),
         ApiRoutes::AuthRegister.get_path().trim_start_matches('/'));
 
     let response = match state
         .config
-        .get_std_client()
+        .get_inst_client()
         .post(&back_api_url)
         .headers(state.config.back_api_header().clone())
         .json(&registration_data)
@@ -145,6 +149,8 @@ pub async fn register_user(
                 return Ok(AuthStep::TryLater {text: TextInfo::ClientApiQueryError});
             }
         };
+    
+    
     
     if !response.status().is_success() {
         let back_err = response

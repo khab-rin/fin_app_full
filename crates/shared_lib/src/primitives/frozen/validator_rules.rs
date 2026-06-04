@@ -142,6 +142,44 @@ pub(crate) fn init_rubf_from_str(amount: &str) -> Result<Decimal, Status> {
     Ok(v)
 }
 
+pub(crate) fn init_date_time_from_str(val: &str) -> Result<chrono::DateTime<chrono::Utc>, Status> {
+    let s = val.trim();
+    
+    tracing::info!("=== ВАЛИДАТОР ДАТЫ ВЫЗВАН С ТЕКСТОМ: '{}' ===", s);
+
+    if s.is_empty() {
+        return Ok(chrono::Utc::now());
+    }
+
+    if let Ok(dt) = chrono::DateTime::parse_from_rfc3339(s) {
+        return Ok(dt.with_timezone(&chrono::Utc));
+    }
+    let clean_string = if s.contains('.') && s.ends_with(" UTC") {
+        if let Some((left, _right)) = s.split_once('.') {
+            format!("{} UTC", left)
+        } else {
+            s.to_string()
+        }
+    } else {
+        s.to_string()
+    };
+
+    let formats = [
+        "%Y-%m-%d %H:%M:%S UTC",
+        "%Y-%m-%d %H:%M:%S",
+        "%Y-%m-%dT%H:%M:%S",
+    ];
+
+    for fmt in &formats {
+        if let Ok(naive) = chrono::NaiveDateTime::parse_from_str(&clean_string, fmt) {
+            return Ok(chrono::DateTime::from_naive_utc_and_offset(naive, chrono::Utc));
+        }
+    }
+
+    tracing::error!("=== КРИТИЧЕСКАЯ ОШИБКА: Ни один формат не подошел для даты '{}' (очищенная: '{}') ===", s, clean_string);
+    
+    Err(Status::ValidDateTime)
+}
 
 pub(crate) fn str_to_date(value: &str) -> Result<NaiveDate, Status> {
     let clean = value.trim()
@@ -314,17 +352,6 @@ pub(crate) fn init_snils_from_str(val: &str) -> Result<Box<str>, Status> {
     Ok(digits.into_boxed_str())
 }
 
-
-pub(crate) fn init_date_time_from_str(val: &str) -> Result<chrono::DateTime<chrono::Utc>, Status> {
-    let s = val.trim();
-    if s.is_empty() {
-        Ok(chrono::Utc::now())
-    } else {
-        chrono::DateTime::parse_from_rfc3339(s)
-            .map(|dt| dt.with_timezone(&chrono::Utc))
-            .map_err(|_| Status::ValidDateTime) // Твой статус ошибки
-    }
-}
 
 pub(crate) fn init_part_status(val: &str) -> Result<Box<str>, Status> {
     let s = val.trim();

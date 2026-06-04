@@ -2,6 +2,7 @@
     import { onMount } from "svelte";
     import { currAuthStep } from "$lib/models/svelte_models/auth_service/SvelteAuthStep.svelte";
     import { invoke } from "@tauri-apps/api/core";
+    import type {AuthStep} from "$lib/models/AuthStep";
 
     import type { NickData } from "$lib/models/NickData";
 
@@ -9,14 +10,17 @@
         try {
             const data = await invoke<NickData>('cmd_get_nick_names');
             if (!data.nick_names || data.nick_names.length === 0) {
-                currAuthStep.step = { NeedPassword: {text: "Пользователь не найден на устройстве, требуется авторизоваться по паролю или пройти регистрацию"} };
+                let next_step: AuthStep = { NeedPassword: {text: "Пользователь не найден на устройстве, требуется авторизоваться по паролю или пройти регистрацию"} };
+                currAuthStep.add(next_step);
             } else {
                 currAuthStep.nick_names = data;
-                currAuthStep.step = { NickName: { text: "Выберите из списка нужного пользователя, в случае отсутствия авторизуйтесь через пароль, либо зарегистрируйтесь"} };
+                let next_step: AuthStep = { NickName: { text: "Выберите из списка нужного пользователя, в случае отсутствия авторизуйтесь через пароль, либо зарегистрируйтесь"} };
+                currAuthStep.add(next_step);
             }
         } catch (err) {
-            currAuthStep.step = { TryLater: {text:"Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
             console.error("Error:", err);
+            const next_step: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
+            currAuthStep.add(next_step);
         }
     });
 

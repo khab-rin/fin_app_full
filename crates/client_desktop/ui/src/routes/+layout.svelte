@@ -12,7 +12,7 @@
 
 
 	onMount(async () => {
-		currAuthStep.step = await checkSessionInit();
+		await checkSessionInit();
 	});
 
 

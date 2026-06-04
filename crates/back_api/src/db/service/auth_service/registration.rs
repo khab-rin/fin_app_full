@@ -71,6 +71,8 @@ pub(crate) async fn register_new_user(
         CryptoApiRoutes::CryptoVerifyPerson.get_path().trim_start_matches('/')
     );
 
+    tracing::debug!("Registration step 1");
+
     let response = match state.config.get_inst_client()
         .post(&crypto_url)
         .json(&crypto_verify_request)
@@ -87,7 +89,8 @@ pub(crate) async fn register_new_user(
                 return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
             }
         };
-
+    
+    tracing::debug!("Registration step 2");
     
     if !response.status().is_success() {
         tracing::error!(
@@ -96,6 +99,8 @@ pub(crate) async fn register_new_user(
         );
         return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
     }
+
+    tracing::debug!("Registration step 3");
 
     let verify_person: CryptoVerifyPersonResponse = match response
         .json()
@@ -112,6 +117,8 @@ pub(crate) async fn register_new_user(
         }
     };
 
+    tracing::debug!("Registration step 4");
+
     if !verify_person.is_signed {
         tracing::warn!(
             failed_data = ?failed_data,
@@ -119,6 +126,8 @@ pub(crate) async fn register_new_user(
         );
         return Ok(AuthStep::NeedRegistration { text: TextInfo::WrongSignFile });
     }
+
+    tracing::debug!("Registration step 5");
 
     if let Err(res) = validate_field(
         "FIO",

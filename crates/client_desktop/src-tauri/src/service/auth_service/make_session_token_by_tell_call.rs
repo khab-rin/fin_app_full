@@ -23,7 +23,7 @@ pub(crate) async fn make_session_token_by_tel_call(
 
     let response = match state
         .config
-        .get_std_client()
+        .get_inst_client()
         .post(&back_api_url)
         .headers(state.config.back_api_header().clone())
         .json(data)
