@@ -12,18 +12,18 @@ use shared_lib::service::auth_service::implements::{
     CryptoVerifyData, 
     RegistrationData, 
     AuthStep,
-    CryptoVerifyPersonResponse,
+    CryptoServiceResponse,
     TextInfo
 };
 
 use crate::config::BackApiState;
-use crate::db::service::auth_service::validate_fields::validate_field;
 use crate::db::sql_queries::users::get::exists_user_by_pers_comp::exists_user_by_pers_comp;
 use crate::db::sql_queries::persons::add::by_person::add_person;
 use crate::db::sql_queries::companys::get::company_by_inn_kpp::get_company_by_inn_kpp;
 use crate::db::sql_queries::companys::helper::make_new_company;
 use crate::db::sql_queries::users::set::user::set_user;
 use crate::db::sql_queries::sessions::set::new_session::new_session;
+use crate::db::service::auth_service::pers_sign_parser::person_checker;
 
 
 
@@ -71,8 +71,6 @@ pub(crate) async fn register_new_user(
         CryptoApiRoutes::CryptoVerifyPerson.get_path().trim_start_matches('/')
     );
 
-    tracing::debug!("Registration step 1");
-
     let response = match state.config.get_inst_client()
         .post(&crypto_url)
         .json(&crypto_verify_request)
@@ -90,8 +88,6 @@ pub(crate) async fn register_new_user(
             }
         };
     
-    tracing::debug!("Registration step 2");
-    
     if !response.status().is_success() {
         tracing::error!(
             failed_data = ?failed_data,
@@ -100,9 +96,8 @@ pub(crate) async fn register_new_user(
         return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
     }
 
-    tracing::debug!("Registration step 3");
 
-    let verify_person: CryptoVerifyPersonResponse = match response
+    let crypto_response: CryptoServiceResponse = match response
         .json()
         .await  {
         Ok(r) => r,
@@ -117,40 +112,31 @@ pub(crate) async fn register_new_user(
         }
     };
 
-    tracing::debug!("Registration step 4");
+    tracing::debug!(data = ?crypto_response);
 
-    if !verify_person.is_signed {
-        tracing::warn!(
-            failed_data = ?failed_data,
-            "FUN register_new_user FAILED BY WRONG SIGNATURE FILE"
-        );
+    if !crypto_response.is_signed {
         return Ok(AuthStep::NeedRegistration { text: TextInfo::WrongSignFile });
     }
 
-    tracing::debug!("Registration step 5");
+    tracing::debug!("FILES ARE SIGNED");
 
-    if let Err(res) = validate_field(
-        "FIO",
-        verify_person.fio,
-        &person.metadata.fio,
-        &failed_data
-    ) { return Ok(res);};
+    match person_checker(&crypto_response.text, &person) {
+        Ok(true) => {},
+        Ok(false) => {
+            return Ok(AuthStep::NeedRegistration { text: TextInfo::WrongPerson });
+        }
+        Err(err) => {
+            tracing::error!(
+                err = ?err,
+                "FUN register_new_user FAILED BY FUN person_checker"
+            );
+            return Ok(AuthStep::TryLater { text: TextInfo::BackApiError });
+        }
+    }
+
+    tracing::debug!("PERSON WAS AUTHED!!");
+
     
-    if let Err(res) =  validate_field(
-        "INN",
-        verify_person.inn,
-        &person.pers_inn,
-        &failed_data
-    ) { return Ok(res);};
-
-    if let Err(res) = validate_field(
-        "SNILS",
-        verify_person.snils,
-        &person.metadata.snils,
-        &failed_data
-    ) { return Ok(res);};
-
-
     let person = match add_person(state, &person).await {
         Ok(p) => p,
         Err(err) => {
@@ -161,6 +147,8 @@ pub(crate) async fn register_new_user(
             return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
         }
     };
+
+    tracing::debug!("COMPANY WAS GETTED FROM DADATA!");
 
     let comp_opt = match get_company_by_inn_kpp(state, &comp_inn, &kpp).await {
         Ok(c_o) => c_o,
@@ -173,6 +161,8 @@ pub(crate) async fn register_new_user(
             None
         }
     };
+
+    tracing::debug!("comp_opt WAS GETTED!");
 
     let company = match comp_opt {
         Some(c) => c,
@@ -191,6 +181,8 @@ pub(crate) async fn register_new_user(
         }
     };
 
+    tracing::debug!("WAS CREATED!");
+
     let exist_flag = match exists_user_by_pers_comp(
         state, 
         &person.pers_id, 
@@ -206,9 +198,12 @@ pub(crate) async fn register_new_user(
             }
         };
 
+
     if exist_flag {
         return Ok(AuthStep::NeedPassword{text: TextInfo::UserAlreadyExists});
     }
+
+    tracing::debug!("IT IS NEW USER!");
 
     let salt = SaltString::generate(&mut OsRng);
 
@@ -226,6 +221,8 @@ pub(crate) async fn register_new_user(
             return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
         }
     };
+
+    tracing::debug!("PASSWORD WAS HASHED BY ARGON2");
 
     let user_set_data = UserSetData {
         pers_id: person.pers_id.clone(),

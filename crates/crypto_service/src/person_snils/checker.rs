@@ -1,28 +1,25 @@
 use axum::{extract::State, Json};
 use std::sync::Arc;
 use tokio::io::AsyncWriteExt;
-use encoding_rs;
 
 use crate::AppState;
-use crate::person_snils::helper::parse_snils_from_stdout;
-
 
 use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{
     CryptoVerifyData,
-    CryptoVerifyPersonResponse
+    CryptoServiceResponse
 };
 
 pub async fn verify_signature_handler (
     State(state): State<Arc<AppState>>,
     Json(payload): Json<CryptoVerifyData> 
-) -> Result<Json<CryptoVerifyPersonResponse>, Status> {
+) -> Result<Json<CryptoServiceResponse>, Status> {
 
     let run_id = uuid::Uuid::new_v4().to_string();
     let temp_dir = std::env::temp_dir();
 
-    let doc_path = temp_dir.join(format!("{}_doc.dat", run_id));
-    let sig_path = temp_dir.join(format!("{}_sig.dat", run_id));
+    let doc_path = temp_dir.join(format!("{}.dat", run_id));
+    let sig_path = temp_dir.join(format!("{}.dat.sig", run_id));
     
     let mut doc_file = tokio::fs::File::create(&doc_path)
         .await
@@ -65,12 +62,16 @@ pub async fn verify_signature_handler (
         }).map_err(|_| Status::FileWriteError)?;
 
     let output = tokio::process::Command::new(&state.cryptcp_path)
-        .arg("-vfy")
+        .arg("-vsignf")
         .arg("-detached")
         .arg("-dir")
-        .arg(&temp_dir)
-        .arg(sig_path.to_str().unwrap_or("")) // Файл подписи
-        .arg(doc_path.to_str().unwrap_or(""))
+        .arg(&temp_dir)                       
+        .arg("-fext")
+        .arg(".sig") // Сюда прилетит ".sig"                  
+        .arg("-nochain")                      
+        .arg("-f")
+        .arg(sig_path.to_str().unwrap_or("")) 
+        .arg(doc_path.to_str().unwrap_or("")) 
         .output()
         .await
         .inspect_err(|err| {
@@ -91,22 +92,14 @@ pub async fn verify_signature_handler (
             wrong_data = %wrong_data,
             "Signature verification failed via cryptcp (invalid signature)"
         );
-        return Ok(Json(CryptoVerifyPersonResponse {
+        return Ok(Json(CryptoServiceResponse {
             is_signed: false,
-            snils: None,
-            inn: None,
-            fio: None
+            text: "".to_string()
         }));
     }
 
-    let (decoded_str, _, error_1251) = encoding_rs::WINDOWS_1251.decode(&output.stdout);
+    let stdout_str = String::from_utf8_lossy(&output.stdout).into_owned();
 
-    let stdout_str = if error_1251 {
-        String::from_utf8_lossy(&output.stdout).into_owned()
-    } else {
-        decoded_str.into_owned()
-    };
-
-    parse_snils_from_stdout(&stdout_str) 
+    Ok(Json(CryptoServiceResponse { is_signed: true, text: stdout_str}))
 
 }

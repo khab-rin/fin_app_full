@@ -7,3 +7,4 @@ pub(crate) mod make_token_by_tel_call;
 pub(crate) mod smsru_cf_query;
 pub(crate) mod registration;
 pub(crate) mod validate_fields;
+pub(crate) mod pers_sign_parser;

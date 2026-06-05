@@ -3,9 +3,9 @@ FROM rust:slim-bookworm AS builder
 WORKDIR /app
 
 # Настройка российских зеркал и установка системных зависимостей
-RUN sed -i 's/deb.debian.org/mirror.yandex.ru/g' /etc/apt/sources.list.d/debian.sources || \
-    sed -i 's/deb.debian.org/mirror.yandex.ru/g' /etc/apt/sources.list && \
-    apt-get update && apt-get install -y pkg-config libssl-dev && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+    apt-get install -y pkg-config libssl-dev && \
+    rm -rf /var/lib/apt/lists/*
 
 # Подтягиваем имя сервиса из docker-compose.yml
 ARG CRATE_NAME
@@ -31,36 +31,33 @@ RUN cp target/release/crypto_service_bin /app/crypto_service
 
 
 # === ЭТАП 2: Финальный образ с КриптоПро ===
-FROM debian:bookworm-slim
+FROM cr.yandex/mirror/library/debian:bookworm-slim
 WORKDIR /app
 
+# Базовая настройка репозиториев и утилит
 RUN sed -i 's/deb.debian.org/mirror.yandex.ru/g' /etc/apt/sources.list.d/debian.sources || \
     sed -i 's/deb.debian.org/mirror.yandex.ru/g' /etc/apt/sources.list && \
     apt-get update --fix-missing && \
     apt-get install -y --no-install-recommends \
-    curl libccid pcscd lsb-release procps && rm -rf /var/lib/apt/lists/*
+    curl libccid pcscd lsb-release procps libusb-1.0-0 && rm -rf /var/lib/apt/lists/*
 
-# Распаковка архива КриптоПро
+# 1. Распаковка архива КриптоПро (создает /tmp/linux-amd64_deb/)
 ADD crates/crypto_service/linux-amd64_deb.tgz /tmp/
 
-# Установка КриптоПро
+# 2. Установка ВСЕХ пакетов из папки (теперь суффиксы -64 нам не страшны)
 RUN cd /tmp/linux-amd64_deb && \
-    ./install.sh && \
-    dpkg -i cprocsp-pki-cades*.deb cprocsp-pki-plugin*.deb || true && \
-    apt-get update && \
-    apt-get install -y -f --no-install-recommends && \
-    rm -rf /tmp/linux-amd64_deb /var/lib/apt/lists/*
+    (dpkg -i *.deb || echo "Пакеты распакованы, долечиваем зависимости...")
 
-# Установка корневого сертификата
-COPY crates/crypto_service/russian_trusted_root_ca.cer /tmp/guc.crt
-RUN /opt/cprocsp/bin/amd64/certmgr -inst -store mRoot -file /tmp/guc.crt || \
-    /opt/cprocsp/bin/amd64/certmgr -inst -store root -file /tmp/guc.crt && \
-    rm /tmp/guc.crt
+# 3. Финальное лечение зависимостей через APT
+RUN apt-get update && (apt-get install -y -f --no-install-recommends || true)
 
-# Копируем собранный бинарь. 
+# 4. Копирование
 COPY --from=builder /app/crypto_service /app/crypto_service
 
-ENV PATH="/opt/cprocsp/bin/amd64:/opt/cprocsp/sbin/amd64:${PATH}"
-EXPOSE 8081
+COPY crates/crypto_service/russian_trusted_root_ca.cer /app/russian_trusted_root_ca.cer
 
-CMD ["./crypto_service"]
+RUN rm -rf /tmp/linux-amd64_deb /var/lib/apt/lists/*
+
+CMD /etc/init.d/cprocsp start && \
+    /opt/cprocsp/bin/amd64/certmgr -inst -store mRoot -file /app/russian_trusted_root_ca.cer && \
+    ./crypto_service

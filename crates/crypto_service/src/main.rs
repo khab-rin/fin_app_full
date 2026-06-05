@@ -51,8 +51,6 @@ async fn main() {
 
     let state = Arc::new(AppState { cryptcp_path });
 
-    tracing::info!("Crypto path {}", &state.cryptcp_path);
-
     let app = Router::new()
         .route(
             CryptoApiRoutes::CryptoVerifyPerson.get_path(), 

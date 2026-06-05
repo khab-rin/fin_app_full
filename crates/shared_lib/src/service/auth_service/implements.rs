@@ -212,11 +212,9 @@ pub struct CryptoVerifyData {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct CryptoVerifyPersonResponse {
+pub struct CryptoServiceResponse {
     pub is_signed: bool,
-    pub snils: Option<Snils>,
-    pub inn: Option<PersInn>,
-    pub fio: Option<Fio>
+    pub text: String
 }
 
 

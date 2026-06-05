@@ -36,5 +36,7 @@ password-hash = { workspace = true }
 rand = { workspace = true }
 blake3 = { workspace = true }
 
+regex = { workspace = true }
+
 
 

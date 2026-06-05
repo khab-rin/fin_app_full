@@ -56,7 +56,6 @@ pub async fn register_user(
         birth_day: None
     };
 
-    log::debug!("register_user step1");
 
     let person = Person {
         pers_id: BoxUuid::unchecked(uuid::Uuid::new_v4()),
@@ -65,7 +64,6 @@ pub async fn register_user(
         last_update: DateTime::unchecked(chrono::Utc::now())
     };
 
-    log::debug!("register_user step2");
 
     let doc_hash = match quard.file_hash.clone() {
         Some(t) => t,
@@ -74,8 +72,6 @@ pub async fn register_user(
             return Ok(AuthStep::TryLater { text: TextInfo::ClientApiSystemError });
         }
     };
-
-    log::debug!("register_user step3");
 
     let device_id = match get_device_id() {
         Ok(d) => d,
@@ -134,7 +130,7 @@ pub async fn register_user(
 
     let response = match state
         .config
-        .get_inst_client()
+        .get_rel_client()
         .post(&back_api_url)
         .headers(state.config.back_api_header().clone())
         .json(&registration_data)
