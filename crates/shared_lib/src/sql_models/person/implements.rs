@@ -45,11 +45,17 @@ impl std::convert::TryFrom<PersonDto> for Person {
 pub struct PersonMetadata {
     pub snils: Snils,
     pub fio: Fio,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub passport: Option<PassportRf>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub address: Option<AdrWrap>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub gender: Option<Gender>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub birth_day: Option<Date>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub phone: Option<Phone>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub email: Option<Email>,
 }
 

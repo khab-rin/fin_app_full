@@ -121,9 +121,6 @@ pub async fn register_user(
         signature,
     };
 
-    let a = json!(&person.last_update);
-    std::println!("{}", a);
-
     let back_api_url = format!("{}/{}",
         state.config.back_api_url().trim_end_matches('/'),
         ApiRoutes::AuthRegister.get_path().trim_start_matches('/'));

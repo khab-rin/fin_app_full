@@ -73,7 +73,7 @@ pub(crate) async fn sync_server_companys(
     let seen_companys_dto = sqlx::
         query_file_as!(
             CompanyDto,
-            "src/db/sql_queries/companys/add/by_cimpays.sql",
+            "src/db/sql_queries/companys/add/sync_companys.sql",
             &inn_d[..],
             &kpp_d[..],
             &type_d[..],

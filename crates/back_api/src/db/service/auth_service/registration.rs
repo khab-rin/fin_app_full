@@ -24,6 +24,7 @@ use crate::db::sql_queries::companys::helper::make_new_company;
 use crate::db::sql_queries::users::set::user::set_user;
 use crate::db::sql_queries::sessions::set::new_session::new_session;
 use crate::db::service::auth_service::pers_sign_parser::person_checker;
+use crate::db::sql_queries::companys::add::company::add_company;
 
 
 
@@ -112,13 +113,11 @@ pub(crate) async fn register_new_user(
         }
     };
 
-    tracing::debug!(data = ?crypto_response);
 
     if !crypto_response.is_signed {
         return Ok(AuthStep::NeedRegistration { text: TextInfo::WrongSignFile });
     }
 
-    tracing::debug!("FILES ARE SIGNED");
 
     match person_checker(&crypto_response.text, &person) {
         Ok(true) => {},
@@ -148,9 +147,9 @@ pub(crate) async fn register_new_user(
         }
     };
 
-    tracing::debug!("COMPANY WAS GETTED FROM DADATA!");
+    tracing::debug!("PERSON WAS ADDED!!");
 
-    let comp_opt = match get_company_by_inn_kpp(state, &comp_inn, &kpp).await {
+    let company_option = match get_company_by_inn_kpp(state, &comp_inn, &kpp).await {
         Ok(c_o) => c_o,
         Err(err) => {
             tracing::error!(
@@ -162,13 +161,32 @@ pub(crate) async fn register_new_user(
         }
     };
 
-    tracing::debug!("comp_opt WAS GETTED!");
+    tracing::debug!("company_option WAS GETTED!!");
 
-    let company = match comp_opt {
-        Some(c) => c,
+    let company = match company_option {
+        Some(c) => {
+            tracing::debug!("company already exists!!");
+            c
+        },
         None => {
+            tracing::debug!("IT s new company!!");
             match make_new_company(state, &comp_inn, &kpp).await {
-                Ok(c) => c,
+                Ok(c) => {
+                    tracing::debug!("CAOMPANY WAS GETTED BY DADATA");
+                    match add_company(state, &c).await {
+                        Ok(comp) => {
+                            tracing::debug!("NEW COMPANY WAS ADDED TO SQL!!");
+                            comp
+                        },
+                        Err(err) => {
+                            tracing::error!(
+                                err = ?err,
+                                "FUN register_new_user FAILED BY FUN add_company"
+                            );
+                            return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
+                        }
+                    }
+                },
                 Err(err) => {
                     tracing::error!(
                         err = ?err,
@@ -181,7 +199,7 @@ pub(crate) async fn register_new_user(
         }
     };
 
-    tracing::debug!("WAS CREATED!");
+    tracing::debug!("company_option WAS ADDED!!");
 
     let exist_flag = match exists_user_by_pers_comp(
         state, 
@@ -200,10 +218,11 @@ pub(crate) async fn register_new_user(
 
 
     if exist_flag {
+        tracing::debug!("exist_flag is true!!");
         return Ok(AuthStep::NeedPassword{text: TextInfo::UserAlreadyExists});
     }
 
-    tracing::debug!("IT IS NEW USER!");
+    tracing::debug!("exist_flag is false!!");
 
     let salt = SaltString::generate(&mut OsRng);
 

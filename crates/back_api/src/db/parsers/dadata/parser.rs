@@ -31,6 +31,20 @@ pub async fn dadata_reqwest_func(
         })
         .map_err(|_| Status::QueryPostRequestErr)?;
 
+    let status = response.status();
+    tracing::debug!("DaData response status: {}", status);
+
+    if !status.is_success() {
+        let error_body = response.text().await.unwrap_or_else(|_| "Не удалось прочитать тело ответа".to_string());
+        
+        tracing::error!(
+            status_code = %status,
+            body = %error_body,
+            "DaData вернула ошибку вместо данных компании!"
+        );
+        return Err(Status::QueryPostRequestErr);
+    }
+
     let resp_wrap:DadaRespWrap = response
         .json()
         .await
