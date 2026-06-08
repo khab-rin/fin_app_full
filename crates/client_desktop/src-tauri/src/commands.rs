@@ -2,8 +2,8 @@ use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{
     AuthStep, IngoingData, PasswordDataShort, SvelteRegistrationData, TextInfo
 };
-
 use shared_lib::service::auth_service::client_state::NickData;
+use shared_lib::primitives::frozen::implements_base::String1_50;
 
 use crate::state::ClientState;
 use shared_lib::primitives::svelte_validate::SvelteValidator;
@@ -84,7 +84,7 @@ pub async fn cmd_session_by_password(
 #[tauri::command]
 pub async fn cmd_session_by_nick(
     state: tauri::State<'_, ClientState>,
-    nick: String
+    nick: String1_50
 ) -> Result<AuthStep, Status> {
     match restore_session_by_nick(&state, &nick).await {
         Ok(res) => Ok(res),

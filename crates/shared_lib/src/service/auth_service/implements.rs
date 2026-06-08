@@ -88,7 +88,7 @@ pub struct TokenDeviceData {
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub struct PasswordDataShort {
-    pub nick: String,
+    pub nick: String1_50,
     pub password: String,
     pub pers_inn: PersInn,
     pub comp_inn: CompInn,

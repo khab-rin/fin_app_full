@@ -52,5 +52,5 @@ tauri-plugin-log = "2"
 ts-rs = { version = "10.1" }
 
 directories = "6.0.0"
-keyring = "3.6.3"
+keyring = { version = "3.6.3", features = ["sync-secret-service", "crypto-rust"] }
 machine-uid = "0.5.4"

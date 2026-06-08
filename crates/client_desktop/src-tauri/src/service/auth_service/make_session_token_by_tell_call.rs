@@ -1,11 +1,12 @@
 use shared_lib::Status;
-use shared_lib::service::api_routes::implements::{ApiRoutes};
+use shared_lib::service::api_routes::implements::ApiRoutes;
 use shared_lib::service::auth_service::implements::{
     AuthStep, 
     PhoneDeviceData,
     TextInfo
 };
 use shared_lib::service::auth_service::client_state::UserLogInfo;
+use shared_lib::primitives::frozen::implements_base::String1_50;
 
 use crate::state::{ClientState, init_session};
 use crate::service::auth_service::helper::write_log_info;
@@ -13,7 +14,7 @@ use crate::service::auth_service::helper::write_log_info;
 pub(crate) async fn make_session_token_by_tel_call(
     state: &ClientState,
     data: &PhoneDeviceData,
-    nick: &str
+    nick: &String1_50
 ) -> Result<AuthStep, Status> {
     
     let back_api_url = format!("{}/{}",
@@ -77,7 +78,7 @@ pub(crate) async fn make_session_token_by_tel_call(
     match write_log_info(state, nick, &log_info) {
         Ok(_) => {},
         Err(err) => {
-            log::error!("FUN restore_by_password FAILED by writing UserLogInfo, err = {}", err);
+            log::error!("FUN make_session_token_by_tel_call FAILED by writing UserLogInfo, err = {}", err);
         }
     }
 

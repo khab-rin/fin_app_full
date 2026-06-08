@@ -27,6 +27,8 @@ pub(crate) async fn restore_session_by_nick(
         }
     };
 
+    
+
     let user_log_data = match get_keyring_data(state, nick) {
         Ok(None) => return Ok(AuthStep::NeedPassword {text: TextInfo::NewUserInSystem}),
         Ok(Some(u)) => u,

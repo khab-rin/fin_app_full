@@ -1,8 +1,10 @@
 use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::BoxUuid;
+use shared_lib::primitives::frozen::implements_base::String1_50;
 use shared_lib::service::auth_service::client_state::UserLogInfo;
 
 use crate::state::ClientState;
+use crate::service::auth_service::nick_data::add_nickname;
 
 pub(crate) fn get_device_id() -> Result<BoxUuid, Status> {
     let id_string = machine_uid::
@@ -68,7 +70,7 @@ pub(crate) fn get_keyring_data(
 
 pub(crate) fn write_log_info(
     state: &ClientState,
-    nick: &str,
+    nick: &String1_50,
     log_info: &UserLogInfo
 ) -> Result<Status, Status> {
 
@@ -97,15 +99,28 @@ pub(crate) fn write_log_info(
     };
 
     match entry.set_password(&log_info_json) {
-        Ok(_) => Ok(Status::Success),
+        Ok(_) => {},
         Err(err) => {
             log::error!(
                 "FUN write_log_info failed BY keyring::entry.set_password, tech_err = {}, local_err = {}",
                 err, Status::SystemErr
             );
-            Err(Status::SystemErr)
+            return Err(Status::SystemErr);
         }
     }
+
+    match add_nickname(state, nick) {
+        Ok(_) => Ok(Status::Success),
+        Err(err) => {
+            log::error!(
+                "FUN write_log_info failed BY FUN add_nickname, tech_err = {}, local_err = {}",
+                err, Status::SystemErr
+            );
+            return Err(Status::SystemErr);
+        } 
+    }
+
+    
 
 
 }

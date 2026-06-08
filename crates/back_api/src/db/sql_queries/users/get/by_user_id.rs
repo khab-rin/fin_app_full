@@ -33,11 +33,11 @@ pub(crate) async fn get_user_by_user_id(
         Ok(session_user) => Ok(session_user),
         Err(err) => {
             tracing::error!(
-                user_id = %user_id,
-                err = ?err,
-                "FUN get_user_by_user_id FAILED TRYING DTO INTO SessionUserDto"
+                tech_err = ?err,
+                local_err = ?Status::MappingError,
+                "FUN get_user_by_device_token FAILED BY MAPPING SessionUser"
             );
-            Err(err)
+            Err(Status::MappingError)
         }
     }
     

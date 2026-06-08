@@ -54,21 +54,13 @@ pub struct SessionUserDto {
 }
 
 impl std::convert::TryFrom<SessionUserDto> for SessionUser {
-    type Error = Status;
+    type Error = serde_json::Error;
     fn try_from(dto: SessionUserDto) -> Result<Self, Self::Error> {
         Ok(Self { 
-            user: serde_json::
-                from_value(dto.user)
-                .map_err(|_| Status::MappingError)?,
-            
-            person: serde_json::
-                from_value(dto.person)
-                .map_err(|_| Status::MappingError)?,
-            
-            company: serde_json::
-                from_value(dto.company)
-                .map_err(|_| Status::MappingError)?
-         })
+            user: serde_json::from_value(dto.user)?,
+            person: serde_json::from_value(dto.person)?,
+            company: serde_json::from_value(dto.company)?,
+        })
     }
 }
 

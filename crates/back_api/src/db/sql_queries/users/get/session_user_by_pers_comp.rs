@@ -40,11 +40,11 @@ pub(crate) async fn get_session_user_by_pers_comp(
         Ok(session_user) => Ok(Some(session_user)),
         Err(err) => {
             tracing::error!(
-                err = ?err,
-                failed_data = ?(pers_id, comp_id),
-                "FUN session_user_dto_opt FAILED BY MAPPING SessionUser"
+                tech_err = ?err,
+                local_err = ?Status::MappingError,
+                "FUN get_user_by_device_token FAILED BY MAPPING SessionUser"
             );
-            Err(err)
+            Err(Status::MappingError)
         }
     }
 }

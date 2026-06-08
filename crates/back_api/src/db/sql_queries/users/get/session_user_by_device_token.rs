@@ -30,19 +30,21 @@ pub(crate) async fn get_user_by_device_token(
         };
 
     
+    
     let session_user_dto = match session_users_dto_opt {
         Some(s_u) => s_u,
         None => return Ok(None)
     };
 
     match session_user_dto.try_into() {
-        Ok(session_user) => return Ok(Some(session_user)),
+        Ok(session_user) => Ok(Some(session_user)),
         Err(err) => {
             tracing::error!(
-                err = ?err,
+                tech_err = ?err,
+                local_err = ?Status::MappingError,
                 "FUN get_user_by_device_token FAILED BY MAPPING SessionUser"
             );
-            return Err(err);
+            Err(Status::MappingError)
         }
     }
     

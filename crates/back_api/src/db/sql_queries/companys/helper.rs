@@ -31,6 +31,8 @@ pub(crate) async fn make_new_company(
     kpp: &Kpp
 ) -> Result<Company, Status> {
 
+    tracing::debug!("make_new_company started");
+
     let mut meta_d = match dadata_reqwest_func(state, comp_inn, kpp).await {
         Ok(m_d) => m_d,
         Err(err) => {

@@ -132,10 +132,7 @@ pub(crate) async fn register_new_user(
             return Ok(AuthStep::TryLater { text: TextInfo::BackApiError });
         }
     }
-
-    tracing::debug!("PERSON WAS AUTHED!!");
-
-    
+   
     let person = match add_person(state, &person).await {
         Ok(p) => p,
         Err(err) => {
@@ -146,8 +143,6 @@ pub(crate) async fn register_new_user(
             return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
         }
     };
-
-    tracing::debug!("PERSON WAS ADDED!!");
 
     let company_option = match get_company_by_inn_kpp(state, &comp_inn, &kpp).await {
         Ok(c_o) => c_o,
@@ -161,23 +156,15 @@ pub(crate) async fn register_new_user(
         }
     };
 
-    tracing::debug!("company_option WAS GETTED!!");
-
     let company = match company_option {
         Some(c) => {
-            tracing::debug!("company already exists!!");
             c
         },
         None => {
-            tracing::debug!("IT s new company!!");
             match make_new_company(state, &comp_inn, &kpp).await {
                 Ok(c) => {
-                    tracing::debug!("CAOMPANY WAS GETTED BY DADATA");
                     match add_company(state, &c).await {
-                        Ok(comp) => {
-                            tracing::debug!("NEW COMPANY WAS ADDED TO SQL!!");
-                            comp
-                        },
+                        Ok(comp) => comp,
                         Err(err) => {
                             tracing::error!(
                                 err = ?err,
@@ -199,8 +186,6 @@ pub(crate) async fn register_new_user(
         }
     };
 
-    tracing::debug!("company_option WAS ADDED!!");
-
     let exist_flag = match exists_user_by_pers_comp(
         state, 
         &person.pers_id, 
@@ -218,11 +203,8 @@ pub(crate) async fn register_new_user(
 
 
     if exist_flag {
-        tracing::debug!("exist_flag is true!!");
         return Ok(AuthStep::NeedPassword{text: TextInfo::UserAlreadyExists});
     }
-
-    tracing::debug!("exist_flag is false!!");
 
     let salt = SaltString::generate(&mut OsRng);
 
@@ -240,8 +222,6 @@ pub(crate) async fn register_new_user(
             return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
         }
     };
-
-    tracing::debug!("PASSWORD WAS HASHED BY ARGON2");
 
     let user_set_data = UserSetData {
         pers_id: person.pers_id.clone(),

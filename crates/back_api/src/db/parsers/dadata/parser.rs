@@ -11,8 +11,12 @@ pub async fn dadata_reqwest_func(
     inn: &CompInn, 
     kpp: &Kpp
 ) -> Result<CtrprtyMetadata, Status> {
+
+    tracing::debug!("dadata_reqwest_func started");
+
     
-    let client = state.config.get_std_client();
+    let client = state.config.get_inst_client();
+
     let header = state.config.get_dadata_header();
     let url =  &state.config.dadata.dadata_comp_url;
 
@@ -32,7 +36,6 @@ pub async fn dadata_reqwest_func(
         .map_err(|_| Status::QueryPostRequestErr)?;
 
     let status = response.status();
-    tracing::debug!("DaData response status: {}", status);
 
     if !status.is_success() {
         let error_body = response.text().await.unwrap_or_else(|_| "Не удалось прочитать тело ответа".to_string());

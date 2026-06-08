@@ -28,8 +28,10 @@ pub(crate) async fn restore_by_password(
         }
     };
 
+    let password_hash = blake3::hash(data.password.clone().as_bytes()).to_hex().to_string();
+
     let password_data = PasswordData {
-        password: data.password.clone(),
+        password: password_hash,
         device_id,
         pers_inn: data.pers_inn.clone(),
         comp_inn: data.comp_inn.clone(),

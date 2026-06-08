@@ -13,10 +13,12 @@ use crate::state::ClientState;
 
 pub(crate) fn add_nickname(
     state: &ClientState,
-    nick_name: String1_50
+    nick_name: &String1_50
 ) -> Result<bool, Status> {
     
     let app_handle = state.app_handle.clone();
+
+    
 
     let app_path = match app_handle.path().app_data_dir() {
         Ok(p) => p,
@@ -28,6 +30,8 @@ pub(crate) fn add_nickname(
             return Err(Status::SystemErr);
         }
     };
+
+    
 
     match std::fs::create_dir_all(&app_path) {
         Ok(_) => {},
@@ -86,7 +90,7 @@ pub(crate) fn add_nickname(
         }
     };
     
-    data.nick_names.push(nick_name);
+    data.nick_names.push(nick_name.clone());
 
     let nick_names_set: std::collections::HashSet<String1_50> = data.nick_names.into_iter().collect();
 
@@ -129,6 +133,7 @@ pub(crate) fn get_nicknames(
     state: &ClientState,
 ) -> Result<NickData, Status> {
     let app_handle = state.app_handle.clone();
+
 
     let app_path = match app_handle.path().app_data_dir() {
         Ok(p) => p,
@@ -182,7 +187,7 @@ pub(crate) fn get_nicknames(
         }
     }
 
-    let mut data = match contents.is_empty() {
+    let data = match contents.is_empty() {
         true => NickData::default(),
         false => {
             match serde_json::from_str(&contents) {
