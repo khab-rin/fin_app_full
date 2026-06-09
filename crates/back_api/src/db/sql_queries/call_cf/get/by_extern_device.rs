@@ -18,7 +18,7 @@ pub(crate) async fn get_user_time_by_device_external(
             "src/db/sql_queries/call_cf/get/by_extern_device.sql",
             device_id.as_ref(),
             external_id
-        ).fetch_one(&state.pool).await {
+        ).fetch_one(&state.pool_fast).await {
             Ok(r) => r,
             Err(err) => {
                 tracing::error!(

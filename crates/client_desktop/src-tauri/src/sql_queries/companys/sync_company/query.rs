@@ -11,7 +11,7 @@ pub(crate) async fn sync_local_companys(
     companys: &[Company]
 ) -> Result<Vec<CompanyCurt>, Status> {
 
-    log::info!("Запуск синхронизации локальных контрагентов (количество: {})", companys.len());
+    log::debug!("Запуск синхронизации локальных контрагентов (количество: {})", companys.len());
 
     let session = match state.get_session().await {
         Ok(s) => s,

@@ -21,7 +21,7 @@ pub(crate) async fn get_companys_by_inn_kpp(
             "src/db/sql_queries/companys/get/companys_by_inn_kpp.sql",
             &inn_data[..],
             &kpp_data[..]
-        ).fetch_all(&state.pool).await {
+        ).fetch_all(&state.pool_long).await {
             Ok(d) => d,
             Err(err) => {
                 tracing::error!(

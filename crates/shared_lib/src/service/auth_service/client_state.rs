@@ -4,7 +4,6 @@ use std::sync::OnceLock;
 use serde::{Serialize, Deserialize};
 use reqwest::header::HeaderMap;
 
-use crate::Status;
 use crate::primitives::frozen::implements::{BoxUuid, PersInn, CompInn, Kpp, Phone};
 use crate::primitives::frozen::implements_base::String1_50;
 use crate::sql_models::company::implements::Company;
@@ -33,13 +32,14 @@ pub struct TempInfo {
     pub nick: Option<String1_50>
 }
 
+#[derive(Debug)]
 pub struct ActiveSession {
     pub user: SessionUser,
     pub local_db: sqlx::SqlitePool,
     pub token: BoxUuid
 }
 
-#[derive(Serialize, Deserialize, Clone, ts_rs::TS)]
+#[derive(Serialize, Deserialize, Clone, Debug, ts_rs::TS)]
 pub struct SessionUser {
     pub user: User,
     pub person: Person,
@@ -75,7 +75,7 @@ pub struct Headers {
 #[derive(Deserialize, Debug)]
 pub struct SqliteOptions {
     pub max_connections: u32,
-    #[serde(deserialize_with = "time_parser::duration_from_u64")]
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
     pub duration: Duration
 }
 

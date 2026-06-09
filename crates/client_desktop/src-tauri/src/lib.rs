@@ -31,6 +31,7 @@ pub async fn run_lib() {
                 Target::new(TargetKind::Webview),
             ])
             .level(log::LevelFilter::Debug)
+            .level_for("rustls_platform_verifier", log::LevelFilter::Warn)
             .build())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())

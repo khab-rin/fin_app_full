@@ -116,7 +116,7 @@ pub(crate) fn write_log_info(
                 "FUN write_log_info failed BY FUN add_nickname, tech_err = {}, local_err = {}",
                 err, Status::SystemErr
             );
-            return Err(Status::SystemErr);
+            Err(Status::SystemErr)
         } 
     }
 

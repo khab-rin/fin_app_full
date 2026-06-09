@@ -2,7 +2,7 @@
     import { invoke } from "@tauri-apps/api/core";
     import { currAuthStep } from "$lib/models/svelte_models/auth_service/SvelteAuthStep.svelte";
     import type { AuthStep } from '$lib/models/AuthStep';
-    import type {PasswordDataShort} from "$lib/models/PasswordDataShort"
+    import type {PasswordDataClientShort} from "$lib/models/PasswordDataClientShort"
 
     let isPushed = $state(false);
 
@@ -25,7 +25,7 @@
             !currAuthStep.data.password.isValid
         ) return;
 
-        const sendData: PasswordDataShort = {
+        const sendData: PasswordDataClientShort = {
             nick: currAuthStep.data.nick.value,
             password: currAuthStep.data.password.value,
             pers_inn: currAuthStep.data.persInn.value,

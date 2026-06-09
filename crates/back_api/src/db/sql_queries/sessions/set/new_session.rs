@@ -16,7 +16,7 @@ pub(crate) async fn new_session(
             "src/db/sql_queries/sessions/set/new_session.sql",
             user_id.as_ref(),
             device_id.as_ref(),
-        ).fetch_one(&state.pool)
+        ).fetch_one(&state.pool_fast)
         .await {
             Ok(t) => Ok(t.token),
             Err(err) => {

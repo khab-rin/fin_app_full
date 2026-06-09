@@ -170,10 +170,7 @@ pub(crate) async fn bank_parser<P: AsRef<Path>>(
 
         match OperationReadFields::from_map(&block_map) {
             Ok(read_fields) => {
-                let parse_data = match parse_comment(state, &read_fields).await {
-                    Ok(p) => p,
-                    Err(err) => OperationParseData::default() 
-                };
+                let parse_data = parse_comment(state, &read_fields).await.unwrap_or_default(); 
                 parse_result.correct_lines.push(
                     ParsedOperation {
                         read_fields, parse_data

@@ -16,7 +16,7 @@ pub(crate) async fn get_user_by_device_token(
             "src/db/sql_queries/users/get/session_user_by_device_token.sql",
             payload.device_id.as_ref(),
             payload.token.as_ref()
-        ).fetch_optional(&state.pool)
+        ).fetch_optional(&state.pool_fast)
         .await {
             Ok(o) => o,
             Err(err) => {

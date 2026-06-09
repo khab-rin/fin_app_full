@@ -16,7 +16,7 @@ pub(crate) async fn exists_user_by_pers_comp(
             "src/db/sql_queries/users/get/exists_user_by_pers_comp.sql",
             pers_id.as_ref(),
             comp_id.as_ref()
-        ).fetch_optional(&state.pool).await {
+        ).fetch_optional(&state.pool_fast).await {
             Ok(o) => o,
             Err(err) => {
                 tracing::error!(

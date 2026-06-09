@@ -1,27 +1,32 @@
 back_api_url = "http://127.0.0.1:3000"
 
 [network]
-inst_conn_timeout = 1
-inst_tot_timeout = 2
-inst_request_interval = 1
-inst_retries = 3
-inst_poll_intervals = 1
+sql_fast_conn_time = 500
+sql_fast_total_time = 2000
+sql_fast_retry_time = 1000
+sql_fast_retries = 1
 
-std_conn_timeout = 5
-std_tot_timeout = 10
-std_request_interval = 2
-std_retries = 5
-std_poll_intervals = 4
+sql_long_conn_time = 500
+sql_long_total_time = 20000
+sql_long_retry_time = 1000
+sql_long_retries = 1
 
-rel_conn_timeout = 10
-rel_tot_timeout = 60
-rel_request_interval = 3
-rel_retries = 3
-rel_poll_intervals = 10
+inst_conn_timeout = 500
+inst_tot_timeout = 3050
+inst_request_interval = 500
+inst_retries = 1
+
+std_conn_timeout = 500
+std_tot_timeout = 12000
+std_request_interval = 1500
+std_retries = 1
+
+inst_poll_intervals = 4000
+std_poll_intervals = 10000
 
 [sqlite_options]
 max_connections = 5
-duration = 3
+duration = 3000
 
 
 [own_company]

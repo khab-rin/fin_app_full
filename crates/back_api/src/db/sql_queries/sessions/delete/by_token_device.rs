@@ -18,7 +18,7 @@ pub(crate) async fn delete_session_by_token(
             "src/db/sql_queries/sessions/delete/by_token_device.sql",
             token.as_ref(),
             device_id.as_ref()
-        ).fetch_all(&state.pool)
+        ).fetch_all(&state.pool_fast)
         .await
         .inspect_err(|err| {
             tracing::error!(

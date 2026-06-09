@@ -16,7 +16,7 @@ pub(crate) async fn get_user_by_user_id(
             SessionUserDto,
             "src/db/sql_queries/users/get/by_user_id.sql",
             user_id.as_ref()
-        ).fetch_one(&state.pool).await {
+        ).fetch_one(&state.pool_fast).await {
             Ok(dto) => dto,
             Err(err) => {
                 tracing::error!(

@@ -18,7 +18,7 @@ pub(crate) async fn new_cf(
             user_id.as_ref(),
             device_id.as_ref(),
             external_id
-        ).fetch_optional(&state.pool)
+        ).fetch_optional(&state.pool_fast)
         .await
         .inspect_err(|err| {
             tracing::error!(

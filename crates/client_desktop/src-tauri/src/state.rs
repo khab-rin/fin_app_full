@@ -1,7 +1,8 @@
-use tauri::Manager;
+use std::time::Duration;
 use std::str::FromStr;
 use std::sync::{OnceLock, Arc};
 
+use tauri::Manager;
 use serde::Deserialize;
 use reqwest::header::{CONTENT_TYPE, ACCEPT, HeaderMap};
 use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions};
@@ -14,7 +15,7 @@ use shared_lib::service::auth_service::implements::SessionUserToken;
 
 
 
-
+#[derive(Debug)]
 pub struct ClientState {
     pub config: &'static Config,
     pub app_handle: tauri::AppHandle,
@@ -34,6 +35,54 @@ pub struct Config {
     pub headers: Headers,
 }
 
+#[derive(Deserialize, Debug)]
+pub struct NetWork {
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub sql_fast_conn_time: Duration,
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub sql_fast_total_time: Duration,
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub sql_fast_retry_time: Duration,
+    pub sql_fast_retries: u32,
+
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub sql_long_conn_time: Duration,
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub sql_long_total_time: Duration,
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub sql_long_retry_time: Duration,
+    pub sql_long_retries: u32,
+
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub inst_conn_timeout: Duration,
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub inst_tot_timeout: Duration,
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub inst_request_interval: Duration,
+    pub inst_retries: u32,
+
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub std_conn_timeout: Duration,
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub std_tot_timeout: Duration,
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub std_request_interval: Duration,
+    pub std_retries: u32,
+
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub inst_poll_intervals: Duration,
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub std_poll_intervals: Duration,
+    }
+
+#[derive(Default, Debug)]
+pub struct Clients {
+    pub sql_fast: OnceLock<reqwest_middleware::ClientWithMiddleware>,
+    pub sql_long: OnceLock<reqwest_middleware::ClientWithMiddleware>,
+    pub instant: OnceLock<reqwest_middleware::ClientWithMiddleware>,
+    pub standard: OnceLock<reqwest_middleware::ClientWithMiddleware>
+}
+
 
 
 impl Config {
@@ -42,7 +91,7 @@ impl Config {
         INSTANCE.get_or_init(|| {
             dotenvy::dotenv().ok();
             let toml_str = include_str!("../config.toml");
-            let mut config: Config = toml::from_str(toml_str)
+            let config: Config = toml::from_str(toml_str)
                 .expect("CONFIG MAPPING ERROR");
 
             let back_api_header = make_header!([
@@ -51,6 +100,23 @@ impl Config {
             ]);
 
             config.headers.back_api_header.set(back_api_header).expect("STATIC_MEMORY_ERROR!!!");
+            
+            let sql_fast = make_client(
+                config.network.sql_fast_conn_time, 
+                config.network.sql_fast_total_time, 
+                config.network.sql_fast_retry_time, 
+                config.network.sql_fast_retries);
+            
+            config.clients.sql_fast.set(sql_fast).expect("STATIC_MEMORY_ERROR!!!");
+
+            let sql_long = make_client(
+                config.network.sql_long_conn_time, 
+                config.network.sql_long_total_time, 
+                config.network.sql_long_retry_time, 
+                config.network.sql_long_retries);
+            
+            config.clients.sql_long.set(sql_long).expect("STATIC_MEMORY_ERROR!!!");
+            
 
             let inst_client = make_client(
                 config.network.inst_conn_timeout, 
@@ -68,16 +134,17 @@ impl Config {
             
             config.clients.standard.set(std_client).expect("STATIC_MEMORY_ERROR!!!");
             
-            let rel_client = make_client(
-                config.network.rel_conn_timeout, 
-                config.network.rel_tot_timeout, 
-                config.network.rel_request_interval, 
-                config.network.rel_retries);
-            
-            config.clients.relaxed.set(rel_client).expect("STATIC_MEMORY_ERROR!!!");
-
+    
             config
         })
+    }
+
+    pub fn get_sql_fast(&self) -> &'static reqwest_middleware::ClientWithMiddleware {
+        Self::global().clients.sql_fast.get().expect("STATIC_MEMORY_ERROR!!!")
+    }
+
+    pub fn get_sql_long(&self) -> &'static reqwest_middleware::ClientWithMiddleware {
+        Self::global().clients.sql_long.get().expect("STATIC_MEMORY_ERROR!!!")
     }
 
     pub fn get_inst_client(&self) -> &'static reqwest_middleware::ClientWithMiddleware {
@@ -86,10 +153,6 @@ impl Config {
 
     pub fn get_std_client(&self) -> &'static reqwest_middleware::ClientWithMiddleware {
         Self::global().clients.standard.get().expect("STATIC_MEMORY_ERROR!!!")
-    }
-
-    pub fn get_rel_client(&self) -> &'static reqwest_middleware::ClientWithMiddleware {
-        Self::global().clients.relaxed.get().expect("STATIC_MEMORY_ERROR!!!")
     }
 
     pub(crate) fn back_api_header(&self) -> &'static HeaderMap {

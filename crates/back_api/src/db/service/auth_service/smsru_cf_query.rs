@@ -1,7 +1,5 @@
 use std::sync::Arc;
 
-use reqwest_middleware::{ClientBuilder,ClientWithMiddleware,RequestBuilder, Extension, Error, RequestInitialiser,reqwest};
-
 use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::DateTime;
 use shared_lib::service::auth_service::implements::{SmsruGetResResponse, SmsRuResponseTextCode};
@@ -36,12 +34,6 @@ pub(crate) async fn smsru_get_cf(
 
     let pool_result = tokio::time::timeout(total_duration, async {
         loop {
-
-            let resp = client
-                .get(&state.config.smsru.get_stat_url)
-                .json(&query_params)
-                .send()
-                .await;
 
             let response = match client
                 .get(&state.config.smsru.get_stat_url)

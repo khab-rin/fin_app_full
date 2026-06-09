@@ -25,8 +25,8 @@ use super::*;
         service::auth_service::client_state::NickData::export_all_to(output_dir)
             .expect("Не удалось экспортировать UserLogInfo");
 
-        service::auth_service::implements::PasswordDataShort::export_all_to(output_dir)
-            .expect("Не удалось экспортировать PasswordDataShort");
+        service::auth_service::implements::PasswordDataClientShort::export_all_to(output_dir)
+            .expect("Не удалось экспортировать PasswordDataClientShort");
 
         service::auth_service::implements::SvelteRegistrationData::export_all_to(output_dir)
             .expect("Не удалось экспортировать SvelteRegistrationData");

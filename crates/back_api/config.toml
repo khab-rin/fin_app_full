@@ -1,21 +1,16 @@
 [network]
-inst_conn_timeout = 1
-inst_tot_timeout = 2
-inst_request_interval = 1
-inst_retries = 3
-inst_poll_intervals = 1
+inst_conn_timeout = 500
+inst_tot_timeout = 1000
+inst_request_interval = 500
+inst_retries = 1
 
-std_conn_timeout = 5
-std_tot_timeout = 10
-std_request_interval = 2
-std_retries = 5
-std_poll_intervals = 4
+std_conn_timeout = 500
+std_tot_timeout = 5000
+std_request_interval = 1000
+std_retries = 1
 
-rel_conn_timeout = 10
-rel_tot_timeout = 60
-rel_request_interval = 3
-rel_retries = 3
-rel_poll_intervals = 10
+inst_poll_intervals = 4000
+std_poll_intervals = 10000
 
 [dadata]
 dadata_comp_url = "https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party"
@@ -28,3 +23,9 @@ get_stat_url = "https://sms.ru/callcheck/status"
 [email_sender]
 base_url = "https://api.resend.com/emails"
 from = "Security <onboarding@resend.dev>"
+
+[postgresql_options]
+fast_max_conn = 15
+fast_timeout = 800
+long_max_conn = 5
+long_timeout = 15000

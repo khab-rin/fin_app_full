@@ -17,7 +17,7 @@ pub(crate) async fn get_companys_by_id(
             CompanyDto,
             "src/db/sql_queries/companys/get/companys_by_id.sql",
             id_data
-        ).fetch_all(&state.pool)
+        ).fetch_all(&state.pool_fast)
         .await
         .inspect(|err| {
             tracing::error!(

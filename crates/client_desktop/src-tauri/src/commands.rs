@@ -1,6 +1,6 @@
 use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{
-    AuthStep, IngoingData, PasswordDataShort, SvelteRegistrationData, TextInfo
+    AuthStep, IngoingData, PasswordDataClientShort, SvelteRegistrationData, TextInfo
 };
 use shared_lib::service::auth_service::client_state::NickData;
 use shared_lib::primitives::frozen::implements_base::String1_50;
@@ -37,7 +37,11 @@ pub async  fn cmd_is_state_active_init(
 ) -> Result<AuthStep, Status> {
 
     log::debug!("cmd_is_state_active_init running!!!!");
+
+    std::println!("{:?}", state.config.sqlite_options.duration);
+
     let session_ref = state.session.lock().await;
+    
     if let Some(ref session) = *session_ref {
         match session.local_db.acquire().await {
             Ok(_) => Ok(AuthStep::SuccessShort {  }),
@@ -76,7 +80,7 @@ pub async fn cmd_logout(
 #[tauri::command]
 pub async fn cmd_session_by_password(
     state: tauri::State<'_, ClientState>,
-    data: PasswordDataShort
+    data: PasswordDataClientShort
 ) -> Result<AuthStep, Status> {
     restore_by_password(&state, &data).await
 }
@@ -88,7 +92,7 @@ pub async fn cmd_session_by_nick(
 ) -> Result<AuthStep, Status> {
     match restore_session_by_nick(&state, &nick).await {
         Ok(res) => Ok(res),
-        Err(err) => Ok(AuthStep::TryLater { text: TextInfo::ClientApiSystemError })
+        Err(_) => Ok(AuthStep::TryLater { text: TextInfo::ClientApiSystemError })
     }
 }
 

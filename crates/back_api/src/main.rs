@@ -82,8 +82,22 @@ async fn main() {
         }
     };
 
+    let pool_fast = config::create_pool(
+        &base_url, 
+        &config::Config::global().postgresql_options.fast_max_conn, 
+        &config::Config::global().postgresql_options.fast_timeout
+    ).await;
+
+    let pool_long = config::create_pool(
+        &base_url, 
+        &config::Config::global().postgresql_options.long_max_conn, 
+        &config::Config::global().postgresql_options.long_timeout
+    ).await;
+
+
     let state = Arc::new(config::BackApiState {
-        pool,
+        pool_fast,
+        pool_long,
         config: config::Config::global()
     });
 

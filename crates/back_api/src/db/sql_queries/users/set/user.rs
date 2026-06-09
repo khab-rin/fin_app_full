@@ -36,7 +36,7 @@ pub(crate) async fn set_user(
             mchd_tax_file.as_deref(),
             mchd_home_guid.as_deref(),
             mchd_home_file.as_deref(),
-        ).fetch_one(&state.pool).await {
+        ).fetch_one(&state.pool_fast).await {
             Ok(u) => Ok(u),
             Err(err) => {
                 tracing::error!(

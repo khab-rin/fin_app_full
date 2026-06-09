@@ -32,7 +32,7 @@ pub(crate) fn person_checker(
     let parsed_sur_name = fio_parts[0]; // "ХАБИПОВ"
     
     let name_and_mid: Vec<&str> = fio_parts[1].split_whitespace().collect();
-    let parsed_first_name = name_and_mid.get(0).copied().unwrap_or("");
+    let parsed_first_name = name_and_mid.first().copied().unwrap_or("");
     let parsed_mid_name = name_and_mid.get(1).copied().unwrap_or("");
 
     let sur_name: &str = person.metadata.fio.sur_name.as_ref();

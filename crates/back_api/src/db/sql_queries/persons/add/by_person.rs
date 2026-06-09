@@ -18,7 +18,7 @@ pub(crate) async fn add_person(
             person.pers_id.as_ref(),
             person.pers_inn.as_ref(),
             serde_json::to_value(&person.metadata).unwrap_or_default()
-        ).fetch_optional(&state.pool)
+        ).fetch_optional(&state.pool_fast)
         .await {
             Ok(r) => r,
             Err(err) => {

@@ -3,9 +3,6 @@ use std::sync::OnceLock;
 use serde::Deserialize;
 use reqwest::header::HeaderMap;
 
-use crate::service::auth_service::general::{NetWork, Clients};
-
-
 #[derive(Deserialize, Debug, Default)]
 pub struct DataBase {
     #[serde(skip, default)]

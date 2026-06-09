@@ -20,7 +20,7 @@ pub(crate) async fn add_company(
             company.comp_type.as_str(),
             company.comp_status.as_str(),
             serde_json::to_value(&company.metadata).unwrap_or_default()
-        ).fetch_optional(&state.pool).await {
+        ).fetch_optional(&state.pool_fast).await {
             Ok(dto) => dto,
             Err(err) => {
                 tracing::error!(

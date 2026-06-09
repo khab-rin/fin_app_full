@@ -79,7 +79,7 @@ pub(crate) async fn sync_server_companys(
             &type_d[..],
             &status_d[..],
             &mt_d[..]
-        ).fetch_all(&state.pool)
+        ).fetch_all(&state.pool_long)
         .await
         .inspect_err(|err| {
             tracing::error!(

@@ -18,7 +18,7 @@ pub(crate) async fn get_company_by_inn_kpp(
         "src/db/sql_queries/companys/get/company_by_inn_kpp.sql",
         inn.as_ref(),
         kpp.as_ref()
-    ).fetch_optional(&state.pool)
+    ).fetch_optional(&state.pool_fast)
     .await {
         Ok(opt_d) => opt_d,
         Err(err) => {

@@ -145,8 +145,6 @@ pub(crate) fn init_rubf_from_str(amount: &str) -> Result<Decimal, Status> {
 pub(crate) fn init_date_time_from_str(val: &str) -> Result<chrono::DateTime<chrono::Utc>, Status> {
     let s = val.trim();
     
-    tracing::info!("=== ВАЛИДАТОР ДАТЫ ВЫЗВАН С ТЕКСТОМ: '{}' ===", s);
-
     if s.is_empty() {
         return Ok(chrono::Utc::now());
     }

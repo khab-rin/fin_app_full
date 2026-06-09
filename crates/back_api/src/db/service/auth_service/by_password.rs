@@ -7,11 +7,11 @@ use argon2::{
 
 use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{
-    CheckPasswordData, 
+    PasswordDataBackApi, 
     AuthStep
 };
 use shared_lib::service::auth_service::implements::{
-    PasswordData,
+    PasswordDataClient,
     TokenDeviceData,
     TextInfo
 };
@@ -24,7 +24,7 @@ use crate::config::BackApiState;
 
 pub(crate) async fn restore_session_by_passord(
     state: &Arc<BackApiState>,
-    data: &PasswordData
+    data: &PasswordDataClient
 ) -> Result<AuthStep, Status> {
 
     let failed_data = data;
@@ -48,7 +48,7 @@ pub(crate) async fn restore_session_by_passord(
         }
     };
 
-    let CheckPasswordData { 
+    let PasswordDataBackApi { 
         user_id, 
         phone, 
         password_hash, 

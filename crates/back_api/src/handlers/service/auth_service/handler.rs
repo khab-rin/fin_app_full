@@ -6,7 +6,7 @@ use shared_lib::service::auth_service::implements::{
     TokenDeviceData,
     RegistrationData,
     AuthStep,
-    PasswordData,
+    PasswordDataClient,
     PhoneDeviceData
 };
 
@@ -40,7 +40,7 @@ pub async fn register_user_by_crypto_handler(
 
 pub async fn restore_by_password_handler(
     State(state) : State<Arc<BackApiState>>,
-    Json(payload): Json<PasswordData>
+    Json(payload): Json<PasswordDataClient>
 ) -> Result<Json<AuthStep>, Status> {
     let res = restore_session_by_passord(&state, &payload).await?;
 

@@ -1,8 +1,8 @@
 use shared_lib::Status;
 use shared_lib::service::api_routes::implements::ApiRoutes;
 use shared_lib::service::auth_service::implements::{
-    PasswordData,
-    PasswordDataShort,
+    PasswordDataClient,
+    PasswordDataClientShort,
     AuthStep,
     TextInfo
 };
@@ -15,7 +15,7 @@ use crate::service::auth_service::helper::{get_device_id, write_log_info};
 
 pub(crate) async fn restore_by_password(
     state: &ClientState,
-    data: &PasswordDataShort
+    data: &PasswordDataClientShort
 ) -> Result<AuthStep, Status> {
 
     let device_id = match get_device_id() {
@@ -30,7 +30,7 @@ pub(crate) async fn restore_by_password(
 
     let password_hash = blake3::hash(data.password.clone().as_bytes()).to_hex().to_string();
 
-    let password_data = PasswordData {
+    let password_data = PasswordDataClient {
         password: password_hash,
         device_id,
         pers_inn: data.pers_inn.clone(),

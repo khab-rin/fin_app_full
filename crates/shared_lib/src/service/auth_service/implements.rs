@@ -1,11 +1,8 @@
 use serde::{Deserialize, Serialize};
 
-
-use crate::Status;
 use crate::sql_models::person::implements::Person;
 use crate::primitives::frozen::implements_base::String1_50;
 use crate::primitives::frozen::implements::{BoxUuid, CompInn, Email, FirstName, Kpp, MidName, Password, PersInn, Phone, Snils, SurName};
-use crate::primitives::composite::implements::Fio;
 use crate::service::auth_service::client_state::SessionUser;
 
 
@@ -87,7 +84,7 @@ pub struct TokenDeviceData {
 }
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
-pub struct PasswordDataShort {
+pub struct PasswordDataClientShort {
     pub nick: String1_50,
     pub password: String,
     pub pers_inn: PersInn,
@@ -96,7 +93,7 @@ pub struct PasswordDataShort {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct PasswordData {
+pub struct PasswordDataClient {
     pub password: String,
     pub device_id: BoxUuid,
     pub pers_inn: PersInn,
@@ -105,7 +102,7 @@ pub struct PasswordData {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct CheckPasswordData {
+pub struct PasswordDataBackApi {
     pub user_id: BoxUuid, 
     pub phone: Phone,
     pub password_hash: String,

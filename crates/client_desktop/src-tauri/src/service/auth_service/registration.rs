@@ -1,4 +1,3 @@
-use serde_json::json;
 use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::{BoxUuid, DateTime};
 use shared_lib::service::auth_service::implements::{
@@ -127,7 +126,7 @@ pub async fn register_user(
 
     let response = match state
         .config
-        .get_rel_client()
+        .get_inst_client()
         .post(&back_api_url)
         .headers(state.config.back_api_header().clone())
         .json(&registration_data)
@@ -191,7 +190,7 @@ pub async fn register_user(
         Ok(_) => Ok(AuthStep::SuccessShort {}),
         Err(err) => {
             log::error!("FUN register_user FAILED BY init_session, err = {}",err);
-            return Ok(AuthStep::TryLater {text: TextInfo::ClientApiSystemError});
+            Ok(AuthStep::TryLater {text: TextInfo::ClientApiSystemError})
         }
     }
 
