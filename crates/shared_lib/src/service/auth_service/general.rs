@@ -14,7 +14,6 @@ pub fn make_client(
     let client= reqwest::Client::builder()
         .connect_timeout(conn_timeout)
         .timeout(tot_timeout)
-        .no_proxy()
         .build()
         .expect("FATAL: Failed to build reqwest::Client");
 

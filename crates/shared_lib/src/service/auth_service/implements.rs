@@ -118,9 +118,9 @@ pub struct WarnEmailData {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct PhoneDeviceData {
+pub struct ExternalDeviceData {
+    pub external_id: String, 
     pub device_id: BoxUuid,
-    pub external_id: String 
 }
 
 

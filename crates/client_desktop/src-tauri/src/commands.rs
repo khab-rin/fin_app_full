@@ -13,6 +13,7 @@ use crate::service::process::bank_statement::proceed::process_statement;
 use crate::service::auth_service::nick_data::get_nicknames;
 use crate::service::auth_service::ingoing_data::make_ingoing_doc;
 use crate::service::auth_service::registration::register_user;
+use crate::service::auth_service::make_session_by_tell_call::make_session_by_tel_call;
 
 #[tauri::command]
 pub async fn cmd_process_bank_statement(
@@ -38,7 +39,7 @@ pub async  fn cmd_is_state_active_init(
 
     log::debug!("cmd_is_state_active_init running!!!!");
 
-    std::println!("{:?}", state.config.sqlite_options.duration);
+    log::debug!("{:?}", state.config.sqlite_options.duration);
 
     let session_ref = state.session.lock().await;
     
@@ -63,6 +64,8 @@ pub async  fn cmd_is_state_active_fast(
     state: tauri::State<'_, ClientState>
 ) -> Result<bool, Status> {
 
+    log::debug!("cmd_is_state_active_fast running!!!!");
+
     let session = state.session.lock().await;
     Ok(session.is_some())
 }
@@ -71,6 +74,8 @@ pub async  fn cmd_is_state_active_fast(
 pub async fn cmd_logout(
     state: tauri::State<'_, ClientState>
 ) -> Result<(), Status> {
+
+    log::debug!("cmd_logout running!!!!");
 
     let mut session_ref = state.session.lock().await;
     *session_ref = None;
@@ -82,6 +87,9 @@ pub async fn cmd_session_by_password(
     state: tauri::State<'_, ClientState>,
     data: PasswordDataClientShort
 ) -> Result<AuthStep, Status> {
+
+    log::debug!("cmd_session_by_password running!!!!");
+
     restore_by_password(&state, &data).await
 }
 
@@ -90,6 +98,9 @@ pub async fn cmd_session_by_nick(
     state: tauri::State<'_, ClientState>,
     nick: String1_50
 ) -> Result<AuthStep, Status> {
+
+    log::debug!("cmd_session_by_nick running!!!!");
+
     match restore_session_by_nick(&state, &nick).await {
         Ok(res) => Ok(res),
         Err(_) => Ok(AuthStep::TryLater { text: TextInfo::ClientApiSystemError })
@@ -109,6 +120,9 @@ pub fn cmd_validate_field(
 pub fn cmd_get_nick_names(
     state: tauri::State<'_, ClientState>
 ) -> Result<NickData, Status> {
+
+    log::debug!("cmd_get_nick_names running");
+
     get_nicknames(&state)
 }
 
@@ -137,9 +151,17 @@ pub async fn cmd_register_user(
     log::debug!("cmd_register_user running");
     
     let res = register_user(&state, data).await;
-    if res.is_err() {
-        log::debug!("cmd_register_user failed");
-    }
 
     res
+}
+
+#[tauri::command]
+pub async fn cmd_session_by_tel_call(
+    state: tauri::State<'_, ClientState>,
+    external_id: String,
+    nick: String1_50
+) -> Result<AuthStep, Status> {
+    
+    make_session_by_tel_call(&state, &external_id, &nick).await
+
 }

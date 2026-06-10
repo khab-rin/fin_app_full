@@ -131,8 +131,8 @@ pub(crate) fn add_nickname(
 pub(crate) fn get_nicknames(
     state: &ClientState,
 ) -> Result<NickData, Status> {
-    let app_handle = state.app_handle.clone();
 
+    let app_handle = state.app_handle.clone();
 
     let app_path = match app_handle.path().app_data_dir() {
         Ok(p) => p,
@@ -201,6 +201,8 @@ pub(crate) fn get_nicknames(
             }
         }
     };
+
+    log::debug!("NICKNAMES GETTED IN CLIENT API");
 
     Ok(data)
 }

@@ -35,7 +35,7 @@ pub(crate) async fn get_restore_password_data(
                 tracing::error!(
                     tech_err = ?err,
                     local_err = ?Status::SqlQueryWrongLogic,
-                    "FUN get_auth_password_check FAILED BY SQL QUERY"
+                    "FUN get_restore_password_data FAILED BY SQL QUERY"
                 );
                 Err(Status::SqlQueryWrongLogic)
             }

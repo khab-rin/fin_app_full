@@ -45,7 +45,7 @@ pub(crate) async fn restore_by_password(
 
     let response = match state
         .config
-        .get_inst_client()
+        .get_std_client()
         .post(&back_api_url)
         .headers(state.config.back_api_header().clone())
         .json(&password_data)

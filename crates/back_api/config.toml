@@ -1,11 +1,11 @@
 [network]
-inst_conn_timeout = 500
-inst_tot_timeout = 1000
+inst_conn_timeout = 1000
+inst_tot_timeout = 2500
 inst_request_interval = 500
 inst_retries = 1
 
-std_conn_timeout = 500
-std_tot_timeout = 5000
+std_conn_timeout = 3000
+std_tot_timeout = 6000
 std_request_interval = 1000
 std_retries = 1
 

@@ -35,7 +35,7 @@ pub(crate) async fn restore_session_by_passord(
             tracing::error!(
                 err = ?err,
                 failed_data = ?failed_data,
-                "FUN restore_user_by_authdata FAILED BY get_auth_password_check FUN"
+                "FUN restore_session_by_passord FAILED BY get_restore_password_data FUN"
             );
             return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
         }
@@ -92,7 +92,7 @@ pub(crate) async fn restore_session_by_passord(
             tracing::error!(
                 err = ?err,
                 user_id = %user_id,
-                "FUN restore_user_by_authdata FAILED ON GETTING CALL BACK PHONE BY FUN smsru_get_phone"
+                "FUN restore_session_by_passord FAILED ON GETTING CALL BACK PHONE BY FUN smsru_get_phone"
             );
             return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
         }

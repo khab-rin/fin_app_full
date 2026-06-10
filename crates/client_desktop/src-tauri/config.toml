@@ -1,23 +1,23 @@
 back_api_url = "http://127.0.0.1:3000"
 
 [network]
-sql_fast_conn_time = 500
+sql_fast_conn_time = 1000
 sql_fast_total_time = 2000
 sql_fast_retry_time = 1000
 sql_fast_retries = 1
 
-sql_long_conn_time = 500
+sql_long_conn_time = 1000
 sql_long_total_time = 20000
 sql_long_retry_time = 1000
 sql_long_retries = 1
 
-inst_conn_timeout = 500
-inst_tot_timeout = 3050
+inst_conn_timeout = 1000
+inst_tot_timeout = 7700
 inst_request_interval = 500
 inst_retries = 1
 
-std_conn_timeout = 500
-std_tot_timeout = 12000
+std_conn_timeout = 1000
+std_tot_timeout = 19500
 std_request_interval = 1500
 std_retries = 1
 

@@ -14,14 +14,19 @@ pub(crate) async fn smsru_get_phone(
     let url = &state.config.smsru.call_add_url;
     let api_key = &state.config.smsru.api;
     let client = state.config.get_std_client();
+
+    let query_params = vec![
+        ("api_id", api_key.to_string()),
+        ("phone", phone.to_string()),
+        ("json", "1".to_string()),
+    ];
+
+    tracing::debug!("url = {}, query_params = {:?}", url, query_params);
+    tracing::debug!("client = {:?}", client);
      
     let response = client
         .get(url)
-        .query(&[
-            ("api_id", api_key.as_str()),
-            ("phone", phone),
-            ("json", "1")
-        ])
+        .query(&query_params)
         .send()
         .await
         .inspect_err(|err| {

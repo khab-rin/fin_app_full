@@ -8,11 +8,14 @@
 
     onMount(async() => {
         try {
+            console.error("Loading START");
             const data = await invoke<NickData>('cmd_get_nick_names');
             if (!data.nick_names || data.nick_names.length === 0) {
+                console.error("data.nick_names GETTED zero Nicks");
                 let next_step: AuthStep = { NeedPassword: {text: "Пользователь не найден на устройстве, требуется авторизоваться по паролю или пройти регистрацию"} };
                 currAuthStep.add(next_step);
             } else {
+                console.error("data.nick_names GETTED");
                 currAuthStep.nick_names = data;
                 let next_step: AuthStep = { NickName: { text: "Выберите из списка нужного пользователя, в случае отсутствия авторизуйтесь через пароль, либо зарегистрируйтесь"} };
                 currAuthStep.add(next_step);

@@ -2,23 +2,23 @@ use std::sync::Arc;
 
 use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::{DateTime, BoxUuid};
-use shared_lib::service::auth_service::implements::{PhoneDeviceData};
+use shared_lib::service::auth_service::implements::{ExternalDeviceData};
 
 use crate::config::BackApiState;
 
 pub(crate) async fn get_user_time_by_device_external(
     state: &Arc<BackApiState>,
-    data: &PhoneDeviceData
-) -> Result<(BoxUuid, DateTime), Status> {
+    data: &ExternalDeviceData
+) -> Result<Option<(BoxUuid, DateTime)>, Status> {
 
-    let PhoneDeviceData {device_id, external_id } = data;
+    let ExternalDeviceData {device_id, external_id } = data;
 
-    let record = match sqlx::
+    let record_opt = match sqlx::
         query_file!(
             "src/db/sql_queries/call_cf/get/by_extern_device.sql",
             device_id.as_ref(),
             external_id
-        ).fetch_one(&state.pool_fast).await {
+        ).fetch_optional(&state.pool_fast).await {
             Ok(r) => r,
             Err(err) => {
                 tracing::error!(
@@ -32,5 +32,9 @@ pub(crate) async fn get_user_time_by_device_external(
             }
         };
 
-    Ok((record.user_id, record.expires_t))
+    let result = record_opt.map(|row| {
+        (row.user_id, row.expires_t) 
+    });
+
+    Ok(result)
 }

@@ -126,7 +126,7 @@ pub async fn register_user(
 
     let response = match state
         .config
-        .get_inst_client()
+        .get_std_client()
         .post(&back_api_url)
         .headers(state.config.back_api_header().clone())
         .json(&registration_data)

@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{ 
-    PhoneDeviceData, 
+    ExternalDeviceData, 
     SessionUserToken, 
     AuthStep,
     TextInfo
@@ -15,24 +15,29 @@ use crate::db::sql_queries::sessions::set::new_session::new_session;
 use crate::db::sql_queries::users::get::by_user_id::get_user_by_user_id;
 
 
-pub(crate) async fn make_session_token_by_tel_call(
+pub(crate) async fn make_session_by_tel_call(
     state: &Arc<BackApiState>,
-    data: &PhoneDeviceData
+    data: &ExternalDeviceData
 ) -> Result<AuthStep, Status> {
 
-    let PhoneDeviceData {external_id, device_id} = data;
+    let ExternalDeviceData {external_id, device_id} = data;
 
-    let (user_id, expires_t) = match get_user_time_by_device_external(state, data).await {
-        Ok(wrap) => wrap,
+    let expire_option = match get_user_time_by_device_external(state, data).await {
+        Ok(o) => o,
         Err(err) => {
             tracing::error!(
-                data = ?data,
-                tech_err = ?err,
-                "FUN restore_user_by_tel_call FAILED BY FUN get_user_time_by_device_external"
+                local_err = ?err,
+                "FUN make_session_by_tel_call FAILED BY FUN get_user_time_by_device_external"
             );
-            return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
+            return Ok(AuthStep::TryLater { text: TextInfo::BackApiError });
         }
     };
+
+    let (user_id, expires_t) = match expire_option {
+        Some((a, b)) => (a, b),
+        None => return Ok(AuthStep::NeedRegistration { text: TextInfo::MissUserNeedRegistration })
+    };
+
 
     let phone_cf = match smsru_get_cf(state, &expires_t, external_id).await {
         Ok(cf) => cf,

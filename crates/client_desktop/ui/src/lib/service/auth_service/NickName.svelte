@@ -1,305 +1,330 @@
-<script lang="ts">
-    import { onMount, onDestroy } from "svelte";
+<script lang='ts'>
     import { invoke } from "@tauri-apps/api/core";
     import { currAuthStep } from "$lib/models/svelte_models/auth_service/SvelteAuthStep.svelte";
-    import type { AuthStep } from "$lib/models/AuthStep";
+    import type { AuthStep } from '$lib/models/AuthStep';
 
-    let isLoading = $state(false);
-    let isPolling = $state(false);
-    let pollTimer: ReturnType<typeof setTimeout> | null = null;
-    let localNotice = $state("");
-    let noticeType = $state<"warning" | "error" | "">("");
+    let IsPushed = $state(false);
+    let dialogRef = $state<HTMLDialogElement | null>(null);
 
-    // Извлекаем данные шага CallIn
-    const callInData = $derived(() => {
-        if (currAuthStep.step && "CallIn" in currAuthStep.step) {
-            return currAuthStep.step.CallIn;
-        }
-        return null;
-    });
+    // Функция открытия модального окна
+    function openAccountsModal() {
+        if (dialogRef) dialogRef.showModal();
+    }
 
-    // Единая функция проверки статуса (и для полинга, и для кнопки)
-    async function verifyStatus(isManualClick = false) {
-        const data = callInData();
-        if (!data || isLoading) return;
+    // Функция закрытия модального окна
+    function closeAccountsModal() {
+        if (dialogRef) dialogRef.close();
+    }
 
-        // Если это ручной клик, сбрасываем текущий фоновый таймер, чтобы запросы не пересекались
-        if (pollTimer) {
-            clearTimeout(pollTimer);
-            pollTimer = null;
-        }
+    async function call_nick_handle(selectedNick: string) {
+        if (IsPushed) return;
+        
+        IsPushed = true;
+        closeAccountsModal(); // Закрываем окно сразу при выборе
+        currAuthStep.data.nick.value = selectedNick;
 
+        console.log("ОТПРАВЛЯЕМ НИК НА БЭКЕНД:", selectedNick);
+        
         try {
-            if (isManualClick) {
-                isLoading = true; // Спиннер на кнопке включаем только при ручном нажатии
-                localNotice = "";
-                noticeType = "";
-            }
-
-            // Запрос в Tauri
-            const nextStep = await invoke<AuthStep>("check_sms_call_status", {
-                externalId: data.external_id
-            });
-
-            // Если фаза сменилась (Успех / Ошибка) — останавливаем всё и двигаем менеджер шагов
-            if (!("CallIn" in nextStep)) {
-                isPolling = false;
-                currAuthStep.add(nextStep);
-                return;
-            }
-
-            // Если вернулся тот же CallIn, но обновился внутренний стейт/текст
-            if (JSON.stringify(nextStep) !== JSON.stringify(currAuthStep.step)) {
-                currAuthStep.step = nextStep;
-            }
-
-            // Если пользователь нажал кнопку руками, а звонка еще нет — покажем подсказку
-            if (isManualClick) {
-                localNotice = "Система пока не зафиксировала звонок. Пожалуйста, убедитесь, что набрали номер, или подождите немного.";
-                noticeType = "warning";
-            }
-
-        } catch (err) {
-            console.error("Ошибка верификации звонка:", err);
-            if (isManualClick) {
-                localNotice = "Не удалось связаться с сервером. Попробуйте нажать еще раз.";
-                noticeType = "error";
-            }
-        } finally {
-            if (isManualClick) {
-                isLoading = false;
-            }
+            let next_step = await invoke<AuthStep>('cmd_session_by_nick', { nick: selectedNick });
+            console.log("БЭКЕНД УСПЕШНО ВЕРНУЛ ШАГ:", next_step);
             
-            // Расписание на следующий фоновый тик (если полинг активен)
-            if (isPolling) {
-                pollTimer = setTimeout(() => verifyStatus(false), 4000);
-            }
+            IsPushed = false;
+            currAuthStep.add(next_step);
+        } catch (err) {
+            let next_step: AuthStep = { 
+                TryLater: { text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"} 
+            };
+            console.error("ОШИБКА В call_nick_handle:", err);
+            IsPushed = false; 
+            currAuthStep.add(next_step);
         }
     }
 
-    onMount(() => {
-        if (callInData()) {
-            isPolling = true;
-            // Первый фоновый запрос пойдет через 4 секунды после открытия экрана
-            pollTimer = setTimeout(() => verifyStatus(false), 4000);
-        } else {
-            localNotice = "Данные для авторизации по звонку не найдены.";
-            noticeType = "error";
-        }
-    });
+    function goToPassword() {
+        let next_step: AuthStep = { NeedPassword: { text: "" } };
+        currAuthStep.add(next_step);
+    }
 
-    onDestroy(() => {
-        isPolling = false;
-        if (pollTimer) clearTimeout(pollTimer);
-    });
-
-    function handleBack() {
-        currAuthStep.back();
+    function goToRegistration() {
+        let next_step: AuthStep  = {NeedRegistration: { text: "" } };
+        currAuthStep.add(next_step);
     }
 </script>
 
-<div class="call-in-container">
-    {#if callInData()}
-        <div class="auth-card">
-            <h2 class="title">Проверка входящего вызова</h2>
-            
-            <p class="instruction-text">
-                Для авторизации на новом устройстве позвоните по номеру телефона ниже, 
-                сбросьте вызов после первого гудка и нажмите на кнопку <strong>"Авторизоваться"</strong> 
-                (или просто подождите, система проверяет статус автоматически).
-            </p>
+<div class="auth-container">
+    <p class="info-text">
+        {currAuthStep.currentText}
+    </p>
 
-            <div class="phone-display">
-                <span class="phone-label">Номер для звонка:</span>
-                <span class="phone-number">{callInData()?.phone}</span>
+    <div class="account-selector-wrapper">
+        <button
+            type="button"
+            disabled={IsPushed}
+            class="google-style-trigger"
+            onclick={openAccountsModal}
+        >
+            <div class="user-avatar-stub">
+                {currAuthStep.data.nick.value ? currAuthStep.data.nick.value.charAt(0).toUpperCase() : "?"}
             </div>
-
-            {#if !localNotice && isPolling}
-                <div class="polling-indicator">
-                    <span class="dot animate-ping"></span>
-                    <span class="text">Автоматическая проверка статуса каждые 4 сек...</span>
-                </div>
-            {/if}
-
-            {#if localNotice}
-                <div class="status-message {noticeType}">
-                    {localNotice}
-                </div>
-            {/if}
-
-            <div class="actions-vertical">
-                <button 
-                    class="btn-primary" 
-                    disabled={isLoading} 
-                    onclick={() => verifyStatus(true)}
-                >
-                    {#if isLoading}
-                        <span class="spinner-small"></span> Проверяем...
-                    {:else}
-                        Авторизоваться
-                    {/if}
-                </button>
-
-                <button class="btn-link" disabled={isLoading} onclick={handleBack}>
-                    ⬅ Назад (изменить данные)
-                </button>
+            <div class="user-info-stub">
+                <span class="username-label">
+                    {currAuthStep.data.nick.value || "Выбрать аккаунт на устройстве"}
+                </span>
+                <span class="sub-label">
+                    {currAuthStep.data.nick.value ? "Текущий выбор" : "Нажмите для просмотра списка"}
+                </span>
             </div>
+            <span class="arrow-icon">❯</span>
+        </button>
+    </div>
+
+    <dialog 
+        bind:this={dialogRef} 
+        class="google-dialog"
+        onclick={(e) => { if (e.target === dialogRef) closeAccountsModal(); }}
+    >
+        <div class="dialog-header">
+            <h3>Выбор аккаунта</h3>
+            <p>Выберите профиль для продолжения работы с XPinAT</p>
         </div>
-    {:else}
-        <div class="loading-state">
-            <span class="spinner">⏳</span>
-            <p>Загрузка данных авторизации...</p>
+
+        <div class="dialog-content">
+            {#if currAuthStep.nick_names.nick_names.length > 0}
+                <ul class="account-list">
+                    {#each currAuthStep.nick_names.nick_names as name (name)}
+                        <li>
+                            <button 
+                                type="button" 
+                                class="account-item-btn"
+                                onclick={() => call_nick_handle(name)}
+                            >
+                                <div class="avatar-circle">{name.charAt(0).toUpperCase()}</div>
+                                <span class="account-name">{name}</span>
+                            </button>
+                        </li>
+                    {/each}
+                </ul>
+            {:else}
+                <p class="no-accounts">На этом устройстве еще нет сохраненных аккаунтов</p>
+            {/if}
         </div>
+
+        <div class="dialog-footer">
+            <button type="button" class="btn-close-modal" onclick={closeAccountsModal}>Отмена</button>
+        </div>
+    </dialog>
+
+    {#if currAuthStep.data.nick.value}
+        <button 
+            type="button" 
+            class="btn-submit" 
+            disabled={IsPushed}
+            onclick={() => call_nick_handle(currAuthStep.data.nick.value)}
+        >
+            {#if IsPushed}
+                <span class="spinner"></span>
+                <span>Проверка...</span>
+            {:else}
+                <span>Войти как {currAuthStep.data.nick.value}</span>
+            {/if}
+        </button>
     {/if}
+
+    <div class="auth-navigation-links">
+        <button type="button" class="btn-link" disabled={IsPushed} onclick={goToPassword}>
+            Вход по паролю
+        </button>
+        <span class="divider">|</span>
+        <button type="button" class="btn-link" disabled={IsPushed} onclick={goToRegistration}>
+            Зарегистрироваться
+        </button>
+    </div>
 </div>
 
 <style>
-    /* Все предыдущие стили остаются в силе, добавляем пару новых для индикатора полинга */
-    .call-in-container {
+    /* Стили главного триггера а-ля Google Аккаунты */
+    .google-style-trigger {
         display: flex;
-        justify-content: center;
         align-items: center;
-        padding: 2rem;
-        min-height: 400px;
-    }
-    .auth-card {
-        background: #1e1e2e;
-        border: 1px solid #313244;
-        border-radius: 12px;
-        padding: 2.5rem;
         width: 100%;
-        max-width: 450px;
-        text-align: center;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-    }
-    .title {
-        font-size: 1.4rem;
-        font-weight: 700;
-        color: #cdd6f4;
-        margin-bottom: 1.2rem;
-    }
-    .instruction-text {
-        font-size: 0.95rem;
-        color: #a6adc8;
-        line-height: 1.6;
-        margin-bottom: 2rem;
-    }
-    .instruction-text strong {
-        color: #b4befe;
-    }
-    .phone-display {
-        background: #11111b;
+        padding: 0.75rem 1rem;
+        background-color: #fff;
+        border: 1px solid #dadce0;
         border-radius: 8px;
-        padding: 1.25rem;
-        margin-bottom: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.4rem;
-        border: 1px dashed #45475a;
-    }
-    .phone-label {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #6c7086;
-    }
-    .phone-number {
-        font-family: monospace;
-        font-size: 1.6rem;
-        font-weight: 700;
-        color: #a6e3a1;
-        letter-spacing: 0.02em;
-    }
-    
-    /* Индикатор автоматического полинга */
-    .polling-indicator {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        margin-bottom: 1.5rem;
-    }
-    .polling-indicator .dot {
-        width: 8px;
-        height: 8px;
-        background-color: #a6e3a1;
-        border-radius: 50%;
-    }
-    .polling-indicator .text {
-        font-size: 0.8rem;
-        color: #6c7086;
+        cursor: pointer;
+        text-align: left;
+        transition: background-color 0.2s, border-color 0.2s;
     }
 
-    .status-message {
-        font-size: 0.85rem;
-        padding: 0.75rem;
-        border-radius: 6px;
-        margin-bottom: 1.5rem;
-        line-height: 1.4;
+    .google-style-trigger:hover:not(:disabled) {
+        background-color: #f8f9fa;
+        border-color: #d2e3fc;
     }
-    .status-message.warning {
-        background: rgba(249, 226, 175, 0.1);
-        color: #f9e2af;
-        border: 1px solid rgba(249, 226, 175, 0.2);
+
+    .user-avatar-stub {
+        width: 40px;
+        height: 40px;
+        background-color: #e8f0fe;
+        color: #1a73e8;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+        margin-right: 1rem;
     }
-    .status-message.error {
-        background: rgba(243, 139, 168, 0.1);
-        color: #f38ba8;
-        border: 1px solid rgba(243, 139, 168, 0.2);
-    }
-    .actions-vertical {
+
+    .user-info-stub {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
-        margin-top: 0.5rem;
+        flex-grow: 1;
     }
-    .btn-primary {
-        background: #b4befe;
-        color: #11111b;
-        font-weight: 600;
-        padding: 0.75rem;
-        border-radius: 6px;
-        border: none;
-        cursor: pointer;
-        transition: background 0.2s;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 0.5rem;
+
+    .username-label {
         font-size: 1rem;
-        width: 100%;
+        font-weight: 500;
+        color: #3c4043;
     }
-    .btn-primary:hover:not(:disabled) {
-        background: #cba6f7;
+
+    .sub-label {
+        font-size: 0.8rem;
+        color: #70757a;
     }
-    .btn-primary:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
+
+    .arrow-icon {
+        color: #70757a;
+        font-size: 0.9rem;
     }
-    .btn-link {
-        background: transparent;
+
+    /* Стили нативного модального окна <dialog> */
+    .google-dialog {
         border: none;
-        color: #6c7086;
+        border-radius: 8px;
+        padding: 1.5rem;
+        width: 90%;
+        max-width: 400px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+        background: white;
+    }
+
+    /* Эффект размытия/затемнения заднего фона модалки */
+    .google-dialog::backdrop {
+        background-color: rgba(32, 33, 36, 0.6);
+        backdrop-filter: blur(2px);
+    }
+
+    .dialog-header h3 {
+        margin: 0 0 0.25rem 0;
+        font-size: 1.4rem;
+        font-weight: 500;
+        color: #202124;
+        text-align: center;
+    }
+
+    .dialog-header p {
+        margin: 0 0 1.5rem 0;
+        font-size: 0.9rem;
+        color: #5f6368;
+        text-align: center;
+    }
+
+    .account-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        max-height: 250px;
+        overflow-y: auto;
+        border-top: 1px solid #dadce0;
+        border-bottom: 1px solid #dadce0;
+    }
+
+    .account-item-btn {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding: 0.75rem 0.5rem;
+        background: none;
+        border: none;
         cursor: pointer;
-        font-size: 0.85rem;
+        text-align: left;
+        transition: background-color 0.15s;
     }
-    .btn-link:hover:not(:disabled) {
-        color: #a6adc8;
-        text-decoration: underline;
+
+    .account-item-btn:hover {
+        background-color: #f8f9fa;
     }
-    .spinner-small {
-        width: 16px;
-        height: 16px;
-        border: 2px solid rgba(17, 17, 27, 0.2);
-        border-top-color: #11111b;
+
+    .avatar-circle {
+        width: 32px;
+        height: 32px;
+        background-color: #f1f3f4;
+        color: #5f6368;
         border-radius: 50%;
-        animation: spin 0.8s linear infinite;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+        margin-right: 0.75rem;
     }
-    @keyframes spin {
-        to { transform: rotate(360deg); }
+
+    .account-name {
+        font-size: 1rem;
+        font-weight: 400;
+        color: #3c4043;
     }
-    @keyframes animate-ping {
-        0% { transform: scale(1); opacity: 1; }
-        70%, 100% { transform: scale(2.5); opacity: 0; }
+
+    .dialog-footer {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 1rem;
     }
+
+    .btn-close-modal {
+        background: none;
+        border: 1px solid #dadce0;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        color: #5f6368;
+        font-weight: 500;
+    }
+
+    .btn-close-modal:hover {
+        background-color: #f8f9fa;
+        color: #202124;
+    }
+
+    .no-accounts {
+        text-align: center;
+        color: #70757a;
+        padding: 1rem 0;
+    }
+
+    /* Базовые кнопки и ссылки */
+    .btn-submit {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        padding: 0.75rem;
+        background-color: #1a73e8;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 1rem;
+    }
+    .btn-submit:disabled { background-color: #b3d7ff; cursor: not-allowed; }
+    .spinner { width: 18px; height: 18px; border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: white; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .auth-navigation-links { display: flex; justify-content: center; align-items: center; gap: 0.75rem; margin-top: 1.5rem; font-size: 0.9rem; }
+    .btn-link { background: none; border: none; color: #1a73e8; cursor: pointer; padding: 0; font-size: inherit; }
+    .btn-link:hover:not(:disabled) { text-decoration: underline; }
+    .btn-link:disabled { color: #aaa; }
+    .divider { color: #ccc; user-select: none; }
 </style>
