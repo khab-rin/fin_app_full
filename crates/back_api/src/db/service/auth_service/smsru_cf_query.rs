@@ -70,8 +70,15 @@ pub(crate) async fn smsru_get_cf(
         return Err(Status::BackSmsRuBalance)
     }
 
+
+
     if let Some(status) = smsru_response.check_status {
-        Ok(status)
+        match status {
+            400 => Ok(SmsRuResponseTextCode::Polling),
+            401 => Ok(SmsRuResponseTextCode::SuccessConfirmed),
+            402 => Ok(SmsRuResponseTextCode::TimeOut),
+            _ => Ok(SmsRuResponseTextCode::UnknownCode)
+        }
     } else {
         Err(Status::BackApiError)
     }

@@ -3,17 +3,10 @@
     import '$lib/style/global.css'
     import favicon from '$lib/assets/favicon.svg';
 	import { goTo } from '$lib/rules/navigation';
-	import { onMount } from 'svelte';
-	import { checkSessionInit } from '$lib/service/auth_service/check_state';
 	import { currAuthStep } from '$lib/models/svelte_models/auth_service/SvelteAuthStep.svelte';
 	import AuthManager from '$lib/service/auth_service/AuthManager.svelte';
 
 	let { children } = $props<{ children: import('svelte').Snippet }>();
-
-
-	onMount(async () => {
-		await checkSessionInit();
-	});
 
 
 </script>

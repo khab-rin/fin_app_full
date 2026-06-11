@@ -19,6 +19,7 @@ pub enum AuthStep {
     NeedPassword {text: TextInfo},
     NeedRegistration {text: TextInfo},
     CallIn { phone: Phone, external_id: String, text: TextInfo },
+    CallInWaiting { text: TextInfo },
     SuccessFull { session_user_token: Box<SessionUserToken> },
     SuccessShort {},
     TryLater { text: TextInfo },
@@ -45,9 +46,6 @@ pub enum TextInfo {
     #[serde(rename = "Пароль к связке входных параметров неверный")]
     WrongPassword,
 
-    #[serde(rename = "Звонок с указанного телефона по указанному номеру не был получен, повторите процесс заново")]
-    SmsRuCallMiss,
-
     #[serde(rename = "Некорректные файлы подписи, пройдите процесс заново")]
     WrongSignFile,
 
@@ -66,12 +64,19 @@ pub enum TextInfo {
     #[serde(rename = "Вход пользователя с нового устройста, для подтверждения позвоните с указанного при регистрации номера по указанному номеру в течение 5 минут, затем нажмите далее. Звонок бесплатный и скинется после первого гудка")]
     CallIn,
 
+    #[serde(rename = "Звонок с указанного телефона по указанному номеру не был получен, время истекло, повторите процесс заново")]
+    CallInnTimeOut,
+
+    #[serde(rename = "Звонок по указанному номеру не был осуществлен, позвоните по этому номеру")]
+    CallInWaiting,
+
     #[serde(rename = "Выберите из списка нужного пользователя, в случае отсутствия авторизуйтесь через пароль, либо зарегистрируйтесь")]
     InitInfo,
 
     #[serde(rename = "Страница загружается, подождите пожалуйста. В случае зависания попробуйте обновить или перезагрузить приложение")]
     LoadingInfo,
 
+    
     #[serde(rename = "")]
     Nothing,
 }
@@ -117,7 +122,7 @@ pub struct WarnEmailData {
     pub kpp: Kpp
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub struct ExternalDeviceData {
     pub external_id: String, 
     pub device_id: BoxUuid,
@@ -149,7 +154,7 @@ pub struct SmsruCallResponse {
 pub struct SmsruGetResResponse {
     pub status: String,
     pub status_code: i32,
-    pub check_status: Option<SmsRuResponseTextCode>,
+    pub check_status: Option<i32>,
     pub check_status_text: Option<String>,
 }
 

@@ -1,6 +1,8 @@
 import type { AuthStep } from '$lib/models/AuthStep';
 import type { NickData } from '$lib/models/NickData';
+
 import {FieldValidator} from "$lib/service/validate/FieldValidator.svelte";
+import { invoke } from '@tauri-apps/api/core';
 
 class SvelteAuthStep {
     step = $state<AuthStep>({
@@ -14,6 +16,7 @@ class SvelteAuthStep {
     
     constructor() {
         this.steps.push(this.step);
+        this.init();
     }
 
     next() {
@@ -31,6 +34,10 @@ class SvelteAuthStep {
     }
 
     add(next_step: AuthStep) {
+        if ("Loading" in next_step) {
+            this.step = next_step;
+            return
+        }
         this.steps.length = this.index + 1;
         this.steps.push(next_step);
         this.index++;
@@ -70,6 +77,23 @@ class SvelteAuthStep {
         }
         
         return '';
+    }
+
+    private async init() {
+        try {
+            const data = await invoke<NickData>('cmd_get_nick_names');
+            this.nick_names = data; 
+
+            const nextStep = await invoke<AuthStep>("cmd_is_state_active_init");
+            
+            this.add(nextStep);
+
+        } catch (error) {
+            console.error("Ошибка инициализации в синглтоне:", error);
+            this.add({ 
+                TryLater: { text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение" } 
+            });
+        }
     }
 }
 

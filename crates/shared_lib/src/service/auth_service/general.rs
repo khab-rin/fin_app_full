@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use serde::{Deserialize, Deserializer};
+use serde::Deserializer;
 use reqwest_middleware::ClientWithMiddleware;
 
 

@@ -46,7 +46,8 @@ pub async fn run_lib() {
             commands::cmd_validate_field,
             commands::cmd_get_nick_names,
             commands::cmd_make_ingoing_doc,
-            commands::cmd_register_user
+            commands::cmd_register_user,
+            commands::cmd_session_by_tel_call
         ]).build(tauri::generate_context!())
         .expect("error while building tauri application");
         

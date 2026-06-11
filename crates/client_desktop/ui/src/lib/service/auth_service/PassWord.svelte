@@ -56,11 +56,6 @@
         currAuthStep.add(next_step);
     }
 
-    function handleGoToNickName() {
-        let next_step: AuthStep = {NickName: {text: ""}};
-        currAuthStep.add(next_step);
-    }
-
     function handleGoBack() {
         currAuthStep.back(); 
     }
@@ -76,7 +71,6 @@
         {currAuthStep.currentText}
     </p>
 
-    <!-- Поле: Никнейм -->
     <div class="form-group">
         <label for="nick">Имя пользователя</label>
         <input 
@@ -109,7 +103,6 @@
         {/if}
     </div>
 
-    <!-- Поле: ИНН Организации -->
     <div class="form-group">
         <label for="compInn">ИНН организации</label>
         <input 
@@ -125,7 +118,6 @@
         {/if}
     </div>
 
-    <!-- Поле: КПП Организации -->
     <div class="form-group">
         <label for="kpp">КПП организации</label>
         <input 
@@ -141,7 +133,6 @@
         {/if}
     </div>
 
-    <!-- Поле: Пароль -->
     <div class="form-group">
         <label for="password">Пароль</label>
         <input 
@@ -157,134 +148,41 @@
         {/if}
     </div>
 
-    <section class="grid-section">
-        <div class="quick-links">
-            
-            <button 
-                type="button" 
-                onclick={handleAuthSubmit}
-                disabled={
-                    isPushed || 
-                    !currAuthStep.data.nick.isValid || 
-                    !currAuthStep.data.persInn.isValid || 
-                    !currAuthStep.data.compInn.isValid || 
-                    !currAuthStep.data.kpp.isValid || 
-                    !currAuthStep.data.password.isValid}
-                class="grid-item"
-                id="auth-submit-btn"
-            >
-                <span class="btn-icon">
-                    {#if isPushed}⏳{:else}🔑{/if}
-                </span>
-                <span class="btn-label">
-                    {#if isPushed}Вход...{:else}Войти{/if}
-                </span>
+    <section class="navi-buttons">
+        <button 
+            type="button" 
+            onclick={handleAuthSubmit}
+            disabled={
+                isPushed || 
+                !currAuthStep.data.nick.isValid || 
+                !currAuthStep.data.persInn.isValid || 
+                !currAuthStep.data.compInn.isValid || 
+                !currAuthStep.data.kpp.isValid || 
+                !currAuthStep.data.password.isValid
+            }
+            class="main-button"
+            id="auth-submit-btn"
+        >
+            <span class="navi-buttons.btn-icon">
+                {#if isPushed}⏳{:else}🔑{/if}
+            </span>
+            <span class="btn-label">
+                {#if isPushed}Вход...{:else}Отправить{/if}
+            </span>
+        </button>
+
+        <div class="buttons-grid-row">
+            <button type="button" onclick={handleGoBack} class="nav-btn-item">
+                <span class="nav-btn-text">Назад</span>
             </button>
 
-            <button 
-                type="button" 
-                onclick={handleGoToRegister} 
-                disabled={isPushed} 
-                class="grid-item"
-                id="auth-register-btn"
-            >
-                <span class="btn-icon">📝</span>
-                <span class="btn-label">Регистрация</span>
+            <button type="button" onclick={handleGoToRegister} disabled={isPushed} class="nav-btn-item">
+                <span class="nav-btn-text">Регистрация</span>
             </button>
 
-            <button 
-                type="button" 
-                onclick={handleGoToNickName} 
-                disabled={isPushed} 
-                class="grid-item"
-                id="auth-select-user-btn"
-            >
-                <span class="btn-icon">👤</span>
-                <span class="btn-label">Выбрать пользователя</span>
+            <button type="button" onclick={handleGoNext} class="nav-btn-item">
+                <span class="nav-btn-text">Вперед</span>
             </button>
-
-            <button 
-                type="button" 
-                onclick={handleGoBack} 
-                class="grid-item"
-                id="auth-select-user-btn"
-            >
-                <span class="btn-icon">👤</span>
-                <span class="btn-label">Назад</span>
-            </button>
-
-            <button 
-                type="button" 
-                onclick={handleGoNext} 
-                class="grid-item"
-                id="auth-select-user-btn"
-            >
-                <span class="btn-icon">👤</span>
-                <span class="btn-label">Вперед</span>
-            </button>
-
         </div>
     </section>
 </div>
-
-<style>
-    .auth-card {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        max-width: 400px;
-        margin: 40px auto;
-        padding: 24px;
-        background: #ffffff;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-    }
-
-    label {
-        font-size: 14px;
-        font-weight: 500;
-        color: #333333;
-    }
-
-    .input-field {
-        padding: 10px;
-        font-size: 14px;
-        border: 1px solid #cccccc;
-        border-radius: 4px;
-        outline: none;
-        transition: border-color 0.2s, background-color 0.2s;
-    }
-
-    .input-field:focus {
-        border-color: #007bff;
-    }
-
-    /* ИСПРАВЛЕНО: Изменено название класса с .invalid на .input-error */
-    /* Сделали красный цвет чуть мягче для приятного UX */
-    .input-field.input-error {
-        border-color: #dc3545;
-        background-color: #fdf2f2;
-    }
-
-    /* ДОБАВЛЕНО: Стили для текста ошибок под инпутами */
-    .error-message {
-        font-size: 12px;
-        color: #dc3545;
-        margin-top: -2px;
-    }
-
-    /* ДОБАВЛЕНО: Визуальное состояние инпутов при отправке в Tauri */
-    .input-field:disabled {
-        background-color: #f5f5f5;
-        color: #888888;
-        cursor: not-allowed;
-    }
-
-</style>

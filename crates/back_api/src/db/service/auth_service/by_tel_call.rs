@@ -2,10 +2,7 @@ use std::sync::Arc;
 
 use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{ 
-    ExternalDeviceData, 
-    SessionUserToken, 
-    AuthStep,
-    TextInfo
+    AuthStep, ExternalDeviceData, SessionUserToken, SmsRuResponseTextCode, TextInfo
 };
 
 use crate::config::BackApiState;
@@ -20,6 +17,8 @@ pub(crate) async fn make_session_by_tel_call(
     data: &ExternalDeviceData
 ) -> Result<AuthStep, Status> {
 
+
+
     let ExternalDeviceData {external_id, device_id} = data;
 
     let expire_option = match get_user_time_by_device_external(state, data).await {
@@ -33,13 +32,15 @@ pub(crate) async fn make_session_by_tel_call(
         }
     };
 
+    tracing::debug!(call_cf_line = ?expire_option, "Checking CallCf Query");
+
     let (user_id, expires_t) = match expire_option {
         Some((a, b)) => (a, b),
         None => return Ok(AuthStep::NeedRegistration { text: TextInfo::MissUserNeedRegistration })
     };
 
 
-    let phone_cf = match smsru_get_cf(state, &expires_t, external_id).await {
+    let phone_cf = match smsru_get_cf(state, external_id).await {
         Ok(cf) => cf,
         Err(err) => {
             tracing::error!(
@@ -51,8 +52,17 @@ pub(crate) async fn make_session_by_tel_call(
         }
     };
 
-    if !phone_cf {
-        return Ok(AuthStep::NeedPassword {text: TextInfo::SmsRuCallMiss});
+    match phone_cf {
+        SmsRuResponseTextCode::Polling => {
+            return Ok(AuthStep::CallInWaiting { text: TextInfo::CallInWaiting });
+        },
+        SmsRuResponseTextCode::SuccessConfirmed => {},
+        SmsRuResponseTextCode::TimeOut => {
+            return Ok(AuthStep::NeedPassword { text: TextInfo::CallInnTimeOut })
+        },
+        SmsRuResponseTextCode::UnknownCode => {
+            return Ok(AuthStep::TryLater { text: TextInfo::BackApiError })
+        }
     }
 
     let token = match new_session(state, &user_id, device_id).await {

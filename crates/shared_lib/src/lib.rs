@@ -25,6 +25,8 @@ use super::*;
         service::auth_service::client_state::NickData::export_all_to(output_dir)
             .expect("Не удалось экспортировать UserLogInfo");
 
+
+
         service::auth_service::implements::PasswordDataClientShort::export_all_to(output_dir)
             .expect("Не удалось экспортировать PasswordDataClientShort");
 
@@ -36,6 +38,9 @@ use super::*;
 
         primitives::svelte_validate::SvelteValidator::export_all_to(output_dir)
             .expect("Не удалось экспортировать SvelteValidator");
+
+        service::auth_service::implements::ExternalDeviceData::export_all_to(output_dir)
+            .expect("Не удалось экспортировать ExternalDeviceData");
     }
 }
 

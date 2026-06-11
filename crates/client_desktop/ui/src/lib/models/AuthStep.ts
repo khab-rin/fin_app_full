@@ -3,4 +3,4 @@ import type { Phone } from "./Phone";
 import type { SessionUserToken } from "./SessionUserToken";
 import type { TextInfo } from "./TextInfo";
 
-export type AuthStep = { "Loading": { text: TextInfo, } } | { "NickName": { text: TextInfo, } } | { "NeedPassword": { text: TextInfo, } } | { "NeedRegistration": { text: TextInfo, } } | { "CallIn": { phone: Phone, external_id: string, text: TextInfo, } } | { "SuccessFull": { session_user_token: SessionUserToken, } } | { "SuccessShort": Record<string, never> } | { "TryLater": { text: TextInfo, } } | { "TokenDevicePairMiss": { text: TextInfo, } };
+export type AuthStep = { "Loading": { text: TextInfo, } } | { "NickName": { text: TextInfo, } } | { "NeedPassword": { text: TextInfo, } } | { "NeedRegistration": { text: TextInfo, } } | { "CallIn": { phone: Phone, external_id: string, text: TextInfo, } } | { "CallInWaiting": { text: TextInfo, } } | { "SuccessFull": { session_user_token: SessionUserToken, } } | { "SuccessShort": Record<string, never> } | { "TryLater": { text: TextInfo, } } | { "TokenDevicePairMiss": { text: TextInfo, } };
