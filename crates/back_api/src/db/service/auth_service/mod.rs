@@ -5,6 +5,5 @@ pub(crate) mod delete_token;
 pub(crate) mod send_warn_mail;
 pub(crate) mod smsru_cf_query;
 pub(crate) mod registration;
-pub(crate) mod validate_fields;
 pub(crate) mod pers_sign_parser;
 pub(crate) mod by_tel_call;

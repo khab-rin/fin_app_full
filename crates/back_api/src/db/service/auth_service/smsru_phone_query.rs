@@ -21,8 +21,6 @@ pub(crate) async fn smsru_get_phone(
         ("json", "1".to_string()),
     ];
 
-    tracing::debug!("url = {}, query_params = {:?}", url, query_params);
-    tracing::debug!("client = {:?}", client);
      
     let response = client
         .get(url)

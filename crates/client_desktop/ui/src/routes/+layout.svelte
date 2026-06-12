@@ -5,8 +5,11 @@
 	import { goTo } from '$lib/rules/navigation';
 	import { currAuthStep } from '$lib/models/svelte_models/auth_service/SvelteAuthStep.svelte';
 	import AuthManager from '$lib/service/auth_service/AuthManager.svelte';
+	import TopBarButton from "$lib/service/Settings/TopBarButton.svelte";
 
 	let { children } = $props<{ children: import('svelte').Snippet }>();
+
+	let isSettingsOpen = $state(false);
 
 
 </script>
@@ -23,15 +26,14 @@
 		<span class="avatar-icon">👤</span>
 		</div>
 		<input type="text" class="search-input" placeholder="Поиск...">
-		<button class="param-btn">⚙️</button>
+		<button class="param-btn" onclick={() => isSettingsOpen = true}>⚙️</button>
 	</header>
+	<TopBarButton bind:show={isSettingsOpen} />
 
-	<section class="user-identity">
-		<h1>ИП Иванов Иван Иванович</h1>
-	</section>
+
 
 	<main class="main-content">
-		{#if 'SuccessShort' in currAuthStep.step }
+		{#if currAuthStep.isAuthorized }
 			{@render children()}
 		{:else}
 			<AuthManager/>

@@ -1,5 +1,6 @@
 <script>
     import { currAuthStep } from "$lib/models/svelte_models/auth_service/SvelteAuthStep.svelte";
+    import {AuthStepType} from "$lib/service/auth_service/AuthValues";
     import Loading from "$lib/service/auth_service/Loading.svelte";
     import CallIn from '$lib/service/auth_service/CallIn.svelte';
     import NickName from '$lib/service/auth_service/NickName.svelte';
@@ -9,15 +10,15 @@
 
 </script>
 
-{#if "Loading" in currAuthStep.step}
+{#if AuthStepType.Loading in currAuthStep.step}
     <Loading/>
-{:else if 'NickName' in currAuthStep.step }
+{:else if AuthStepType.NickName in currAuthStep.step }
     <NickName/>
-{:else if 'NeedPassword' in currAuthStep.step }
+{:else if AuthStepType.NeedPassword in currAuthStep.step }
     <PassWord/>
-{:else if 'CallIn' in currAuthStep.step }
+{:else if AuthStepType.CallIn in currAuthStep.step }
     <CallIn/>
-{:else if 'NeedRegistration' in currAuthStep.step }
+{:else if AuthStepType.NeedRegistration in currAuthStep.step }
     <Registration/>
 {:else}
     <TryLater/>

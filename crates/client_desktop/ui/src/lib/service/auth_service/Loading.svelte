@@ -22,7 +22,7 @@
 </script>
 
 <div>
-    <p class="info-text">
+    <p class="auth-text-step">
         {currAuthStep.currentText}
     </p>
 </div>

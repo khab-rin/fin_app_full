@@ -30,7 +30,7 @@ pub async fn run_lib() {
                 Target::new(TargetKind::LogDir { file_name: Some("app_logs".to_string()) }),
                 Target::new(TargetKind::Webview),
             ])
-            .level(log::LevelFilter::Debug)
+            .level(log::LevelFilter::Info)
             .level_for("rustls_platform_verifier", log::LevelFilter::Warn)
             .build())
         .plugin(tauri_plugin_dialog::init())

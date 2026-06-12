@@ -162,6 +162,8 @@ pub async fn cmd_session_by_tel_call(
     nick: String1_50
 ) -> Result<AuthStep, Status> {
     
-    make_session_by_tel_call(&state, &external_id, &nick).await
+    let res = make_session_by_tel_call(&state, &external_id, &nick).await?;
+    
+    Ok(res)
 
 }

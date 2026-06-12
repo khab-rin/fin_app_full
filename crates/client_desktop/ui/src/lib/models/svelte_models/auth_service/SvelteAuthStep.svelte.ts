@@ -1,6 +1,7 @@
 import type { AuthStep } from '$lib/models/AuthStep';
 import type { NickData } from '$lib/models/NickData';
 
+import {AuthStepType} from "$lib/service/auth_service/AuthValues";
 import {FieldValidator} from "$lib/service/validate/FieldValidator.svelte";
 import { invoke } from '@tauri-apps/api/core';
 
@@ -34,14 +35,27 @@ class SvelteAuthStep {
     }
 
     add(next_step: AuthStep) {
-        if ("Loading" in next_step) {
+        if (AuthStepType.Loading in next_step) {
             this.step = next_step;
             return
+        }
+        if (AuthStepType.SuccessShort in next_step) {
+            this.data.password.value = "";
         }
         this.steps.length = this.index + 1;
         this.steps.push(next_step);
         this.index++;
         this.step = next_step;
+    }
+
+    reset() {
+        const next_step: AuthStep = { Loading: {text: "Страница загружается, подождите пожалуйста. В случае зависания попробуйте обновить или перезагрузить приложение"}};
+        this.index = -1;
+        this.add(next_step);
+    }
+
+    get isAuthorized() {
+        return AuthStepType.SuccessShort in this.step;
     }
 
     data = $state({

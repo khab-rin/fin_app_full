@@ -4,7 +4,6 @@ mod config;
 mod models;
 
 use std::sync::Arc;
-use sqlx::PgPool;
 use axum::{routing::post, Router};
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::{fmt, prelude::*, EnvFilter};
@@ -51,7 +50,7 @@ async fn main() {
 
     // 4. Задаем фильтры для консоли и записи в файл с помощью строки
     let log_filter = EnvFilter::try_from_default_env()
-        .unwrap_or_else(|_| "back_api=debug,tower_http=debug,axum::rejection=trace".into());
+        .unwrap_or_else(|_| "back_api=debug,tower_http=warn,axum=warn,sqlx=warn".into());
 
     // 5. Регистрируем все вместе
     tracing_subscriber::registry()
@@ -64,32 +63,14 @@ async fn main() {
 
     let base_url = &config::Config::global().data_base.database_url;
 
-    let mut attemps = 0;
-
-    let pool = loop {
-        attemps += 1;
-        match PgPool::connect(base_url).await {
-            Ok(p) => {break p;}
-            Err(er) => { 
-                tracing::warn!("Попытка подключения к БД №{} не удалась", attemps);
-                if attemps == 5 { 
-                    tracing::error!("ФАТАЛЬНАЯ ОШИБКА: Не удалось подключиться к PostgreSQL после 5 попыток. Завершение работы.");
-
-                    panic!("Database connection failed: {}", er);
-                }
-                tokio::time::sleep(std::time::Duration::from_secs(5)).await;
-            }
-        }
-    };
-
     let pool_fast = config::create_pool(
-        &base_url, 
+        base_url, 
         &config::Config::global().postgresql_options.fast_max_conn, 
         &config::Config::global().postgresql_options.fast_timeout
     ).await;
 
     let pool_long = config::create_pool(
-        &base_url, 
+        base_url, 
         &config::Config::global().postgresql_options.long_max_conn, 
         &config::Config::global().postgresql_options.long_timeout
     ).await;

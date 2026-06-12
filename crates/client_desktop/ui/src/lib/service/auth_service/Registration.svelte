@@ -84,6 +84,7 @@
                 console.log("Документ успешно сохранен по пути:", docPath);
 
                 docPathSaved = docPath;
+                isPushedDoc = false;
                 isGeneratedDoc = true;
     
             } else {
@@ -133,11 +134,17 @@
             signature_path: signPath,
         }
 
+        isPushedReg = true;
+
         try {
-            currAuthStep.step = await invoke<AuthStep>("cmd_register_user", {data: regData});
+            let next_step: AuthStep = await invoke<AuthStep>("cmd_register_user", {data: regData});
+            isPushedReg = false;
+            currAuthStep.add(next_step);
         } catch (err) {
             console.error("Registration FAILED, err = ", err);
-            currAuthStep.step = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
+            isPushedReg = false;
+            let next_step: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
+            currAuthStep.add(next_step);
         }
     }
 
@@ -156,7 +163,7 @@
 </script>
 
 <div class="auth-card">
-    <p>
+    <p class="auth-text-step">
         {currAuthStep.currentText}
     </p>
 
@@ -341,201 +348,145 @@
 
 
     {:else}
-        <div class="success-container">
-            <p class="success-notice">🎉 Шаг 1 завершен: заявление успешно сформировано и сохранено!</p>
-            
-            <hr class="divider" />
+        <p class="success-notice">🎉 Шаг 1 завершен: заявление успешно сформировано и сохранено!</p>
+        
+        <hr class="divider" />
 
-            <div class="form-group">
-                <label for="nick">Никнейм (Логин для входа)</label>
+        <div class="form-group">
+            <label for="nick">Никнейм (Логин для входа)</label>
+            <input 
+                id="nick" 
+                type="text" 
+                bind:value={currAuthStep.data.nick.value} 
+                disabled={isPushedReg}
+                placeholder="Придумайте уникальный логин"
+                class="input-field"
+                class:input-error={!currAuthStep.data.nick.isValid}
+            />
+            {#if !currAuthStep.data.nick.isValid}
+                <span class="error-message">Некорректный никнейм (от 1 до 50 символов)</span>
+            {/if}
+        </div>
+
+        <div class="form-group">
+            <label for="password">Придумайте пароль приложения</label>
+            <input 
+                id="password" 
+                type="password" 
+                bind:value={currAuthStep.data.password.value} 
+                disabled={isPushedReg}
+                placeholder="Минимум 6 символов"
+                class="input-field"
+                class:input-error={!currAuthStep.data.password.isValid}
+            />
+            {#if !currAuthStep.data.password.isValid}
+                <span class="error-message">Слишком короткий или простой пароль</span>
+            {/if}
+        </div>
+
+        <div class="form-group">
+            <label for="passwordRepeat">Повторите пароль</label>
+            <input 
+                id="passwordRepeat" 
+                type="password" 
+                bind:value={passwordRepeat} 
+                disabled={isPushedReg}
+                placeholder="Введите пароль еще раз"
+                class="input-field"
+                class:input-error={currAuthStep.data.password.value !== passwordRepeat && passwordRepeat !== ''}
+            />
+            {#if currAuthStep.data.password.value !== passwordRepeat && passwordRepeat !== ''}
+                <span class="error-message">Пароли не совпадают</span>
+            {/if}
+        </div>
+
+        <hr class="divider" />
+
+        <div class="form-group">
+            <label for="document">Сформированное заявление (.doc)</label>
+            <div class="file-picker-wrapper">
                 <input 
-                    id="nick" 
+                    id="document"
                     type="text" 
-                    bind:value={currAuthStep.data.nick.value} 
-                    disabled={isPushedReg}
-                    placeholder="Придумайте уникальный логин"
-                    class="input-field"
-                    class:input-error={!currAuthStep.data.nick.isValid}
+                    value={docPathSaved} 
+                    disabled 
+                    class="input-field file-path-input" 
                 />
-                {#if !currAuthStep.data.nick.isValid}
-                    <span class="error-message">Некорректный никнейм (от 1 до 50 символов)</span>
-                {/if}
+                <button 
+                    type="button" 
+                    class="secondary-btn" 
+                    onclick={handleIngoingDoc}
+                    disabled={isPushedReg}
+                >
+                    Пересохранить
+                </button>
             </div>
+        </div>
 
-            <div class="form-group">
-                <label for="password">Придумайте пароль приложения</label>
+        <div class="form-group">
+            <label for="sigPath">Файл электронной подписи (.doc.sig)</label>
+            <div class="file-picker-wrapper">
                 <input 
-                    id="password" 
-                    type="password" 
-                    bind:value={currAuthStep.data.password.value} 
-                    disabled={isPushedReg}
-                    placeholder="Минимум 6 символов"
-                    class="input-field"
-                    class:input-error={!currAuthStep.data.password.isValid}
+                    id="sigPath"
+                    type="text" 
+                    value={signPath || 'Файл подписи не выбран...'} 
+                    disabled 
+                    class="input-field file-path-input"
+                    class:input-error={signPath === '' && isPushedReg}
                 />
-                {#if !currAuthStep.data.password.isValid}
-                    <span class="error-message">Слишком короткий или простой пароль</span>
-                {/if}
-            </div>
-
-            <div class="form-group">
-                <label for="passwordRepeat">Повторите пароль</label>
-                <input 
-                    id="passwordRepeat" 
-                    type="password" 
-                    bind:value={passwordRepeat} 
+                <button 
+                    type="button" 
+                    class="primary-btn" 
+                    onclick={handleSelectSigFile}
                     disabled={isPushedReg}
-                    placeholder="Введите пароль еще раз"
-                    class="input-field"
-                    class:input-error={currAuthStep.data.password.value !== passwordRepeat && passwordRepeat !== ''}
-                />
-                {#if currAuthStep.data.password.value !== passwordRepeat && passwordRepeat !== ''}
-                    <span class="error-message">Пароли не совпадают</span>
-                {/if}
+                >
+                    Обзор...
+                </button>
             </div>
+            {#if signPath === '' && isPushedReg}
+                <span class="error-message">Необходимо прикрепить файл подписи</span>
+            {/if}
+        </div>
 
-            <hr class="divider" />
 
-            <div class="form-group">
-                <label for="document">Сформированное заявление (.doc)</label>
-                <div class="file-picker-wrapper">
-                    <input 
-                        id="document"
-                        type="text" 
-                        value={docPathSaved} 
-                        disabled 
-                        class="input-field file-path-input" 
-                    />
-                    <button 
-                        type="button" 
-                        class="secondary-btn" 
-                        onclick={handleIngoingDoc}
-                        disabled={isPushedReg}
-                    >
-                        Пересохранить
-                    </button>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="sigPath">Файл электронной подписи (.doc.sig)</label>
-                <div class="file-picker-wrapper">
-                    <input 
-                        id="sigPath"
-                        type="text" 
-                        value={signPath || 'Файл подписи не выбран...'} 
-                        disabled 
-                        class="input-field file-path-input"
-                        class:input-error={signPath === '' && isPushedReg}
-                    />
-                    <button 
-                        type="button" 
-                        class="primary-btn" 
-                        onclick={handleSelectSigFile}
-                        disabled={isPushedReg}
-                    >
-                        Обзор...
-                    </button>
-                </div>
-                {#if signPath === '' && isPushedReg}
-                    <span class="error-message">Необходимо прикрепить файл подписи</span>
-                {/if}
-            </div>
-
+        <section class="navi-buttons">
             <button 
-                type="button"
-                onclick={handleRegistrationSubmit} 
-                disabled={
-                    !currAuthStep.data.nick.isValid ||
+                type="button" 
+                onclick={handleRegistrationSubmit}
+                disabled={!currAuthStep.data.nick.isValid ||
                     isPushedReg || 
                     currAuthStep.data.password.value !== passwordRepeat ||  
                     !docPathSaved ||
                     !signPath
                 }
-                class="submit-btn register-btn"
+                class="main-button"
+                id="auth-submit-btn"
             >
-                {isPushedReg ? 'Регистрация...' : 'Завершить регистрацию'}
+                <span class="navi-buttons.btn-icon">
+                    {#if isPushedReg}⏳{:else}🔑{/if}
+                </span>
+                <span class="btn-label">
+                    {#if isPushedReg}Регистрация...{:else}Отправить{/if}
+                </span>
             </button>
 
-            <button 
-                type="button" 
-                onclick={handleGoBack} 
-                class="grid-item"
-                id="auth-select-user-btn"
-            >
-                <span class="btn-icon">👤</span>
-                <span class="btn-label">Назад</span>
-            </button>
+            <div class="buttons-grid-row">
+                <button type="button" onclick={handleGoBack} class="nav-btn-item">
+                    <span class="nav-btn-text">Назад</span>
+                </button>
 
-            <button 
-                type="button" 
-                onclick={handleGoNext} 
-                class="grid-item"
-                id="auth-select-user-btn"
-            >
-                <span class="btn-icon">👤</span>
-                <span class="btn-label">Вперед</span>
-            </button>
-        </div>
+                <button type="button" onclick={handleGoPassword} disabled={isPushedReg} class="nav-btn-item">
+                    <span class="nav-btn-text">Ввод пароля</span>
+                </button>
+
+                <button type="button" onclick={handleGoNext} class="nav-btn-item">
+                    <span class="nav-btn-text">Вперед</span>
+                </button>
+            </div>
+
+        </section>
     {/if}
 </div>
 
 
 
-<style>
-    .auth-card {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        max-width: 400px;
-        margin: 40px auto;
-        padding: 24px;
-        background: #ffffff;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-    }
-
-    label {
-        font-size: 14px;
-        font-weight: 500;
-        color: #333333;
-    }
-
-    .input-field {
-        padding: 10px;
-        font-size: 14px;
-        border: 1px solid #cccccc;
-        border-radius: 4px;
-        outline: none;
-        transition: border-color 0.2s, background-color 0.2s;
-    }
-
-    .input-field:focus {
-        border-color: #007bff;
-    }
-
-
-    .input-field.input-error {
-        border-color: #dc3545;
-        background-color: #fdf2f2;
-    }
-
-    .error-message {
-        font-size: 12px;
-        color: #dc3545;
-        margin-top: -2px;
-    }
-
-    .input-field:disabled {
-        background-color: #f5f5f5;
-        color: #888888;
-        cursor: not-allowed;
-    }
-</style>

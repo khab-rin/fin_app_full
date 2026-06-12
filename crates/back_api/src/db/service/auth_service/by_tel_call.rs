@@ -58,7 +58,8 @@ pub(crate) async fn make_session_by_tel_call(
         },
         SmsRuResponseTextCode::SuccessConfirmed => {},
         SmsRuResponseTextCode::TimeOut => {
-            return Ok(AuthStep::NeedPassword { text: TextInfo::CallInnTimeOut })
+            let res = AuthStep::NeedPassword { text: TextInfo::CallInnTimeOut };
+            return Ok(res)
         },
         SmsRuResponseTextCode::UnknownCode => {
             return Ok(AuthStep::TryLater { text: TextInfo::BackApiError })

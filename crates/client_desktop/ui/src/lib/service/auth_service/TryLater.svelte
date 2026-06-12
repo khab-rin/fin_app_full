@@ -7,11 +7,6 @@
         currAuthStep.add(next_step);
     }
 
-    function handleGoToNickName() {
-        let next_step: AuthStep = {NickName: {text: ""}};
-        currAuthStep.add(next_step);
-    }
-
     function handleGoBack() {
         currAuthStep.back(); 
     }
@@ -23,54 +18,25 @@
 </script>
 
 <div class="auth-card">
-    <p>
+    <p class="auth-text-error">
         {currAuthStep.currentText}
     </p>
-    <section class="grid-section">
-        <div class="quick-links">
-        
 
-            <button 
-                type="button" 
-                onclick={handleGoToRegister} 
-                class="grid-item"
-                id="auth-register-btn"
-            >
-                <span class="btn-icon">📝</span>
-                <span class="btn-label">Регистрация</span>
+    <section class="navi-buttons">
+        <div class="buttons-grid-row">
+            <button type="button" onclick={handleGoBack} class="nav-btn-item">
+                <span class="nav-btn-text">Назад</span>
             </button>
 
-            <button 
-                type="button" 
-                onclick={handleGoToNickName} 
-                class="grid-item"
-                id="auth-select-user-btn"
-            >
-                <span class="btn-icon">👤</span>
-                <span class="btn-label">Выбрать пользователя</span>
+            <button type="button" onclick={handleGoToRegister} class="nav-btn-item">
+                <span class="nav-btn-text">Регистрация</span>
             </button>
 
-            <button 
-                type="button" 
-                onclick={handleGoBack} 
-                class="grid-item"
-                id="auth-select-user-btn"
-            >
-                <span class="btn-icon">👤</span>
-                <span class="btn-label">Назад</span>
+            <button type="button" onclick={handleGoNext} class="nav-btn-item">
+                <span class="nav-btn-text">Вперед</span>
             </button>
-
-            <button 
-                type="button" 
-                onclick={handleGoNext} 
-                class="grid-item"
-                id="auth-select-user-btn"
-            >
-                <span class="btn-icon">👤</span>
-                <span class="btn-label">Вперед</span>
-            </button>
-
         </div>
+
     </section>
 
 </div>

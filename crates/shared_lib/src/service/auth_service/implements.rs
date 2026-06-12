@@ -6,13 +6,13 @@ use crate::primitives::frozen::implements::{BoxUuid, CompInn, Email, FirstName, 
 use crate::service::auth_service::client_state::SessionUser;
 
 
-#[derive(Serialize, Deserialize, ts_rs::TS)]
+#[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub struct SessionUserToken {
     pub user: SessionUser,
     pub token: BoxUuid
 }
 
-#[derive(Serialize, Deserialize, ts_rs::TS)]
+#[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub enum AuthStep {
     Loading { text: TextInfo },
     NickName { text: TextInfo },
@@ -76,7 +76,6 @@ pub enum TextInfo {
     #[serde(rename = "Страница загружается, подождите пожалуйста. В случае зависания попробуйте обновить или перезагрузить приложение")]
     LoadingInfo,
 
-    
     #[serde(rename = "")]
     Nothing,
 }

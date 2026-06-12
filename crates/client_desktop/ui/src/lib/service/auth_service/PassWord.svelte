@@ -6,14 +6,6 @@
 
     let isPushed = $state(false);
 
-    $effect(() => {
-        currAuthStep.data.nick.validate(); 
-    });
-
-    $effect(() => {
-        currAuthStep.data.persInn.validate(); 
-    });
-
     async function handleAuthSubmit() {
         if (isPushed) return;
        
@@ -67,7 +59,7 @@
 </script>
 
 <div class="auth-card">
-    <p>
+    <p class="auth-text-step">
         {currAuthStep.currentText}
     </p>
 
