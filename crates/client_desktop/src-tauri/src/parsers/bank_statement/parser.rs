@@ -130,29 +130,66 @@ pub(crate) async fn bank_parser<P: AsRef<Path>>(
         }
     };
 
-
-    if wr_bytes { parse_result.status.insert(Status::FileReadError); }
+    if wr_bytes { 
+        log::error!(
+            "FUN bank_parser WRONG BYTES IN BANK STATEMENT"
+        );
+        parse_result.status.insert(Status::FileReadError); 
+    }
 
     let mut data_iter = buffer.split("СекцияДокумент=");
 
-    let mut head_block_iter = data_iter
-        .next()
-        .ok_or(Status::MappingError)?
-        .trim()
-        .split("СекцияРасчСчет");
+    let mut head_block = match data_iter.next() {
+        Some(val) => val.trim(),
+        None => {
+            log::error!(
+                "err = {}, FUN bank_parser INVALIDE DATA IN BANK STATEMENT", Status::FileInvalideData
+            );
+            return Err(Status::FileInvalideData);
+        }
+    };
 
-    head_block_iter.next().ok_or(Status::MappingError)?;
-    let block_head = head_block_iter.next().ok_or(Status::MappingError)?.trim();
+    let mut head_block_iter = head_block.split("СекцияРасчСчет");
+
+    match head_block_iter.next() {
+        Some(_) => {},
+        None => {
+            log::error!(
+                "local_err = {}, FUN bank_parser FAILED BY MAPPING HEAD BLOCK", 
+                Status::FileInvalideData
+            );
+        }
+    }
+
+    let head = match head_block_iter.next() {
+        Some(b) => b,
+        None => {
+            log::error!(
+                "local_err = {}, FUN bank_parser FAILED BY MAPPING HEAD BLOCK", 
+                Status::FileInvalideData
+            );
+            return Err(Status::FileInvalideData)
+        }
+    };
+
     let mut block_map:HashMap<&str, &str> = HashMap::new();
 
-    for s in block_head.lines() {
+    for s in head.lines() {
         if let Some((key, value)) = s.split_once('=') {
             block_map.insert(key.trim(), value.trim());
         }
     }
 
-    let head = StatementHead::from_map(&block_map)
-        .map_err(|_| Status::MappingError)?;
+    let head = match StatementHead::from_map(&block_map) {
+        Ok(h) => h,
+        Err(err) => {
+            log::error!(
+                "local_err = {}, FUN bank_parser FAILED BY MAPPING HEAD",
+                err
+            );
+            return Err(Status::MappingError);
+        }
+    };
 
     if head.head_acc != own_ras_acc { return Err(Status::FileInvalideData); }
 
@@ -178,6 +215,9 @@ pub(crate) async fn bank_parser<P: AsRef<Path>>(
                 );
             }
             Err(err) =>  {
+                log::error!(
+                    "local_err = {}, FUN bank_parser FAILED BY PARSED OPERATION", err
+                );
                 parse_result.status.insert(err);
                 let wrong_line:HashMap<String, String> = block_map
                     .iter()

@@ -3,13 +3,12 @@
     import '$lib/style/global.css'
     import favicon from '$lib/assets/favicon.svg';
 	import { goTo } from '$lib/rules/navigation';
-	import { currAuthStep } from '$lib/models/svelte_models/auth_service/SvelteAuthStep.svelte';
+	import { currAuthStep } from '$lib/models/Auth/AuthStep.svelte';
+	import { appState } from '$lib/models/AppState/appState.svelte';
 	import AuthManager from '$lib/service/auth_service/AuthManager.svelte';
-	import TopBarButton from "$lib/service/Settings/TopBarButton.svelte";
+	import SettingsMainMenu from "$lib/service/Settings/SettingsMainMenu.svelte";
 
 	let { children } = $props<{ children: import('svelte').Snippet }>();
-
-	let isSettingsOpen = $state(false);
 
 
 </script>
@@ -21,14 +20,20 @@
 
 
 <div class="app-container">
+	{#if appState.settingsOnOff}
+		<SettingsMainMenu/>
+	{/if}
 	<header class="top-bar">
 		<div class="user-avatar">
-		<span class="avatar-icon">👤</span>
+			<span class="avatar-icon">👤</span>
 		</div>
 		<input type="text" class="search-input" placeholder="Поиск...">
-		<button class="param-btn" onclick={() => isSettingsOpen = true}>⚙️</button>
+		<button 
+			class="param-btn" 
+			onclick={() => appState.settingsOnOff = true}
+			disabled={appState.totalOff}>⚙️
+		</button>
 	</header>
-	<TopBarButton bind:show={isSettingsOpen} />
 
 
 

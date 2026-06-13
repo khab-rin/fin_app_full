@@ -1,8 +1,8 @@
 <script lang='ts'>
     import { invoke } from "@tauri-apps/api/core";
-    import { currAuthStep } from "$lib/models/svelte_models/auth_service/SvelteAuthStep.svelte";
-    import type { AuthStep } from '$lib/models/AuthStep';
-    import type {PasswordDataClientShort} from "$lib/models/PasswordDataClientShort"
+    import { currAuthStep } from "$lib/models/Auth/AuthStep.svelte";
+    import type { AuthStep } from '$lib/models/rustModels/AuthStep';
+    import type {PasswordDataClientShort} from "$lib/models/rustModels/PasswordDataClientShort"
 
     let isPushed = $state(false);
 

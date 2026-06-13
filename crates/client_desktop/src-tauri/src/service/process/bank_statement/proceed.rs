@@ -31,7 +31,6 @@ pub(crate) async fn process_statement<P: AsRef<Path>>(
 
     let companys_vec:InnKppAccVec = companys_map.into_iter().collect();
 
-
     let api_url = format!(
         "{}/{}", 
         state.config.back_api_url().trim_end_matches('/'), 
@@ -52,13 +51,20 @@ pub(crate) async fn process_statement<P: AsRef<Path>>(
         })
         .map_err(|_| Status::QueryPostRequestErr)?;
     
+    if response.status() != 200 {
+        log::error!(
+            "FUN process_statement FAILED BY QUERY TO BACK API, response = {:?}, local_err = {}",
+            response, Status::BackApiError
+        );
+        return Err(Status::BackApiError);
+    }
 
     let companys: Vec<Company> = response
         .json()
         .await
         .inspect_err(|err| {
             log::error!(
-                "tech_err = {}, stat_err = {}",
+                "tech_err = {}, local_err = {}",
                 err,
                 Status::QueryBodyReadErr
             );

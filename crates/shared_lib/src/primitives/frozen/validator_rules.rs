@@ -63,6 +63,8 @@ pub fn init_pers_inn_from_str(inn: &str) -> Result<Box<str>, Status> {
 }
 
 pub fn init_comp_inn_from_str(inn: &str) -> Result<Box<str>, Status> {
+    if let Ok(inn) = init_pers_inn_from_str(inn) { return Ok(inn) }
+
     let inn = inn.trim();
 
     if inn.len() != 10 || !inn.chars().all(|c| c.is_ascii_digit()) {

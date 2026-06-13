@@ -21,10 +21,10 @@ pub async fn cmd_process_bank_statement(
     path: String
 ) -> Result<(), Status> {
 
+    log::info!("cmd_process_bank_statement running");
+
     match process_statement(&state, path).await {
-        Ok(res) => {
-            std::println!("ОБЩИЙ_РЕЗУЛЬТАТ!!!");
-            std::println!("{:?}", res.companys_curt);
+        Ok(_) => {
             Ok(())
         }
         Err(err) => Err(err)
@@ -99,7 +99,7 @@ pub async fn cmd_session_by_nick(
     nick: String1_50
 ) -> Result<AuthStep, Status> {
 
-    log::debug!("cmd_session_by_nick running!!!!");
+    log::info!("cmd_session_by_nick running!!!!");
 
     match restore_session_by_nick(&state, &nick).await {
         Ok(res) => Ok(res),

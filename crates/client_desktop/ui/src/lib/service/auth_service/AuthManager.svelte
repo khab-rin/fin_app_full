@@ -1,6 +1,6 @@
 <script>
-    import { currAuthStep } from "$lib/models/svelte_models/auth_service/SvelteAuthStep.svelte";
-    import {AuthStepType} from "$lib/service/auth_service/AuthValues";
+    import { currAuthStep } from "$lib/models/Auth/AuthStep.svelte";
+    import {AuthStepType} from "$lib/models/Auth/AuthValues";
     import Loading from "$lib/service/auth_service/Loading.svelte";
     import CallIn from '$lib/service/auth_service/CallIn.svelte';
     import NickName from '$lib/service/auth_service/NickName.svelte';

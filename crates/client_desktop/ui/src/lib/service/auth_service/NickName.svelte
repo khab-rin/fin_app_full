@@ -1,7 +1,7 @@
 <script lang='ts'>
     import { invoke } from "@tauri-apps/api/core";
-    import { currAuthStep } from "$lib/models/svelte_models/auth_service/SvelteAuthStep.svelte";
-    import type { AuthStep } from '$lib/models/AuthStep';
+    import { currAuthStep } from "$lib/models/Auth/AuthStep.svelte";
+    import type { AuthStep } from '$lib/models/rustModels/AuthStep';
 
     let IsPushed = $state(false);
     let dialogRef = $state<HTMLDialogElement | null>(null);

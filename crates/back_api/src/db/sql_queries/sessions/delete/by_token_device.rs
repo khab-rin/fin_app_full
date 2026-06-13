@@ -11,13 +11,12 @@ pub(crate) async fn delete_session_by_token(
     payload: &TokenDeviceData
 ) -> Result<Vec<WarnEmailData>, Status> {
 
-    let &TokenDeviceData { token, device_id } = &payload;
+    let &TokenDeviceData { token, .. } = &payload;
     let row = sqlx::
         query_file_as!(
             WarnEmailData,
             "src/db/sql_queries/sessions/delete/by_token_device.sql",
             token.as_ref(),
-            device_id.as_ref()
         ).fetch_all(&state.pool_fast)
         .await
         .inspect_err(|err| {

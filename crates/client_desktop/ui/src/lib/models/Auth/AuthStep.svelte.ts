@@ -1,8 +1,8 @@
-import type { AuthStep } from '$lib/models/AuthStep';
-import type { NickData } from '$lib/models/NickData';
+import type { AuthStep } from '$lib/models/rustModels/AuthStep';
+import type { NickData } from '$lib/models/rustModels/NickData';
 
-import {AuthStepType} from "$lib/service/auth_service/AuthValues";
-import {FieldValidator} from "$lib/service/validate/FieldValidator.svelte";
+import {AuthStepType} from "$lib/models/Auth/AuthValues";
+import {FieldValidator} from "$lib/models/Auth/FieldValidator.svelte";
 import { invoke } from '@tauri-apps/api/core';
 
 class SvelteAuthStep {

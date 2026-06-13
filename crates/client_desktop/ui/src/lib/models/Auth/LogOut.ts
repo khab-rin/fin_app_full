@@ -1,5 +1,5 @@
 import {invoke} from "@tauri-apps/api/core";
-import {currAuthStep} from "$lib/models/svelte_models/auth_service/SvelteAuthStep.svelte";
+import {currAuthStep} from "$lib/models/Auth/AuthStep.svelte";
 
 export async function logOut() {
     try {

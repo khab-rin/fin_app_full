@@ -1,12 +1,12 @@
 <script lang='ts'>
-	import { currAuthStep } from "$lib/models/svelte_models/auth_service/SvelteAuthStep.svelte";
+	import { currAuthStep } from "$lib/models/Auth/AuthStep.svelte";
     import {invoke} from "@tauri-apps/api/core";
     import { writeFile } from "@tauri-apps/plugin-fs";
     import { save, open as openFileDialog } from "@tauri-apps/plugin-dialog";
 
-    import type {AuthStep} from "$lib/models/AuthStep";
-    import type {IngoingData} from "$lib/models/IngoingData";
-    import type {SvelteRegistrationData} from "$lib/models/SvelteRegistrationData"
+    import type {AuthStep} from "$lib/models/rustModels/AuthStep";
+    import type {IngoingData} from "$lib/models/rustModels/IngoingData";
+    import type {SvelteRegistrationData} from "$lib/models/rustModels/SvelteRegistrationData"
 	
     
 

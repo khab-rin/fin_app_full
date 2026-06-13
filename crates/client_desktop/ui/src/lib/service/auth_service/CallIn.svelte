@@ -1,11 +1,11 @@
 <script lang='ts'>
-    import {currAuthStep} from "$lib/models/svelte_models/auth_service/SvelteAuthStep.svelte";
+    import {currAuthStep} from "$lib/models/Auth/AuthStep.svelte";
     import {invoke} from "@tauri-apps/api/core";
     import { onMount } from "svelte";
 
-    import {AuthStepType} from "$lib/service/auth_service/AuthValues";
+    import {AuthStepType} from "$lib/models/Auth/AuthValues";
 
-    import type {AuthStep} from "$lib/models/AuthStep";
+    import type {AuthStep} from "$lib/models/rustModels/AuthStep";
 	
     
     let isPolling = $state(false);

@@ -1,0 +1,57 @@
+.popover {
+  position: absolute;
+  top: 65px;
+  right: 15px;
+  
+  width: 220px;
+  
+  /* Прозрачно-голубой фон */
+  background: rgba(173, 216, 230, 0.7); 
+  backdrop-filter: blur(10px);
+  
+  /* Темно-зеленая линия вокруг */
+  border: 1px solid #006400;
+  
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 8px;
+  z-index: 1000;
+  
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Стили для заголовка h3 */
+.popover-header h3 {
+  color: #006400; /* Темно-зеленый цвет */
+  margin: 0;
+  padding: 8px 12px;
+  font-size: 16px;
+}
+
+/* Все надписи синего цвета */
+.popover-button, .popover-header {
+  color: #0000FF; /* Синий цвет */
+}
+
+/* Анимация */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.popover-button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.2s;
+  font-size: 14px;
+}
+
+.popover-button:hover {
+  background: rgba(0, 0, 255, 0.1); /* Легкий синий фон при наведении */
+}

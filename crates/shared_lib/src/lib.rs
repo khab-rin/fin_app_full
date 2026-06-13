@@ -17,15 +17,13 @@ use super::*;
     #[test]
     fn generate_types_for_svelte() {
 
-        let output_dir = "/home/khabipovrinat/dev/fin_app_full/crates/client_desktop/ui/src/lib/models";
+        let output_dir = "../client_desktop/ui/src/lib/models/rustModels";
 
         service::auth_service::implements::AuthStep::export_all_to(output_dir)
             .expect("Не удалось экспортировать AuthStep");
 
         service::auth_service::client_state::NickData::export_all_to(output_dir)
             .expect("Не удалось экспортировать UserLogInfo");
-
-
 
         service::auth_service::implements::PasswordDataClientShort::export_all_to(output_dir)
             .expect("Не удалось экспортировать PasswordDataClientShort");
