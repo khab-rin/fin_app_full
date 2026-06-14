@@ -2,8 +2,8 @@
 pub mod sql_queries;
 pub mod service;
 pub mod parsers;
-pub mod commands;
 pub mod state;
+pub mod commands;
 
 use tauri_plugin_log::{Target, TargetKind};
 use tauri::Manager;
@@ -37,17 +37,17 @@ pub async fn run_lib() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_fs::init())
         .invoke_handler(tauri::generate_handler![
-            commands::cmd_process_bank_statement,
-            commands::cmd_is_state_active_init,
-            commands::cmd_is_state_active_fast,
-            commands::cmd_logout,
-            commands::cmd_session_by_password,
-            commands::cmd_session_by_nick,
-            commands::cmd_validate_field,
-            commands::cmd_get_nick_names,
-            commands::cmd_make_ingoing_doc,
-            commands::cmd_register_user,
-            commands::cmd_session_by_tel_call
+            commands::auth::cmd_get_nick_names,
+            commands::auth::cmd_is_state_active_fast,
+            commands::auth::cmd_is_state_active_init,
+            commands::auth::cmd_logout,
+            commands::auth::cmd_make_ingoing_doc,
+            commands::auth::cmd_register_user,
+            commands::auth::cmd_session_by_nick,
+            commands::auth::cmd_session_by_password,
+            commands::auth::cmd_session_by_tel_call,
+            commands::other::cmd_process_bank_statement,
+            commands::other::cmd_validate_field,
         ]).build(tauri::generate_context!())
         .expect("error while building tauri application");
         

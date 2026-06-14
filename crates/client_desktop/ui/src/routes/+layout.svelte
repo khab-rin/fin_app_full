@@ -3,14 +3,21 @@
     import '$lib/style/global.css'
     import favicon from '$lib/assets/favicon.svg';
 	import { goTo } from '$lib/rules/navigation';
-	import { currAuthStep } from '$lib/models/Auth/AuthStep.svelte';
+	import {currAuthStep} from "$lib/models/Auth/AuthStep.svelte";
 	import { appState } from '$lib/models/AppState/appState.svelte';
-	import AuthManager from '$lib/service/auth_service/AuthManager.svelte';
 	import SettingsMainMenu from "$lib/service/Settings/SettingsMainMenu.svelte";
+
+	import {AuthStepType} from "$lib/models/Auth/AuthValues";
 
 	let { children } = $props<{ children: import('svelte').Snippet }>();
 
-
+	$effect(() => {
+        if (AuthStepType.SuccessShort in currAuthStep.step) {
+            appState.Page = null;
+        } else {
+			appState.Page = "auth";
+		}
+    });
 </script>
 
 
@@ -38,10 +45,10 @@
 
 
 	<main class="main-content">
-		{#if currAuthStep.isAuthorized }
-			{@render children()}
+		{#if appState.getPage}
+			<appState.getPage />
 		{:else}
-			<AuthManager/>
+			{@render children()}
 		{/if}
 	</main>
 

@@ -7,7 +7,6 @@
     import PassWord from '$lib/service/auth_service/PassWord.svelte';
     import Registration from '$lib/service/auth_service/Registration.svelte';
     import TryLater from "./TryLater.svelte";
-
 </script>
 
 {#if AuthStepType.Loading in currAuthStep.step}
