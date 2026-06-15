@@ -1,11 +1,19 @@
 <script>
     import { logOut } from "$lib/models/Auth/LogOut";
-    import {appState} from "$lib/models/AppState/appState.svelte";
+    import { pageManager } from "$lib/models/MainManager/MainManager.svelte";
+    import { PageType } from "$lib/models/MainManager/PageValues";
+
     
     async function press_logout() {
-        appState.settingsOnOff = false;
+        pageManager.settingsOnOff = false;
         await logOut();
     }
+
+    function gotoMchd() {
+        pageManager.settingsOnOff = false;
+        pageManager.Page = PageType.Mchd
+    }
+
 </script>
 
 <div class="popover">
@@ -14,8 +22,18 @@
     </div>
 
     <div class="popover-list">
-        <button class="popover-button" onclick={() => alert("Тут будут настройки")}>
+        <button 
+            class="popover-button" 
+            onclick={() => alert("Тут будут настройки")}
+            disabled={pageManager.totalOff}>
             <span class="popover-span">⚙️ Личные настройки</span>
+        </button>
+
+        <button 
+            class="popover-button"
+            disabled = {pageManager.totalOff}
+            onclick={gotoMchd}>
+            <span class="popover-span">МЧД ДОВЕРЕННОСТИ</span>
         </button>
 
         <button class="popover-batton" onclick={press_logout}>

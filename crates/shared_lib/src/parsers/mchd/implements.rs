@@ -801,7 +801,7 @@ pub struct SubPrincipal {
 
 
 //Документ
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct PoaWrap {
     #[serde(rename = "@КНД")]
     pub code_knd: Option<String7_7>,
@@ -1022,7 +1022,7 @@ pub enum AddressChoice {
 
 
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub enum FormatVersion {
     #[serde(rename = "EMCHD_1")]
     Emchd1,
@@ -1030,7 +1030,7 @@ pub enum FormatVersion {
 
 
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ts_rs::TS)]
 pub enum PoaRedelegateaChoice {
     #[serde(rename = "Довер")]
     Poa(Box<Poa>),

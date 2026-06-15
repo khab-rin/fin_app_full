@@ -252,7 +252,7 @@ pub(crate) async fn init_session(
         }).map_err(|_| Status::SystemErr)?;
 
     let session = Arc::new(ActiveSession {
-        user: user_data.user.clone(),
+        session_user: user_data.user.clone(),
         local_db: pool,
         token: user_data.token.clone(),
     });

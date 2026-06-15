@@ -3,21 +3,12 @@
     import '$lib/style/global.css'
     import favicon from '$lib/assets/favicon.svg';
 	import { goTo } from '$lib/rules/navigation';
-	import {currAuthStep} from "$lib/models/Auth/AuthStep.svelte";
-	import { appState } from '$lib/models/AppState/appState.svelte';
 	import SettingsMainMenu from "$lib/service/Settings/SettingsMainMenu.svelte";
-
-	import {AuthStepType} from "$lib/models/Auth/AuthValues";
-
+	import {pageManager} from "$lib/models/MainManager/MainManager.svelte";
 	let { children } = $props<{ children: import('svelte').Snippet }>();
 
-	$effect(() => {
-        if (AuthStepType.SuccessShort in currAuthStep.step) {
-            appState.Page = null;
-        } else {
-			appState.Page = "auth";
-		}
-    });
+
+	
 </script>
 
 
@@ -27,7 +18,7 @@
 
 
 <div class="app-container">
-	{#if appState.settingsOnOff}
+	{#if pageManager.settingsOnOff}
 		<SettingsMainMenu/>
 	{/if}
 	<header class="top-bar">
@@ -37,16 +28,16 @@
 		<input type="text" class="search-input" placeholder="Поиск...">
 		<button 
 			class="param-btn" 
-			onclick={() => appState.settingsOnOff = true}
-			disabled={appState.totalOff}>⚙️
+			onclick={() => pageManager.settingsOnOff = true}
+			disabled={pageManager.totalOff}>⚙️
 		</button>
 	</header>
 
 
 
 	<main class="main-content">
-		{#if appState.getPage}
-			<appState.getPage />
+		{#if pageManager.getPage}
+			<pageManager.getPage />
 		{:else}
 			{@render children()}
 		{/if}

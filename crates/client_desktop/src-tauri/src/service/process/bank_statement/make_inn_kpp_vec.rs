@@ -20,7 +20,7 @@ pub(crate) async fn make_inn_kpp_map_func(
         }
     };
 
-    let own_comp_inn = &session.user.company.comp_inn;
+    let own_comp_inn = &session.session_user.company.comp_inn;
 
     let mut companys:InnKppAccMap = HashMap::new();
 

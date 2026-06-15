@@ -4,7 +4,7 @@ use crate::primitives::frozen::implements_base::{String1_255, String1_5000};
 use crate::primitives::frozen::implements::PoaReqElemsFlag;
 use crate::parsers::mchd::implements::{FormatVersion, PoaWrap};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct PoaMchd {
     #[serde(rename = "@ВерсФорм")]
     pub version_format: FormatVersion,

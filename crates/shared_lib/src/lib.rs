@@ -39,6 +39,9 @@ use super::*;
 
         service::auth_service::implements::ExternalDeviceData::export_all_to(output_dir)
             .expect("Не удалось экспортировать ExternalDeviceData");
+
+        service::mchd::implements::MchdStep::export_all_to(output_dir)
+            .expect("Не удалось экспортировать MchdStep");
     }
 }
 

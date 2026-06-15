@@ -1,8 +1,12 @@
 import type { AuthStep } from '$lib/models/rustModels/AuthStep';
+import {AuthStepType} from "$lib/models/Auth/AuthValues";
 import type { NickData } from '$lib/models/rustModels/NickData';
 
-import {AuthStepType} from "$lib/models/Auth/AuthValues";
 import {FieldValidator} from "$lib/models/Auth/FieldValidator.svelte";
+
+import { pageManager } from '../MainManager/MainManager.svelte';
+import { PageType } from '../MainManager/PageValues';
+
 import { invoke } from '@tauri-apps/api/core';
 
 class SvelteAuthStep {
@@ -35,11 +39,8 @@ class SvelteAuthStep {
     }
 
     add(next_step: AuthStep) {
-        if (AuthStepType.Loading in next_step) {
-            this.step = next_step;
-            return
-        }
         if (AuthStepType.SuccessShort in next_step) {
+            pageManager.Page = null;
             this.data.password.value = "";
         }
         this.steps.length = this.index + 1;
@@ -51,6 +52,7 @@ class SvelteAuthStep {
     reset() {
         const next_step: AuthStep = { Loading: {text: "Страница загружается, подождите пожалуйста. В случае зависания попробуйте обновить или перезагрузить приложение"}};
         this.index = -1;
+        pageManager.Page = PageType.Auth;
         this.add(next_step);
     }
 
@@ -95,8 +97,8 @@ class SvelteAuthStep {
 
     private async init() {
         try {
-            const data = await invoke<NickData>('cmd_get_nick_names');
-            this.nick_names = data; 
+            const nickData = await invoke<NickData>('cmd_get_nick_names');
+            this.nick_names = nickData; 
 
             const nextStep = await invoke<AuthStep>("cmd_is_state_active_init");
             

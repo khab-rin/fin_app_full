@@ -34,7 +34,7 @@ pub struct TempInfo {
 
 #[derive(Debug)]
 pub struct ActiveSession {
-    pub user: SessionUser,
+    pub session_user: SessionUser,
     pub local_db: sqlx::SqlitePool,
     pub token: BoxUuid
 }
