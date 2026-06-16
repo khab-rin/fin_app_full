@@ -7,7 +7,7 @@ use crate::primitives::composite::implements::Fio;
 
 
 // АдрТип
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct PostalAddress {
     #[serde(rename = "@Регион")]
     pub region: Region,
@@ -22,7 +22,7 @@ pub struct PostalAddress {
 
 
 //ВриоНотТип
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct ActingNotary {
     #[serde(rename = "@Должность")]
     pub position: String1_255,
@@ -37,7 +37,7 @@ pub struct ActingNotary {
 
 
 //СвНотДействТип
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct Notary {
     #[serde(rename = "@Должность")]
     pub position: String1_255,
@@ -52,7 +52,7 @@ pub struct Notary {
 
 
 //ДокПдтвТип
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct DirectAuthorityDoc  {
     #[serde(rename = "@НаимДокПдтв")]
     pub name: Option<String1_120>,
@@ -70,7 +70,7 @@ pub struct DirectAuthorityDoc  {
 
 
 //СвИнОргТип
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct ForeignOrg {
     #[serde(rename = "@СтУчНД")]
     pub participant_status: Option<ParticipantStatus>,
@@ -115,7 +115,7 @@ pub struct ForeignOrg {
 
 
 //УдЛичнФЛ
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct PersonDocums {
     #[serde(rename = "@КодВидДок")]
     pub doc_code: Digits2_2,
@@ -139,7 +139,7 @@ pub struct PersonDocums {
 
 
 //СведФЛТип
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct PersonMchd {
     #[serde(rename = "@Пол")]
     pub gender: Option<Gender>,
@@ -178,7 +178,7 @@ pub struct PersonMchd {
 
 
 //СвФЛТип
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct JuridicalWrapPerson {
     #[serde(rename = "@СтУчНД")]
     pub participant_status: Option<ParticipantStatus>,
@@ -202,7 +202,7 @@ pub struct JuridicalWrapPerson {
 
 
 //СвОргТип
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct RussOrganization {
     #[serde(rename = "@СтУчНД")]
     pub participant_statustatus: Option<ParticipantStatus>,
@@ -241,7 +241,7 @@ pub struct RussOrganization {
 
 
 //ИнОргДоверТип
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct ForeignOrgPrincipal {
     #[serde(rename = "СвИнОрг")]
     pub foreign_org: ForeignOrg,
@@ -253,7 +253,7 @@ pub struct ForeignOrgPrincipal {
 
 
 //СведИПТип
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct Ip {
     #[serde(rename = "@СтУчНД")]
     pub participant_statustatus: Option<ParticipantStatus>,
@@ -280,7 +280,7 @@ pub struct Ip {
 
 
 //СВЮЛ
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct PrimeManagerOrg {
     #[serde(rename = "СвЮЛЕИО")]
     pub organization: RussOrganization,
@@ -292,7 +292,7 @@ pub struct PrimeManagerOrg {
 
 
 //ЛицоБезДовТип
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct LegalRep {
     #[serde(rename = "@ПолнЮЛ")]
     pub management_type: ManagementType,
@@ -310,7 +310,7 @@ pub struct LegalRep {
 
 
 //РосОргДоверТип
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct RussOrgPrincipal {
     #[serde(rename = "@ЕИОУК")]
     pub direct_authority_yk: Flag,
@@ -331,7 +331,7 @@ pub struct RussOrgPrincipal {
 
 
 //СвДовТип
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct PoaMetadata {
     #[serde(rename = "@ВидДовер")]
     pub revocable_type: PoaTypeRevocable,
@@ -376,7 +376,7 @@ pub struct PoaMetadata {
 
 
 //Безотзыв
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct IrrevocablePoa {
     #[serde(rename = "@ПрПерБезДов")]
     pub redelegate_type: IrrevocablePoaRedelegationType,
@@ -391,7 +391,7 @@ pub struct IrrevocablePoa {
 
 
 //ПодпРукопис
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct Signature  {
     #[serde(rename = "ХешPDFДок")]
     pub pdf_hash: String1_16000,
@@ -412,7 +412,7 @@ pub struct Signature  {
 
 
 //СвНотУдТип
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct NotarialCertification {
     #[serde(rename = "@МестоДовер")]
     pub issuance_place: String1_250,
@@ -460,7 +460,7 @@ pub struct NotarialCertification {
 
 
 //ФЛДоверТип
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct PrincipalPerson {
     #[serde(rename = "@СтУчНД")]
     pub participant_status: Option<ParticipantStatus>,
@@ -491,7 +491,7 @@ pub struct PrincipalPerson {
 
 
 //Пред
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct Delegate {
     #[serde(rename = "СведОрг")]
     pub organization: Option<RussOrganization>,
@@ -512,7 +512,7 @@ pub struct Delegate {
 
 
 //СвУпПредТип
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct DelegateInfo {
     #[serde(rename = "@ТипПред")]
     pub delegate_type: DelegateType,
@@ -524,7 +524,7 @@ pub struct DelegateInfo {
 
 
 //ДоверитПерв
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct InitPrincipal {
     #[serde(rename = "РосОргДовер")]
     pub organization: Option<RussOrganization>,
@@ -542,7 +542,7 @@ pub struct InitPrincipal {
 
 
 //СвДоверПерв
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct InitPrincipalWrap {
     #[serde(rename = "@ТипДоверит")]
     pub initial_principal_type: PrincipalIdentity,
@@ -554,7 +554,7 @@ pub struct InitPrincipalWrap {
 
 
 //СвПервДоверТип
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct OriginalPoa {
     #[serde(rename = "@ПрДовер")]
     pub origin_principal_type: InitPrincipalTypeShort,
@@ -599,7 +599,7 @@ pub struct OriginalPoa {
 
 
 //ОгрСвПолн
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Clone, ts_rs::TS)]
 pub struct PoaLimitations {
     #[serde(rename = "@ИдОгр")]
     pub number: i32,
@@ -620,7 +620,7 @@ pub struct PoaLimitations {
 
 
 //МашПолн
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Eq, Hash, PartialEq, Clone, ts_rs::TS)]
 pub struct MchdPower {
     #[serde(rename = "@МнПолн")]
     pub powers_mnemonic: Option<String6_255>,
@@ -629,7 +629,7 @@ pub struct MchdPower {
     pub powers_code: String6_255,
 
     #[serde(rename = "@НаимПолн")]
-    pub powers_name: String6_255,
+    pub powers_name: String1_255,
 
     #[serde(rename = "ОгрСвПолн", default, skip_serializing_if = "Vec::is_empty")]
     pub poa_limitations: Vec<PoaLimitations>,
@@ -638,7 +638,7 @@ pub struct MchdPower {
 
 
 //СвПолнТип
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct DelegatePowers {
     #[serde(rename = "@ТипПолн")]
     pub power_type: PowerType,
@@ -659,8 +659,8 @@ pub struct DelegatePowers {
 
 
 //Довер
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Poa {
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
+pub struct RootPoa {
     #[serde(rename = "СвДов")]
     pub poa_metadata: PoaMetadata,
 
@@ -680,7 +680,7 @@ pub struct Poa {
 
 
 //Доверит
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct Principal {
     #[serde(rename = "РосОргДовер")]
     pub russian_org: Option<RussOrgPrincipal>,
@@ -698,7 +698,7 @@ pub struct Principal {
 
 
 //СвДоверит
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct PrincipalInfo {
     #[serde(rename = "@ТипДоверит")]
     pub principal_identity: PrincipalIdentity,
@@ -709,8 +709,8 @@ pub struct PrincipalInfo {
 
 
 //Передов
-#[derive(Debug, Serialize, Deserialize)]
-pub struct RedelegatedPoa {
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
+pub struct DerivedPoa {
     #[serde(rename = "@ПрНалПередов")]
     pub redelegate_flag: Flag,
 
@@ -737,7 +737,7 @@ pub struct RedelegatedPoa {
 }
 
 //ФЛПерПолн
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct RedelegatePerson {
     #[serde(rename = "@СтУчНД")]
     pub participant_status: Option<ParticipantStatus>,
@@ -760,7 +760,7 @@ pub struct RedelegatePerson {
 
 
 //ФилПерПолн
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct RedelegaterFilial {
     #[serde(rename = "СвФил")]
     pub filial: RussOrganization,
@@ -771,7 +771,7 @@ pub struct RedelegaterFilial {
 
 
 // ПередПолн
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct SubPrincipalInfo {
     #[serde(rename = "РосОргПерПолн")]
     pub russian_organization: Option<RussOrgPrincipal>,
@@ -790,7 +790,7 @@ pub struct SubPrincipalInfo {
 }
 
 //СвПередПолн
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct SubPrincipal {
     #[serde(rename = "@ТипПерПолн")]
     pub sub_principal_type: DelegateType,
@@ -807,12 +807,12 @@ pub struct PoaWrap {
     pub code_knd: Option<String7_7>,
 
     #[serde(rename = "$value")]
-    pub poa_doc: PoaRedelegateaChoice,
+    pub poa_doc: PoaRootKind,
 }
 
 
 
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, sqlx::Type, ts_rs::TS)]
+#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, sqlx::Type, Clone, ts_rs::TS)]
 pub enum Gender {
     #[serde(rename = "1")]
     Male,
@@ -822,7 +822,7 @@ pub enum Gender {
 
 
 
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
 pub enum IsCitizen {
     #[serde(rename = "1")]
     Citizen,
@@ -834,7 +834,7 @@ pub enum IsCitizen {
 
 
 
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
 pub enum ManagementType {
     #[serde(rename = "1")]
     Sole,
@@ -844,7 +844,7 @@ pub enum ManagementType {
 
 
 
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
 pub enum Flag {
     #[serde(rename = "0")]
     FalseFlag,
@@ -854,7 +854,7 @@ pub enum Flag {
 
 
 
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
 pub enum PoaTypeRevocable {
     #[serde(rename = "1")]
     Revocable,
@@ -865,7 +865,7 @@ pub enum PoaTypeRevocable {
 
 
 
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
 pub enum PoaTypeRedelegatable {
     #[serde(rename = "1")]
     Single,
@@ -879,7 +879,7 @@ pub enum PoaTypeRedelegatable {
 
 
 
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
 pub enum IrrevocablePoaRedelegationType {
     #[serde(rename = "1")]
     Static,
@@ -890,7 +890,7 @@ pub enum IrrevocablePoaRedelegationType {
 
 
 
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
 pub enum IrrevocablePoaRevocationCondition {
     #[serde(rename = "1")]
     Conditional,
@@ -901,7 +901,7 @@ pub enum IrrevocablePoaRevocationCondition {
 
 
 
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
 pub enum DelegateType {
     #[serde(rename = "1")]
     LegalEntity,
@@ -917,7 +917,7 @@ pub enum DelegateType {
 
 
 
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
 pub enum PrincipalIdentity  {
     #[serde(rename = "1")]
     RussianLegalEntity,
@@ -934,7 +934,7 @@ pub enum PrincipalIdentity  {
 
 
 
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
 pub enum InitPrincipalTypeShort {
     #[serde(rename = "1")]
     LegalEntity,
@@ -945,7 +945,7 @@ pub enum InitPrincipalTypeShort {
 
 
 
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
 pub enum PoaLegalForm {
     #[serde(rename = "1")]
     Simple,
@@ -956,7 +956,7 @@ pub enum PoaLegalForm {
 
 
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Clone, ts_rs::TS)]
 pub enum ConfineValue {
     #[serde(rename = "КодЗначОгр")]
     Code(String1_255),
@@ -967,7 +967,7 @@ pub enum ConfineValue {
 
 
 
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
 pub enum PowerType {
     #[serde(rename = "0")]
     Textual,
@@ -978,7 +978,7 @@ pub enum PowerType {
 
 
 
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
 pub enum PowerCommonType {
     #[serde(rename = "1")]
     Joint,
@@ -989,7 +989,7 @@ pub enum PowerCommonType {
 
 
 
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
 pub enum RedelegatePowerLossType {
     #[serde(rename = "1")]
     Lost,
@@ -1000,7 +1000,7 @@ pub enum RedelegatePowerLossType {
 
 
 
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
 pub enum RedelegationStatus {
     #[serde(rename = "0")]
     Original,
@@ -1011,7 +1011,7 @@ pub enum RedelegationStatus {
 
 
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub enum AddressChoice {
     #[serde(rename = "АдрРФ")]
     AdrRf(String1_1000),
@@ -1030,11 +1030,11 @@ pub enum FormatVersion {
 
 
 
-#[derive(Debug, Serialize, Deserialize, ts_rs::TS)]
-pub enum PoaRedelegateaChoice {
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
+pub enum PoaRootKind {
     #[serde(rename = "Довер")]
-    Poa(Box<Poa>),
+    RootPoa(Box<RootPoa>),
 
     #[serde(rename = "Передов")]
-    RedelegatedPoa(Box<RedelegatedPoa>), 
+    DerivedPoa(Box<DerivedPoa>), 
 }

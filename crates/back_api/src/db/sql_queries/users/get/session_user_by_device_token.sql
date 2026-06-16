@@ -10,9 +10,9 @@ tab1 AS (
         t2.pers_id, 
         t2.comp_id,
         t2.mchd_tax_guid,
-        t2.mchd_tax_file,
+        t2.tax_powers,
         t2.mchd_home_guid,
-        t2.mchd_home_file,
+        t2.home_powers,
         t2.last_update
     FROM update_session AS t1
     JOIN users AS t2 ON t1.user_id = t2.user_id
@@ -22,9 +22,9 @@ SELECT
     jsonb_build_object(
         'user_id', t1.user_id,
         'mchd_tax_guid', t1.mchd_tax_guid,
-        'mchd_tax_file', t1.mchd_tax_file,
+        'tax_powers', t1.tax_powers,
         'mchd_home_guid', t1.mchd_home_guid,
-        'mchd_home_file', t1.mchd_home_file,
+        'home_powers', t1.home_powers,
         'last_update', t1.last_update
     ) AS "user!", 
     to_jsonb(t2) AS "person!", 

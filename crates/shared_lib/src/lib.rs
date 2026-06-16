@@ -40,8 +40,14 @@ use super::*;
         service::auth_service::implements::ExternalDeviceData::export_all_to(output_dir)
             .expect("Не удалось экспортировать ExternalDeviceData");
 
-        service::mchd::implements::MchdStep::export_all_to(output_dir)
+        service::mchd::service::MchdStep::export_all_to(output_dir)
             .expect("Не удалось экспортировать MchdStep");
+
+        parsers::mchd::poa::PoaMchd::export_all_to(output_dir)
+            .expect("Не удалось экспортировать PoaMchd");
+
+        service::mchd::tax_mchd::MchdTaxFields::export_all_to(output_dir)
+            .expect("Не удалось экспортировать MchdTaxFields");
     }
 }
 

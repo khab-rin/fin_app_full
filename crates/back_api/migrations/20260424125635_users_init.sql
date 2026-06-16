@@ -8,10 +8,10 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR NOT NULL,
 
     mchd_tax_guid UUID,
-    mchd_tax_file TEXT,
+    tax_powers JSONB NOT NULL DEFAULT '{}'::jsonb,
 
     mchd_home_guid UUID,
-    mchd_home_file TEXT,
+    home_powers JSONB NOT NULL DEFAULT '{}'::jsonb,
 
     sync_shard_id INTEGER DEFAULT floor(random() * 7),
 

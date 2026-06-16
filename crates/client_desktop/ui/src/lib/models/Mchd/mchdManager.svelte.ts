@@ -11,7 +11,7 @@ import TryLater from "$lib/service/mchd/TryLater.svelte";
 
 class MchdManager {
     step = $state<MchdStep>({
-        Loading: {text: "Страница загружается, подождите..."}
+        Loading: {text: "Выберите тип доверенности, который нужно создать"}
     });
     private steps: MchdStep[] = $state([]);
     private index = $state(0);
@@ -42,9 +42,10 @@ class MchdManager {
     }
 
     data = $state({
-        userSurName: new FieldValidator("String1_50"),
-        userFirstName: new FieldValidator("String1_50"),
-        userMidName: new FieldValidator("MidName"),
+        mamagerSurName: new FieldValidator("SurName"),
+        mamagerFirstName: new FieldValidator("FirstName"),
+        managerMidName: new FieldValidator("MidName"),
+        managerTitle: new FieldValidator("String1_255")
     })
 
     get currentText(): string {

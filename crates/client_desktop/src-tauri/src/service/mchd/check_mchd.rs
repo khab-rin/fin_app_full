@@ -1,6 +1,6 @@
 use shared_lib::Status;
 use shared_lib::service::auth_service::client_state::SessionUser;
-use shared_lib::service::mchd::implements::{MchdStep, MchdInfo};
+use shared_lib::service::mchd::service::{MchdStep, MchdInfo};
 
 
 use crate::state::ClientState;
@@ -21,7 +21,7 @@ pub(crate) async fn check_user_mchd_tax(
 
     let session_user: &SessionUser = &session.session_user;
     let user = &session_user.user;
-    if user.mchd_tax_file.is_some() && user.mchd_tax_guid.is_some() {
+    if user.mchd_tax_guid.is_some() {
         return Ok(MchdStep::TaxMchdFull { text: MchdInfo::TaxMchdFull });
     }
 
@@ -48,7 +48,7 @@ pub(crate) async fn check_user_mchd_home(
 
     let session_user: &SessionUser = &session.session_user;
     let user = &session_user.user;
-    if user.mchd_home_file.is_some() && user.mchd_home_guid.is_some() {
+    if user.mchd_home_guid.is_some() {
         return Ok(MchdStep::HomeMchdFull { text: MchdInfo::HomeMchdFull });
     }
 

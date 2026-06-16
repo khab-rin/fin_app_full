@@ -230,9 +230,9 @@ pub(crate) async fn register_new_user(
         password_hash: server_password_hash,
         email,
         mchd_tax_guid: None,
-        mchd_tax_file: None,
+        tax_powers: std::collections::HashSet::new(),
         mchd_home_guid: None,
-        mchd_home_file: None,
+        home_powers: std::collections::HashSet::new(),
     };
 
     let user = match set_user(state, &user_set_data).await {
