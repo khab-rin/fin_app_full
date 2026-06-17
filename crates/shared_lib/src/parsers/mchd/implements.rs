@@ -1,8 +1,10 @@
 use serde::{Serialize, Deserialize};
 
+use crate::make_mchd_enum;
 use crate::primitives::frozen::implements::{BoxUuid, Date, CompInn, PersInn, Kpp, Ogrn, Phone, Region, RubF, Snils, ParticipantStatus};
 use crate::primitives::frozen::implements_base::*;
 use crate::primitives::composite::implements::Fio;
+
 
 
 
@@ -810,151 +812,14 @@ pub struct PoaWrap {
     pub poa_doc: PoaRootKind,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
+pub enum PoaRootKind {
+    #[serde(rename = "Довер")]
+    RootPoa(Box<RootPoa>),
 
-
-#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, sqlx::Type, Clone, ts_rs::TS)]
-pub enum Gender {
-    #[serde(rename = "1")]
-    Male,
-    #[serde(rename = "2")]
-    Female,
+    #[serde(rename = "Передов")]
+    DerivedPoa(Box<DerivedPoa>), 
 }
-
-
-
-#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
-pub enum IsCitizen {
-    #[serde(rename = "1")]
-    Citizen,
-    #[serde(rename = "2")]
-    ForeignCitizen,
-    #[serde(rename = "3")]
-    StatelessPerson,
-}
-
-
-
-#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
-pub enum ManagementType {
-    #[serde(rename = "1")]
-    Sole,
-    #[serde(rename = "2")]
-    Joint,
-}
-
-
-
-#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
-pub enum Flag {
-    #[serde(rename = "0")]
-    FalseFlag,
-    #[serde(rename = "1")]
-    TrueFlag,
-}
-
-
-
-#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
-pub enum PoaTypeRevocable {
-    #[serde(rename = "1")]
-    Revocable,
-
-    #[serde(rename = "2")]
-    Irrevocable
-}
-
-
-
-#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
-pub enum PoaTypeRedelegatable {
-    #[serde(rename = "1")]
-    Single,
-
-    #[serde(rename = "2")]
-    Once,
-
-    #[serde(rename = "3")]
-    Successive
-}
-
-
-
-#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
-pub enum IrrevocablePoaRedelegationType {
-    #[serde(rename = "1")]
-    Static,
-
-    #[serde(rename = "2")]
-    Single
-}
-
-
-
-#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
-pub enum IrrevocablePoaRevocationCondition {
-    #[serde(rename = "1")]
-    Conditional,
-
-    #[serde(rename = "2")]
-    Unconditional,
-}
-
-
-
-#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
-pub enum DelegateType {
-    #[serde(rename = "1")]
-    LegalEntity,
-    #[serde(rename = "2")]
-    IndividualEnt,
-    #[serde(rename = "3")]
-    PhysicalPerson,
-    #[serde(rename = "4")]
-    Branch,
-    #[serde(rename = "5")]
-    ForeignBranch,
-}
-
-
-
-#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
-pub enum PrincipalIdentity  {
-    #[serde(rename = "1")]
-    RussianLegalEntity,
-    
-    #[serde(rename = "2")]
-    ForeignLegalEntity,
-    
-    #[serde(rename = "3")]
-    IndividualEntrepreneur,
-    
-    #[serde(rename = "4")]
-    PhysicalPerson,
-}
-
-
-
-#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
-pub enum InitPrincipalTypeShort {
-    #[serde(rename = "1")]
-    LegalEntity,
-
-    #[serde(rename = "2")]
-    PhysicalPerson,
-}
-
-
-
-#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
-pub enum PoaLegalForm {
-    #[serde(rename = "1")]
-    Simple,
-
-    #[serde(rename = "2")]
-    Notarial,
-}
-
-
 
 #[derive(Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Clone, ts_rs::TS)]
 pub enum ConfineValue {
@@ -965,52 +830,6 @@ pub enum ConfineValue {
     Text(String1_255),
 }
 
-
-
-#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
-pub enum PowerType {
-    #[serde(rename = "0")]
-    Textual,
-
-    #[serde(rename = "1")]
-    MachineReadable,
-}
-
-
-
-#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
-pub enum PowerCommonType {
-    #[serde(rename = "1")]
-    Joint,
-
-    #[serde(rename = "2")]
-    Individual,
-}
-
-
-
-#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
-pub enum RedelegatePowerLossType {
-    #[serde(rename = "1")]
-    Lost,
-
-    #[serde(rename = "2")]
-    Retained,
-}
-
-
-
-#[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, Clone, ts_rs::TS)]
-pub enum RedelegationStatus {
-    #[serde(rename = "0")]
-    Original,
-    
-    #[serde(rename = "1")]
-    Redelegated,
-}
-
-
-
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub enum AddressChoice {
     #[serde(rename = "АдрРФ")]
@@ -1020,21 +839,94 @@ pub enum AddressChoice {
     FiasAdrRf(String1_1000),
 }
 
+make_mchd_enum!(Gender, {
+    Male => "1",
+    Female => "2",
+});
+
+make_mchd_enum!(IsCitizen, {
+    Citizen => "1",
+    ForeignCitizen => "2",
+    StatelessPerson => "3",
+});
+
+make_mchd_enum!(ManagementType, {
+    Sole => "1",
+    Joint => "2",
+});
+
+make_mchd_enum!(Flag, {
+    FalseFlag => "0",
+    TrueFlag => "1",
+});
+
+make_mchd_enum!(PoaTypeRevocable, {
+    Revocable => "1",
+    Irrevocable => "2",
+});
 
 
-#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
-pub enum FormatVersion {
-    #[serde(rename = "EMCHD_1")]
-    Emchd1,
-}
+make_mchd_enum!(PoaTypeRedelegatable, {
+    Single => "1",
+    Once => "2",
+    Successive => "3",
+});
 
+make_mchd_enum!(IrrevocablePoaRedelegationType, {
+    Static => "1",
+    Single => "2",
+});
 
+make_mchd_enum!(IrrevocablePoaRevocationCondition, {
+    Conditional => "1",
+    Unconditional => "2",
+});
 
-#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
-pub enum PoaRootKind {
-    #[serde(rename = "Довер")]
-    RootPoa(Box<RootPoa>),
+make_mchd_enum!(DelegateType, {
+    LegalEntity => "1",
+    IndividualEnt => "2",
+    PhysicalPerson => "3",
+    Branch => "4",
+    ForeignBranch => "5",
+});
 
-    #[serde(rename = "Передов")]
-    DerivedPoa(Box<DerivedPoa>), 
-}
+make_mchd_enum!(PrincipalIdentity, {
+    RussianLegalEntity => "1",
+    ForeignLegalEntity => "2",
+    IndividualEntrepreneur => "3",
+    PhysicalPerson => "4",
+});
+
+make_mchd_enum!(InitPrincipalTypeShort, {
+    LegalEntity => "1",
+    PhysicalPerson => "2",
+});
+
+make_mchd_enum!(PoaLegalForm, {
+    Simple => "1",
+    Notarial => "2",
+});
+
+make_mchd_enum!(PowerType, {
+    Textual => "0",
+    MachineReadable => "1",
+});
+
+make_mchd_enum!(PowerCommonType, {
+    Joint => "1",
+    Individual => "2",
+});
+
+make_mchd_enum!(RedelegatePowerLossType, {
+    Lost => "1",
+    Retained => "2",
+});
+
+make_mchd_enum!(RedelegationStatus, {
+    Original => "0",
+    Redelegated => "1",
+});
+
+make_mchd_enum!(FormatVersion, {
+    Emchd1 => "EMCHD_1",
+});

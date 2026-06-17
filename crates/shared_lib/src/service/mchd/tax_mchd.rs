@@ -213,3 +213,10 @@ impl MchdTaxFields {
             MchdTaxFields::FNS_VPD_003]
     }
 }
+
+
+#[derive(Serialize, Deserialize, Debug, Clone, ts_rs::TS)]
+pub struct MchdPowerInfo {
+    pub code: &'static str,
+    pub name: &'static str,
+}

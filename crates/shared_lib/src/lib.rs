@@ -48,6 +48,8 @@ use super::*;
 
         service::mchd::tax_mchd::MchdTaxFields::export_all_to(output_dir)
             .expect("Не удалось экспортировать MchdTaxFields");
+        service::mchd::tax_mchd::MchdPowerInfo::export_all_to(output_dir)
+            .expect("Не удалось экспортировать MchdPowerInfo")
     }
 }
 

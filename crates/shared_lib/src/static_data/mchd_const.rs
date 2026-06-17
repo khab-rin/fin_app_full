@@ -1,7 +1,4 @@
-pub struct MchdPowerInfo {
-    pub code: &'static str,
-    pub name: &'static str,
-}
+use crate::service::mchd::tax_mchd::MchdPowerInfo;
 
 pub const FNS02: MchdPowerInfo = MchdPowerInfo { code: "2_FNS02", name: "Представлять налоговую декларацию, другую отчетность" };
 pub const FNS03: MchdPowerInfo = MchdPowerInfo { code: "2_FNS03", name: "Получать документы в налоговом органе" };

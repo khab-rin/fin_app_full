@@ -178,25 +178,6 @@ frozen_primitives!(
     "Email"
 );
 
-make_enum_frozen! {
-    CompStatus, {
-        Active, "ACTIVE", {"120"},
-        Liquidating, "LIQUIDATING", {"121"},
-        Liquidated, "LIQUIDATED", {"122"},
-        Reorganizing, "REORGANIZING", {"123"},
-        Bankrupt, "BANKRUPT", {"124"}
-    }
-}
-
-make_enum_frozen! {
-    CompType, {
-        ComEnt, "COM_ENT", {"LEGAL"},
-        Ip, "IP", {"INDIVIDUAL"},
-        Gov, "GOV", {},
-        Bank, "BANK", {}
-    }
-}
-
 frozen_primitives!(
     ParticipantStatus,
     init_part_status,
@@ -217,3 +198,23 @@ frozen_primitives!(
     Box<str>,
     "Поле_пароля"
 );
+
+
+make_enum_frozen! {
+    CompStatus, {
+        Active, "ACTIVE", {"120"},
+        Liquidating, "LIQUIDATING", {"121"},
+        Liquidated, "LIQUIDATED", {"122"},
+        Reorganizing, "REORGANIZING", {"123"},
+        Bankrupt, "BANKRUPT", {"124"}
+    }
+}
+
+make_enum_frozen! {
+    CompType, {
+        ComEnt, "COM_ENT", {"LEGAL"},
+        Ip, "IP", {"INDIVIDUAL"},
+        Gov, "GOV", {},
+        Bank, "BANK", {}
+    }
+}

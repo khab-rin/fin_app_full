@@ -1,6 +1,11 @@
-import type {MchdStep} from "$lib/models/rustModels/MchdStep";
+import { invoke } from "@tauri-apps/api/core";
+
 import { FieldValidator } from "../Auth/FieldValidator.svelte";
 import { MchdStepType } from "./MchdValues";
+
+import type {MchdStep} from "$lib/models/rustModels/MchdStep";
+import type {MchdPowerInfo} from "$lib/models/rustModels/MchdPowerInfo";
+import type {MchdTaxFields} from "$lib/models/rustModels/MchdTaxFields";
 
 import HomeMchdFull from "$lib/service/mchd/HomeMchdFull.svelte";
 import HomeMchdMiss from "$lib/service/mchd/HomeMchdFull.svelte";
@@ -8,6 +13,7 @@ import TaxMchdMiss from "$lib/service/mchd/TaxMchdMiss.svelte";
 import TaxMchdFull from "$lib/service/mchd/TaxMchdFull.svelte";
 import Loading from "$lib/service/mchd/Loading.svelte";
 import TryLater from "$lib/service/mchd/TryLater.svelte";
+
 
 class MchdManager {
     step = $state<MchdStep>({
@@ -42,10 +48,29 @@ class MchdManager {
     }
 
     data = $state({
-        mamagerSurName: new FieldValidator("SurName"),
-        mamagerFirstName: new FieldValidator("FirstName"),
+        PoaNumber: new FieldValidator("String1_50"),
+        PoaEndDate: new FieldValidator("Date"),
+
+        managerTitle: new FieldValidator("String1_255"),
+        managerSurName: new FieldValidator("SurName"),
+        managerFirstName: new FieldValidator("FirstName"),
         managerMidName: new FieldValidator("MidName"),
-        managerTitle: new FieldValidator("String1_255")
+        managerBirthDay: new FieldValidator("Date"),
+        managerSnils: new FieldValidator("Snils"),
+        managerInn: new FieldValidator("PersInn"),
+        managerisSitizen: new FieldValidator("IsCitizen"),
+
+        userSurName: new FieldValidator("SurName"),
+        userFirstName: new FieldValidator("FirstName"),
+        userMidName: new FieldValidator("MidName"),
+        userBirthDay: new FieldValidator("Date"),
+        userGender: new FieldValidator("Gender"),
+        userSnils: new FieldValidator("Snils"),
+        userInn: new FieldValidator("PersInn"),
+        userPassportNumber: new FieldValidator("PasspRfNumber"),
+        userPassportIssueer: new FieldValidator("String1_1000"),
+        userPassportUssuerCode: new FieldValidator("String7_7"),
+        userisSitizen: new FieldValidator("IsCitizen"),
     })
 
     get currentText(): string {
@@ -83,6 +108,14 @@ class MchdManager {
             return HomeMchdFull
         } else {
             return null
+        }
+    }
+
+    async get_power_info(tax_power: MchdTaxFields) {
+        try {
+            return await invoke<MchdPowerInfo>("cmd_get_power_info", { power: tax_power })
+        } catch(err) {
+            console.log("function get_power_info FAILED BY cmd_get_power_info, err = ", err);
         }
     }
 
