@@ -61,17 +61,17 @@ class SvelteAuthStep {
     }
 
     data = $state({
-        nick: new FieldValidator("String1_50"),
-        surName: new FieldValidator("SurName"),
-        firstName: new FieldValidator("FirstName"),
-        midName: new FieldValidator("MidName"),
-        persInn: new FieldValidator("PersInn"),
-        snils: new FieldValidator("Snils"),
-        compInn: new FieldValidator("CompInn"),
-        kpp: new FieldValidator("Kpp"),
-        password: new FieldValidator("Password"),
-        phone: new FieldValidator("Phone"),
-        email: new FieldValidator("Email"),
+        nick: new FieldValidator("String1_50", ""),
+        surName: new FieldValidator("SurName", ""),
+        firstName: new FieldValidator("FirstName", ""),
+        midName: new FieldValidator("MidName", ""),
+        persInn: new FieldValidator("PersInn", ""),
+        snils: new FieldValidator("Snils", ""),
+        compInn: new FieldValidator("CompInn", ""),
+        kpp: new FieldValidator("Kpp", ""),
+        password: new FieldValidator("Password", ""),
+        phone: new FieldValidator("Phone", ""),
+        email: new FieldValidator("Email", ""),
     })
 
     nick_names = $state<NickData>({ nick_names: [] });

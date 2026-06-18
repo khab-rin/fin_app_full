@@ -48,6 +48,9 @@ pub async fn run_lib() {
             commands::auth::cmd_session_by_tel_call,
             commands::mchd::cmd_check_user_mchd_home,
             commands::mchd::cmd_check_user_mchd_tax,
+            commands::mchd::cmd_register_tax_mchd,
+            commands::mchd::cmd_get_power_info,
+            commands::mchd::cmd_get_tax_powers,
             commands::other::cmd_process_bank_statement,
             commands::other::cmd_validate_field,
         ]).build(tauri::generate_context!())

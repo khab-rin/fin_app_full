@@ -1,0 +1,78 @@
+/* Базовые стили для всех заголовков */
+h1, h2, h3, h4, h5, h6 {
+    color: #333; /* Темно-серый цвет текста */
+    line-height: 1.2;
+    margin-top: 1.5em; /* Больше отступа сверху */
+    margin-bottom: 0.5em; /* Меньше отступа снизу */
+    font-weight: 600; /* Полужирный шрифт */
+}
+
+/* Размеры для каждого уровня */
+h1 {
+    font-size: 2.5rem; /* ~40px */
+}
+
+h2 {
+    font-size: 2rem;   /* ~32px */
+    border-bottom: 2px solid #e0e0e0; /* Легкая линия для акцента */
+    padding-bottom: 0.3em;
+}
+
+h3 {
+    font-size: 1.75rem; /* ~28px */
+}
+
+h4 {
+    font-size: 1.5rem;  /* ~24px */
+}
+
+h5 {
+    font-size: 1.25rem; /* ~20px */
+    text-transform: uppercase; /* Чуть строже для мелких заголовков */
+    letter-spacing: 0.05em;
+    color: #555;
+}
+
+h6 {
+    font-size: 1rem;    /* ~16px */
+    color: #777;
+    text-transform: uppercase;
+}
+
+h1:first-child, h2:first-child, h3:first-child {
+    margin-top: 0;
+}
+
+
+p {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #4a4a4a;
+    margin-top: 0.5em;
+    margin-bottom: 1em;
+    max-width: 80ch; 
+    
+    /* Добавляем контур */
+    border: 2px solid #275a18;   /* Зеленая рамка */
+    padding: 10px 15px;          /* Отступ текста от рамки */
+    border-radius: 8px;          /* Скругление углов */
+}
+
+.text-small {
+    font-size: 0.875rem;
+    color: #275a18;
+    margin-top: 0.25em;
+    margin-bottom: 0.5em;
+}
+
+/* 2. Текст ошибки */
+.text-error {
+    color: #d32f2f;
+    font-weight: 500;
+}
+
+/* 3. Текст с акцентом */
+.text-muted {
+    color: #9e9e9e;
+    font-style: italic;
+}

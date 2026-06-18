@@ -5,7 +5,6 @@ import { MchdStepType } from "./MchdValues";
 
 import type {MchdStep} from "$lib/models/rustModels/MchdStep";
 import type {MchdPowerInfo} from "$lib/models/rustModels/MchdPowerInfo";
-import type {MchdTaxFields} from "$lib/models/rustModels/MchdTaxFields";
 
 import HomeMchdFull from "$lib/service/mchd/HomeMchdFull.svelte";
 import HomeMchdMiss from "$lib/service/mchd/HomeMchdFull.svelte";
@@ -13,6 +12,8 @@ import TaxMchdMiss from "$lib/service/mchd/TaxMchdMiss.svelte";
 import TaxMchdFull from "$lib/service/mchd/TaxMchdFull.svelte";
 import Loading from "$lib/service/mchd/Loading.svelte";
 import TryLater from "$lib/service/mchd/TryLater.svelte";
+import type { MchdTaxFields } from "../rustModels/MchdTaxFields";
+import { pageManager } from "../MainManager/MainManager.svelte";
 
 
 class MchdManager {
@@ -41,6 +42,9 @@ class MchdManager {
     }
 
     add(next_step: MchdStep) {
+        if (MchdStepType.Success in next_step) {
+            pageManager.Page = null;
+        }
         this.steps.length = this.index + 1;
         this.steps.push(next_step);
         this.index++;
@@ -48,29 +52,29 @@ class MchdManager {
     }
 
     data = $state({
-        PoaNumber: new FieldValidator("String1_50"),
-        PoaEndDate: new FieldValidator("Date"),
+        PoaNumber: new FieldValidator("String1_50", "1"),
+        PoaEndDate: new FieldValidator("Date", "18.06.2028"),
 
-        managerTitle: new FieldValidator("String1_255"),
-        managerSurName: new FieldValidator("SurName"),
-        managerFirstName: new FieldValidator("FirstName"),
-        managerMidName: new FieldValidator("MidName"),
-        managerBirthDay: new FieldValidator("Date"),
-        managerSnils: new FieldValidator("Snils"),
-        managerInn: new FieldValidator("PersInn"),
-        managerisSitizen: new FieldValidator("IsCitizen"),
+        managerTitle: new FieldValidator("String1_255", "Директор"),
+        managerSurName: new FieldValidator("SurName", "Хабипов"),
+        managerFirstName: new FieldValidator("FirstName", "Ринат"),
+        managerMidName: new FieldValidator("MidName", "Ришатович"),
+        managerBirthDay: new FieldValidator("Date", "06.01.1985"),
+        managerSnils: new FieldValidator("Snils", "16293848705"),
+        managerInn: new FieldValidator("PersInn", "166021488126"),
+        managerIsCitizen: new FieldValidator("IsCitizen", "1"),
 
-        userSurName: new FieldValidator("SurName"),
-        userFirstName: new FieldValidator("FirstName"),
-        userMidName: new FieldValidator("MidName"),
-        userBirthDay: new FieldValidator("Date"),
-        userGender: new FieldValidator("Gender"),
-        userSnils: new FieldValidator("Snils"),
-        userInn: new FieldValidator("PersInn"),
-        userPassportNumber: new FieldValidator("PasspRfNumber"),
-        userPassportIssueer: new FieldValidator("String1_1000"),
-        userPassportUssuerCode: new FieldValidator("String7_7"),
-        userisSitizen: new FieldValidator("IsCitizen"),
+        userSurName: new FieldValidator("SurName", "Хабипов"),
+        userFirstName: new FieldValidator("FirstName", "Ринат"),
+        userMidName: new FieldValidator("MidName", "Ришатович"),
+        userBirthDay: new FieldValidator("Date", "06.01.1985"),
+        userGender: new FieldValidator("Gender", "1"),
+        userSnils: new FieldValidator("Snils", "16293848705"),
+        userInn: new FieldValidator("PersInn", "166021488126"),
+        userPassportNumber: new FieldValidator("PasspRfNumber", "9207360338"),
+        userPassportIssueer: new FieldValidator("String1_1000", "МВД ПО РЕСПУБЛИКЕ ТАТАРСТАН"),
+        userPassportUssuerCode: new FieldValidator("String7_7", "160-009"),
+        userIsCitizen: new FieldValidator("IsCitizen", "1"),
     })
 
     get currentText(): string {
@@ -111,9 +115,9 @@ class MchdManager {
         }
     }
 
-    async get_power_info(tax_power: MchdTaxFields) {
+    async get_power_info(power: MchdTaxFields) {
         try {
-            return await invoke<MchdPowerInfo>("cmd_get_power_info", { power: tax_power })
+            return await invoke<MchdPowerInfo>("cmd_get_power_info", { power: power })
         } catch(err) {
             console.log("function get_power_info FAILED BY cmd_get_power_info, err = ", err);
         }

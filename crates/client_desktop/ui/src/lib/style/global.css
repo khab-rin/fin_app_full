@@ -3,6 +3,11 @@
 @import './auth.css';
 @import './header.css';
 @import './popovers.css';
+@import './input_group.css';
+@import './buttons.css';
+@import './check_box.css';
+@import './h_p.css';
+
 
 
 :root {

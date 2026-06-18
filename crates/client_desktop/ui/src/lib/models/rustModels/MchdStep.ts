@@ -2,4 +2,4 @@
 import type { MchdInfo } from "./MchdInfo";
 import type { Person } from "./Person";
 
-export type MchdStep = { "Loading": { text: MchdInfo, } } | { "TaxMchdMiss": { pers: Person, text: MchdInfo, } } | { "HomeMchdMiss": { pers: Person, text: MchdInfo, } } | { "TaxMchdFull": { text: MchdInfo, } } | { "HomeMchdFull": { text: MchdInfo, } } | { "TryLater": { text: MchdInfo, } };
+export type MchdStep = { "Loading": { text: MchdInfo, } } | { "TaxMchdMiss": { pers: Person, text: MchdInfo, } } | { "HomeMchdMiss": { pers: Person, text: MchdInfo, } } | { "TaxMchdFull": { text: MchdInfo, } } | { "HomeMchdFull": { text: MchdInfo, } } | { "TryLater": { text: MchdInfo, } } | { "Success": { text: MchdInfo, } };

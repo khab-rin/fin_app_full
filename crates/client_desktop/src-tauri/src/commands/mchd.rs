@@ -1,5 +1,5 @@
 use shared_lib::Status;
-use shared_lib::service::mchd::service::MchdStep;
+use shared_lib::service::mchd::service::{MchdStep, NewMchdData};
 use shared_lib::service::mchd::tax_mchd::{MchdTaxFields, MchdPowerInfo};
 
 use crate::state::ClientState;
@@ -28,6 +28,7 @@ pub async fn cmd_check_user_mchd_home(
 #[tauri::command]
 pub fn cmd_get_tax_powers(
 ) -> Vec<MchdTaxFields> {
+    log::info!("cmd_get_power_info running!");
     MchdTaxFields::get_all_powers()
 }
 
@@ -35,5 +36,15 @@ pub fn cmd_get_tax_powers(
 pub fn cmd_get_power_info(
     power: MchdTaxFields
 ) -> MchdPowerInfo {
+    log::info!("cmd_get_power_info running!");
     power.get_power_info().clone()
+}
+
+#[tauri::command]
+pub fn cmd_register_tax_mchd(
+    state: tauri::State<'_, ClientState>,
+    new_mchd_data: NewMchdData
+) -> Result<MchdStep, Status> {
+
+    Err(Status::Unknown)
 }

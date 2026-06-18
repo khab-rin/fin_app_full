@@ -5,5 +5,6 @@ export const MchdStepType = {
     TaxMchdFull: "TaxMchdFull",
     HomeMchdMiss: "HomeMchdMiss",
     HomeMchdFull: "HomeMchdFull",
+    Success: "Success",
     
 } as const

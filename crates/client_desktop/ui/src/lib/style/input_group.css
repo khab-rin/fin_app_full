@@ -1,0 +1,61 @@
+/* Контейнер секции */
+.input-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* Отступ между группами полей */
+    padding: 2rem;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    max-width: 500px;
+    margin: 1rem auto;
+}
+
+/* Группа ввода */
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Лейбл */
+.input-group-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+/* Поле ввода */
+.input-field {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.input-field:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.input-field:disabled {
+    background-color: #f3f4f6;
+    cursor: not-allowed;
+}
+
+/* Стилизация ошибки */
+.input-error {
+    border-color: #ef4444 !important;
+}
+
+.input-error:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
+.input-error-message {
+    font-size: 0.8rem;
+    color: #ef4444;
+    margin-top: -0.25rem;
+}

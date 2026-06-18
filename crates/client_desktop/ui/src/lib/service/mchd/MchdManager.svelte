@@ -3,7 +3,7 @@
 </script>
 
 
-<p class="mchd-p">{currentMchdStep.currentText}</p>
+<p class="text-small">{currentMchdStep.currentText}</p>
 {#if currentMchdStep.getPage}
     <svelte:component this={currentMchdStep.getPage} />
 {:else}
