@@ -46,10 +46,11 @@ pub(crate) async fn add_person(
         Ok(p) => Ok(p),
         Err(err) => {
             tracing::error!(
-                err = ?err,
+                tech_err = ?err,
+                local_err = ?Status::MappingError,
                 "FUN add_person FAILED BY MAPPING Person"
             );
-            Err(err)
+            Err(Status::MappingError)
         }
     }
 }

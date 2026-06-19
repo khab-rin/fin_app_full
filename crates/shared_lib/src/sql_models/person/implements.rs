@@ -5,8 +5,6 @@ use crate::primitives::frozen::implements_base::*;
 use crate::primitives::composite::implements::Fio;
 use crate::parsers::dadata::implements::AdrWrap;
 use crate::parsers::mchd::implements::Gender;
-use crate::Status;
-
 
 #[derive(Serialize, Deserialize, sqlx::FromRow, Debug, Clone, ts_rs::TS)]
 pub struct Person {
@@ -26,18 +24,17 @@ pub struct PersonDto {
 }
 
 impl std::convert::TryFrom<PersonDto> for Person {
-    type Error = Status;
+    type Error = serde_json::Error;
     fn try_from(dto: PersonDto) -> Result<Self, Self::Error> {
         Ok(Person { 
             pers_id: dto.pers_id,
             pers_inn: dto.pers_inn,
-            metadata: serde_json::
-                from_value(dto.metadata)
-                .map_err(|_| Status::MappingError)?,
+            metadata: serde_json::from_value(dto.metadata)?,
             last_update: dto.last_update
         })
     }
 }
+
 #[derive(Serialize, Deserialize, Debug, Clone, sqlx::Type, ts_rs::TS)]
 #[sqlx(type_name = "jsonb")]
 pub struct PersonMetadata {

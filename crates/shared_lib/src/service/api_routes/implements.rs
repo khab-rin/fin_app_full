@@ -3,7 +3,8 @@ pub enum ApiRoutes {
     AuthRestoreToken,
     AuthRestorePassword,
     AuthRegister,
-    AuthRestoreTellCall
+    AuthRestoreTellCall,
+    SqlPersonGetByInn
 }
 
 impl ApiRoutes {
@@ -13,7 +14,8 @@ impl ApiRoutes {
             Self::AuthRestoreToken => "/api/auth/restore_by_token",
             Self::AuthRestorePassword => "/api/auth/restore_by_password",
             Self::AuthRegister => "/api/auth/register_user",
-            Self::AuthRestoreTellCall => "/api/auth/restore_by_tel_call"
+            Self::AuthRestoreTellCall => "/api/auth/restore_by_tel_call",
+            Self::SqlPersonGetByInn => "/api/sql/person_get_by_inn"
         }
     }
 }

@@ -4,6 +4,7 @@ pub mod service;
 pub mod parsers;
 pub mod state;
 pub mod commands;
+pub mod back_api;
 
 use tauri_plugin_log::{Target, TargetKind};
 use tauri::Manager;

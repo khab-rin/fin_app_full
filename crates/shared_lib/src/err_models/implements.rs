@@ -122,6 +122,8 @@ pub enum Status {
     QueryBodyReadErr = 601,
     QueryPostRequestErr = 602,
     QueryResponseFormatErr = 603,
+    QueryConnectErr = 604,
+
 
     ClientSessionMissError = 700
 }

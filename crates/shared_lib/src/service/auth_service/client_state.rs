@@ -32,7 +32,7 @@ pub struct TempInfo {
     pub nick: Option<String1_50>
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ActiveSession {
     pub session_user: SessionUser,
     pub local_db: sqlx::SqlitePool,

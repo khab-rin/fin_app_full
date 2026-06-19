@@ -2,7 +2,7 @@ use shared_lib::sql_models::person::implements::{Person, PersonDto};
 use shared_lib::Status;
 
 
-pub(crate) fn dto_to_person(persons_dto: Vec<PersonDto> ) -> Vec<Person> {
+pub(crate) fn dtos_to_persons(persons_dto: Vec<PersonDto> ) -> Vec<Person> {
     let mut res: Vec<Person> = vec!();
 
     for dto in persons_dto {

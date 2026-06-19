@@ -14,6 +14,7 @@ pub enum MchdStep {
     HomeMchdFull { text: MchdInfo },
     TryLater {text: MchdInfo},
     Success {text: MchdInfo},
+    WrongData {text: MchdInfo},
 }
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
@@ -45,6 +46,9 @@ pub enum MchdInfo {
     #[serde(rename = "Доверенность успешно создана и проходит регистрацию в сервисе МЧД ФНС РФ")]
     Success,
 
+    #[serde(rename = "Введенные данные не соответствуют данным зарегистрированного пользователя")]
+    WrongPerson,
+
     #[serde(rename = "")]
     Nothing,
 }
@@ -73,8 +77,9 @@ pub struct NewMchdData {
     pub user_snils: Snils,
     pub user_inn: PersInn,
     pub user_passport_number: PasspRfNumber,
-    pub user_passport_issueer: String1_1000,
+    pub user_passport_issueer: String1_4000,
     pub user_passport_ussuer_code: String7_7,
     pub user_is_citizen: IsCitizen,
+    
     pub powers: std::collections::HashSet<MchdPower>
 }

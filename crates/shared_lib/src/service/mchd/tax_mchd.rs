@@ -103,19 +103,26 @@ pub enum MchdTaxFields {
     #[serde(rename = "2_FNS41")]
     FNS41,
 
-    FNS_RAM_AU_RAU,
+    #[serde(rename = "FNS_RAM_AU_RAU")]
+    FNSRAMAURAU,
 
-    FNS_RAM_SROAU_RAU,
+    #[serde(rename = "FNS_RAM_SROAU_RAU")]
+    FNSRAMSROAURAU,
 
-    FNS_OFR_340FZ,
+    #[serde(rename = "FNS_OFR_340FZ")]
+    FNSOFR340FZ,
 
-    FNS_OFR_173FZ,
+    #[serde(rename = "FNS_OFR_173FZ")]
+    FNSOFR173FZ,
 
-    FNS_VPD_001,
+    #[serde(rename = "FNS_VPD_001")]
+    FNSVPD001,
 
-    FNS_VPD_002,
+    #[serde(rename = "FNS_VPD_002")]
+    FNSVPD002,
 
-    FNS_VPD_003,
+    #[serde(rename = "FNS_VPD_003")]
+    FNSVPD003,
 }
 
 impl MchdTaxFields {
@@ -153,13 +160,14 @@ impl MchdTaxFields {
             Self::FNS40 { .. } => &FNS40,
             Self::FNS41 { .. } => &FNS41,
             Self::FNS99 { .. } => &FNS99,
-            Self::FNS_RAM_AU_RAU { .. } => &FNS_RAM_AU_RAU,
-            Self::FNS_RAM_SROAU_RAU { .. } => &FNS_RAM_SROAU_RAU,
-            Self::FNS_OFR_340FZ { .. } => &FNS_OFR_340FZ,
-            Self::FNS_OFR_173FZ { .. } => &FNS_OFR_173FZ,
-            Self::FNS_VPD_001 { .. } => &FNS_VPD_001,
-            Self::FNS_VPD_002 { .. } => &FNS_VPD_002,
-            Self::FNS_VPD_003 { .. } => &FNS_VPD_003,
+            Self::FNSRAMAURAU { .. } => &FNSRAMAURAU,
+            Self::FNSRAMSROAURAU { .. } => &FNSRAMSROAURAU,
+            Self::FNSOFR340FZ { .. } => &FNSOFR340FZ,
+            Self::FNSOFR173FZ { .. } => &FNSOFR173FZ,
+            Self::FNSVPD001 { .. } => &FNSVPD001,
+            Self::FNSVPD002 { .. } => &FNSVPD002,
+            Self::FNSVPD003 { .. } => &FNSVPD003,
+
         }
     }
 
@@ -204,13 +212,14 @@ impl MchdTaxFields {
             MchdTaxFields::FNS38, 
             MchdTaxFields::FNS99, 
             MchdTaxFields::FNS41, 
-            MchdTaxFields::FNS_RAM_AU_RAU, 
-            MchdTaxFields::FNS_RAM_SROAU_RAU, 
-            MchdTaxFields::FNS_OFR_340FZ, 
-            MchdTaxFields::FNS_OFR_173FZ, 
-            MchdTaxFields::FNS_VPD_001, 
-            MchdTaxFields::FNS_VPD_002, 
-            MchdTaxFields::FNS_VPD_003]
+            MchdTaxFields::FNSRAMAURAU, 
+            MchdTaxFields::FNSRAMSROAURAU, 
+            MchdTaxFields::FNSOFR340FZ, 
+            MchdTaxFields::FNSOFR173FZ, 
+            MchdTaxFields::FNSVPD001, 
+            MchdTaxFields::FNSVPD002, 
+            MchdTaxFields::FNSVPD003
+        ]
     }
 }
 

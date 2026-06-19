@@ -12,12 +12,15 @@ use shared_lib::service::api_routes::implements::ApiRoutes;
 use shared_lib::static_data::init_re;
 
 use crate::handlers::service::process::bank_statement::handler::auto_add_company_handler;
+
 use crate::handlers::service::auth_service::handler::{
     restore_by_token_handler,
     restore_by_password_handler,
     make_session_by_tell_call_handler,
     register_user_by_crypto_handler
 };
+
+use crate::handlers::sql::handlers::get_person_by_inn_handler;
 
 
 #[tokio::main]
@@ -99,6 +102,9 @@ async fn main() {
         ).route(
             ApiRoutes::AuthRegister.get_path(), 
             post(register_user_by_crypto_handler)
+        ).route(
+            ApiRoutes::SqlPersonGetByInn.get_path(), 
+            post(get_person_by_inn_handler)
         )
 
         .layer(TraceLayer::new_for_http())

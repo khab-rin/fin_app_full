@@ -72,7 +72,7 @@ class MchdManager {
         userSnils: new FieldValidator("Snils", "16293848705"),
         userInn: new FieldValidator("PersInn", "166021488126"),
         userPassportNumber: new FieldValidator("PasspRfNumber", "9207360338"),
-        userPassportIssueer: new FieldValidator("String1_1000", "МВД ПО РЕСПУБЛИКЕ ТАТАРСТАН"),
+        userPassportIssueer: new FieldValidator("String1_4000", "МВД ПО РЕСПУБЛИКЕ ТАТАРСТАН"),
         userPassportUssuerCode: new FieldValidator("String7_7", "160-009"),
         userIsCitizen: new FieldValidator("IsCitizen", "1"),
     })

@@ -1,6 +1,6 @@
 INSERT INTO companys(
     comp_id,
-    inn,
+    comp_inn,
     kpp,
     comp_type,
     comp_status,
@@ -9,7 +9,7 @@ INSERT INTO companys(
     is_synced
 )
 VALUES(?1, ?2, ?3, ?4, ?5, ?6, ?7, 1)
-ON CONFLICT(inn, kpp) DO UPDATE SET
+ON CONFLICT(comp_inn, kpp) DO UPDATE SET
     comp_id = excluded.comp_id,
     comp_type = excluded.comp_type,
     comp_status = excluded.comp_status,
@@ -18,5 +18,5 @@ ON CONFLICT(inn, kpp) DO UPDATE SET
     is_synced = 1
 RETURNING
     comp_id AS "comp_id: Uuid",
-    inn AS "comp_inn:CompInn",
+    comp_inn AS "comp_inn:CompInn",
     kpp AS "kpp:Kpp"
