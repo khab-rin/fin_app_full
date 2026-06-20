@@ -12,6 +12,7 @@ use shared_lib::make_header;
 use shared_lib::service::auth_service::general::*;
 use shared_lib::service::auth_service::client_state::*;
 use shared_lib::service::auth_service::implements::SessionUserToken;
+use shared_lib::sql_models::person::implements::Person;
 
 
 
@@ -269,4 +270,21 @@ impl ClientState {
     pub async fn get_session(&self) -> Result<Arc<ActiveSession>, Status> {
         self.session.lock().await.clone().ok_or(Status::ClientSessionMissError)
     }
+
+    pub async fn update_person(&self, new_person: Person) -> Result<(), Status> {
+        let mut session_lock = self.session.lock().await;
+        
+        if let Some(current_session) = session_lock.as_mut() {
+            let mut updated_session = (**current_session).clone();
+            updated_session.session_user.person = new_person;
+            
+            *current_session = Arc::new(updated_session);
+            Ok(())
+        } else {
+            log::error!("FAILED TO UPDATE PERSON: {}", Status::ClientSessionMissError);
+            Err(Status::ClientSessionMissError)
+        }
+    }
 }
+
+

@@ -1,9 +1,12 @@
 use shared_lib::Status;
 use shared_lib::service::mchd::service::{MchdStep, NewMchdData, MchdInfo};
-use shared_lib::parsers::mchd::implements::PersonDocums;
+use shared_lib::parsers::mchd::implements::*;
 
 use crate::state::ClientState;
 use crate::service::mchd::helper::check_update_user;
+use crate::service::mchd::make_poametadata::make_poametadata;
+use crate::sql_queries::persons::insert::person_no_sync::insert_person_no_sync;
+
 
 pub(crate) async  fn make_new_tax_mchd(
     state: &ClientState,
@@ -28,26 +31,37 @@ pub(crate) async  fn make_new_tax_mchd(
         return Ok(MchdStep::WrongData { text: MchdInfo::WrongPerson })
     }
 
-    let mut session_lock = state.session.lock().await;
-    
-    // Пересобираем сессию: клонируем старую структуру ActiveSession, 
-    // но заменяем в ней person на наш обновленный
-    if let Some(current_session) = session_lock.as_ref() {
-        let mut updated_session = (**current_session).clone();
-        updated_session.session_user.person = person;          // обновляем человека
-        
-        // Кладим обратно в Mutex, упаковав в новый Arc
-        *session_lock = Some(std::sync::Arc::new(updated_session));
-    } else {
-        // На случай, если пока мы проверяли пользователя, сессия внезапно исчезла (разлогинился)
-        log::error!("Session was dropped during check_update_user");
-        return Ok(failed_result);
+    match state.update_person(person.clone()).await {
+        Ok(_) => {},
+        Err(err) => {
+            log::error!(
+                "FUN make_new_tax_mchd FAILED BY state.update_person, err = {}", err
+            );
+            return Ok(failed_result);
+        }
     }
+
+    match insert_person_no_sync(state, &person).await {
+        Ok(_) => {},
+        Err(err) => {
+            log::error!(
+                "FUN make_new_tax_mchd FAILED BY insert_person_no_sync, err = {}", err
+            );
+            return Ok(failed_result);
+        }
+    }
+
+    let poametadata = make_poametadata(data);
+
+
+
+
+
+
+
+
+
     
-    // Не забываем явно или неявно дропнуть лок перед асинхронными операциями дальше
-    drop(session_lock);
-
-
 
     let NewMchdData { 
         poa_number, 

@@ -1,7 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-use crate::make_mchd_enum;
-use crate::primitives::frozen::implements::{BoxUuid, Date, CompInn, PersInn, Kpp, Ogrn, Phone, Region, RubF, Snils, ParticipantStatus};
+use crate::primitives::frozen::implements::{BoxUuid, Date, CompInn, PersInn, Kpp, Ogrn, Phone, Region, RubF, Snils};
 use crate::primitives::frozen::implements_base::*;
 use crate::primitives::composite::implements::Fio;
 
@@ -75,7 +74,7 @@ pub struct DirectAuthorityDoc  {
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct ForeignOrg {
     #[serde(rename = "@СтУчНД")]
-    pub participant_status: Option<ParticipantStatus>,
+    pub principal_notarial_status: Option<PrincipalNotarialStatus>,
 
     #[serde(rename = "@НаимИО")]
     pub for_org_name: String1_1000,
@@ -183,7 +182,7 @@ pub struct PersonMchd {
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct JuridicalWrapPerson {
     #[serde(rename = "@СтУчНД")]
-    pub participant_status: Option<ParticipantStatus>,
+    pub principal_notarial_status: Option<PrincipalNotarialStatus>,
 
     #[serde(rename = "@ИННФЛ")]
     pub inn: Option<PersInn>,
@@ -207,13 +206,13 @@ pub struct JuridicalWrapPerson {
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct RussOrganization {
     #[serde(rename = "@СтУчНД")]
-    pub participant_statustatus: Option<ParticipantStatus>,
+    pub principal_notarial_status: Option<PrincipalNotarialStatus>,
 
     #[serde(rename = "@НаимОрг")]
-    pub name: String1_1000,
+    pub name: CompanyName,
 
     #[serde(rename = "@ИННЮЛ")]
-    pub inn: Option<CompInn>,
+    pub comp_inn: Option<CompInn>,
 
     #[serde(rename = "@КПП")]
     pub kpp: Kpp,
@@ -256,9 +255,9 @@ pub struct ForeignOrgPrincipal {
 
 //СведИПТип
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
-pub struct Ip {
+pub struct IpPrincipal {
     #[serde(rename = "@СтУчНД")]
-    pub participant_statustatus: Option<ParticipantStatus>,
+    pub principal_notarial_status: Option<PrincipalNotarialStatus>,
 
     #[serde(rename = "@НаимИП")]
     pub name: Option<String1_1000>,
@@ -295,7 +294,7 @@ pub struct PrimeManagerOrg {
 
 //ЛицоБезДовТип
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
-pub struct LegalRep {
+pub struct RootManager {
     #[serde(rename = "@ПолнЮЛ")]
     pub management_type: ManagementType,
 
@@ -306,7 +305,7 @@ pub struct LegalRep {
     pub prime_manager_person: Option<JuridicalWrapPerson>,
 
     #[serde(rename = "СвИП")]
-    pub prime_manager_ip: Option<Ip>
+    pub prime_manager_ip: Option<IpPrincipal>
 }
 
 
@@ -315,19 +314,19 @@ pub struct LegalRep {
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct RussOrgPrincipal {
     #[serde(rename = "@ЕИОУК")]
-    pub direct_authority_yk: Flag,
+    pub root_manager_yk: Flag,
 
     #[serde(rename = "@ЕИОФЛ")]
-    pub direct_authority_yk_person: Flag,
+    pub root_manager_person: Flag,
 
     #[serde(rename = "@ЕИОИП")]
-    pub direct_authority_yk_ip: Flag,
+    pub root_manager_ip: Flag,
 
     #[serde(rename = "СвРосОрг")]
     pub organization: RussOrganization,
 
     #[serde(rename = "ЛицоБезДов")]
-    pub managers: Vec<LegalRep>
+    pub root_managers: Vec<RootManager>
 }
 
 
@@ -369,7 +368,7 @@ pub struct PoaMetadata {
     pub tax_org_idents: Vec<Digits4_4>,
 
     #[serde(rename = "СведСист")]
-    pub system_info: String1_1000,
+    pub mchd_system_info: String1_1000,
 
     #[serde(rename = "Безотзыв")]
     pub irrevocable_poa: Option<IrrevocablePoa>,
@@ -463,9 +462,9 @@ pub struct NotarialCertification {
 
 //ФЛДоверТип
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
-pub struct PrincipalPerson {
+pub struct PersonPrincipal {
     #[serde(rename = "@СтУчНД")]
-    pub participant_status: Option<ParticipantStatus>,
+    pub principal_notarial_status: Option<PrincipalNotarialStatus>,
 
     #[serde(rename = "@ПрДеесп")]
     pub legal_capacity: Option<Flag>,
@@ -486,7 +485,7 @@ pub struct PrincipalPerson {
     pub person: PersonMchd,
 
     #[serde(rename = "СвЗакПредРук")]
-    pub legal_rep: Option<LegalRep>,
+    pub root_manager: Option<RootManager>,
 
 }
 
@@ -499,7 +498,7 @@ pub struct Delegate {
     pub organization: Option<RussOrganization>,
 
     #[serde(rename = "СведИП")]
-    pub ip: Option<Ip>,
+    pub ip: Option<IpPrincipal>,
 
     #[serde(rename = "СведФизЛ")]
     pub person: Option<JuridicalWrapPerson>,
@@ -535,10 +534,10 @@ pub struct InitPrincipal {
     pub foreign_organization: Option<ForeignOrg>,
 
     #[serde(rename = "ИПДовер")]
-    pub ip: Option<Ip>,
+    pub ip: Option<IpPrincipal>,
 
     #[serde(rename = "ФЛДовер")]
-    pub person: Option<PrincipalPerson>
+    pub person: Option<PersonPrincipal>
 }
 
 
@@ -691,10 +690,10 @@ pub struct Principal {
     pub foreign_org: Option<ForeignOrgPrincipal>,
 
     #[serde(rename = "ИПДовер")]
-    pub ip: Option<Ip>,
+    pub ip: Option<IpPrincipal>,
 
     #[serde(rename = "ФЛДовер")]
-    pub person: Option<PrincipalPerson>,
+    pub person: Option<PersonPrincipal>,
 }
 
 
@@ -742,7 +741,7 @@ pub struct DerivedPoa {
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct RedelegatePerson {
     #[serde(rename = "@СтУчНД")]
-    pub participant_status: Option<ParticipantStatus>,
+    pub principal_notarial_status: Option<PrincipalNotarialStatus>,
 
     #[serde(rename = "@ПрНалРук")]
     pub signatory_flag: Option<Flag>,
@@ -779,7 +778,7 @@ pub struct SubPrincipalInfo {
     pub russian_organization: Option<RussOrgPrincipal>,
 
     #[serde(rename = "ИППерПолн")]
-    pub ip: Option<Ip>,
+    pub ip: Option<IpPrincipal>,
 
     #[serde(rename = "ФЛПерПолн")]
     pub person: Option<RedelegatePerson>,
@@ -929,4 +928,13 @@ make_mchd_enum!(RedelegationStatus, {
 
 make_mchd_enum!(FormatVersion, {
     Emchd1 => "EMCHD_1",
+});
+
+make_mchd_enum!(PrincipalNotarialStatus, {
+    RussionPerson => "101",
+    ForeignPerson => "102",
+    Ip => "299",
+    RussianOrganization => "301",
+    ForeignOrganization => "303",
+    OtherForeignOrganizations => "399"
 });

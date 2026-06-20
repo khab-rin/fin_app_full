@@ -169,9 +169,6 @@ impl SvelteValidator {
             SvelteValidator::Email=> match Email::new(value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::ParticipantStatus=> match ParticipantStatus::new(value) {
-                Ok(_) => Ok(true), Err(_) => Ok(false),
-            },
             SvelteValidator::PoaReqElemsFlag=> match PoaReqElemsFlag::new(value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
@@ -332,6 +329,10 @@ impl SvelteValidator {
                 Err(_) => Ok(false),
             },
             SvelteValidator::FormatVersion => match value.parse::<FormatVersion>() {
+                Ok(_) => Ok(true),
+                Err(_) => Ok(false),
+            },
+            SvelteValidator::ParticipantStatus=> match value.parse::<FormatVersion>() {
                 Ok(_) => Ok(true),
                 Err(_) => Ok(false),
             },

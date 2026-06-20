@@ -4,7 +4,7 @@ use shared_lib::sql_models::person::implements::{PersonDto, Person};
 
 use crate::state::ClientState;
 
-pub(crate) async fn insert_person_sync(
+pub(crate) async fn insert_person_no_sync(
     state: &ClientState,
     person: &Person
 ) -> Result<Person, Status> {

@@ -27,8 +27,7 @@ pub(crate) fn check_update_user(
 
     person.metadata.passport = Some(passport);
     person.metadata.birth_day = Some(data.user_birth_day.clone());
-    person.metadata.gender = Some(data.user_gender.clone());
+    person.metadata.gender = Some(data.user_gender);
     
     true
 }
-

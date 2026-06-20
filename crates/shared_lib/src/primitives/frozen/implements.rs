@@ -179,13 +179,6 @@ frozen_primitives!(
 );
 
 frozen_primitives!(
-    ParticipantStatus,
-    init_part_status,
-    Box<str>,
-    "3_значный_код_статуса"
-);
-
-frozen_primitives!(
     PoaReqElemsFlag,
     init_flag_str,
     Box<str>,

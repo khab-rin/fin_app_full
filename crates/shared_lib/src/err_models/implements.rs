@@ -85,8 +85,6 @@ pub enum Status {
     FileInvalideData = 201,
     MappingError = 202,
 
-
-
     FileCreateError = 250,
     FileReadError = 251,
     FileWriteError = 252,
@@ -113,6 +111,7 @@ pub enum Status {
     BackSmsRuBalance = 500,
     BackApiError = 501,
     CryptoServerError = 502,
+    DadataMissFields = 503,
 
     // ==========================================
     // 600-я группа: Ошибки выполнения HTTP/сетевых запросов

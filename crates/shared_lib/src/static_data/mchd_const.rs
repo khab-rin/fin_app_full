@@ -39,3 +39,7 @@ pub const FNSOFR173FZ: MchdPowerInfo = MchdPowerInfo { code: "FNS_OFR_173FZ", na
 pub const FNSVPD001: MchdPowerInfo = MchdPowerInfo { code: "FNS_VPD_001", name: "Регистрировать организацию на платформе поставки данных «ВПД» ФНС России от имени доверителя" };
 pub const FNSVPD002: MchdPowerInfo = MchdPowerInfo { code: "FNS_VPD_002", name: "Подписывать оферту или соглашение об информационном взаимодействии с ФНС России на платформе поставки данных «ВПД» ФНС России от имени доверителя" };
 pub const FNSVPD003: MchdPowerInfo = MchdPowerInfo { code: "FNS_VPD_003", name: "Расторгать оферту или соглашение об информационном взаимодействии с ФНС России на платформе поставки данных «ВПД» ФНС России от имени доверителя" };
+
+
+
+pub const MCHD_SYSTEM_INFO: &str = "https://m4d.nalog.gov.ru/emchd/check-status?guid=";
