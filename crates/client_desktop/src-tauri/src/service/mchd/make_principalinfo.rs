@@ -2,32 +2,29 @@ use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::Region;
 use shared_lib::service::mchd::service::NewMchdData;
 use shared_lib::parsers::mchd::implements::{
-    Flag, 
-    IpPrincipal, 
-    PostalAddress, 
-    Principal, 
-    PrincipalIdentity, 
-    PrincipalInfo, 
-    RussOrgPrincipal, 
-    RussOrganization,
-    AddressChoice
+    AddressChoice, Flag, IpPrincipal, ManagementType, PersonMchd, PostalAddress, Principal, PrincipalIdentity, PrincipalInfo, RootManager, RussOrgPrincipal, RussOrganization, WrapPerson
 };
 use shared_lib::service::auth_service::client_state::ActiveSession;
+use shared_lib::primitives::composite::implements::Fio;
+
 
 
 pub(crate) fn make_principal_info(
     session: &ActiveSession,
     data: &NewMchdData
-) -> PrincipalInfo {
+) -> Result<PrincipalInfo, Status> {
+
     let principal_identity = match session.session_user.company.comp_inn.len() {
         10 => PrincipalIdentity::RussianLegalEntity,
         _ => PrincipalIdentity::IndividualEntrepreneur
     };
 
-    PrincipalInfo { 
+    let principal_info = PrincipalInfo { 
         principal_identity, 
-        principal: make_principal(session, data)
-    }
+        principal: make_principal(session, data)?
+    };
+
+    Ok(principal_info)
 }
 
 
@@ -35,21 +32,40 @@ pub(crate) fn make_principal_info(
 pub(crate) fn make_principal(
     session: &ActiveSession,
     data: &NewMchdData
-) -> Principal {
-    Principal {
-        russian_org: make_russ_org_principal(session, data),
+) -> Result<Principal, Status> {
+
+    let principal = Principal {
+        russian_org: make_russ_org_principal(session, data)?,
         foreign_org: None,
         ip: make_ip_principal(session, data),
         person: None
-    }
+    };
+
+    Ok(principal)
 }
 
 pub(crate) fn make_russ_org_principal(
     session: &ActiveSession,
     data: &NewMchdData
-) -> Option<RussOrgPrincipal> {
+) -> Result<Option<RussOrgPrincipal>, Status> {
+
+    if session.session_user.company.comp_inn.len() == 12 {
+        return Ok(None)
+    }
     
-    None
+    let russ_organization = make_russ_organization(session, data)?;
+    let root_manager = make_rootmanager(data);
+
+    let russ_organization_principal = RussOrgPrincipal {
+        root_manager_yk: Flag::FalseFlag,
+        root_manager_person: Flag::TrueFlag,
+        root_manager_ip: Flag::FalseFlag,
+        organization: russ_organization,
+        root_managers: vec!(root_manager)
+
+    };
+
+    Ok(Some(russ_organization_principal))
 }
 
 pub(crate) fn make_ip_principal(
@@ -61,7 +77,7 @@ pub(crate) fn make_ip_principal(
 }
 
 
-pub(crate) fn make_russionorgenization(
+pub(crate) fn make_russ_organization(
     session: &ActiveSession,
     data: &NewMchdData
 ) -> Result<RussOrganization, Status> {
@@ -70,7 +86,7 @@ pub(crate) fn make_russionorgenization(
         Some(d) => d,
         None => {
             log::error!(
-                "FUN make_russionorgenization FAILED BY MISS session.session_user.company.metadata.comp_name, err = {}",
+                "FUN make_russ_organization FAILED BY MISS session.session_user.company.metadata.comp_name, err = {}",
                 Status::DadataMissFields
             );
             return Err(Status::DadataMissFields);
@@ -96,19 +112,19 @@ pub(crate) fn make_russionorgenization(
         ogrn: session.session_user.company.metadata.ogrn.clone(), 
         reg_num: None, 
         founding_doc: None, 
-        phone: session.session_user.company.metadata.phone.clone(), 
-        email: session.session_user.company.metadata.e_mail.clone(), 
+        phone: None, 
+        email: None, 
         direct_authority_doc: None, 
-        address: make_address(session, data)
+        address: Some(make_address(session))
     };
 
     return Ok(a);
 }
 
+
 pub(crate) fn make_address(
     session: &ActiveSession,
-    data: &NewMchdData
-) -> Option<PostalAddress> {
+) -> PostalAddress {
 
     let comp_inn_str = session.session_user.company.comp_inn.to_string();
     let region_base: String = comp_inn_str.chars().take(2).collect();
@@ -124,9 +140,58 @@ pub(crate) fn make_address(
         .map(AddressChoice::AdrRf);
 
 
-    Some(PostalAddress {
+    PostalAddress {
         region,
         fias_id,
         address
-    })
+    }
+}
+
+pub(crate) fn make_rootmanager(
+    data: &NewMchdData
+) -> RootManager {
+    RootManager {
+        management_type: ManagementType::Sole,
+        prime_manager_org: None,
+        prime_manager_person: Some(make_wrap_person(data)),
+        prime_manager_ip: None
+    }
+}
+
+pub(crate) fn make_wrap_person(
+    data: &NewMchdData
+) -> WrapPerson {
+
+    WrapPerson {
+        principal_notarial_status: None,
+        inn: Some(data.manager_inn.clone()),
+        snils: Some(data.manager_snils.clone()),
+        position: Some(data.manager_tittle.clone()),
+        direct_authority_doc: None,
+        person: make_person_mchd(data)
+    }
+}
+
+pub(crate) fn make_person_mchd(
+    data: &NewMchdData
+) -> PersonMchd {
+
+    PersonMchd {
+        gender: None,
+        is_citizen: Some(data.manager_is_citizen),
+        ern_num: None,
+        birth_day: Some(data.manager_birth_day.clone()),
+        birth_place: None,
+        country_code: None,
+        tel_number: None,
+        email: None,
+        fio: Fio {
+            first_name: data.manager_first_name.clone(),
+            sur_name: data.manager_sur_name.clone(),
+            mid_name: Some(data.manager_mid_name.clone())
+        },
+        address: None,
+        person_docums: None
+
+    }
 }

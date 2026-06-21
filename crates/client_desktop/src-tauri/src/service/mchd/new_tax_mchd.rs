@@ -1,11 +1,13 @@
 use shared_lib::Status;
 use shared_lib::service::mchd::service::{MchdStep, NewMchdData, MchdInfo};
 use shared_lib::parsers::mchd::implements::*;
+use shared_lib::parsers::mchd::poa::PoaMchd;
 
 use crate::state::ClientState;
 use crate::service::mchd::helper::check_update_user;
 use crate::service::mchd::make_poametadata::make_poametadata;
 use crate::sql_queries::persons::insert::person_no_sync::insert_person_no_sync;
+use crate::service::mchd::make_poa_wrap::make_poa_wrap;
 
 
 pub(crate) async  fn make_new_tax_mchd(
@@ -51,7 +53,17 @@ pub(crate) async  fn make_new_tax_mchd(
         }
     }
 
-    let poametadata = make_poametadata(data);
+
+
+    let poa_wrap = match make_poa_wrap(&session, data) {
+        Ok(p) => p,
+        Err(err) => {
+            log::error!(
+                "FUN make_new_tax_mchd FAILED BY FUN make_poa_wrap, err = {}", err
+            );
+            return Ok(failed_result);
+        }
+    };
 
 
 

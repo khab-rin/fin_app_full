@@ -185,6 +185,13 @@ frozen_primitives!(
 );
 
 frozen_primitives!(
+    Digits7_7,
+    init_digits_7_7,
+    Box<str>,
+    "Строка_7_цифр"
+);
+
+frozen_primitives!(
     Digits12_12,
     init_digits_12_12,
     Box<str>,

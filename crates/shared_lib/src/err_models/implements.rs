@@ -76,6 +76,7 @@ pub enum Status {
     ValidPassword = 155,
     CompInnValid = 156,
     PersInnValid = 157,
+    ValidMchdDig7_7 = 158,
 
     // ==========================================
     // 200-я группа: Ошибки при работе с файлами и структуры данных

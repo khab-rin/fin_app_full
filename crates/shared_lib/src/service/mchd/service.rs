@@ -4,6 +4,7 @@ use crate::sql_models::person::implements::Person;
 use crate::primitives::frozen::implements::*;
 use crate::primitives::frozen::implements_base::*;
 use crate::parsers::mchd::implements::*;
+use crate::service::mchd::tax_mchd::MchdTaxFields;
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub enum MchdStep {
@@ -81,5 +82,5 @@ pub struct NewMchdData {
     pub user_passport_ussuer_code: String7_7,
     pub user_is_citizen: IsCitizen,
     
-    pub powers: std::collections::HashSet<MchdPower>
+    pub powers: std::collections::HashSet<MchdTaxFields>
 }

@@ -43,3 +43,4 @@ pub const FNSVPD003: MchdPowerInfo = MchdPowerInfo { code: "FNS_VPD_003", name: 
 
 
 pub const MCHD_SYSTEM_INFO: &str = "https://m4d.nalog.gov.ru/emchd/check-status?guid=";
+pub const MCHD_KND: &str = "1110415";

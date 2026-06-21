@@ -180,7 +180,7 @@ pub struct PersonMchd {
 
 //СвФЛТип
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
-pub struct JuridicalWrapPerson {
+pub struct WrapPerson {
     #[serde(rename = "@СтУчНД")]
     pub principal_notarial_status: Option<PrincipalNotarialStatus>,
 
@@ -248,7 +248,7 @@ pub struct ForeignOrgPrincipal {
     pub foreign_org: ForeignOrg,
 
     #[serde(rename = "СвРукОП")]
-    pub managers: Vec<JuridicalWrapPerson>
+    pub managers: Vec<WrapPerson>
 }
 
 
@@ -287,7 +287,7 @@ pub struct PrimeManagerOrg {
     pub organization: RussOrganization,
 
     #[serde(rename = "СвФЛ")]
-    pub managers: Vec<JuridicalWrapPerson>
+    pub managers: Vec<WrapPerson>
 }
 
 
@@ -302,7 +302,7 @@ pub struct RootManager {
     pub prime_manager_org: Option<PrimeManagerOrg>,
 
     #[serde(rename = "СвФЛ")]
-    pub prime_manager_person: Option<JuridicalWrapPerson>,
+    pub prime_manager_person: Option<WrapPerson>,
 
     #[serde(rename = "СвИП")]
     pub prime_manager_ip: Option<IpPrincipal>
@@ -501,7 +501,7 @@ pub struct Delegate {
     pub ip: Option<IpPrincipal>,
 
     #[serde(rename = "СведФизЛ")]
-    pub person: Option<JuridicalWrapPerson>,
+    pub person: Option<WrapPerson>,
 
     #[serde(rename = "СведФилиал")]
     pub filial: Option<RussOrganization>,
@@ -753,10 +753,10 @@ pub struct RedelegatePerson {
     pub snils: Snils,
 
     #[serde(rename = "СведРукоп")]
-    pub signatory: Option<JuridicalWrapPerson>,
+    pub signatory: Option<WrapPerson>,
 
     #[serde(rename = "СведФЛ")]
-    pub person: JuridicalWrapPerson,
+    pub person: WrapPerson,
 }
 
 
@@ -767,7 +767,7 @@ pub struct RedelegaterFilial {
     pub filial: RussOrganization,
 
     #[serde(rename = "СвРукФил")]
-    pub manager: JuridicalWrapPerson,
+    pub manager: WrapPerson,
 }
 
 
@@ -805,7 +805,7 @@ pub struct SubPrincipal {
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct PoaWrap {
     #[serde(rename = "@КНД")]
-    pub code_knd: Option<String7_7>,
+    pub code_knd: Option<Digits7_7>,
 
     #[serde(rename = "$value")]
     pub poa_doc: PoaRootKind,
