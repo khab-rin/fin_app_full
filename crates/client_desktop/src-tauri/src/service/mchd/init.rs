@@ -2,8 +2,7 @@ use std::fs;
 use std::path::Path;
 
 use shared_lib::Status;
-use shared_lib::parsers::mchd::implements::*;
-use shared_lib::parsers::mchd::poa::PoaMchd;
+use shared_lib::service::mchd::poa::PoaMchd;
 
 
 fn get_mchd_files<P: AsRef<Path>>(path: P) -> Result<PoaMchd, Status> {

@@ -4,9 +4,6 @@ use crate::primitives::frozen::implements::{BoxUuid, Date, CompInn, PersInn, Kpp
 use crate::primitives::frozen::implements_base::*;
 use crate::primitives::composite::implements::Fio;
 
-
-
-
 // АдрТип
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct PostalAddress {
@@ -19,8 +16,6 @@ pub struct PostalAddress {
     #[serde(rename = "$value")] 
     pub address: Option<AddressChoice>,
 }
-
-
 
 //ВриоНотТип
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
@@ -117,9 +112,9 @@ pub struct ForeignOrg {
 
 //УдЛичнФЛ
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
-pub struct PersonDocums {
+pub struct PersonDocum {
     #[serde(rename = "@КодВидДок")]
-    pub doc_code: Digits2_2,
+    pub doc_code: RussDocumCode,
 
     #[serde(rename = "@СерНомДок")]
     pub doc_ser_num: String1_25,
@@ -173,7 +168,7 @@ pub struct PersonMchd {
     pub address: Option<PostalAddress>,
 
     #[serde(rename = "УдЛичнФЛ")]
-    pub person_docums: Option<PersonDocums>,
+    pub person_docums: Option<PersonDocum>,
 }
 
 
@@ -514,7 +509,7 @@ pub struct Delegate {
 
 //СвУпПредТип
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
-pub struct DelegateInfo {
+pub struct DelegateWrap {
     #[serde(rename = "@ТипПред")]
     pub delegate_type: DelegateType,
 
@@ -666,10 +661,10 @@ pub struct RootPoa {
     pub poa_metadata: PoaMetadata,
 
     #[serde(rename = "СвДоверит")]
-    pub principal: Vec<PrincipalInfo>,
+    pub principal: Vec<PrincipalWrap>,
 
     #[serde(rename = "СвУпПред")]
-    pub delegate: Vec<DelegateInfo>,
+    pub delegate: Vec<DelegateWrap>,
 
     #[serde(rename = "СвПолн")]
     pub delegate_powers: DelegatePowers,
@@ -700,7 +695,7 @@ pub struct Principal {
 
 //СвДоверит
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
-pub struct PrincipalInfo {
+pub struct PrincipalWrap {
     #[serde(rename = "@ТипДоверит")]
     pub principal_identity: PrincipalIdentity,
 
@@ -728,7 +723,7 @@ pub struct DerivedPoa {
     pub sub_principals: Vec<SubPrincipal>,
 
     #[serde(rename = "СвПолучПолн")]
-    pub delegates: Vec<DelegateInfo>,
+    pub delegates: Vec<DelegateWrap>,
 
     #[serde(rename = "СвПолн")]
     pub delegate_powers: DelegatePowers,
@@ -938,3 +933,26 @@ make_mchd_enum!(PrincipalNotarialStatus, {
     ForeignOrganization => "303",
     OtherForeignOrganizations => "399"
 });
+
+
+make_mchd_enum!(RussDocumCode, {
+    PasspRf => "21",
+    BirthCert => "03",
+    ForeignPassp => "10",
+    MilitaryId => "07",
+    ResidencyPermit => "12",
+    InterRfPassport => "22",
+    DriverLicense => "91",
+    Snils => "14"
+});
+
+make_mchd_enum!(PoaReqElemsFlag, {
+    Main => "00000000",
+    MainEsia => "01000000",
+    MainNotarial => "00100000",
+    MainTax => "00010000",
+    MainEsiaNotarial => "01100000",
+    MainNotarialTax => "00110000",
+    MainEsiaNotarialTax => "01110000"
+});
+

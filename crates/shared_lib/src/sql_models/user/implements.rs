@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 
 
 use crate::primitives::frozen::implements::{BoxUuid, DateTime, Email, Phone};
-use crate::parsers::mchd::implements::MchdPower;
+use crate::service::mchd::implements::MchdPower;
 
 
 #[derive(Serialize, Deserialize, Debug, Clone, ts_rs::TS)]

@@ -3,7 +3,7 @@ use crate::Status;
 // Импортируем все ваши примитивы из соответствующего модуля
 use crate::primitives::frozen::implements::*;
 use crate::primitives::frozen::implements_base::*;
-use crate::parsers::mchd::implements::*;
+use crate::service::mchd::implements::*;
 
 #[derive(Serialize, Deserialize, ts_rs::TS, Debug)]
 pub enum SvelteValidator {
@@ -169,9 +169,6 @@ impl SvelteValidator {
             SvelteValidator::Email=> match Email::new(value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::PoaReqElemsFlag=> match PoaReqElemsFlag::new(value) {
-                Ok(_) => Ok(true), Err(_) => Ok(false),
-            },
             SvelteValidator::CompanyName=> match CompanyName::new(value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
@@ -257,84 +254,67 @@ impl SvelteValidator {
                 Ok(_) => Ok(true), Err(_) => Ok(false)
             },
             SvelteValidator::CompStatus => match value.parse::<CompStatus>() {
-                Ok(_) => Ok(true),
-                Err(_) => Ok(false),
+                Ok(_) => Ok(true), Err(_) => Ok(false),
             },
             SvelteValidator::CompType => match value.parse::<CompType>() {
-                Ok(_) => Ok(true),
-                Err(_) => Ok(false),
+                Ok(_) => Ok(true), Err(_) => Ok(false),
             },
             SvelteValidator::Gender => match value.parse::<Gender>() {
-                Ok(_) => Ok(true),
-                Err(_) => Ok(false),
+                Ok(_) => Ok(true), Err(_) => Ok(false),
             },
             SvelteValidator::IsCitizen => match value.parse::<IsCitizen>() {
-                Ok(_) => Ok(true),
-                Err(_) => Ok(false),
+                Ok(_) => Ok(true), Err(_) => Ok(false),
             },
             SvelteValidator::ManagementType => match value.parse::<ManagementType>() {
-                Ok(_) => Ok(true),
-                Err(_) => Ok(false),
+                Ok(_) => Ok(true), Err(_) => Ok(false),
             },
             SvelteValidator::Flag => match value.parse::<Flag>() {
-                Ok(_) => Ok(true),
-                Err(_) => Ok(false),
+                Ok(_) => Ok(true), Err(_) => Ok(false),
             },
             SvelteValidator::PoaTypeRevocable => match value.parse::<PoaTypeRevocable>() {
-                Ok(_) => Ok(true),
-                Err(_) => Ok(false),
+                Ok(_) => Ok(true), Err(_) => Ok(false),
             },
             SvelteValidator::PoaTypeRedelegatable => match value.parse::<PoaTypeRedelegatable>() {
-                Ok(_) => Ok(true),
-                Err(_) => Ok(false),
+                Ok(_) => Ok(true), Err(_) => Ok(false),
             },
             SvelteValidator::IrrevocablePoaRedelegationType => match value.parse::<IrrevocablePoaRedelegationType>() {
-                Ok(_) => Ok(true),
-                Err(_) => Ok(false),
+                Ok(_) => Ok(true), Err(_) => Ok(false),
             },
             SvelteValidator::IrrevocablePoaRevocationCondition => match value.parse::<IrrevocablePoaRevocationCondition>() {
-                Ok(_) => Ok(true),
-                Err(_) => Ok(false),
+                Ok(_) => Ok(true), Err(_) => Ok(false),
             },
             SvelteValidator::DelegateType => match value.parse::<DelegateType>() {
-                Ok(_) => Ok(true),
-                Err(_) => Ok(false),
+                Ok(_) => Ok(true), Err(_) => Ok(false),
             },
             SvelteValidator::PrincipalIdentity => match value.parse::<PrincipalIdentity>() {
-                Ok(_) => Ok(true),
-                Err(_) => Ok(false),
+                Ok(_) => Ok(true), Err(_) => Ok(false),
             },
             SvelteValidator::InitPrincipalTypeShort => match value.parse::<InitPrincipalTypeShort>() {
-                Ok(_) => Ok(true),
-                Err(_) => Ok(false),
+                Ok(_) => Ok(true), Err(_) => Ok(false),
             },
             SvelteValidator::PoaLegalForm => match value.parse::<PoaLegalForm>() {
-                Ok(_) => Ok(true),
-                Err(_) => Ok(false),
+                Ok(_) => Ok(true), Err(_) => Ok(false),
             },
             SvelteValidator::PowerType => match value.parse::<PowerType>() {
-                Ok(_) => Ok(true),
-                Err(_) => Ok(false),
+                Ok(_) => Ok(true), Err(_) => Ok(false),
             },
             SvelteValidator::PowerCommonType => match value.parse::<PowerCommonType>() {
-                Ok(_) => Ok(true),
-                Err(_) => Ok(false),
+                Ok(_) => Ok(true), Err(_) => Ok(false),
             },
             SvelteValidator::RedelegatePowerLossType => match value.parse::<RedelegatePowerLossType>() {
-                Ok(_) => Ok(true),
-                Err(_) => Ok(false),
+                Ok(_) => Ok(true), Err(_) => Ok(false),
             },
             SvelteValidator::RedelegationStatus => match value.parse::<RedelegationStatus>() {
-                Ok(_) => Ok(true),
-                Err(_) => Ok(false),
+                Ok(_) => Ok(true), Err(_) => Ok(false),
             },
             SvelteValidator::FormatVersion => match value.parse::<FormatVersion>() {
-                Ok(_) => Ok(true),
-                Err(_) => Ok(false),
+                Ok(_) => Ok(true), Err(_) => Ok(false),
             },
             SvelteValidator::ParticipantStatus=> match value.parse::<FormatVersion>() {
-                Ok(_) => Ok(true),
-                Err(_) => Ok(false),
+                Ok(_) => Ok(true), Err(_) => Ok(false),
+            },
+            SvelteValidator::PoaReqElemsFlag=> match value.parse::<PoaReqElemsFlag>() {
+                Ok(_) => Ok(true), Err(_) => Ok(false),
             },
         }
     }

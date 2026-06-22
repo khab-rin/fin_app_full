@@ -43,11 +43,12 @@ use super::*;
         service::mchd::service::MchdStep::export_all_to(output_dir)
             .expect("Не удалось экспортировать MchdStep");
 
-        parsers::mchd::poa::PoaMchd::export_all_to(output_dir)
+        service::mchd::poa::PoaMchd::export_all_to(output_dir)
             .expect("Не удалось экспортировать PoaMchd");
 
         service::mchd::tax_mchd::MchdTaxFields::export_all_to(output_dir)
             .expect("Не удалось экспортировать MchdTaxFields");
+        
         service::mchd::tax_mchd::MchdPowerInfo::export_all_to(output_dir)
             .expect("Не удалось экспортировать MchdPowerInfo")
     }

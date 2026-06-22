@@ -1,16 +1,14 @@
 use shared_lib::Status;
 use shared_lib::service::mchd::service::{MchdStep, NewMchdData, MchdInfo};
-use shared_lib::parsers::mchd::implements::*;
-use shared_lib::parsers::mchd::poa::PoaMchd;
 
 use crate::state::ClientState;
 use crate::service::mchd::helper::check_update_user;
-use crate::service::mchd::make_poametadata::make_poametadata;
 use crate::sql_queries::persons::insert::person_no_sync::insert_person_no_sync;
-use crate::service::mchd::make_poa_wrap::make_poa_wrap;
+use crate::service::mchd::make_tax_poa::make_tax_poa;
+use crate::service::mchd::make_tax_success::make_mchd_step_tax_success;
 
 
-pub(crate) async  fn make_new_tax_mchd(
+pub(crate) async fn make_new_tax_mchd(
     state: &ClientState,
     data: &NewMchdData
 ) -> Result<MchdStep, Status> {
@@ -55,51 +53,16 @@ pub(crate) async  fn make_new_tax_mchd(
 
 
 
-    let poa_wrap = match make_poa_wrap(&session, data) {
+    let poa_mchd = match make_tax_poa(&session, data) {
         Ok(p) => p,
         Err(err) => {
             log::error!(
-                "FUN make_new_tax_mchd FAILED BY FUN make_poa_wrap, err = {}", err
+                "FUN make_new_tax_mchd FAILED BY FUN make_tax_poa, err = {}", err
             );
             return Ok(failed_result);
         }
     };
 
-
-
-
-
-
-
-
-
+    make_mchd_step_tax_success(&session, &poa_mchd, data)
     
-
-    let NewMchdData { 
-        poa_number, 
-        poa_end_date, 
-        manager_tittle, 
-        manager_sur_name, 
-        manager_first_name, 
-        manager_mid_name, 
-        manager_birth_day, 
-        manager_snils, 
-        manager_inn, 
-        manager_is_citizen, 
-        user_sur_name, 
-        user_first_name, 
-        user_mid_name, 
-        user_birth_day, 
-        user_gender, 
-        user_snils, 
-        user_inn, 
-        user_passport_number, 
-        user_passport_issueer, 
-        user_passport_ussuer_code, 
-        user_is_citizen,
-        powers } = data;
-    
-    
-
-    Err(Status::Unknown)
 }

@@ -3,7 +3,7 @@ use serde::{Serialize, Deserialize};
 use crate::sql_models::person::implements::Person;
 use crate::primitives::frozen::implements::*;
 use crate::primitives::frozen::implements_base::*;
-use crate::parsers::mchd::implements::*;
+use crate::service::mchd::implements::*;
 use crate::service::mchd::tax_mchd::MchdTaxFields;
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
@@ -16,6 +16,13 @@ pub enum MchdStep {
     TryLater {text: MchdInfo},
     Success {text: MchdInfo},
     WrongData {text: MchdInfo},
+    TaxMchdSuccess { 
+        doc_name: String1_255,
+        doc_file: Vec<u8>,
+        xml_name: String1_255,
+        xml_file: Vec<u8>,
+        text: MchdInfo
+     }
 }
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
@@ -78,6 +85,7 @@ pub struct NewMchdData {
     pub user_snils: Snils,
     pub user_inn: PersInn,
     pub user_passport_number: PasspRfNumber,
+    pub user_passport_issue_date: Date,
     pub user_passport_issueer: String1_4000,
     pub user_passport_ussuer_code: String7_7,
     pub user_is_citizen: IsCitizen,

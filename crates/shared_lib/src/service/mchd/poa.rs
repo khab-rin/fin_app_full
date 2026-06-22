@@ -1,8 +1,7 @@
 use serde::{Serialize, Deserialize};
 
 use crate::primitives::frozen::implements_base::{String1_255, String1_5000};
-use crate::primitives::frozen::implements::PoaReqElemsFlag;
-use crate::parsers::mchd::implements::{FormatVersion, PoaWrap};
+use crate::service::mchd::implements::{FormatVersion, PoaWrap, PoaReqElemsFlag};
 
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct PoaMchd {
@@ -13,7 +12,7 @@ pub struct PoaMchd {
     pub required_elements: PoaReqElemsFlag,
 
     #[serde(rename = "@ИдФайл")]
-    pub flie_identifivator: String1_255,
+    pub flie_identificator: String1_255,
 
     #[serde(rename = "@ИдФайлНО")]
     pub tax_file_identificator: Option<String1_255>,

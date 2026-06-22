@@ -1,29 +1,28 @@
-use shared_lib::parsers::mchd::implements::{
+use shared_lib::service::mchd::implements::{
     PoaMetadata,
     PoaTypeRevocable,
     PoaTypeRedelegatable
 
 };
-
 use shared_lib::service::mchd::service::NewMchdData;
 use shared_lib::primitives::frozen::implements::{
     BoxUuid, Date
 };
-use shared_lib::static_data::mchd_const::MCHD_SYSTEM_INFO;
+use shared_lib::static_data::mchd_const::{MCHD_SYSTEM_INFO, MCHD_TAX_ORG_IDENT};
 use shared_lib::primitives::frozen::implements_base::{
     Digits4_4, String1_1000
 };
-use sqlx::types::chrono;
+
 
 pub(crate) fn make_poametadata(
-    data: &NewMchdData
+    data: &NewMchdData,
+    mchd_num: &BoxUuid,
+    today: &Date
 ) -> PoaMetadata {
 
-    let mchd_num = BoxUuid::unchecked(uuid::Uuid::new_v4());
+    
 
-    let tax_org_ident = Digits4_4::unchecked("0000");
-
-    let today = Date::unchecked(chrono::Local::now().date_naive());
+    let tax_org_ident = Digits4_4::unchecked(MCHD_TAX_ORG_IDENT);
 
     let mchd_system_info_str = format!("{}{}", MCHD_SYSTEM_INFO, mchd_num);
 
@@ -34,11 +33,11 @@ pub(crate) fn make_poametadata(
         revocable_type: PoaTypeRevocable::Revocable, 
         redelegate_type: PoaTypeRedelegatable::Single, 
         doc_num: data.poa_number.clone(), 
-        mchd_num, 
+        mchd_num: mchd_num.clone(), 
         notar_number: None, 
         extra_num: None, 
         registration_date: None, 
-        issue_date: today, 
+        issue_date: today.clone(), 
         life_date: data.poa_end_date.clone(), 
         tax_org_ident: Some(tax_org_ident.clone()), 
         tax_org_idents: vec!(tax_org_ident), 

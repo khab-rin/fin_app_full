@@ -34,6 +34,7 @@
         !currentMchdStep.data.userSnils.isValid ||
         !currentMchdStep.data.userInn.isValid ||
         !currentMchdStep.data.userPassportNumber.isValid ||
+        !currentMchdStep.data.userPassportIssueDate ||
         !currentMchdStep.data.userPassportIssueer.isValid ||
         !currentMchdStep.data.userPassportUssuerCode.isValid ||
         !currentMchdStep.data.userIsCitizen.isValid);
@@ -112,6 +113,7 @@
         let data = {
             PoaNumber: currentMchdStep.data.PoaNumber.value,
             PoaEndDate: currentMchdStep.data.PoaEndDate.value,
+
             managerTitle: currentMchdStep.data.managerTitle.value,
             managerSurName: currentMchdStep.data.managerSurName.value,
             managerFirstName: currentMchdStep.data.managerFirstName.value,
@@ -129,6 +131,7 @@
             userSnils: currentMchdStep.data.userSnils.value,
             userInn: currentMchdStep.data.userInn.value,
             userPassportNumber: currentMchdStep.data.userPassportNumber.value,
+            userPassportIssueDate: currentMchdStep.data.userPassportIssueDate.value,
             userPassportIssueer: currentMchdStep.data.userPassportIssueer.value,
             userPassportUssuerCode: currentMchdStep.data.userPassportUssuerCode.value,
             userIsCitizen: currentMchdStep.data.userIsCitizen.value,
@@ -472,6 +475,19 @@
                     placeholder="00 00 000000"
                     class="input-field"
                     class:input-error={!currentMchdStep.data.userPassportNumber.isValid}
+                />
+            </div>
+
+            <div class="input-group">
+                <label class="input-group-label" for="userPassportNumber">Дата выдачи пасспорта</label>
+                <input
+                    id="userPassportNumber"
+                    type="text"
+                    bind:value={currentMchdStep.data.userPassportIssueDate.value}
+                    disabled={isMainPushed}
+                    placeholder="00.00.0000"
+                    class="input-field"
+                    class:input-error={!currentMchdStep.data.userPassportIssueDate.isValid}
                 />
             </div>
 

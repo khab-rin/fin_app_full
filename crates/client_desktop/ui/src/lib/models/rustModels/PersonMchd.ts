@@ -5,10 +5,10 @@ import type { Digits3_3 } from "./Digits3_3";
 import type { Fio } from "./Fio";
 import type { Gender } from "./Gender";
 import type { IsCitizen } from "./IsCitizen";
-import type { PersonDocums } from "./PersonDocums";
+import type { PersonDocum } from "./PersonDocum";
 import type { Phone } from "./Phone";
 import type { PostalAddress } from "./PostalAddress";
 import type { String1_250 } from "./String1_250";
 import type { String3_129 } from "./String3_129";
 
-export type PersonMchd = { "@Пол": Gender | null, "@ПрГражд": IsCitizen | null, "@НомЕРН": Digits12_12 | null, "@ДатаРожд": Date | null, "@МестоРожд": String1_250 | null, "@Гражданство": Digits3_3 | null, "@КонтактТлф": Phone | null, "@АдрЭлПочт": String3_129 | null, ФИО: Fio, АдрМЖ: PostalAddress | null, УдЛичнФЛ: PersonDocums | null, };
+export type PersonMchd = { "@Пол": Gender | null, "@ПрГражд": IsCitizen | null, "@НомЕРН": Digits12_12 | null, "@ДатаРожд": Date | null, "@МестоРожд": String1_250 | null, "@Гражданство": Digits3_3 | null, "@КонтактТлф": Phone | null, "@АдрЭлПочт": String3_129 | null, ФИО: Fio, АдрМЖ: PostalAddress | null, УдЛичнФЛ: PersonDocum | null, };

@@ -179,13 +179,6 @@ frozen_primitives!(
 );
 
 frozen_primitives!(
-    PoaReqElemsFlag,
-    init_flag_str,
-    Box<str>,
-    "Флаги_обязательности_элементов"
-);
-
-frozen_primitives!(
     Password,
     init_password_from_str,
     Box<str>,

@@ -5,4 +5,6 @@ pub(crate) mod helper;
 pub(crate) mod make_poametadata;
 pub(crate) mod make_principalinfo;
 pub(crate) mod make_poa_wrap;
-pub(crate) mod make_delegate_info;
+pub(crate) mod make_delegate_wrap;
+pub(crate) mod make_tax_poa;
+pub(crate) mod make_tax_success;

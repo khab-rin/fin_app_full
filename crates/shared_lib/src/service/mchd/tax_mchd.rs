@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 
 use crate::primitives::frozen::implements_base::{String1_255, String6_255};
-use crate::parsers::mchd::implements::MchdPower;
+use crate::service::mchd::implements::MchdPower;
 use crate::static_data::mchd_const::*;
 
 

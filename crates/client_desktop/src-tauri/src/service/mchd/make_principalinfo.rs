@@ -1,25 +1,37 @@
 use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::Region;
 use shared_lib::service::mchd::service::NewMchdData;
-use shared_lib::parsers::mchd::implements::{
-    AddressChoice, Flag, IpPrincipal, ManagementType, PersonMchd, PostalAddress, Principal, PrincipalIdentity, PrincipalInfo, RootManager, RussOrgPrincipal, RussOrganization, WrapPerson
-};
 use shared_lib::service::auth_service::client_state::ActiveSession;
 use shared_lib::primitives::composite::implements::Fio;
+use shared_lib::service::mchd::implements::{
+    AddressChoice, 
+    Flag, 
+    IpPrincipal, 
+    ManagementType, 
+    PersonMchd, 
+    PostalAddress, 
+    Principal, 
+    PrincipalIdentity, 
+    PrincipalWrap, 
+    RootManager, 
+    RussOrgPrincipal,
+    RussOrganization, 
+    WrapPerson
+};
 
 
 
 pub(crate) fn make_principal_info(
     session: &ActiveSession,
     data: &NewMchdData
-) -> Result<PrincipalInfo, Status> {
+) -> Result<PrincipalWrap, Status> {
 
     let principal_identity = match session.session_user.company.comp_inn.len() {
         10 => PrincipalIdentity::RussianLegalEntity,
         _ => PrincipalIdentity::IndividualEntrepreneur
     };
 
-    let principal_info = PrincipalInfo { 
+    let principal_info = PrincipalWrap { 
         principal_identity, 
         principal: make_principal(session, data)?
     };
@@ -153,12 +165,12 @@ pub(crate) fn make_rootmanager(
     RootManager {
         management_type: ManagementType::Sole,
         prime_manager_org: None,
-        prime_manager_person: Some(make_wrap_person(data)),
+        prime_manager_person: Some(make_root_manager_wrap_person(data)),
         prime_manager_ip: None
     }
 }
 
-pub(crate) fn make_wrap_person(
+pub(crate) fn make_root_manager_wrap_person(
     data: &NewMchdData
 ) -> WrapPerson {
 
@@ -168,11 +180,11 @@ pub(crate) fn make_wrap_person(
         snils: Some(data.manager_snils.clone()),
         position: Some(data.manager_tittle.clone()),
         direct_authority_doc: None,
-        person: make_person_mchd(data)
+        person: make_root_manager_person_mchd(data)
     }
 }
 
-pub(crate) fn make_person_mchd(
+pub(crate) fn make_root_manager_person_mchd(
     data: &NewMchdData
 ) -> PersonMchd {
 
