@@ -14,7 +14,7 @@ use shared_lib::service::mchd::implements::{
 };
 use shared_lib::service::mchd::poa::PoaMchd;
 use shared_lib::service::mchd::service::NewMchdData;
-use shared_lib::static_data::mchd_const::{MCHD_R_T, MCHD_TAX_R_T,MCHD_TAX_ORG_IDENT};
+use shared_lib::static_data::mchd_const::{MCHD_R_T, MCHD_TAX_R_T,MCHD_TAX_ORG_IDENT, MCHD_XMLNS, MCHD_XMLNS_XSD, MCHD_XMLNS_XSI};
 
 use crate::service::mchd::make_poa_wrap::make_poa_wrap;
 
@@ -34,16 +34,26 @@ pub(crate) fn make_tax_poa(
     let kpp = session.session_user.company.kpp.as_ref();
 
     let flie_identificator = String1_255::unchecked(
-        format!("{}_{}{}{}_{}", MCHD_R_T, years, month, days, mchd_num)
+        format!("{}_{}{:02}{:02}_{}", MCHD_R_T, years, month, days, mchd_num)
     );
 
     let tax_file_identificator = String1_255::unchecked(
-        format!("{}_{}_{}_{}{}_{}", MCHD_TAX_R_T, MCHD_TAX_ORG_IDENT, MCHD_TAX_ORG_IDENT, comp_inn, kpp, mchd_num)
+        format!("{}_{}_{}_{}{}_{}{:02}{:02}_{}", 
+        MCHD_TAX_R_T, 
+        MCHD_TAX_ORG_IDENT, 
+        MCHD_TAX_ORG_IDENT, 
+        comp_inn, 
+        kpp, 
+        years,
+        month,
+        days,
+        mchd_num)
     );
 
-
-
     let tax_poa = PoaMchd {
+        xmlns_xsi: MCHD_XMLNS_XSI.to_string(),
+        xmlns_xsd: MCHD_XMLNS_XSD.to_string(),
+        xmlns: MCHD_XMLNS.to_string(),
         version_format: FormatVersion::Emchd1,
         required_elements: PoaReqElemsFlag::MainTax,
         flie_identificator,

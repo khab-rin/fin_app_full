@@ -4,9 +4,6 @@ use serde::{Serialize, Deserialize};
 use crate::primitives::frozen::implements::{BoxUuid, CompStatus, CompType, DateTime, CompInn, Kpp};
 use crate::parsers::dadata::implements::CtrprtyMetadata;
 
-use crate::Status;
-
-
 #[derive(Serialize, Deserialize, Clone)]
 #[derive(sqlx::FromRow, Debug)]
 pub struct CompanyDto {
@@ -33,17 +30,15 @@ pub struct Company {
 }
 
 impl std::convert::TryFrom<CompanyDto> for Company {
-    type Error = Status;
+    type Error = serde_json::Error;
     fn try_from(dto: CompanyDto) -> Result<Self, Self::Error> {
         Ok(Company { 
             comp_id: dto.comp_id,
-            comp_inn: CompInn::new(&dto.comp_inn)?,
-            kpp: Kpp::new(&dto.kpp)?,
-            comp_type: dto.comp_type.clone(),
-            comp_status: dto.comp_status.clone(),
-            metadata: serde_json::
-                from_value(dto.metadata.clone())
-                .map_err(|_| Status::MappingError)?,
+            comp_inn: dto.comp_inn,
+            kpp: dto.kpp,
+            comp_type: dto.comp_type,
+            comp_status: dto.comp_status,
+            metadata: serde_json::from_value(dto.metadata)?,
             last_update: dto.last_update
          })
     }

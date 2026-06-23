@@ -18,8 +18,10 @@ where
 {
     let back_api_url = format!("{}/{}",
         state.config.back_api_url().trim_end_matches('/'),
-        route.get_path()
+        route.get_path().trim_start_matches('/')
     );
+
+    log::info!("back_api_url = {}", back_api_url);
 
     let response = match client
         .post(&back_api_url)

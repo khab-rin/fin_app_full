@@ -16,6 +16,8 @@ pub(crate) async fn get_person_by_inn_handler(
     Json(pers_inn): Json<PersInn>
 ) -> Result<Json<Option<Person>>, Status> {
     
+    tracing::info!("get_person_by_inn_handler running!");
+
     let res = get_person_by_inn(&state, &pers_inn).await?;
 
     Ok(Json(res))

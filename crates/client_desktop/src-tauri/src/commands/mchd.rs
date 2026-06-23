@@ -30,7 +30,7 @@ pub async fn cmd_check_user_mchd_home(
 #[tauri::command]
 pub fn cmd_get_tax_powers(
 ) -> Vec<MchdTaxFields> {
-    log::info!("cmd_get_power_info running!");
+    log::info!("cmd_get_tax_powers running!");
     MchdTaxFields::get_all_powers()
 }
 
@@ -38,19 +38,19 @@ pub fn cmd_get_tax_powers(
 pub fn cmd_get_power_info(
     power: MchdTaxFields
 ) -> MchdPowerInfo {
-    log::info!("cmd_get_power_info running!");
+    
     power.get_power_info().clone()
 }
 
 #[tauri::command]
 pub async fn cmd_register_tax_mchd(
     state: tauri::State<'_, ClientState>,
-    new_mchd_data: NewMchdData
+    data: NewMchdData
 ) -> Result<MchdStep, Status> {
 
     log::info!("cmd_register_tax_mchd running!!!");
 
-    make_new_tax_mchd(&state, &new_mchd_data).await
+    make_new_tax_mchd(&state, &data).await
 
 
 }

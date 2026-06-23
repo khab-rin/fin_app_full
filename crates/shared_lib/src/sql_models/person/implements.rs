@@ -26,17 +26,26 @@ pub struct PersonDto {
 impl std::convert::TryFrom<PersonDto> for Person {
     type Error = serde_json::Error;
     fn try_from(dto: PersonDto) -> Result<Self, Self::Error> {
+        let parsed_metadata = match dto.metadata {
+            serde_json::Value::String(json_str) => {
+                serde_json::from_str(&json_str)?
+            },
+            other_value => {
+                serde_json::from_value(other_value)?
+            }
+        };
         Ok(Person { 
             pers_id: dto.pers_id,
             pers_inn: dto.pers_inn,
-            metadata: serde_json::from_value(dto.metadata)?,
+            metadata: parsed_metadata,
             last_update: dto.last_update
         })
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, sqlx::Type, ts_rs::TS)]
-#[sqlx(type_name = "jsonb")]
+
+
+#[derive(Serialize, Deserialize, Debug, Clone, ts_rs::TS)]
 pub struct PersonMetadata {
     pub snils: Snils,
     pub fio: Fio,
@@ -52,6 +61,17 @@ pub struct PersonMetadata {
     pub phone: Option<Phone>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub email: Option<Email>,
+}
+
+impl PersonMetadata {
+    pub fn merge(&mut self, new: Self) {
+        self.passport = new.passport.or(self.passport.take());
+        self.address = new.address.or(self.address.take());
+        self.gender = new.gender.or(self.gender);
+        self.birth_day = new.birth_day.or(self.birth_day.take());
+        self.phone = new.phone.or(self.phone.take());
+        self.email = new.email.or(self.email.take());
+    }
 }
 
 

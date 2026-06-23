@@ -111,10 +111,10 @@
     async function lendMchd() {
         if (allDone) {return}
         let data = {
-            PoaNumber: currentMchdStep.data.PoaNumber.value,
-            PoaEndDate: currentMchdStep.data.PoaEndDate.value,
+            poaNumber: currentMchdStep.data.PoaNumber.value,
+            poaEndDate: currentMchdStep.data.PoaEndDate.value,
 
-            managerTitle: currentMchdStep.data.managerTitle.value,
+            managerTittle: currentMchdStep.data.managerTitle.value,
             managerSurName: currentMchdStep.data.managerSurName.value,
             managerFirstName: currentMchdStep.data.managerFirstName.value,
             managerMidName: currentMchdStep.data.managerMidName.value,
@@ -135,11 +135,11 @@
             userPassportIssueer: currentMchdStep.data.userPassportIssueer.value,
             userPassportUssuerCode: currentMchdStep.data.userPassportUssuerCode.value,
             userIsCitizen: currentMchdStep.data.userIsCitizen.value,
-            powers: selectedPowers
+            powers: Array.from(selectedPowers)
         }
 
         try {
-            const next_step = await invoke<MchdStep>("cmd_register_tax_mchd", {new_mchd_data: data})
+            const next_step = await invoke<MchdStep>("cmd_register_tax_mchd", {data: data})
             currentMchdStep.add(next_step);
         } catch(err) {
             console.error("cmd_register_tax_mchd FAILED, err = ", err);

@@ -2,9 +2,11 @@ import { invoke } from "@tauri-apps/api/core";
 
 import { FieldValidator } from "../Auth/FieldValidator.svelte";
 import { MchdStepType } from "./MchdValues";
+import { pageManager } from "../MainManager/MainManager.svelte";
 
 import type {MchdStep} from "$lib/models/rustModels/MchdStep";
 import type {MchdPowerInfo} from "$lib/models/rustModels/MchdPowerInfo";
+import type { MchdTaxFields } from "../rustModels/MchdTaxFields";
 
 import HomeMchdFull from "$lib/service/mchd/HomeMchdFull.svelte";
 import HomeMchdMiss from "$lib/service/mchd/HomeMchdFull.svelte";
@@ -12,8 +14,10 @@ import TaxMchdMiss from "$lib/service/mchd/TaxMchdMiss.svelte";
 import TaxMchdFull from "$lib/service/mchd/TaxMchdFull.svelte";
 import Loading from "$lib/service/mchd/Loading.svelte";
 import TryLater from "$lib/service/mchd/TryLater.svelte";
-import type { MchdTaxFields } from "../rustModels/MchdTaxFields";
-import { pageManager } from "../MainManager/MainManager.svelte";
+import TaxMchdSuccess from "$lib/service/mchd/TaxMchdSuccess.svelte";
+
+
+
 
 
 class MchdManager {
@@ -65,16 +69,16 @@ class MchdManager {
         managerIsCitizen: new FieldValidator("IsCitizen", "1"),
 
         userSurName: new FieldValidator("SurName", "Хабипов"),
-        userFirstName: new FieldValidator("FirstName", "Ильдар"),
-        userMidName: new FieldValidator("MidName", "Ринатович"),
-        userBirthDay: new FieldValidator("Date", "31.05.2009"),
+        userFirstName: new FieldValidator("FirstName", "Ринат"),
+        userMidName: new FieldValidator("MidName", "Ришатович"),
+        userBirthDay: new FieldValidator("Date", "06.01.1985"),
         userGender: new FieldValidator("Gender", "1"),
-        userSnils: new FieldValidator("Snils", "16293848705"),
-        userInn: new FieldValidator("PersInn", "166021488126"),
-        userPassportNumber: new FieldValidator("PasspRfNumber", "9223 381140"),
-        userPassportIssueDate: new FieldValidator("Date", "2023-09-27"),
-        userPassportIssueer: new FieldValidator("String1_4000", "МВД ПО РЕСПУБЛИКЕ ТАТАРСТАН"),
-        userPassportUssuerCode: new FieldValidator("String7_7", "160-007"),
+        userSnils: new FieldValidator("Snils", "11021217665"),
+        userInn: new FieldValidator("PersInn", "161101510882"),
+        userPassportNumber: new FieldValidator("PasspRfNumber", "9207 360338"),
+        userPassportIssueDate: new FieldValidator("Date", "15-05-2008"),
+        userPassportIssueer: new FieldValidator("String1_4000", "Отделением в Советском районе отдела УФМС России по Республике Татарстан в городе Казани"),
+        userPassportUssuerCode: new FieldValidator("String7_7", "160-009"),
         userIsCitizen: new FieldValidator("IsCitizen", "1"),
     })
 
@@ -111,6 +115,8 @@ class MchdManager {
             return HomeMchdMiss
         } else if (MchdStepType.HomeMchdFull in step) {
             return HomeMchdFull
+        } else if (MchdStepType.TaxMchdSuccess in step) {
+            return TaxMchdSuccess
         } else {
             return null
         }

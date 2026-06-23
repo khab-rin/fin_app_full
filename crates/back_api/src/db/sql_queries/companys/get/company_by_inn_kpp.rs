@@ -41,11 +41,12 @@ pub(crate) async fn get_company_by_inn_kpp(
         Ok(company) => Ok(Some(company)),
         Err(err) => {
             tracing::error!(
-                err = ?err,
+                tech_er = ?err,
+                local_err = ?Status::MappingError,
                 failed_data = ?(inn, kpp),
                 "FUN get_companys_by_inn_kpp FAILED BY MAPPING COMPANY"
             );
-            Err(err)
+            Err(Status::MappingError)
         }
     }
 

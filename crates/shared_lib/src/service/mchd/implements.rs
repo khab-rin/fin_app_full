@@ -10,10 +10,10 @@ pub struct PostalAddress {
     #[serde(rename = "@Регион")]
     pub region: Region,
 
-    #[serde(rename = "@ИдФИАС")]
+    #[serde(rename = "@ИдФИАС", skip_serializing_if = "Option::is_none")]
     pub fias_id: Option<BoxUuid>,
 
-    #[serde(rename = "$value")] 
+    #[serde(rename = "$value", skip_serializing_if = "Option::is_none")] 
     pub address: Option<AddressChoice>,
 }
 
@@ -50,16 +50,16 @@ pub struct Notary {
 //ДокПдтвТип
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct DirectAuthorityDoc  {
-    #[serde(rename = "@НаимДокПдтв")]
+    #[serde(rename = "@НаимДокПдтв", skip_serializing_if = "Option::is_none")]
     pub name: Option<String1_120>,
 
-    #[serde(rename = "@ДатаВыд")]
+    #[serde(rename = "@ДатаВыд", skip_serializing_if = "Option::is_none")]
     pub issue_date: Option<Date>,
 
-    #[serde(rename = "@КемВыд")]
+    #[serde(rename = "@КемВыд", skip_serializing_if = "Option::is_none")]
     pub issued_by: Option<String1_1000>,
 
-    #[serde(rename = "@СвУдДок")]
+    #[serde(rename = "@СвУдДок", skip_serializing_if = "Option::is_none")]
     pub cert_info: Option<String1_1000>,
 }
 
@@ -68,43 +68,43 @@ pub struct DirectAuthorityDoc  {
 //СвИнОргТип
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct ForeignOrg {
-    #[serde(rename = "@СтУчНД")]
+    #[serde(rename = "@СтУчНД", skip_serializing_if = "Option::is_none")]
     pub principal_notarial_status: Option<PrincipalNotarialStatus>,
 
     #[serde(rename = "@НаимИО")]
     pub for_org_name: String1_1000,
 
-    #[serde(rename = "@ИННЮЛ")]
+    #[serde(rename = "@ИННЮЛ", skip_serializing_if = "Option::is_none")]
     pub inn: Option<CompInn>,
     
-    #[serde(rename = "@КПП")]
+    #[serde(rename = "@КПП", skip_serializing_if = "Option::is_none")]
     pub kpp: Option<Kpp>,
     
-    #[serde(rename = "@НЗА")]
+    #[serde(rename = "@НЗА", skip_serializing_if = "Option::is_none")]
     pub nza: Option<String11_11>,
 
-    #[serde(rename = "@СтрРег")]
+    #[serde(rename = "@СтрРег", skip_serializing_if = "Option::is_none")]
     pub country_code: Option<Digits3_3>,
 
-    #[serde(rename = "@НаимРегОрг")]
+    #[serde(rename = "@НаимРегОрг", skip_serializing_if = "Option::is_none")]
     pub reg_org_name: Option<String1_255>,
 
-    #[serde(rename = "@РегНомер")]
+    #[serde(rename = "@РегНомер", skip_serializing_if = "Option::is_none")]
     pub reg_number: Option<String1_80>,
 
-    #[serde(rename = "@КодНПРег")]
+    #[serde(rename = "@КодНПРег", skip_serializing_if = "Option::is_none")]
     pub foreign_tax_id: Option<String1_80>,
 
-    #[serde(rename = "@КонтактТлф")]
+    #[serde(rename = "@КонтактТлф", skip_serializing_if = "Option::is_none")]
     pub tel_number: Option<Phone>,
     
-    #[serde(rename = "@АдрЭлПочт")]
+    #[serde(rename = "@АдрЭлПочт", skip_serializing_if = "Option::is_none")]
     pub email: Option<String3_129>,
 
-    #[serde(rename = "@АдрСтрРег")]
+    #[serde(rename = "@АдрСтрРег", skip_serializing_if = "Option::is_none")]
     pub foreign_address: Option<String1_1000>,
 
-    #[serde(rename = "АдрМНФакт")]
+    #[serde(rename = "АдрМНФакт", skip_serializing_if = "Option::is_none")]
     pub russian_address: Option<PostalAddress>,
 }
 
@@ -122,13 +122,13 @@ pub struct PersonDocum {
     #[serde(rename = "@ДатаДок")]
     pub doc_date: Date,
 
-    #[serde(rename = "@ВыдДок")]
+    #[serde(rename = "@ВыдДок", skip_serializing_if = "Option::is_none")]
     pub issued_by: Option<String1_4000>,
 
-    #[serde(rename = "@КодВыдДок")]
+    #[serde(rename = "@КодВыдДок", skip_serializing_if = "Option::is_none")]
     pub issued_code: Option<String7_7>,
 
-    #[serde(rename = "expDate")]
+    #[serde(rename = "expDate", skip_serializing_if = "Option::is_none")]
     pub exp_date: Option<Date>,
 }
 
@@ -137,37 +137,37 @@ pub struct PersonDocum {
 //СведФЛТип
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct PersonMchd {
-    #[serde(rename = "@Пол")]
+    #[serde(rename = "@Пол", skip_serializing_if = "Option::is_none")]
     pub gender: Option<Gender>,
 
-    #[serde(rename = "@ПрГражд")]
+    #[serde(rename = "@ПрГражд", skip_serializing_if = "Option::is_none")]
     pub is_citizen: Option<IsCitizen>,
 
-    #[serde(rename = "@НомЕРН")]
+    #[serde(rename = "@НомЕРН", skip_serializing_if = "Option::is_none")]
     pub ern_num: Option<Digits12_12>,
 
-    #[serde(rename = "@ДатаРожд")]
+    #[serde(rename = "@ДатаРожд", skip_serializing_if = "Option::is_none")]
     pub birth_day: Option<Date>,
 
-    #[serde(rename = "@МестоРожд")]
+    #[serde(rename = "@МестоРожд", skip_serializing_if = "Option::is_none")]
     pub birth_place: Option<String1_250>,
 
-    #[serde(rename = "@Гражданство")]
+    #[serde(rename = "@Гражданство", skip_serializing_if = "Option::is_none")]
     pub country_code: Option<Digits3_3>,
 
-    #[serde(rename = "@КонтактТлф")]
+    #[serde(rename = "@КонтактТлф", skip_serializing_if = "Option::is_none")]
     pub tel_number: Option<Phone>,
 
-    #[serde(rename = "@АдрЭлПочт")]
+    #[serde(rename = "@АдрЭлПочт", skip_serializing_if = "Option::is_none")]
     pub email: Option<String3_129>,
 
     #[serde(rename = "ФИО")]
     pub fio: Fio,
 
-    #[serde(rename = "АдрМЖ")]
+    #[serde(rename = "АдрМЖ", skip_serializing_if = "Option::is_none")]
     pub address: Option<PostalAddress>,
 
-    #[serde(rename = "УдЛичнФЛ")]
+    #[serde(rename = "УдЛичнФЛ", skip_serializing_if = "Option::is_none")]
     pub person_docums: Option<PersonDocum>,
 }
 
@@ -176,19 +176,19 @@ pub struct PersonMchd {
 //СвФЛТип
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct WrapPerson {
-    #[serde(rename = "@СтУчНД")]
+    #[serde(rename = "@СтУчНД", skip_serializing_if = "Option::is_none")]
     pub principal_notarial_status: Option<PrincipalNotarialStatus>,
 
-    #[serde(rename = "@ИННФЛ")]
+    #[serde(rename = "@ИННФЛ", skip_serializing_if = "Option::is_none")]
     pub inn: Option<PersInn>,
 
-    #[serde(rename = "@СНИЛС")]
+    #[serde(rename = "@СНИЛС", skip_serializing_if = "Option::is_none")]
     pub snils: Option<Snils>,
 
-    #[serde(rename = "@Должность")]
+    #[serde(rename = "@Должность", skip_serializing_if = "Option::is_none")]
     pub position: Option<String1_255>,
 
-    #[serde(rename = "ДокПдтв")]
+    #[serde(rename = "ДокПдтв", skip_serializing_if = "Option::is_none")]
     pub direct_authority_doc: Option<DirectAuthorityDoc>,
 
     #[serde(rename = "СведФЛ")]
@@ -200,37 +200,37 @@ pub struct WrapPerson {
 //СвОргТип
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct RussOrganization {
-    #[serde(rename = "@СтУчНД")]
+    #[serde(rename = "@СтУчНД", skip_serializing_if = "Option::is_none")]
     pub principal_notarial_status: Option<PrincipalNotarialStatus>,
 
     #[serde(rename = "@НаимОрг")]
     pub name: CompanyName,
 
-    #[serde(rename = "@ИННЮЛ")]
+    #[serde(rename = "@ИННЮЛ", skip_serializing_if = "Option::is_none")]
     pub comp_inn: Option<CompInn>,
 
     #[serde(rename = "@КПП")]
     pub kpp: Kpp,
 
-    #[serde(rename = "@ОГРН")]
+    #[serde(rename = "@ОГРН", skip_serializing_if = "Option::is_none")]
     pub ogrn: Option<Ogrn>,
 
-    #[serde(rename = "@РегНомер")]
+    #[serde(rename = "@РегНомер", skip_serializing_if = "Option::is_none")]
     pub reg_num: Option<String1_80>,
 
-    #[serde(rename = "@НаимУчрДок")]
+    #[serde(rename = "@НаимУчрДок", skip_serializing_if = "Option::is_none")]
     pub founding_doc : Option<String1_1000>,
 
-    #[serde(rename = "@КонтактТлф")]
+    #[serde(rename = "@КонтактТлф", skip_serializing_if = "Option::is_none")]
     pub phone : Option<Phone>,
 
-    #[serde(rename = "@АдрЭлПочт")]
+    #[serde(rename = "@АдрЭлПочт", skip_serializing_if = "Option::is_none")]
     pub email: Option<String3_129>,
 
-    #[serde(rename = "ДокПдтв")]
+    #[serde(rename = "ДокПдтв", skip_serializing_if = "Option::is_none")]
     pub direct_authority_doc: Option<DirectAuthorityDoc>,
 
-    #[serde(rename = "АдрРег")]
+    #[serde(rename = "АдрРег", skip_serializing_if = "Option::is_none")]
     pub address: Option<PostalAddress>
 }
 
@@ -251,10 +251,10 @@ pub struct ForeignOrgPrincipal {
 //СведИПТип
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct IpPrincipal {
-    #[serde(rename = "@СтУчНД")]
+    #[serde(rename = "@СтУчНД", skip_serializing_if = "Option::is_none")]
     pub principal_notarial_status: Option<PrincipalNotarialStatus>,
 
-    #[serde(rename = "@НаимИП")]
+    #[serde(rename = "@НаимИП", skip_serializing_if = "Option::is_none")]
     pub name: Option<String1_1000>,
 
     #[serde(rename = "@ОГРНИП")]
@@ -266,7 +266,7 @@ pub struct IpPrincipal {
     #[serde(rename = "@СНИЛС")]
     pub snils: Snils,
 
-    #[serde(rename = "ДокПдтв")]
+    #[serde(rename = "ДокПдтв", skip_serializing_if = "Option::is_none")]
     pub direct_authority_doc: Option<DirectAuthorityDoc>,
 
     #[serde(rename = "СведФЛ")]
@@ -293,13 +293,13 @@ pub struct RootManager {
     #[serde(rename = "@ПолнЮЛ")]
     pub management_type: ManagementType,
 
-    #[serde(rename = "СВЮЛ")]
+    #[serde(rename = "СВЮЛ", skip_serializing_if = "Option::is_none")]
     pub prime_manager_org: Option<PrimeManagerOrg>,
 
-    #[serde(rename = "СвФЛ")]
+    #[serde(rename = "СвФЛ", skip_serializing_if = "Option::is_none")]
     pub prime_manager_person: Option<WrapPerson>,
 
-    #[serde(rename = "СвИП")]
+    #[serde(rename = "СвИП", skip_serializing_if = "Option::is_none")]
     pub prime_manager_ip: Option<IpPrincipal>
 }
 
@@ -341,13 +341,13 @@ pub struct PoaMetadata {
     #[serde(rename = "@НомДовер")]
     pub mchd_num: BoxUuid,
 
-    #[serde(rename = "@НомРНДДовер")]
+    #[serde(rename = "@НомРНДДовер", skip_serializing_if = "Option::is_none")]
     pub notar_number: Option<String1_28>,
 
-    #[serde(rename = "@ДопИдДовер")]
+    #[serde(rename = "@ДопИдДовер", skip_serializing_if = "Option::is_none")]
     pub extra_num: Option<String1_50>,
 
-    #[serde(rename = "@ДатаВнРегДовер")]
+    #[serde(rename = "@ДатаВнРегДовер", skip_serializing_if = "Option::is_none")]
     pub registration_date: Option<Date>,
 
     #[serde(rename = "@ДатаВыдДовер")]
@@ -356,7 +356,7 @@ pub struct PoaMetadata {
     #[serde(rename = "@СрокДейст")]
     pub life_date: Date,
 
-    #[serde(rename = "@КодНО")]
+    #[serde(rename = "@КодНО", skip_serializing_if = "Option::is_none")]
     pub tax_org_ident: Option<Digits4_4>,
 
     #[serde(rename = "КодНОДейст", default, skip_serializing_if = "Vec::is_empty")]
@@ -365,7 +365,7 @@ pub struct PoaMetadata {
     #[serde(rename = "СведСист")]
     pub mchd_system_info: String1_1000,
 
-    #[serde(rename = "Безотзыв")]
+    #[serde(rename = "Безотзыв", skip_serializing_if = "Option::is_none")]
     pub irrevocable_poa: Option<IrrevocablePoa>,
 }
 
@@ -380,7 +380,7 @@ pub struct IrrevocablePoa {
     #[serde(rename = "@УслОтзыва")]
     pub revocation_conditin: IrrevocablePoaRevocationCondition,
 
-    #[serde(rename = "ОписУслОт")]
+    #[serde(rename = "ОписУслОт", skip_serializing_if = "Option::is_none")]
     pub revocation_condition_text: Option<String1_1000>,
 }
 
@@ -413,34 +413,34 @@ pub struct NotarialCertification {
     #[serde(rename = "@МестоДовер")]
     pub issuance_place: String1_250,
 
-    #[serde(rename = "@НапрДокДовЕПГУ")]
+    #[serde(rename = "@НапрДокДовЕПГУ", skip_serializing_if = "Option::is_none")]
     pub send_to_principal_epgu: Option<Flag>,
 
-    #[serde(rename = "@НапрДокПовЕПГУ")]
+    #[serde(rename = "@НапрДокПовЕПГУ", skip_serializing_if = "Option::is_none")]
     pub send_to_representative_epgu: Option<Flag>,
 
-    #[serde(rename = "@НапрДокЗвлФНП")]
+    #[serde(rename = "@НапрДокЗвлФНП", skip_serializing_if = "Option::is_none")]
     pub send_to_applicant_fnp: Option<Flag>,
 
-    #[serde(rename = "@НапрДокПовФНП")]
+    #[serde(rename = "@НапрДокПовФНП", skip_serializing_if = "Option::is_none")]
     pub send_to_representative_fnp: Option<Flag>,
 
     #[serde(rename = "@УплНотДейст")]
     pub notary_fee: RubF,
 
-    #[serde(rename = "@ЛьготаСум")]
+    #[serde(rename = "@ЛьготаСум", skip_serializing_if = "Option::is_none")]
     pub discount: Option<RubF>,
 
-    #[serde(rename = "@ДрИнфСист")]
+    #[serde(rename = "@ДрИнфСист", skip_serializing_if = "Option::is_none")]
     pub system_info: Option<String1_255>,
 
-    #[serde(rename = "@ДрСпосВыд")]
+    #[serde(rename = "@ДрСпосВыд", skip_serializing_if = "Option::is_none")]
     pub other_issuance_method: Option<String1_255>,
 
-    #[serde(rename = "@ДопСвНотДовер")]
+    #[serde(rename = "@ДопСвНотДовер", skip_serializing_if = "Option::is_none")]
     pub extra_info: Option<String1_2500>,
 
-    #[serde(rename = "ИнСвУдНадпис")]
+    #[serde(rename = "ИнСвУдНадпис", skip_serializing_if = "Option::is_none")]
     pub other_info: Option<String1_2500>,
 
     #[serde(rename = "СвНотДейств")]
@@ -449,7 +449,7 @@ pub struct NotarialCertification {
     #[serde(rename = "ПодпРукопис")]
     pub signature: Vec<Signature>,
 
-    #[serde(rename = "ВриоНот")]
+    #[serde(rename = "ВриоНот", skip_serializing_if = "Option::is_none")]
     pub acting_notary : Option<ActingNotary >
 }
 
@@ -461,16 +461,16 @@ pub struct PersonPrincipal {
     #[serde(rename = "@СтУчНД")]
     pub principal_notarial_status: Option<PrincipalNotarialStatus>,
 
-    #[serde(rename = "@ПрДеесп")]
+    #[serde(rename = "@ПрДеесп", skip_serializing_if = "Option::is_none")]
     pub legal_capacity: Option<Flag>,
 
-    #[serde(rename = "@ПрНалРук")]
+    #[serde(rename = "@ПрНалРук", skip_serializing_if = "Option::is_none")]
     pub assistant_signatory: Option<Flag>,
 
-    #[serde(rename = "@ДокНедеесп")]
+    #[serde(rename = "@ДокНедеесп", skip_serializing_if = "Option::is_none")]
     pub incapacity_proof_doc: Option<String1_255>,
 
-    #[serde(rename = "@ИННФЛ")]
+    #[serde(rename = "@ИННФЛ", skip_serializing_if = "Option::is_none")]
     pub inn: Option<PersInn>,
 
     #[serde(rename = "@СНИЛС")]
@@ -479,7 +479,7 @@ pub struct PersonPrincipal {
     #[serde(rename = "СведФЛ")]
     pub person: PersonMchd,
 
-    #[serde(rename = "СвЗакПредРук")]
+    #[serde(rename = "СвЗакПредРук", skip_serializing_if = "Option::is_none")]
     pub root_manager: Option<RootManager>,
 
 }
@@ -489,19 +489,19 @@ pub struct PersonPrincipal {
 //Пред
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct Delegate {
-    #[serde(rename = "СведОрг")]
+    #[serde(rename = "СведОрг", skip_serializing_if = "Option::is_none")]
     pub organization: Option<RussOrganization>,
 
-    #[serde(rename = "СведИП")]
+    #[serde(rename = "СведИП", skip_serializing_if = "Option::is_none")]
     pub ip: Option<IpPrincipal>,
 
-    #[serde(rename = "СведФизЛ")]
+    #[serde(rename = "СведФизЛ", skip_serializing_if = "Option::is_none")]
     pub person: Option<WrapPerson>,
 
-    #[serde(rename = "СведФилиал")]
+    #[serde(rename = "СведФилиал", skip_serializing_if = "Option::is_none")]
     pub filial: Option<RussOrganization>,
 
-    #[serde(rename = "СведИО")]
+    #[serde(rename = "СведИО", skip_serializing_if = "Option::is_none")]
     pub foreign_organization: Option<ForeignOrg>,
 }
 
@@ -522,16 +522,16 @@ pub struct DelegateWrap {
 //ДоверитПерв
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct InitPrincipal {
-    #[serde(rename = "РосОргДовер")]
+    #[serde(rename = "РосОргДовер", skip_serializing_if = "Option::is_none")]
     pub organization: Option<RussOrganization>,
 
-    #[serde(rename = "ИнОргДовер")]
+    #[serde(rename = "ИнОргДовер", skip_serializing_if = "Option::is_none")]
     pub foreign_organization: Option<ForeignOrg>,
 
-    #[serde(rename = "ИПДовер")]
+    #[serde(rename = "ИПДовер", skip_serializing_if = "Option::is_none")]
     pub ip: Option<IpPrincipal>,
 
-    #[serde(rename = "ФЛДовер")]
+    #[serde(rename = "ФЛДовер", skip_serializing_if = "Option::is_none")]
     pub person: Option<PersonPrincipal>
 }
 
@@ -564,31 +564,31 @@ pub struct OriginalPoa {
     #[serde(rename = "@СрокДейст")]
     pub expiration_date: Date,
 
-    #[serde(rename = "@ВнНомДоверПерв")]
+    #[serde(rename = "@ВнНомДоверПерв", skip_serializing_if = "Option::is_none")]
     pub origin_poa_num: Option<String1_50>,
 
-    #[serde(rename = "@ВнНомДоверN")]
+    #[serde(rename = "@ВнНомДоверN", skip_serializing_if = "Option::is_none")]
     pub revoc_poa_num: Option<String1_50>,
 
-    #[serde(rename = "@НомДоверПерв")]
+    #[serde(rename = "@НомДоверПерв", skip_serializing_if = "Option::is_none")]
     pub origin_poa_mchd_num: Option<BoxUuid>,
 
-    #[serde(rename = "@НомДоверN")]
+    #[serde(rename = "@НомДоверN", skip_serializing_if = "Option::is_none")]
     pub revoc_poa_mchd_num: Option<BoxUuid>,
 
-    #[serde(rename = "@НомРНДПерв")]
+    #[serde(rename = "@НомРНДПерв", skip_serializing_if = "Option::is_none")]
     pub origin_poa_notar_num: Option<String1_28>,
 
-    #[serde(rename = "@НомРНДN")]
+    #[serde(rename = "@НомРНДN", skip_serializing_if = "Option::is_none")]
     pub revoc_poa_notar_num: Option<String1_28>,
 
     #[serde(rename = "СвДоверПерв", default, skip_serializing_if = "Vec::is_empty")]
     pub origin_principal: Vec<InitPrincipalWrap>,
 
-    #[serde(rename = "СвНотДейств")]
+    #[serde(rename = "СвНотДейств", skip_serializing_if = "Option::is_none")]
     pub notary: Option<Notary>,
 
-    #[serde(rename = "ВриоНот")]
+    #[serde(rename = "ВриоНот", skip_serializing_if = "Option::is_none")]
     pub acting_notary : Option<ActingNotary >
 }
 
@@ -606,7 +606,7 @@ pub struct PoaLimitations {
     #[serde(rename = "@НаимОгр")]
     pub name: String1_255,
 
-    #[serde(rename = "@НаимЗначОгр")]
+    #[serde(rename = "@НаимЗначОгр", skip_serializing_if = "Option::is_none")]
     pub value_name: Option<String1_255>,
 
     #[serde(rename = "$value")]
@@ -618,7 +618,7 @@ pub struct PoaLimitations {
 //МашПолн
 #[derive(Debug, Serialize, Deserialize, Eq, Hash, PartialEq, Clone, ts_rs::TS)]
 pub struct MchdPower {
-    #[serde(rename = "@МнПолн")]
+    #[serde(rename = "@МнПолн", skip_serializing_if = "Option::is_none")]
     pub powers_mnemonic: Option<String6_255>,
 
     #[serde(rename = "@КодПолн")]
@@ -642,10 +642,10 @@ pub struct DelegatePowers {
     #[serde(rename = "@ПрСовмПолн")]
     pub power_common_type: PowerCommonType,
 
-    #[serde(rename = "@ПрУтрПолн")]
+    #[serde(rename = "@ПрУтрПолн", skip_serializing_if = "Option::is_none")]
     pub redelegate_power_loss: Option<RedelegatePowerLossType>,
 
-    #[serde(rename = "ТекстПолн")]
+    #[serde(rename = "ТекстПолн", skip_serializing_if = "Option::is_none")]
     pub power_text: Option<String1_10000>,
 
     #[serde(rename = "МашПолн", default, skip_serializing_if = "Vec::is_empty")]
@@ -669,7 +669,7 @@ pub struct RootPoa {
     #[serde(rename = "СвПолн")]
     pub delegate_powers: DelegatePowers,
 
-    #[serde(rename = "СвНотУд")]
+    #[serde(rename = "СвНотУд", skip_serializing_if = "Option::is_none")]
     pub notarial_certification: Option<NotarialCertification>,
 }
 
@@ -678,16 +678,16 @@ pub struct RootPoa {
 //Доверит
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct Principal {
-    #[serde(rename = "РосОргДовер")]
+    #[serde(rename = "РосОргДовер", skip_serializing_if = "Option::is_none")]
     pub russian_org: Option<RussOrgPrincipal>,
 
-    #[serde(rename = "ИнОргДовер")]
+    #[serde(rename = "ИнОргДовер", skip_serializing_if = "Option::is_none")]
     pub foreign_org: Option<ForeignOrgPrincipal>,
 
-    #[serde(rename = "ИПДовер")]
+    #[serde(rename = "ИПДовер", skip_serializing_if = "Option::is_none")]
     pub ip: Option<IpPrincipal>,
 
-    #[serde(rename = "ФЛДовер")]
+    #[serde(rename = "ФЛДовер", skip_serializing_if = "Option::is_none")]
     pub person: Option<PersonPrincipal>,
 }
 
@@ -713,7 +713,7 @@ pub struct DerivedPoa {
     #[serde(rename = "СвПервДовер")]
     pub original_poa: OriginalPoa,
 
-    #[serde(rename = "СвПередов")]
+    #[serde(rename = "СвПередов", skip_serializing_if = "Option::is_none")]
     pub prev_poa: Option<OriginalPoa>,
 
     #[serde(rename = "СвПереДовер")]
@@ -728,17 +728,17 @@ pub struct DerivedPoa {
     #[serde(rename = "СвПолн")]
     pub delegate_powers: DelegatePowers,
 
-    #[serde(rename = "СвНотУд")]
+    #[serde(rename = "СвНотУд", skip_serializing_if = "Option::is_none")]
     pub notary_sertification: Option<NotarialCertification>,
 }
 
 //ФЛПерПолн
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct RedelegatePerson {
-    #[serde(rename = "@СтУчНД")]
+    #[serde(rename = "@СтУчНД", skip_serializing_if = "Option::is_none")]
     pub principal_notarial_status: Option<PrincipalNotarialStatus>,
 
-    #[serde(rename = "@ПрНалРук")]
+    #[serde(rename = "@ПрНалРук", skip_serializing_if = "Option::is_none")]
     pub signatory_flag: Option<Flag>,
 
     #[serde(rename = "@ИННФЛ")]
@@ -747,7 +747,7 @@ pub struct RedelegatePerson {
     #[serde(rename = "@СНИЛС")]
     pub snils: Snils,
 
-    #[serde(rename = "СведРукоп")]
+    #[serde(rename = "СведРукоп", skip_serializing_if = "Option::is_none")]
     pub signatory: Option<WrapPerson>,
 
     #[serde(rename = "СведФЛ")]
@@ -769,19 +769,19 @@ pub struct RedelegaterFilial {
 // ПередПолн
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct SubPrincipalInfo {
-    #[serde(rename = "РосОргПерПолн")]
+    #[serde(rename = "РосОргПерПолн", skip_serializing_if = "Option::is_none")]
     pub russian_organization: Option<RussOrgPrincipal>,
 
-    #[serde(rename = "ИППерПолн")]
+    #[serde(rename = "ИППерПолн", skip_serializing_if = "Option::is_none")]
     pub ip: Option<IpPrincipal>,
 
-    #[serde(rename = "ФЛПерПолн")]
+    #[serde(rename = "ФЛПерПолн", skip_serializing_if = "Option::is_none")]
     pub person: Option<RedelegatePerson>,
 
-    #[serde(rename = "ФилПерПолн")]
+    #[serde(rename = "ФилПерПолн", skip_serializing_if = "Option::is_none")]
     pub filial: Option<RedelegaterFilial>,
 
-    #[serde(rename = "ИнПерПолн")]
+    #[serde(rename = "ИнПерПолн", skip_serializing_if = "Option::is_none")]
     pub foreign_organizetioan: Option<ForeignOrgPrincipal>
 }
 
@@ -799,7 +799,7 @@ pub struct SubPrincipal {
 //Документ
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct PoaWrap {
-    #[serde(rename = "@КНД")]
+    #[serde(rename = "@КНД", skip_serializing_if = "Option::is_none")]
     pub code_knd: Option<Digits7_7>,
 
     #[serde(rename = "$value")]
@@ -907,8 +907,8 @@ make_mchd_enum!(PowerType, {
 });
 
 make_mchd_enum!(PowerCommonType, {
-    Joint => "1",
-    Individual => "2",
+    Individual => "1",
+    Joint => "2",
 });
 
 make_mchd_enum!(RedelegatePowerLossType, {
