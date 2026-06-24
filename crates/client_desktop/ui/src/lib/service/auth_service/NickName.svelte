@@ -41,25 +41,10 @@
         }
     }
 
-    function goToPassword() {
-        let next_step: AuthStep = { NeedPassword: { text: "" } };
-        currAuthStep.add(next_step);
-    }
-
-    function handleGoBack() {
-        currAuthStep.back(); 
-    }
-
-    function handleGoNext() {
-        currAuthStep.next(); 
-    }
 </script>
 
 <div class="auth-card">
     <div class="nick-name">
-        <p class="info-text">
-            {currAuthStep.currentText}
-        </p>
 
         <div class="account-selector-wrapper">
             <button
@@ -135,20 +120,4 @@
             </button>
         {/if}
     </div>
-
-    <section class="navi-buttons">
-        <div class="buttons-grid-row">
-            <button type="button" onclick={handleGoBack} class="nav-btn-item">
-                <span class="nav-btn-text">Назад</span>
-            </button>
-
-            <button type="button" onclick={goToPassword} class="nav-btn-item">
-                <span class="nav-btn-text">Вход по паролю</span>
-            </button>
-
-            <button type="button" onclick={handleGoNext} class="nav-btn-item">
-                <span class="nav-btn-text">Вперед</span>
-            </button>
-        </div>
-    </section>
 </div>

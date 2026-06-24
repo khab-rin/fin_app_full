@@ -9,16 +9,21 @@
     import type {SvelteRegistrationData} from "$lib/models/rustModels/SvelteRegistrationData"
 	
     
+    let firstStep = $state(false);
+    let secondStep = $state(true);
+    let secondStepOne = $state(false);
+    let secondStepTwo = $state(true);
 
     let isPushedReg = $state(false);
-    let isPushedDoc = $state(false);
-    let isGeneratedDoc = $state(false);
+    let isPushedMakeDoc = $state(false);
+    
     let passwordRepeat = $state("")
-    let docPathSaved = $state("");
+    
+    let initDocPath = $state("");
     let signPath = $state("");
 
-    let isFormInvalid = $derived(
-        isPushedDoc ||
+    let isFormValid = $derived(
+        isPushedMakeDoc ||
         !currAuthStep.data.surName.isValid ||
         !currAuthStep.data.firstName.isValid ||
         !currAuthStep.data.midName.isValid ||
@@ -29,10 +34,38 @@
         !currAuthStep.data.phone.isValid ||
         !currAuthStep.data.email.isValid
     );
+
+    let isRegDataValid = $derived(
+        isFormValid ||
+        !currAuthStep.data.nick.isValid ||
+        !currAuthStep.data.password.isValid ||
+        passwordRepeat != currAuthStep.data.password.value ||
+        initDocPath.length == 0 ||
+        signPath.length == 0
+    );
     
+    function makeInitregistrationFlags() {
+        firstStep = false;
+        secondStep = true;
+        secondStepOne = false;
+        secondStepTwo = true;
+    }
 
+    function makeSecondStepOneFlags() {
+        firstStep = true;
+        secondStep = false;
+        secondStepOne = false;
+        secondStepTwo = true;
+    }
 
-    async function handleSelectSigFile() {
+    function makeSecondStepTwoFlags() {
+        firstStep = true;
+        secondStep = false;
+        secondStepOne = true;
+        secondStepTwo = false;
+    }
+
+    async function selectSigFile() {
         try {
             const selected = await openFileDialog({
                 multiple: false,
@@ -50,10 +83,29 @@
         }
     }
 
-    async function handleIngoingDoc() {
-        if (isFormInvalid) return;
+    async function selectDocFile() {
+        try {
+            const selected = await openFileDialog({
+                multiple: false,
+                directory: false,
+                title: "Выберите изначальный файл заявления",
+                filters: [{ name: 'документ doc', extensions: ['doc'] }]
+            });
 
-        isPushedDoc = true;
+
+            if (selected && typeof selected === 'string') {
+                initDocPath = selected;
+            }
+        } catch (err) {
+            console.error("Ошибка при выборе файла подписи:", err);
+        }
+    }
+
+    async function makeInitDoc() {
+        if (isFormValid) return;
+
+        isPushedMakeDoc = true;
+        
 
         const ingoingData: IngoingData = {
             sur_name: currAuthStep.data.surName.value,
@@ -83,17 +135,17 @@
                 await writeFile(docPath, fileBytes);
                 console.log("Документ успешно сохранен по пути:", docPath);
 
-                docPathSaved = docPath;
-                isPushedDoc = false;
-                isGeneratedDoc = true;
+                initDocPath = docPath;
+                makeSecondStepOneFlags();
     
             } else {
-                isPushedDoc = false;
+                isPushedMakeDoc = false;
             }
 
         } catch (err) {
             console.error("MAKE INGOING FILE ERR: ", err);
-            isPushedDoc = false;
+            makeInitregistrationFlags();
+            isPushedMakeDoc = false;
             currAuthStep.step = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
         }
     };
@@ -102,21 +154,7 @@
     async function handleRegistrationSubmit() {
         if (isPushedReg) return;
 
-        if (
-            !currAuthStep.data.nick.isValid ||
-            !currAuthStep.data.surName.isValid ||
-            !currAuthStep.data.firstName.isValid ||
-            !currAuthStep.data.midName.isValid ||
-            !currAuthStep.data.persInn.isValid ||
-            !currAuthStep.data.snils.isValid ||
-            !currAuthStep.data.compInn.isValid ||
-            !currAuthStep.data.kpp.isValid ||
-            !currAuthStep.data.password.isValid ||
-            !currAuthStep.data.phone.isValid ||
-            !currAuthStep.data.email.isValid ||
-            docPathSaved.length == 0 ||
-            signPath.length == 0
-        ) return;
+        if (isRegDataValid) return;
 
         const regData: SvelteRegistrationData = {
             nick: currAuthStep.data.nick.value,
@@ -130,7 +168,7 @@
             password: currAuthStep.data.password.value,
             phone: currAuthStep.data.phone.value,
             email: currAuthStep.data.email.value,
-            document_path: docPathSaved,  
+            document_path: initDocPath,  
             signature_path: signPath,
         }
 
@@ -139,27 +177,17 @@
         try {
             let next_step: AuthStep = await invoke<AuthStep>("cmd_register_user", {data: regData});
             isPushedReg = false;
+            makeInitregistrationFlags();
             currAuthStep.add(next_step);
         } catch (err) {
             console.error("Registration FAILED, err = ", err);
             isPushedReg = false;
             let next_step: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
+            makeInitregistrationFlags();
             currAuthStep.add(next_step);
         }
     }
 
-    function handleGoBack() {
-        currAuthStep.back(); 
-    }
-
-    function handleGoNext() {
-        currAuthStep.next(); 
-    }
-
-    function handleGoPassword() {
-        const next_step: AuthStep = {NeedPassword: {text: ""}};
-        currAuthStep.add(next_step); 
-    }
 </script>
 
 <div class="auth-card">
@@ -167,14 +195,14 @@
         {currAuthStep.currentText}
     </p>
 
-    {#if !isGeneratedDoc}
+    <section hidden={firstStep}>
         <div class="form-group">
             <label for="surName">Фамилия</label>
             <input 
                 id="surName" 
                 type="text" 
                 bind:value={currAuthStep.data.surName.value} 
-                disabled={isPushedDoc}
+                disabled={isPushedMakeDoc}
                 placeholder="Только русские буквы"
                 class="input-field"
                 class:input-error={!currAuthStep.data.surName.isValid}
@@ -190,7 +218,7 @@
                 id="firstName" 
                 type="text" 
                 bind:value={currAuthStep.data.firstName.value} 
-                disabled={isPushedDoc}
+                disabled={isPushedMakeDoc}
                 placeholder="Только русские буквы"
                 class="input-field"
                 class:input-error={!currAuthStep.data.firstName.isValid}
@@ -206,7 +234,7 @@
                 id="midName" 
                 type="text" 
                 bind:value={currAuthStep.data.midName.value} 
-                disabled={isPushedDoc}
+                disabled={isPushedMakeDoc}
                 placeholder="Только русские буквы"
                 class="input-field"
                 class:input-error={!currAuthStep.data.midName.isValid}
@@ -222,7 +250,7 @@
                 id="persInn" 
                 type="text" 
                 bind:value={currAuthStep.data.persInn.value} 
-                disabled={isPushedDoc}
+                disabled={isPushedMakeDoc}
                 placeholder="12 цифр"
                 class="input-field"
                 class:input-error={!currAuthStep.data.persInn.isValid}
@@ -238,7 +266,7 @@
                 id="snils" 
                 type="text" 
                 bind:value={currAuthStep.data.snils.value} 
-                disabled={isPushedDoc}
+                disabled={isPushedMakeDoc}
                 placeholder="Формат: 000-000-000 00"
                 class="input-field"
                 class:input-error={!currAuthStep.data.snils.isValid}
@@ -254,7 +282,7 @@
                 id="compInn" 
                 type="text" 
                 bind:value={currAuthStep.data.compInn.value} 
-                disabled={isPushedDoc}
+                disabled={isPushedMakeDoc}
                 placeholder="10 цифр"
                 class="input-field"
                 class:input-error={!currAuthStep.data.compInn.isValid}
@@ -270,7 +298,7 @@
                 id="kpp" 
                 type="text" 
                 bind:value={currAuthStep.data.kpp.value} 
-                disabled={isPushedDoc}
+                disabled={isPushedMakeDoc}
                 placeholder="9 цифр"
                 class="input-field"
                 class:input-error={!currAuthStep.data.kpp.isValid}
@@ -286,7 +314,7 @@
                 id="phone" 
                 type="tel" 
                 bind:value={currAuthStep.data.phone.value} 
-                disabled={isPushedDoc}
+                disabled={isPushedMakeDoc}
                 placeholder="+7 (900) 000-00-00"
                 class="input-field"
                 class:input-error={!currAuthStep.data.phone.isValid}
@@ -302,7 +330,7 @@
                 id="email" 
                 type="email" 
                 bind:value={currAuthStep.data.email.value} 
-                disabled={isPushedDoc}
+                disabled={isPushedMakeDoc}
                 placeholder="example@mail.ru"
                 class="input-field"
                 class:input-error={!currAuthStep.data.email.isValid}
@@ -315,177 +343,227 @@
         <section class="navi-buttons">
             <button 
                 type="button" 
-                onclick={handleIngoingDoc}
-                disabled={isFormInvalid}
+                onclick={makeInitDoc}
+                disabled={isFormValid}
                 class="main-button"
-                id="auth-submit-btn"
+                id="auth-make-doc-btn"
             >
                 <span class="navi-buttons.btn-icon">
-                    {#if isPushedDoc}⏳{:else}🔑{/if}
+                    {#if isPushedMakeDoc}⏳{:else}🔑{/if}
                 </span>
                 <span class="btn-label">
-                    {#if isPushedDoc}Формирование документа...{:else}Отправить{/if}
+                    {#if isPushedMakeDoc}Формирование документа...{:else}Сформировать заявление{/if}
                 </span>
             </button>
 
-            <div class="buttons-grid-row">
-                <button type="button" onclick={handleGoBack} class="nav-btn-item">
-                    <span class="nav-btn-text">Назад</span>
-                </button>
-
-                <button type="button" onclick={handleGoPassword} disabled={isPushedDoc} class="nav-btn-item">
-                    <span class="nav-btn-text">Ввод пароля</span>
-                </button>
-
-                <button type="button" onclick={handleGoNext} class="nav-btn-item">
-                    <span class="nav-btn-text">Вперед</span>
-                </button>
-            </div>
-
-        </section>
-
-
-
-
-    {:else}
-        <p class="success-notice">🎉 Шаг 1 завершен: заявление успешно сформировано и сохранено!</p>
-        
-        <hr class="divider" />
-
-        <div class="form-group">
-            <label for="nick">Никнейм (Логин для входа)</label>
-            <input 
-                id="nick" 
-                type="text" 
-                bind:value={currAuthStep.data.nick.value} 
-                disabled={isPushedReg}
-                placeholder="Придумайте уникальный логин"
-                class="input-field"
-                class:input-error={!currAuthStep.data.nick.isValid}
-            />
-            {#if !currAuthStep.data.nick.isValid}
-                <span class="error-message">Некорректный никнейм (от 1 до 50 символов)</span>
-            {/if}
-        </div>
-
-        <div class="form-group">
-            <label for="password">Придумайте пароль приложения</label>
-            <input 
-                id="password" 
-                type="password" 
-                bind:value={currAuthStep.data.password.value} 
-                disabled={isPushedReg}
-                placeholder="Минимум 6 символов"
-                class="input-field"
-                class:input-error={!currAuthStep.data.password.isValid}
-            />
-            {#if !currAuthStep.data.password.isValid}
-                <span class="error-message">Слишком короткий или простой пароль</span>
-            {/if}
-        </div>
-
-        <div class="form-group">
-            <label for="passwordRepeat">Повторите пароль</label>
-            <input 
-                id="passwordRepeat" 
-                type="password" 
-                bind:value={passwordRepeat} 
-                disabled={isPushedReg}
-                placeholder="Введите пароль еще раз"
-                class="input-field"
-                class:input-error={currAuthStep.data.password.value !== passwordRepeat && passwordRepeat !== ''}
-            />
-            {#if currAuthStep.data.password.value !== passwordRepeat && passwordRepeat !== ''}
-                <span class="error-message">Пароли не совпадают</span>
-            {/if}
-        </div>
-
-        <hr class="divider" />
-
-        <div class="form-group">
-            <label for="document">Сформированное заявление (.doc)</label>
-            <div class="file-picker-wrapper">
-                <input 
-                    id="document"
-                    type="text" 
-                    value={docPathSaved} 
-                    disabled 
-                    class="input-field file-path-input" 
-                />
-                <button 
-                    type="button" 
-                    class="secondary-btn" 
-                    onclick={handleIngoingDoc}
-                    disabled={isPushedReg}
-                >
-                    Пересохранить
-                </button>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="sigPath">Файл электронной подписи (.doc.sig)</label>
-            <div class="file-picker-wrapper">
-                <input 
-                    id="sigPath"
-                    type="text" 
-                    value={signPath || 'Файл подписи не выбран...'} 
-                    disabled 
-                    class="input-field file-path-input"
-                    class:input-error={signPath === '' && isPushedReg}
-                />
-                <button 
-                    type="button" 
-                    class="primary-btn" 
-                    onclick={handleSelectSigFile}
-                    disabled={isPushedReg}
-                >
-                    Обзор...
-                </button>
-            </div>
-            {#if signPath === '' && isPushedReg}
-                <span class="error-message">Необходимо прикрепить файл подписи</span>
-            {/if}
-        </div>
-
-
-        <section class="navi-buttons">
             <button 
                 type="button" 
-                onclick={handleRegistrationSubmit}
-                disabled={!currAuthStep.data.nick.isValid ||
-                    isPushedReg || 
-                    currAuthStep.data.password.value !== passwordRepeat ||  
-                    !docPathSaved ||
-                    !signPath
-                }
+                onclick={makeSecondStepTwoFlags}
                 class="main-button"
-                id="auth-submit-btn"
+                id="auth-goto-load-btn"
             >
-                <span class="navi-buttons.btn-icon">
-                    {#if isPushedReg}⏳{:else}🔑{/if}
-                </span>
                 <span class="btn-label">
-                    {#if isPushedReg}Регистрация...{:else}Отправить{/if}
+                    Загрузить готовое
                 </span>
             </button>
 
-            <div class="buttons-grid-row">
-                <button type="button" onclick={handleGoBack} class="nav-btn-item">
-                    <span class="nav-btn-text">Назад</span>
-                </button>
+        </section>
+    </section>
 
-                <button type="button" onclick={handleGoPassword} disabled={isPushedReg} class="nav-btn-item">
-                    <span class="nav-btn-text">Ввод пароля</span>
-                </button>
+    <section hidden={secondStep}>
+        <section>
+            <div class="form-group">
+                <label for="nick">Никнейм (Логин для входа)</label>
+                <input 
+                    id="nick" 
+                    type="text" 
+                    bind:value={currAuthStep.data.nick.value} 
+                    disabled={isPushedReg}
+                    placeholder="Придумайте уникальный логин"
+                    class="input-field"
+                    class:input-error={!currAuthStep.data.nick.isValid}
+                />
+                {#if !currAuthStep.data.nick.isValid}
+                    <span class="error-message">Некорректный никнейм (от 1 до 50 символов)</span>
+                {/if}
+            </div>
 
-                <button type="button" onclick={handleGoNext} class="nav-btn-item">
-                    <span class="nav-btn-text">Вперед</span>
+            <div class="form-group">
+                <label for="password">Придумайте пароль приложения</label>
+                <input 
+                    id="password" 
+                    type="password" 
+                    bind:value={currAuthStep.data.password.value} 
+                    disabled={isPushedReg}
+                    placeholder="Минимум 6 символов"
+                    class="input-field"
+                    class:input-error={!currAuthStep.data.password.isValid}
+                />
+                {#if !currAuthStep.data.password.isValid}
+                    <span class="error-message">Слишком короткий или простой пароль</span>
+                {/if}
+            </div>
+
+            <div class="form-group">
+                <label for="passwordRepeat">Повторите пароль</label>
+                <input 
+                    id="passwordRepeat" 
+                    type="password" 
+                    bind:value={passwordRepeat} 
+                    disabled={isPushedReg}
+                    placeholder="Введите пароль еще раз"
+                    class="input-field"
+                    class:input-error={currAuthStep.data.password.value !== passwordRepeat && passwordRepeat !== ''}
+                />
+                {#if currAuthStep.data.password.value !== passwordRepeat && passwordRepeat !== ''}
+                    <span class="error-message">Пароли не совпадают</span>
+                {/if}
+            </div>
+        </section>
+
+
+
+        <section hidden={secondStepOne}>
+            <div class="form-group">
+                <label for="document">Сформированное заявление (.doc)</label>
+                <div class="file-picker-wrapper">
+                    <input 
+                        id="document"
+                        type="text" 
+                        value={initDocPath} 
+                        disabled 
+                        class="input-field file-path-input" 
+                    />
+                    <button 
+                        type="button" 
+                        class="secondary-btn" 
+                        onclick={makeInitDoc}
+                        disabled={isPushedReg}
+                    >
+                        Пересохранить
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="sigPath">Файл электронной подписи (.doc.sig)</label>
+                <div class="file-picker-wrapper">
+                    <input 
+                        id="sigPath"
+                        type="text" 
+                        value={signPath || 'Файл подписи не выбран...'} 
+                        disabled 
+                        class="input-field file-path-input"
+                        class:input-error={signPath === '' && isPushedReg}
+                    />
+                    <button 
+                        type="button" 
+                        class="primary-btn" 
+                        onclick={selectSigFile}
+                        disabled={isPushedReg}
+                    >
+                        Обзор...
+                    </button>
+                </div>
+                {#if signPath === '' && isPushedReg}
+                    <span class="error-message">Необходимо прикрепить файл подписи</span>
+                {/if}
+            </div>
+
+            <div class="form-group">
+                <button 
+                    type="button" 
+                    onclick={handleRegistrationSubmit}
+                    disabled={isRegDataValid || isPushedReg}
+                    class="main-button"
+                    id="auth-submit-btn"
+                >
+                    <span class="navi-buttons.btn-icon">
+                        {#if isPushedReg}⏳{:else}🔑{/if}
+                    </span>
+                    <span class="btn-label">
+                        {#if isPushedReg}Регистрация...{:else}Отправить{/if}
+                    </span>
                 </button>
             </div>
 
         </section>
-    {/if}
+
+        <section hidden={secondStepTwo}>
+            <div class="form-group">
+                <label for="sigPath">Документ заявления(.doc.sig)</label>
+                <div class="file-picker-wrapper">
+                    <input 
+                        id="sigPath"
+                        type="text" 
+                        value={initDocPath || 'Файл подписи не выбран...'} 
+                        disabled 
+                        class="input-field file-path-input"
+                        class:input-error={initDocPath === '' && isPushedReg}
+                    />
+                    <button 
+                        type="button" 
+                        class="primary-btn" 
+                        onclick={selectDocFile}
+                        disabled={isPushedReg}
+                    >
+                        Обзор...
+                    </button>
+                </div>
+                {#if signPath === '' && isPushedReg}
+                    <span class="error-message">Необходимо прикрепить заявление</span>
+                {/if}
+            </div>
+
+            <div class="form-group">
+                <label for="sigPath">Файл электронной подписи (.doc.sig)</label>
+                <div class="file-picker-wrapper">
+                    <input 
+                        id="sigPath"
+                        type="text" 
+                        value={signPath || 'Файл подписи не выбран...'} 
+                        disabled 
+                        class="input-field file-path-input"
+                        class:input-error={signPath === '' && isPushedReg}
+                    />
+                    <button 
+                        type="button" 
+                        class="primary-btn" 
+                        onclick={selectSigFile}
+                        disabled={isPushedReg}
+                    >
+                        Обзор...
+                    </button>
+                </div>
+                {#if signPath === '' && isPushedReg}
+                    <span class="error-message">Необходимо прикрепить файл подписи</span>
+                {/if}
+            </div>
+
+            <div class="form-group">
+                <button 
+                    type="button" 
+                    onclick={handleRegistrationSubmit}
+                    disabled={isRegDataValid || isPushedReg}
+                    class="main-button"
+                    id="auth-submit-btn"
+                >
+                    <span class="navi-buttons.btn-icon">
+                        {#if isPushedReg}⏳{:else}🔑{/if}
+                    </span>
+                    <span class="btn-label">
+                        {#if isPushedReg}Регистрация...{:else}Отправить{/if}
+                    </span>
+                </button>
+            </div>
+
+
+        </section>
+
+
+    </section>
+
+
 </div>
 
 

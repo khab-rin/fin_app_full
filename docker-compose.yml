@@ -1,7 +1,7 @@
 services:
-  db:
+  PGql_db:
     image: postgres:16-alpine
-    container_name: fin_app_db
+    container_name: db
     restart: always
     environment:
       POSTGRES_USER: postgres
@@ -10,7 +10,7 @@ services:
     ports:
       - "127.0.0.1:5432:5432"
     volumes:
-      - fin_app_server_data:/var/lib/postgresql/data
+      - fin_app_docker_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d fin_app_server"]
       interval: 5s
@@ -34,9 +34,5 @@ services:
       - RUST_LOG=info
       - PORT=8081
 
-    depends_on:
-      db:
-        condition: service_healthy
-
 volumes:
-  fin_app_server_data:
+  fin_app_docker_data:

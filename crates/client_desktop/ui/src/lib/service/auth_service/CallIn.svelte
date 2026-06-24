@@ -61,10 +61,6 @@
 
 
 <div class="auth-card">
-    <p class="auth-text-step">
-        {currAuthStep.currentText}
-    </p>
-
     <div class="callin">
 
         {#if phone}

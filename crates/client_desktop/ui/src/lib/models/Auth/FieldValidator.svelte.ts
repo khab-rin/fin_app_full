@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import type { SvelteValidator } from "$lib/models/rustModels/SvelteValidator";
 
 export class FieldValidator {
-    _isValid = $state(true);
+    _isValid = $state(false);
     
     private _value = $state(""); 
     
@@ -11,6 +11,7 @@ export class FieldValidator {
     constructor(type_value: SvelteValidator, start_value: string) {
         this._value = start_value;
         this.typeValue = type_value;
+        this.validate();
     }
 
     get value(): string {

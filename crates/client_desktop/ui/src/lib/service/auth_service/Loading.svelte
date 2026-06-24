@@ -20,9 +20,3 @@
     });
 
 </script>
-
-<div>
-    <p class="auth-text-step">
-        {currAuthStep.currentText}
-    </p>
-</div>

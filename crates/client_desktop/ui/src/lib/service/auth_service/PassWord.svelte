@@ -43,26 +43,9 @@
         }
     }
 
-    function handleGoToRegister() {
-        let next_step: AuthStep = {NeedRegistration: {text: ""}};
-        currAuthStep.add(next_step);
-    }
-
-    function handleGoBack() {
-        currAuthStep.back(); 
-    }
-
-    function handleGoNext() {
-        currAuthStep.next(); 
-    }
-
 </script>
 
 <div class="auth-card">
-    <p class="auth-text-step">
-        {currAuthStep.currentText}
-    </p>
-
     <div class="form-group">
         <label for="nick">Имя пользователя</label>
         <input 
@@ -140,41 +123,25 @@
         {/if}
     </div>
 
-    <section class="navi-buttons">
-        <button 
-            type="button" 
-            onclick={handleAuthSubmit}
-            disabled={
-                isPushed || 
-                !currAuthStep.data.nick.isValid || 
-                !currAuthStep.data.persInn.isValid || 
-                !currAuthStep.data.compInn.isValid || 
-                !currAuthStep.data.kpp.isValid || 
-                !currAuthStep.data.password.isValid
-            }
-            class="main-button"
-            id="auth-submit-btn"
-        >
-            <span class="navi-buttons.btn-icon">
-                {#if isPushed}⏳{:else}🔑{/if}
-            </span>
-            <span class="btn-label">
-                {#if isPushed}Вход...{:else}Отправить{/if}
-            </span>
-        </button>
-
-        <div class="buttons-grid-row">
-            <button type="button" onclick={handleGoBack} class="nav-btn-item">
-                <span class="nav-btn-text">Назад</span>
-            </button>
-
-            <button type="button" onclick={handleGoToRegister} disabled={isPushed} class="nav-btn-item">
-                <span class="nav-btn-text">Регистрация</span>
-            </button>
-
-            <button type="button" onclick={handleGoNext} class="nav-btn-item">
-                <span class="nav-btn-text">Вперед</span>
-            </button>
-        </div>
-    </section>
+    <button 
+        type="button" 
+        onclick={handleAuthSubmit}
+        disabled={
+            isPushed || 
+            !currAuthStep.data.nick.isValid || 
+            !currAuthStep.data.persInn.isValid || 
+            !currAuthStep.data.compInn.isValid || 
+            !currAuthStep.data.kpp.isValid || 
+            !currAuthStep.data.password.isValid
+        }
+        class="main-button"
+        id="auth-submit-btn"
+    >
+        <span class="navi-buttons.btn-icon">
+            {#if isPushed}⏳{:else}🔑{/if}
+        </span>
+        <span class="btn-label">
+            {#if isPushed}Вход...{:else}Отправить{/if}
+        </span>
+    </button>
 </div>

@@ -43,8 +43,9 @@ class SvelteAuthStep {
             pageManager.Page = null;
             this.data.password.value = "";
         }
-        this.steps.length = this.index + 1;
-        this.steps.push(next_step);
+        
+        this.steps = [...this.steps.slice(0, this.index + 1), next_step];
+        
         this.index++;
         this.step = next_step;
     }
@@ -93,6 +94,33 @@ class SvelteAuthStep {
         }
         
         return '';
+    }
+
+    set currentText(value: Partial<Record<keyof AuthStep, string>>) {
+        if (!this.step || typeof this.step !== 'object') {
+            return;
+        }
+
+        const stepKey = Object.keys(this.step)[0] as keyof AuthStep;
+        if (!stepKey) return;
+
+        if (value && typeof value === 'object' && stepKey in value) {
+            const newText = value[stepKey];
+            
+            if (typeof newText === 'string') {
+                const currentStepObj = this.step[stepKey];
+
+                if (currentStepObj && typeof currentStepObj === 'object' && 'text' in currentStepObj) {
+                    this.step = {
+                        ...this.step,
+                        [stepKey]: {
+                            ...(currentStepObj as Record<string, unknown>),
+                            text: newText
+                        }
+                    };
+                }
+            }
+        }
     }
 
     private async init() {

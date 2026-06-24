@@ -22,7 +22,7 @@ pub struct UserLogInfo {
 
 #[derive(Serialize, Deserialize, Default, ts_rs::TS)]
 pub struct NickData{
-    pub nick_names: Vec<String1_50>
+    pub nick_names: HashSet<String1_50>
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
