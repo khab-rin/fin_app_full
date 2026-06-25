@@ -4,4 +4,4 @@ import type { IpPrincipal } from "./IpPrincipal";
 import type { PersonPrincipal } from "./PersonPrincipal";
 import type { RussOrgPrincipal } from "./RussOrgPrincipal";
 
-export type Principal = { РосОргДовер: RussOrgPrincipal | null, ИнОргДовер: ForeignOrgPrincipal | null, ИПДовер: IpPrincipal | null, ФЛДовер: PersonPrincipal | null, };
+export type Principal = { russian_org: RussOrgPrincipal | null, foreign_org: ForeignOrgPrincipal | null, ip: IpPrincipal | null, person: PersonPrincipal | null, };

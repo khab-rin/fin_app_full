@@ -7,4 +7,4 @@ import type { RootManager } from "./RootManager";
 import type { Snils } from "./Snils";
 import type { String1_255 } from "./String1_255";
 
-export type PersonPrincipal = { "@СтУчНД": PrincipalNotarialStatus | null, "@ПрДеесп": Flag | null, "@ПрНалРук": Flag | null, "@ДокНедеесп": String1_255 | null, "@ИННФЛ": PersInn | null, "@СНИЛС": Snils, СведФЛ: PersonMchd, СвЗакПредРук: RootManager | null, };
+export type PersonPrincipal = { "@СтУчНД": PrincipalNotarialStatus | null, legal_capacity: Flag | null, assistant_signatory: Flag | null, incapacity_proof_doc: String1_255 | null, inn: PersInn | null, "@СНИЛС": Snils, СведФЛ: PersonMchd, root_manager: RootManager | null, };

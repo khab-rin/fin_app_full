@@ -5,4 +5,4 @@ import type { PowerType } from "./PowerType";
 import type { RedelegatePowerLossType } from "./RedelegatePowerLossType";
 import type { String1_10000 } from "./String1_10000";
 
-export type DelegatePowers = { "@ТипПолн": PowerType, "@ПрСовмПолн": PowerCommonType, "@ПрУтрПолн": RedelegatePowerLossType | null, ТекстПолн: String1_10000 | null, mchd_powers: Array<MchdPower>, };
+export type DelegatePowers = { "@ТипПолн": PowerType, "@ПрСовмПолн": PowerCommonType, redelegate_power_loss: RedelegatePowerLossType | null, power_text: String1_10000 | null, mchd_powers: Array<MchdPower>, };

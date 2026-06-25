@@ -1,6 +1,9 @@
 use shared_lib::Status;
+use shared_lib::service::auth_service::client_state::{NickData, UserLogInfo};
 use shared_lib::service::auth_service::implements::IngoingData;
 
+use crate::service::auth_service::nick_data::add_nick_data;
+use crate::service::auth_service::key_ring::{write_keyring_data, get_keyring_data};
 use crate::state::ClientState;
 
 pub(crate) async  fn make_ingoing_doc(
@@ -9,6 +12,7 @@ pub(crate) async  fn make_ingoing_doc(
 ) -> Result<Vec<u8>, Status> {
 
     let IngoingData { 
+        nick,
         sur_name, 
         first_name, 
         mid_name, 
@@ -20,12 +24,12 @@ pub(crate) async  fn make_ingoing_doc(
         email 
     } = data;
 
- let full_name = match mid_name {
-        Some(mid) if !mid.as_ref().trim().is_empty() => {
-            format!("{} {} {}", sur_name.as_ref(), first_name.as_ref(), mid.as_ref())
-        }
-        _ => format!("{} {}", sur_name.as_ref(), first_name.as_ref()),
-    };
+    let full_name = match mid_name {
+            Some(mid) if !mid.as_ref().trim().is_empty() => {
+                format!("{} {} {}", sur_name.as_ref(), first_name.as_ref(), mid.as_ref())
+            }
+            _ => format!("{} {}", sur_name.as_ref(), first_name.as_ref()),
+        };
 
     let html_text = format!(
         r#"<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
@@ -124,9 +128,51 @@ pub(crate) async  fn make_ingoing_doc(
 
     let hash_string = hash_res.to_hex().to_string();
 
-    {
-        let mut temp_info_guard = state.temp_info.lock().await;
-        temp_info_guard.file_hash = Some(hash_string);
+    let new_nick_data = NickData {
+        nick: nick.clone(),
+        pers_inn: pers_inn.clone(),
+        comp_inn: comp_inn.clone(),
+        kpp: kpp.clone()
+    };
+
+    match add_nick_data(state, &new_nick_data) {
+        Ok(_) => {},
+        Err(err) => {
+            log::error!(
+                "FUN make_ingoing_doc FAILED BY FUN add_nick_data, err = {}", err
+            );
+            return Err(Status::SystemErr);
+        }
+    }
+
+    let key_ = format!("{}{}{}", pers_inn.clone(), comp_inn.clone(), kpp.clone());
+
+    let mut user_log_info = match get_keyring_data(state, &key_) {
+        Ok(i) => i,
+        Err(err) => {
+            log::error!(
+                "FUN make_ingoing_doc FAILED BY FUN get_keyring_data, err = {}", err
+            );
+            return Err(err);
+        }   
+    };
+
+    user_log_info.init_file_hash = hash_string;
+
+    match write_keyring_data(state, &key_, &user_log_info) {
+        Ok(true) => {},
+        Ok(false) => {
+            log::error!(
+                "FUN make_ingoing_doc FAILED BY MISS NickData, err = {}", Status::SystemLogicErr
+            );
+            return Err(Status::SystemLogicErr);
+        },
+        Err(err) => {
+            log::error!(
+                "FUN make_ingoing_doc FAILED BY FUN write_keyring_data, err = {}", err
+            );
+            return Err(err);
+        }
     }
 
     Ok(bytes)

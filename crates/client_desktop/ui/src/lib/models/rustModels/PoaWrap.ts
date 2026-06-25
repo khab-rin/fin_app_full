@@ -2,4 +2,4 @@
 import type { Digits7_7 } from "./Digits7_7";
 import type { PoaRootKind } from "./PoaRootKind";
 
-export type PoaWrap = { "@КНД": Digits7_7 | null, $value: PoaRootKind, };
+export type PoaWrap = { code_knd: Digits7_7 | null, $value: PoaRootKind, };

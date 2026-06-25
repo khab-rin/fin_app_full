@@ -5,4 +5,4 @@ import type { PrincipalNotarialStatus } from "./PrincipalNotarialStatus";
 import type { Snils } from "./Snils";
 import type { WrapPerson } from "./WrapPerson";
 
-export type RedelegatePerson = { "@СтУчНД": PrincipalNotarialStatus | null, "@ПрНалРук": Flag | null, "@ИННФЛ": PersInn, "@СНИЛС": Snils, СведРукоп: WrapPerson | null, СведФЛ: WrapPerson, };
+export type RedelegatePerson = { principal_notarial_status: PrincipalNotarialStatus | null, signatory_flag: Flag | null, "@ИННФЛ": PersInn, "@СНИЛС": Snils, signatory: WrapPerson | null, СведФЛ: WrapPerson, };

@@ -8,4 +8,4 @@ import type { String1_250 } from "./String1_250";
 import type { String1_2500 } from "./String1_2500";
 import type { String1_255 } from "./String1_255";
 
-export type NotarialCertification = { "@МестоДовер": String1_250, "@НапрДокДовЕПГУ": Flag | null, "@НапрДокПовЕПГУ": Flag | null, "@НапрДокЗвлФНП": Flag | null, "@НапрДокПовФНП": Flag | null, "@УплНотДейст": RubF, "@ЛьготаСум": RubF | null, "@ДрИнфСист": String1_255 | null, "@ДрСпосВыд": String1_255 | null, "@ДопСвНотДовер": String1_2500 | null, ИнСвУдНадпис: String1_2500 | null, СвНотДейств: Notary, ПодпРукопис: Array<Signature>, ВриоНот: ActingNotary | null, };
+export type NotarialCertification = { "@МестоДовер": String1_250, send_to_principal_epgu: Flag | null, send_to_representative_epgu: Flag | null, send_to_applicant_fnp: Flag | null, send_to_representative_fnp: Flag | null, "@УплНотДейст": RubF, discount: RubF | null, system_info: String1_255 | null, other_issuance_method: String1_255 | null, extra_info: String1_2500 | null, other_info: String1_2500 | null, СвНотДейств: Notary, ПодпРукопис: Array<Signature>, acting_notary: ActingNotary | null, };

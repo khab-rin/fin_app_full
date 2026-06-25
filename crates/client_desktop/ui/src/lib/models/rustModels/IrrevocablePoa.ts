@@ -3,4 +3,4 @@ import type { IrrevocablePoaRedelegationType } from "./IrrevocablePoaRedelegatio
 import type { IrrevocablePoaRevocationCondition } from "./IrrevocablePoaRevocationCondition";
 import type { String1_1000 } from "./String1_1000";
 
-export type IrrevocablePoa = { "@ПрПерБезДов": IrrevocablePoaRedelegationType, "@УслОтзыва": IrrevocablePoaRevocationCondition, ОписУслОт: String1_1000 | null, };
+export type IrrevocablePoa = { "@ПрПерБезДов": IrrevocablePoaRedelegationType, "@УслОтзыва": IrrevocablePoaRevocationCondition, revocation_condition_text: String1_1000 | null, };

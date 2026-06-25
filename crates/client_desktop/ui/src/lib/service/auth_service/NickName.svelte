@@ -79,9 +79,9 @@
             </div>
 
             <div class="dialog-content">
-                {#if currAuthStep.nick_names.nick_names.length > 0}
+                {#if currAuthStep.nick_names.length > 0}
                     <ul class="account-list">
-                        {#each currAuthStep.nick_names.nick_names as name (name)}
+                        {#each currAuthStep.nick_names as name (name)}
                             <li>
                                 <button 
                                     type="button" 

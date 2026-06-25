@@ -5,4 +5,4 @@ import type { String1_25 } from "./String1_25";
 import type { String1_4000 } from "./String1_4000";
 import type { String7_7 } from "./String7_7";
 
-export type PersonDocum = { "@КодВидДок": RussDocumCode, "@СерНомДок": String1_25, "@ДатаДок": Date, "@ВыдДок": String1_4000 | null, "@КодВыдДок": String7_7 | null, expDate: Date | null, };
+export type PersonDocum = { "@КодВидДок": RussDocumCode, "@СерНомДок": String1_25, "@ДатаДок": Date, issued_by: String1_4000 | null, issued_code: String7_7 | null, exp_date: Date | null, };

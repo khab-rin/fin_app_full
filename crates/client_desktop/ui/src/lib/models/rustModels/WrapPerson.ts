@@ -6,4 +6,4 @@ import type { PrincipalNotarialStatus } from "./PrincipalNotarialStatus";
 import type { Snils } from "./Snils";
 import type { String1_255 } from "./String1_255";
 
-export type WrapPerson = { "@СтУчНД": PrincipalNotarialStatus | null, "@ИННФЛ": PersInn | null, "@СНИЛС": Snils | null, "@Должность": String1_255 | null, ДокПдтв: DirectAuthorityDoc | null, СведФЛ: PersonMchd, };
+export type WrapPerson = { principal_notarial_status: PrincipalNotarialStatus | null, inn: PersInn | null, snils: Snils | null, position: String1_255 | null, direct_authority_doc: DirectAuthorityDoc | null, СведФЛ: PersonMchd, };

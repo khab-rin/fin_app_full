@@ -5,4 +5,4 @@ import type { RedelegatePerson } from "./RedelegatePerson";
 import type { RedelegaterFilial } from "./RedelegaterFilial";
 import type { RussOrgPrincipal } from "./RussOrgPrincipal";
 
-export type SubPrincipalInfo = { РосОргПерПолн: RussOrgPrincipal | null, ИППерПолн: IpPrincipal | null, ФЛПерПолн: RedelegatePerson | null, ФилПерПолн: RedelegaterFilial | null, ИнПерПолн: ForeignOrgPrincipal | null, };
+export type SubPrincipalInfo = { russian_organization: RussOrgPrincipal | null, ip: IpPrincipal | null, person: RedelegatePerson | null, filial: RedelegaterFilial | null, foreign_organizetioan: ForeignOrgPrincipal | null, };

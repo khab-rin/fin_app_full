@@ -11,4 +11,4 @@ import type { String1_1000 } from "./String1_1000";
 import type { String1_80 } from "./String1_80";
 import type { String3_129 } from "./String3_129";
 
-export type RussOrganization = { "@СтУчНД": PrincipalNotarialStatus | null, "@НаимОрг": CompanyName, "@ИННЮЛ": CompInn | null, "@КПП": Kpp, "@ОГРН": Ogrn | null, "@РегНомер": String1_80 | null, "@НаимУчрДок": String1_1000 | null, "@КонтактТлф": Phone | null, "@АдрЭлПочт": String3_129 | null, ДокПдтв: DirectAuthorityDoc | null, АдрРег: PostalAddress | null, };
+export type RussOrganization = { principal_notarial_status: PrincipalNotarialStatus | null, "@НаимОрг": CompanyName, comp_inn: CompInn | null, "@КПП": Kpp, ogrn: Ogrn | null, reg_num: String1_80 | null, founding_doc: String1_1000 | null, phone: Phone | null, email: String3_129 | null, direct_authority_doc: DirectAuthorityDoc | null, address: PostalAddress | null, };

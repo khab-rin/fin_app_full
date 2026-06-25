@@ -3,4 +3,4 @@ import type { PoaLimitations } from "./PoaLimitations";
 import type { String1_255 } from "./String1_255";
 import type { String6_255 } from "./String6_255";
 
-export type MchdPower = { "@МнПолн": String6_255 | null, "@КодПолн": String6_255, "@НаимПолн": String1_255, poa_limitations: Array<PoaLimitations>, };
+export type MchdPower = { powers_mnemonic: String6_255 | null, "@КодПолн": String6_255, "@НаимПолн": String1_255, poa_limitations: Array<PoaLimitations>, };

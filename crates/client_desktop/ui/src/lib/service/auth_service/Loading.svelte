@@ -5,7 +5,7 @@
 
     onMount(async() => {
         try {
-            if (currAuthStep.nick_names.nick_names.length == 0) {
+            if (currAuthStep.nick_names.length == 0) {
                 let next_step: AuthStep = {NeedPassword: {text: "Пользователь не найден на устройстве, требуется авторизоваться по паролю или пройти регистрацию"}};
                 currAuthStep.add(next_step);
             } else {

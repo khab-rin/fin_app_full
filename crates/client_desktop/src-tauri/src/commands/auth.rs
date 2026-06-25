@@ -8,7 +8,7 @@ use shared_lib::primitives::frozen::implements_base::String1_50;
 use crate::state::ClientState;
 use crate::service::auth_service::restore_by_nick::restore_session_by_nick;
 use crate::service::auth_service::restore_by_password::restore_by_password;
-use crate::service::auth_service::nick_data::get_nicknames;
+use crate::service::auth_service::nick_data::get_nick_names;
 use crate::service::auth_service::ingoing_data::make_ingoing_doc;
 use crate::service::auth_service::registration::register_user;
 use crate::service::auth_service::make_session_by_tell_call::make_session_by_tel_call;
@@ -21,15 +21,13 @@ pub async  fn cmd_is_state_active_init(
     state: tauri::State<'_, ClientState>
 ) -> Result<AuthStep, Status> {
 
-    log::debug!("cmd_is_state_active_init running!!!!");
-
-    log::debug!("{:?}", state.config.sqlite_options.duration);
+    log::info!("cmd_is_state_active_init running!!!!");
 
     let session_ref = state.session.lock().await;
     
     if let Some(ref session) = *session_ref {
         match session.local_db.acquire().await {
-            Ok(_) => Ok(AuthStep::SuccessShort {  }),
+            Ok(_) => Ok(AuthStep::SuccessShort { }),
             Err(err) => {
                 log::error!(
                     "tech_err = {}, local_err = {}",
@@ -95,11 +93,11 @@ pub async fn cmd_session_by_nick(
 #[tauri::command]
 pub fn cmd_get_nick_names(
     state: tauri::State<'_, ClientState>
-) -> Result<NickData, Status> {
+) -> Result<Vec<String1_50>, Status> {
 
     log::debug!("cmd_get_nick_names running");
 
-    get_nicknames(&state)
+    get_nick_names(&state)
 }
 
 
@@ -112,6 +110,7 @@ pub async  fn cmd_make_ingoing_doc(
     log::debug!("cmd_make_ingoing_doc running");
 
     let res = make_ingoing_doc(&state, &data).await;
+    
     if res.is_err() {
         log::debug!("cmd_make_ingoing_doc failed");
     }
@@ -128,7 +127,7 @@ pub async fn cmd_register_user(
 
     log::debug!("cmd_register_user running");
     
-    let res = register_user(&state, data).await;
+    let res = register_user(&state, &data).await;
 
     res
 }

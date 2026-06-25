@@ -9,4 +9,4 @@ import type { PoaLegalForm } from "./PoaLegalForm";
 import type { String1_28 } from "./String1_28";
 import type { String1_50 } from "./String1_50";
 
-export type OriginalPoa = { "@ПрДовер": InitPrincipalTypeShort, "@ФормДовер": PoaLegalForm, "@ДатаВыдДовер": Date, "@СрокДейст": Date, "@ВнНомДоверПерв": String1_50 | null, "@ВнНомДоверN": String1_50 | null, "@НомДоверПерв": BoxUuid | null, "@НомДоверN": BoxUuid | null, "@НомРНДПерв": String1_28 | null, "@НомРНДN": String1_28 | null, origin_principal: Array<InitPrincipalWrap>, СвНотДейств: Notary | null, ВриоНот: ActingNotary | null, };
+export type OriginalPoa = { "@ПрДовер": InitPrincipalTypeShort, "@ФормДовер": PoaLegalForm, "@ДатаВыдДовер": Date, "@СрокДейст": Date, origin_poa_num: String1_50 | null, revoc_poa_num: String1_50 | null, origin_poa_mchd_num: BoxUuid | null, revoc_poa_mchd_num: BoxUuid | null, origin_poa_notar_num: String1_28 | null, revoc_poa_notar_num: String1_28 | null, origin_principal: Array<InitPrincipalWrap>, notary: Notary | null, acting_notary: ActingNotary | null, };

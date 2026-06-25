@@ -4,4 +4,4 @@ import type { ManagementType } from "./ManagementType";
 import type { PrimeManagerOrg } from "./PrimeManagerOrg";
 import type { WrapPerson } from "./WrapPerson";
 
-export type RootManager = { "@ПолнЮЛ": ManagementType, СВЮЛ: PrimeManagerOrg | null, СвФЛ: WrapPerson | null, СвИП: IpPrincipal | null, };
+export type RootManager = { "@ПолнЮЛ": ManagementType, prime_manager_org: PrimeManagerOrg | null, prime_manager_person: WrapPerson | null, prime_manager_ip: IpPrincipal | null, };

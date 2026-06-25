@@ -7,4 +7,4 @@ import type { OriginalPoa } from "./OriginalPoa";
 import type { PoaMetadata } from "./PoaMetadata";
 import type { SubPrincipal } from "./SubPrincipal";
 
-export type DerivedPoa = { "@ПрНалПередов": Flag, СвПервДовер: OriginalPoa, СвПередов: OriginalPoa | null, СвПереДовер: PoaMetadata, СвПередПолн: Array<SubPrincipal>, СвПолучПолн: Array<DelegateWrap>, СвПолн: DelegatePowers, СвНотУд: NotarialCertification | null, };
+export type DerivedPoa = { "@ПрНалПередов": Flag, СвПервДовер: OriginalPoa, prev_poa: OriginalPoa | null, СвПереДовер: PoaMetadata, СвПередПолн: Array<SubPrincipal>, СвПолучПолн: Array<DelegateWrap>, СвПолн: DelegatePowers, notary_sertification: NotarialCertification | null, };

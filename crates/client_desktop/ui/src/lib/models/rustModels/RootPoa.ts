@@ -5,4 +5,4 @@ import type { NotarialCertification } from "./NotarialCertification";
 import type { PoaMetadata } from "./PoaMetadata";
 import type { PrincipalWrap } from "./PrincipalWrap";
 
-export type RootPoa = { СвДов: PoaMetadata, СвДоверит: Array<PrincipalWrap>, СвУпПред: Array<DelegateWrap>, СвПолн: DelegatePowers, СвНотУд: NotarialCertification | null, };
+export type RootPoa = { СвДов: PoaMetadata, СвДоверит: Array<PrincipalWrap>, СвУпПред: Array<DelegateWrap>, СвПолн: DelegatePowers, notarial_certification: NotarialCertification | null, };

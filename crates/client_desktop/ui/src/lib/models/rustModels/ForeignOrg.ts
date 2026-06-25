@@ -11,4 +11,4 @@ import type { String1_255 } from "./String1_255";
 import type { String1_80 } from "./String1_80";
 import type { String3_129 } from "./String3_129";
 
-export type ForeignOrg = { "@СтУчНД": PrincipalNotarialStatus | null, "@НаимИО": String1_1000, "@ИННЮЛ": CompInn | null, "@КПП": Kpp | null, "@НЗА": String11_11 | null, "@СтрРег": Digits3_3 | null, "@НаимРегОрг": String1_255 | null, "@РегНомер": String1_80 | null, "@КодНПРег": String1_80 | null, "@КонтактТлф": Phone | null, "@АдрЭлПочт": String3_129 | null, "@АдрСтрРег": String1_1000 | null, АдрМНФакт: PostalAddress | null, };
+export type ForeignOrg = { principal_notarial_status: PrincipalNotarialStatus | null, "@НаимИО": String1_1000, inn: CompInn | null, kpp: Kpp | null, nza: String11_11 | null, country_code: Digits3_3 | null, reg_org_name: String1_255 | null, reg_number: String1_80 | null, foreign_tax_id: String1_80 | null, tel_number: Phone | null, email: String3_129 | null, foreign_address: String1_1000 | null, russian_address: PostalAddress | null, };

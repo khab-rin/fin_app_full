@@ -3,4 +3,4 @@ import type { Date } from "./Date";
 import type { String1_1000 } from "./String1_1000";
 import type { String1_120 } from "./String1_120";
 
-export type DirectAuthorityDoc = { "@НаимДокПдтв": String1_120 | null, "@ДатаВыд": Date | null, "@КемВыд": String1_1000 | null, "@СвУдДок": String1_1000 | null, };
+export type DirectAuthorityDoc = { name: String1_120 | null, issue_date: Date | null, issued_by: String1_1000 | null, cert_info: String1_1000 | null, };

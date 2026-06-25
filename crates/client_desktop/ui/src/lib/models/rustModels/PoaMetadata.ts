@@ -9,4 +9,4 @@ import type { String1_1000 } from "./String1_1000";
 import type { String1_28 } from "./String1_28";
 import type { String1_50 } from "./String1_50";
 
-export type PoaMetadata = { "@ВидДовер": PoaTypeRevocable, "@ПрПередов": PoaTypeRedelegatable, "@ВнНомДовер": String1_50, "@НомДовер": BoxUuid, "@НомРНДДовер": String1_28 | null, "@ДопИдДовер": String1_50 | null, "@ДатаВнРегДовер": Date | null, "@ДатаВыдДовер": Date, "@СрокДейст": Date, "@КодНО": Digits4_4 | null, tax_org_idents: Array<Digits4_4>, СведСист: String1_1000, Безотзыв: IrrevocablePoa | null, };
+export type PoaMetadata = { "@ВидДовер": PoaTypeRevocable, "@ПрПередов": PoaTypeRedelegatable, "@ВнНомДовер": String1_50, "@НомДовер": BoxUuid, notar_number: String1_28 | null, extra_num: String1_50 | null, registration_date: Date | null, "@ДатаВыдДовер": Date, "@СрокДейст": Date, tax_org_ident: Digits4_4 | null, tax_org_idents: Array<Digits4_4>, СведСист: String1_1000, irrevocable_poa: IrrevocablePoa | null, };

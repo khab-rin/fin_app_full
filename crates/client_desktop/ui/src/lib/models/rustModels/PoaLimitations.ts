@@ -2,4 +2,4 @@
 import type { ConfineValue } from "./ConfineValue";
 import type { String1_255 } from "./String1_255";
 
-export type PoaLimitations = { "@ИдОгр": number, "@КодОгр": String1_255, "@НаимОгр": String1_255, "@НаимЗначОгр": String1_255 | null, $value: ConfineValue, };
+export type PoaLimitations = { "@ИдОгр": number, "@КодОгр": String1_255, "@НаимОгр": String1_255, value_name: String1_255 | null, $value: ConfineValue, };

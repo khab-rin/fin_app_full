@@ -1,6 +1,5 @@
 import type { AuthStep } from '$lib/models/rustModels/AuthStep';
 import {AuthStepType} from "$lib/models/Auth/AuthValues";
-import type { NickData } from '$lib/models/rustModels/NickData';
 
 import {FieldValidator} from "$lib/models/Auth/FieldValidator.svelte";
 
@@ -75,7 +74,7 @@ class SvelteAuthStep {
         email: new FieldValidator("Email", ""),
     })
 
-    nick_names = $state<NickData>({ nick_names: [] });
+    nick_names = $state<string[]>([]);
 
     get currentText(): string {
         if (!this.step || typeof this.step !== 'object') {
@@ -125,8 +124,8 @@ class SvelteAuthStep {
 
     private async init() {
         try {
-            const nickData = await invoke<NickData>('cmd_get_nick_names');
-            this.nick_names = nickData; 
+            const names = await invoke<string[]>('cmd_get_nick_names');
+            this.nick_names = names;
 
             const nextStep = await invoke<AuthStep>("cmd_is_state_active_init");
             

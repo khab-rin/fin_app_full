@@ -3,4 +3,4 @@ import type { AddressChoice } from "./AddressChoice";
 import type { BoxUuid } from "./BoxUuid";
 import type { Region } from "./Region";
 
-export type PostalAddress = { "@Регион": Region, "@ИдФИАС": BoxUuid | null, $value: AddressChoice | null, };
+export type PostalAddress = { "@Регион": Region, fias_id: BoxUuid | null, address: AddressChoice | null, };

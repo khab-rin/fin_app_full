@@ -5,4 +5,4 @@ import type { PoaWrap } from "./PoaWrap";
 import type { String1_255 } from "./String1_255";
 import type { String1_5000 } from "./String1_5000";
 
-export type PoaMchd = { "@ВерсФорм": FormatVersion, "@ПрЭлФорм": PoaReqElemsFlag, "@ИдФайл": String1_255, "@ИдФайлНО": String1_255 | null, "@OID": String1_255 | null, ИнСвед: String1_5000 | null, Документ: PoaWrap, };
+export type Доверенность = { "@xmlns:xsi": string, "@xmlns:xsd": string, "@xmlns": string, "@ВерсФорм": FormatVersion, "@ПрЭлФорм": PoaReqElemsFlag, "@ИдФайл": String1_255, "@ИдФайлНО": String1_255 | null, "@OID": String1_255 | null, ИнСвед: String1_5000 | null, Документ: PoaWrap, };

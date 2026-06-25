@@ -4,4 +4,4 @@ import type { IpPrincipal } from "./IpPrincipal";
 import type { RussOrganization } from "./RussOrganization";
 import type { WrapPerson } from "./WrapPerson";
 
-export type Delegate = { СведОрг: RussOrganization | null, СведИП: IpPrincipal | null, СведФизЛ: WrapPerson | null, СведФилиал: RussOrganization | null, СведИО: ForeignOrg | null, };
+export type Delegate = { organization: RussOrganization | null, ip: IpPrincipal | null, person: WrapPerson | null, filial: RussOrganization | null, foreign_organization: ForeignOrg | null, };

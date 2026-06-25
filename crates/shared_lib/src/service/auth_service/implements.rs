@@ -76,6 +76,9 @@ pub enum TextInfo {
     #[serde(rename = "Страница загружается, подождите пожалуйста. В случае зависания попробуйте обновить или перезагрузить приложение")]
     LoadingInfo,
 
+    #[serde(rename = "Пользователь не существует, либо не прошел регистрацию, либо не синхронизирован. Попробуйте войти по паролю, либо пройдите регистрацию")]
+    MissToken,
+
     #[serde(rename = "")]
     Nothing,
 }
@@ -177,6 +180,7 @@ pub struct SvelteRegistrationData {
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub struct IngoingData {
+    pub nick: String1_50,
     pub sur_name: SurName,
     pub first_name: FirstName,
     pub mid_name: Option<MidName>,

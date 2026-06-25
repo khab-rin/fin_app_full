@@ -7,4 +7,4 @@ import type { PrincipalNotarialStatus } from "./PrincipalNotarialStatus";
 import type { Snils } from "./Snils";
 import type { String1_1000 } from "./String1_1000";
 
-export type IpPrincipal = { "@СтУчНД": PrincipalNotarialStatus | null, "@НаимИП": String1_1000 | null, "@ОГРНИП": Ogrn, "@ИННФЛ": PersInn, "@СНИЛС": Snils, ДокПдтв: DirectAuthorityDoc | null, СведФЛ: PersonMchd, };
+export type IpPrincipal = { principal_notarial_status: PrincipalNotarialStatus | null, name: String1_1000 | null, "@ОГРНИП": Ogrn, "@ИННФЛ": PersInn, "@СНИЛС": Snils, direct_authority_doc: DirectAuthorityDoc | null, СведФЛ: PersonMchd, };

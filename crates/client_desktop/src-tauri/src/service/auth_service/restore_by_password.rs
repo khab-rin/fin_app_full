@@ -6,17 +6,29 @@ use shared_lib::service::auth_service::implements::{
     AuthStep,
     TextInfo
 };
-use shared_lib::service::auth_service::client_state::UserLogInfo;
-
+use shared_lib::service::auth_service::client_state::NickData;
 
 use crate::state::{ClientState, init_session};
-use crate::service::auth_service::helper::{get_device_id, write_log_info};
+use crate::back_api::post_query::post_query_back_api;
+use crate::service::auth_service::helper::get_device_id;
+use crate::service::auth_service::nick_data::add_nick_data;
+use crate::service::auth_service::key_ring::{write_keyring_data, get_keyring_data};
 
 
 pub(crate) async fn restore_by_password(
     state: &ClientState,
     data: &PasswordDataClientShort
 ) -> Result<AuthStep, Status> {
+
+    let key_ = format!("{}{}{}", data.pers_inn, data.comp_inn, data.kpp);
+
+    let mut user_log_info = match get_keyring_data(state, &key_) {
+        Ok(i) => i,
+        Err(err) => {
+            log::error!("FUN restore_by_password FAILED BY FUN get_keyring_data, err = {}", err);
+            return Ok(AuthStep::TryLater { text: TextInfo::ClientApiSystemError });
+        }
+    };
 
     let device_id = match get_device_id() {
         Ok(d) => d,
@@ -38,40 +50,18 @@ pub(crate) async fn restore_by_password(
         kpp: data.kpp.clone()
     };
 
-    let back_api_url = format!("{}/{}",
-        state.config.back_api_url().trim_end_matches('/'),
-        ApiRoutes::AuthRestorePassword.get_path().trim_start_matches('/')
-    );
+    let response = match post_query_back_api(
+            state, 
+            state.config.get_std_client(), 
+            ApiRoutes::AuthRestorePassword, 
+            &password_data).await {
+        Ok(r) => r,
+        Err(err) => {
+            log::error!("FUN restore_by_password FAILED BY FUN post_query_back_api, err = {}", err);
+            return Ok(AuthStep::TryLater { text: TextInfo::BackApiError});
+        }
+    };
 
-    let response = match state
-        .config
-        .get_std_client()
-        .post(&back_api_url)
-        .headers(state.config.back_api_header().clone())
-        .json(&password_data)
-        .send()
-        .await {
-            Ok(r) => r,
-            Err(err) => {
-                log::error!(
-                    "FUN restore_by_password FAILED BY POST QUERY TO BACK API, teck_err = {:?}, local_err = {:?}, url = {:?}",
-                    err, Status::QueryPostRequestErr, back_api_url
-                );
-                return Ok(AuthStep::TryLater { text: TextInfo::ClientApiQueryError});
-            }
-        };
-    
-    if !response.status().is_success() {
-        let back_err = response
-            .json::<Status>()
-            .await
-            .unwrap_or(Status::Unknown);
-        log::error!(
-            "FUN restore_session_by_nick FAILED BY POST QUERY TO BACK API. Backend error code: {}, local_err = {:?}",
-            back_err, Status::BackApiError
-        );
-        return Ok(AuthStep::TryLater { text: TextInfo::BackApiError});
-    }
 
     let auth_step:AuthStep = match response.json().await {
         Ok(s) => s,
@@ -89,17 +79,28 @@ pub(crate) async fn restore_by_password(
         _ => return Ok(auth_step)
     };
 
-    let log_info = UserLogInfo {
-        pers_inn: data.pers_inn.clone(),
-        comp_inn: data.comp_inn.clone(),
-        kpp: data.kpp.clone(),
-        token: success_result.token.clone()
-    };
+    user_log_info.token = Some(success_result.token.clone());
 
-    match write_log_info(state, &data.nick, &log_info) {
+    match write_keyring_data(state, &key_, &user_log_info) {
         Ok(_) => {},
         Err(err) => {
             log::error!("FUN restore_by_password FAILED by writing UserLogInfo, err = {}", err);
+            return Ok(AuthStep::TryLater { text: TextInfo::ClientApiSystemError });
+        }
+    }
+
+    let nick_data = NickData {
+        nick: data.nick.clone(),
+        pers_inn: data.pers_inn.clone(),
+        comp_inn: data.comp_inn.clone(),
+        kpp: data.kpp.clone()
+    };
+
+    match add_nick_data(state, &nick_data) {
+        Ok(_) => {},
+        Err(err) => {
+            log::error!("FUN restore_by_password FAILED BY FUN add_nick_data, err = {}", err);
+            return Ok(AuthStep::TryLater { text: TextInfo::ClientApiSystemError });
         }
     }
 
@@ -107,7 +108,7 @@ pub(crate) async fn restore_by_password(
         Ok(_) => Ok(AuthStep::SuccessShort {}),
         Err(err) => {
             log::error!("FUN restore_by_password FAILED BY init_session, err = {}",err);
-            Err(err)
+            Ok(AuthStep::TryLater { text: TextInfo::ClientApiSystemError })
         }
     }
 

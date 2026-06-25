@@ -85,6 +85,7 @@ pub enum Status {
     FileInvalideFormat = 200,
     FileInvalideData = 201,
     MappingError = 202,
+    SerializationError = 203,
 
     FileCreateError = 250,
     FileReadError = 251,
@@ -104,6 +105,8 @@ pub enum Status {
     // ==========================================
     SystemErr = 400,
     DataCorruptionErr = 401,
+    SystemLogicErr = 402,
+    ClientSessionMissError = 403,
 
     // ==========================================
     // 500-я группа: Ошибки интеграции с внешними API и сервисами
@@ -125,7 +128,7 @@ pub enum Status {
     QueryConnectErr = 604,
 
 
-    ClientSessionMissError = 700
+    
 }
 
 

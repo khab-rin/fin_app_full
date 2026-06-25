@@ -62,7 +62,6 @@ pub async fn run_lib() {
             app_handle: app.handle().clone(),
             session: tokio::sync::Mutex::new(None),
             temp_info: tokio::sync::Mutex::new(TempInfo {
-                file_hash: None,
                 phone: None,
                 nick: None
             })

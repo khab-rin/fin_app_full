@@ -11,4 +11,4 @@ import type { PostalAddress } from "./PostalAddress";
 import type { String1_250 } from "./String1_250";
 import type { String3_129 } from "./String3_129";
 
-export type PersonMchd = { "@Пол": Gender | null, "@ПрГражд": IsCitizen | null, "@НомЕРН": Digits12_12 | null, "@ДатаРожд": Date | null, "@МестоРожд": String1_250 | null, "@Гражданство": Digits3_3 | null, "@КонтактТлф": Phone | null, "@АдрЭлПочт": String3_129 | null, ФИО: Fio, АдрМЖ: PostalAddress | null, УдЛичнФЛ: PersonDocum | null, };
+export type PersonMchd = { gender: Gender | null, is_citizen: IsCitizen | null, ern_num: Digits12_12 | null, birth_day: Date | null, birth_place: String1_250 | null, country_code: Digits3_3 | null, tel_number: Phone | null, email: String3_129 | null, ФИО: Fio, address: PostalAddress | null, person_docums: PersonDocum | null, };

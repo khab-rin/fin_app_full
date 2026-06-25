@@ -14,8 +14,9 @@
     let secondStepOne = $state(false);
     let secondStepTwo = $state(true);
 
-    let isPushedReg = $state(false);
     let isPushedMakeDoc = $state(false);
+    let isPushedReg = $state(false);
+    
     
     let passwordRepeat = $state("")
     
@@ -24,6 +25,7 @@
 
     let isFormValid = $derived(
         isPushedMakeDoc ||
+        !currAuthStep.data.nick.isValid ||
         !currAuthStep.data.surName.isValid ||
         !currAuthStep.data.firstName.isValid ||
         !currAuthStep.data.midName.isValid ||
@@ -37,7 +39,6 @@
 
     let isRegDataValid = $derived(
         isFormValid ||
-        !currAuthStep.data.nick.isValid ||
         !currAuthStep.data.password.isValid ||
         passwordRepeat != currAuthStep.data.password.value ||
         initDocPath.length == 0 ||
@@ -108,6 +109,7 @@
         
 
         const ingoingData: IngoingData = {
+            nick: currAuthStep.data.nick.value,
             sur_name: currAuthStep.data.surName.value,
             first_name: currAuthStep.data.firstName.value,
             mid_name: currAuthStep.data.midName.value.trim() || null,
@@ -141,6 +143,7 @@
             } else {
                 isPushedMakeDoc = false;
             }
+            isPushedMakeDoc = false;
 
         } catch (err) {
             console.error("MAKE INGOING FILE ERR: ", err);
@@ -196,6 +199,22 @@
     </p>
 
     <section hidden={firstStep}>
+        <div class="form-group">
+            <label for="nick">Никнейм (Логин для входа)</label>
+            <input 
+                id="nick" 
+                type="text" 
+                bind:value={currAuthStep.data.nick.value} 
+                disabled={isPushedMakeDoc}
+                placeholder="Придумайте уникальный логин"
+                class="input-field"
+                class:input-error={!currAuthStep.data.nick.isValid}
+            />
+            {#if !currAuthStep.data.nick.isValid}
+                <span class="error-message">Некорректный никнейм (от 1 до 50 символов)</span>
+            {/if}
+        </div>
+
         <div class="form-group">
             <label for="surName">Фамилия</label>
             <input 
@@ -372,22 +391,7 @@
 
     <section hidden={secondStep}>
         <section>
-            <div class="form-group">
-                <label for="nick">Никнейм (Логин для входа)</label>
-                <input 
-                    id="nick" 
-                    type="text" 
-                    bind:value={currAuthStep.data.nick.value} 
-                    disabled={isPushedReg}
-                    placeholder="Придумайте уникальный логин"
-                    class="input-field"
-                    class:input-error={!currAuthStep.data.nick.isValid}
-                />
-                {#if !currAuthStep.data.nick.isValid}
-                    <span class="error-message">Некорректный никнейм (от 1 до 50 символов)</span>
-                {/if}
-            </div>
-
+            
             <div class="form-group">
                 <label for="password">Придумайте пароль приложения</label>
                 <input 
@@ -425,10 +429,10 @@
 
         <section hidden={secondStepOne}>
             <div class="form-group">
-                <label for="document">Сформированное заявление (.doc)</label>
+                <label for="docPathSave">Сформированное заявление (.doc)</label>
                 <div class="file-picker-wrapper">
                     <input 
-                        id="document"
+                        id="docPathSave"
                         type="text" 
                         value={initDocPath} 
                         disabled 
@@ -446,10 +450,10 @@
             </div>
 
             <div class="form-group">
-                <label for="sigPath">Файл электронной подписи (.doc.sig)</label>
+                <label for="sigPathSave">Файл электронной подписи (.doc.sig)</label>
                 <div class="file-picker-wrapper">
                     <input 
-                        id="sigPath"
+                        id="sigPathSave"
                         type="text" 
                         value={signPath || 'Файл подписи не выбран...'} 
                         disabled 
@@ -491,10 +495,10 @@
 
         <section hidden={secondStepTwo}>
             <div class="form-group">
-                <label for="sigPath">Документ заявления(.doc.sig)</label>
+                <label for="docPath">Документ заявления(.doc.sig)</label>
                 <div class="file-picker-wrapper">
                     <input 
-                        id="sigPath"
+                        id="docPath"
                         type="text" 
                         value={initDocPath || 'Файл подписи не выбран...'} 
                         disabled 

@@ -4,4 +4,4 @@ import type { IpPrincipal } from "./IpPrincipal";
 import type { PersonPrincipal } from "./PersonPrincipal";
 import type { RussOrganization } from "./RussOrganization";
 
-export type InitPrincipal = { РосОргДовер: RussOrganization | null, ИнОргДовер: ForeignOrg | null, ИПДовер: IpPrincipal | null, ФЛДовер: PersonPrincipal | null, };
+export type InitPrincipal = { organization: RussOrganization | null, foreign_organization: ForeignOrg | null, ip: IpPrincipal | null, person: PersonPrincipal | null, };
