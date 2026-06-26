@@ -21,8 +21,6 @@ where
         route.get_path().trim_start_matches('/')
     );
 
-    log::info!("back_api_url = {}", back_api_url);
-
     let response = match client
         .post(&back_api_url)
         .headers(state.config.back_api_header().clone())

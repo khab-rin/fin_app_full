@@ -61,17 +61,17 @@ class SvelteAuthStep {
     }
 
     data = $state({
-        nick: new FieldValidator("String1_50", ""),
-        surName: new FieldValidator("SurName", ""),
-        firstName: new FieldValidator("FirstName", ""),
-        midName: new FieldValidator("MidName", ""),
-        persInn: new FieldValidator("PersInn", ""),
-        snils: new FieldValidator("Snils", ""),
-        compInn: new FieldValidator("CompInn", ""),
-        kpp: new FieldValidator("Kpp", ""),
-        password: new FieldValidator("Password", ""),
-        phone: new FieldValidator("Phone", ""),
-        email: new FieldValidator("Email", ""),
+        nick: new FieldValidator("String1_50", "KhabipovBeton"),
+        surName: new FieldValidator("SurName", "Хабипов"),
+        firstName: new FieldValidator("FirstName", "Ринат"),
+        midName: new FieldValidator("MidName", "Ришатович"),
+        persInn: new FieldValidator("PersInn", "161101510882"),
+        snils: new FieldValidator("Snils", "11021217665"),
+        compInn: new FieldValidator("CompInn", "1655476106"),
+        kpp: new FieldValidator("Kpp", "165501001"),
+        password: new FieldValidator("Password", "asdfasdf"),
+        phone: new FieldValidator("Phone", "+79173949166"),
+        email: new FieldValidator("Email", "Oreolkazan@gmail.com"),
     })
 
     nick_names = $state<string[]>([]);
@@ -136,6 +136,15 @@ class SvelteAuthStep {
             this.add({ 
                 TryLater: { text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение" } 
             });
+        }
+    }
+
+    async updateNickNames() {
+        try {
+            const names = await invoke<string[]>('cmd_get_nick_names');
+            this.nick_names = names;
+        } catch (error) {
+            console.error("Не удалось обновить никнеймы:", error);
         }
     }
 }

@@ -1,14 +1,13 @@
 <script lang='ts'>
-	import { currAuthStep } from "$lib/models/Auth/AuthStep.svelte";
     import {invoke} from "@tauri-apps/api/core";
     import { writeFile } from "@tauri-apps/plugin-fs";
     import { save, open as openFileDialog } from "@tauri-apps/plugin-dialog";
 
+    import { currAuthStep } from "$lib/models/Auth/AuthStep.svelte";
     import type {AuthStep} from "$lib/models/rustModels/AuthStep";
     import type {IngoingData} from "$lib/models/rustModels/IngoingData";
-    import type {SvelteRegistrationData} from "$lib/models/rustModels/SvelteRegistrationData"
-	
-    
+    import type {SvelteRegistrationData} from "$lib/models/rustModels/SvelteRegistrationData";
+
     let firstStep = $state(false);
     let secondStep = $state(true);
     let secondStepOne = $state(false);
@@ -22,6 +21,8 @@
     
     let initDocPath = $state("");
     let signPath = $state("");
+
+    let isNickExist = $derived(currAuthStep.nick_names.includes(currAuthStep.data.nick.value));
 
     let isFormValid = $derived(
         isPushedMakeDoc ||
@@ -181,6 +182,7 @@
             let next_step: AuthStep = await invoke<AuthStep>("cmd_register_user", {data: regData});
             isPushedReg = false;
             makeInitregistrationFlags();
+            await currAuthStep.updateNickNames();
             currAuthStep.add(next_step);
         } catch (err) {
             console.error("Registration FAILED, err = ", err);
@@ -208,7 +210,7 @@
                 disabled={isPushedMakeDoc}
                 placeholder="Придумайте уникальный логин"
                 class="input-field"
-                class:input-error={!currAuthStep.data.nick.isValid}
+                class:input-error={!currAuthStep.data.nick.isValid || isNickExist}
             />
             {#if !currAuthStep.data.nick.isValid}
                 <span class="error-message">Некорректный никнейм (от 1 до 50 символов)</span>
