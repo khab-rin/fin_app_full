@@ -25,12 +25,12 @@
   <div class="ingest-list">
     <button class="ingest-row" onclick={handleBankImport}>
       <span class="label">Банковская выписка</span>
-      <span class="action-btn">Выбрать</span>
+      <span class="action-button">Выбрать</span>
     </button>
 
     <button class="ingest-row">
       <span class="label">Отчет Яндекс Такси</span>
-      <span class="action-btn">Выбрать</span>
+      <span class="action-button">Выбрать</span>
     </button>
   </div>
 </div>
@@ -52,6 +52,6 @@
     text-align: left;
   }
   .ingest-row:hover { background: #ebebeb; }
-  .action-btn { color: #0066cc; font-weight: 600; }
+  .action-button { color: #0066cc; font-weight: 600; }
   .label { color: #444; }
 </style>

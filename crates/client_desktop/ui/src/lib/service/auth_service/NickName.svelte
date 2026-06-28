@@ -43,81 +43,91 @@
 
 </script>
 
-<div class="auth-card">
-    <div class="nick-name">
 
-        <div class="account-selector-wrapper">
-            <button
-                type="button"
-                disabled={IsPushed}
-                class="google-style-trigger"
-                onclick={openAccountsModal}
-            >
-                <div class="user-avatar-stub">
-                    {currAuthStep.data.nick.value ? currAuthStep.data.nick.value.charAt(0).toUpperCase() : "?"}
-                </div>
-                <div class="user-info-stub">
-                    <span class="username-label">
-                        {currAuthStep.data.nick.value || "Выбрать аккаунт на устройстве"}
+
+<div class="selector-wrapper">
+    <button
+        type="button"
+        class="wide-button"
+        disabled={IsPushed}
+        
+        onclick={openAccountsModal}
+    >
+
+        <span class="wide-button-span">
+             - {currAuthStep.data.nick.value ? "Текущий выбор" : "Нажмите для просмотра списка"}
+        </span>
+
+        <span class="wide-button-span">
+            {currAuthStep.data.nick.value || "Выбрать аккаунт на устройстве"} >
+        </span>
+    </button>
+</div>
+
+
+<dialog 
+    bind:this={dialogRef} 
+    class="selector-dialog"
+    onclick={(e) => { if (e.target === dialogRef) closeAccountsModal(); }}
+>
+
+    <h5>Выбор аккаунта</h5>
+
+
+    <div class="selector-dialog-content">
+        {#if currAuthStep.nick_names.length > 0}
+            <ul class="dialog-list">
+                {#each currAuthStep.nick_names as name (name)}
+                    <li>
+                        <div class="wide-button-grid">
+                            <button 
+                                type="button" 
+                                class="wide-button"
+                                onclick={() => call_nick_handle(name)}
+                            >
+                                <span class="wide-button-span">{name}</span>
+                            </button>
+                        </div>
+                    </li>
+                {/each}
+            </ul>
+
+            <div class="wide-button-grid">
+                <button class="wide-button"
+                    type="button"
+                    onclick={closeAccountsModal}
+                    >
+                    
+                    <span class="wide-button-span">
+                        Отмена
                     </span>
-                    <span class="sub-label">
-                        {currAuthStep.data.nick.value ? "Текущий выбор" : "Нажмите для просмотра списка"}
-                    </span>
-                </div>
-                <span class="arrow-icon">❯</span>
-            </button>
-        </div>
 
-        <dialog 
-            bind:this={dialogRef} 
-            class="google-dialog"
-            onclick={(e) => { if (e.target === dialogRef) closeAccountsModal(); }}
-        >
-            <div class="dialog-header">
-                <h3>Выбор аккаунта</h3>
-                <p>Выберите профиль для продолжения работы с XPinAT</p>
+
+                </button>
             </div>
 
-            <div class="dialog-content">
-                {#if currAuthStep.nick_names.length > 0}
-                    <ul class="account-list">
-                        {#each currAuthStep.nick_names as name (name)}
-                            <li>
-                                <button 
-                                    type="button" 
-                                    class="account-item-btn"
-                                    onclick={() => call_nick_handle(name)}
-                                >
-                                    <div class="avatar-circle">{name.charAt(0).toUpperCase()}</div>
-                                    <span class="account-name">{name}</span>
-                                </button>
-                            </li>
-                        {/each}
-                    </ul>
-                {:else}
-                    <p class="no-accounts">На этом устройстве еще нет сохраненных аккаунтов</p>
-                {/if}
-            </div>
-
-            <div class="dialog-footer">
-                <button type="button" class="btn-close-modal" onclick={closeAccountsModal}>Отмена</button>
-            </div>
-        </dialog>
-
-        {#if currAuthStep.data.nick.value}
-            <button 
-                type="button" 
-                class="btn-submit" 
-                disabled={IsPushed}
-                onclick={() => call_nick_handle(currAuthStep.data.nick.value)}
-            >
-                {#if IsPushed}
-                    <span class="spinner"></span>
-                    <span>Проверка...</span>
-                {:else}
-                    <span>Войти как {currAuthStep.data.nick.value}</span>
-                {/if}
-            </button>
+        {:else}
+            <p>На этом устройстве еще нет сохраненных аккаунтов</p>
         {/if}
     </div>
-</div>
+
+</dialog>
+
+{#if currAuthStep.data.nick.value}
+    <div class="main-button-grid">
+        <button 
+            type="button" 
+            class="main-button" 
+            disabled={IsPushed}
+            onclick={() => call_nick_handle(currAuthStep.data.nick.value)}
+        >
+            {#if IsPushed}
+                <span class="main-button-span"></span>
+                <span class="main-button-span">Проверка...</span>
+            {:else}
+                <span class="main-button-span">Войти как {currAuthStep.data.nick.value}</span>
+            {/if}
+        </button>
+    </div>
+{/if}
+

@@ -1,43 +1,49 @@
-/* Базовые стили для всех заголовков */
 h1, h2, h3, h4, h5, h6 {
-    color: #333; /* Темно-серый цвет текста */
+    color: #333;
     line-height: 1.2;
-    margin-top: 1.5em; /* Больше отступа сверху */
-    margin-bottom: 0.5em; /* Меньше отступа снизу */
-    font-weight: 600; /* Полужирный шрифт */
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    font-weight: 600;
+
+    /* Включаем Flexbox, чтобы выровнять текст и линии по одной оси */
+    display: flex;
+    align-items: center;
+    text-align: center;
+    gap: 15px; /* Отступ между текстом заголовка и чёрточками */
 }
 
-/* Размеры для каждого уровня */
-h1 {
-    font-size: 2.5rem; /* ~40px */
+/* Создаем чёрточки слева (::before) и справа (::after) */
+h1::before, h1::after,
+h2::before, h2::after,
+h3::before, h3::after,
+h4::before, h4::after,
+h5::before, h5::after,
+h6::before, h6::after {
+    content: "";
+    flex: 1; /* Линии займут всё свободное место слева и справа */
+    
+    /* Делаем настоящую сплошную линию вместо символа дефиса */
+    border-bottom: 2px solid #275a18; /* Зеленая линия, как рамка у ваших <p> */
+    
+    /* Если вы хотите, чтобы линии были тонкими и серыми, 
+       можно заменить цвет на #e0e0e0 или #ccc */
 }
 
+/* Специальное исключение для h2: 
+   Раз мы делаем боковые линии, старое нижнее подчеркивание лучше убрать, 
+   иначе они будут визуально спорить друг с другом */
 h2 {
-    font-size: 2rem;   /* ~32px */
-    border-bottom: 2px solid #e0e0e0; /* Легкая линия для акцента */
-    padding-bottom: 0.3em;
+    font-size: 2rem;
+    border-bottom: none; 
+    padding-bottom: 0;
 }
 
-h3 {
-    font-size: 1.75rem; /* ~28px */
-}
-
-h4 {
-    font-size: 1.5rem;  /* ~24px */
-}
-
-h5 {
-    font-size: 1.25rem; /* ~20px */
-    text-transform: uppercase; /* Чуть строже для мелких заголовков */
-    letter-spacing: 0.05em;
-    color: #555;
-}
-
-h6 {
-    font-size: 1rem;    /* ~16px */
-    color: #777;
-    text-transform: uppercase;
-}
+/* Размеры для остальных уровней (остаются как у вас) */
+h1 { font-size: 2.5rem; }
+h3 { font-size: 1.75rem; }
+h4 { font-size: 1.5rem; }
+h5 { font-size: 1.25rem; text-transform: uppercase; letter-spacing: 0.05em; color: #555; }
+h6 { font-size: 1rem; text-transform: uppercase; color: #777; }
 
 h1:first-child, h2:first-child, h3:first-child {
     margin-top: 0;

@@ -1,0 +1,169 @@
+/* ==========================================================================
+   SELECTOR (Кнопка выбора аккаунта)
+   ========================================================================== */
+
+.selector-wrapper {
+  margin: 16px 0;
+  width: 100%;
+}
+
+/* Основная кнопка-селектор */
+.selector-wrapper .wide-button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+  padding: 12px 16px;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  text-align: left;
+}
+
+/* Эффекты при наведении и фокусе */
+.selector-wrapper .wide-button:hover:not(:disabled) {
+  background-color: #f1f3f5;
+  border-color: #ced4da;
+}
+
+.selector-wrapper .wide-button:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Состояние disabled */
+.selector-wrapper .wide-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Стилизация строк внутри селектора */
+.selector-wrapper .wide-button-span {
+  display: block;
+  width: 100%;
+}
+
+/* Верхняя строка: подпись/статус */
+.selector-wrapper .wide-button-span:first-child {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6c757d;
+}
+
+/* Нижняя строка: имя аккаунта или призыв к действию */
+.selector-wrapper .wide-button-span:last-child {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #212529;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+/* ==========================================================================
+   DIALOG (Модальное окно выбора аккаунта)
+   ========================================================================== */
+
+.selector-dialog {
+  border: none;
+  border-radius: 16px;
+  padding: 24px;
+  width: 90%;
+  max-width: 400px;
+  background-color: #ffffff;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 
+              0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Стилизация стандартного бэкдропа (затемнения фона) */
+.selector-dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px); /* Легкое размытие заднего плана */
+}
+
+/* Заголовок модального окна */
+.selector-dialog h5 {
+  margin: 0 0 16px 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a1d20;
+  text-align: center;
+}
+
+/* Контентная область */
+.selector-dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.selector-dialog-content p {
+  margin: 8px 0;
+  font-size: 0.95rem;
+  color: #6c757d;
+  text-align: center;
+}
+
+/* Список аккаунтов */
+.dialog-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 260px; /* Ограничение по высоте, если аккаунтов много */
+  overflow-y: auto;  /* Прокрутка внутри списка */
+}
+
+/* Обертка для кнопок в списке */
+.wide-button-grid {
+  width: 100%;
+}
+
+/* Кнопки внутри модального окна (аккаунты и кнопка Отмена) */
+.selector-dialog .wide-button {
+  width: 100%;
+  padding: 12px 16px;
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+/* Эффект при наведении на аккаунт */
+.selector-dialog .dialog-list .wide-button:hover {
+  background-color: #f8f9fa;
+  border-color: #3b82f6; /* Подсвечиваем синим при наведении */
+}
+
+.selector-dialog .wide-button-span {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #212529;
+  text-align: left;
+  display: block;
+}
+
+/* Специфичные стили для кнопки "Отмена" */
+.selector-dialog-content > .wide-button-grid .wide-button {
+  background-color: #f8f9fa;
+  border: 1px solid transparent;
+  margin-top: 8px;
+}
+
+.selector-dialog-content > .wide-button-grid .wide-button:hover {
+  background-color: #e2e8f0;
+}
+
+.selector-dialog-content > .wide-button-grid .wide-button-span {
+  text-align: center;
+  color: #495057;
+}

@@ -11,7 +11,7 @@
     import Registration from '$lib/service/auth_service/Registration.svelte';
     import TryLater from "./TryLater.svelte";
 
-    let isPassord = $derived(AuthStepType.NeedPassword in currAuthStep.step);
+    let isPassword = $derived(AuthStepType.NeedPassword in currAuthStep.step);
     let isRegistration = $derived(AuthStepType.NeedRegistration in currAuthStep.step);
 
     function goToPassword() {
@@ -52,48 +52,55 @@
 {/if}
 
 
-<section class="navi-buttons">
-    <div class="buttons-grid-row">
+<section class="navi-button-section">
+
+    <h6> Навигация по авторизации </h6>
+
+    <div class="navi-button-grid">
         <button
+            class="medium-button"
             type="button"
             onclick={handleGoBack}
         >
-            <span class="navi-btn-text">
+            <span class="medium-button-span">
                 Шаг назад
             </span>
         </button>
     </div>
 
-    <div class="buttons-grid-row">
+    <div class="navi-button-grid">
         <button
+            class="medium-button"
             type="button"
-            hidden={isPassord}
+            hidden={isPassword}
             onclick={goToPassword}
         >
-            <span class="navi-btn-text">
+            <span class="medium-button-span">
                 Вход по паролю
             </span>
         </button>
     </div>
 
-    <div class="buttons-grid-row">
+    <div class="navi-button-grid">
         <button
+            class="medium-button"
             type="button"
             hidden={isRegistration}
             onclick={goToRegistration}
         >
-            <span class="navi-btn-text">
+            <span class="medium-button-span">
                 Регистрация
             </span>
         </button>
     </div>
 
-    <div class="buttons-grid-row">
+    <div class="navi-button-grid">
         <button
+            class="medium-button"
             type="button"
             onclick={handleGoNext}
         >
-            <span class="navi-btn-text">
+            <span class="medium-button-span">
                 Шаг вперед
             </span>
         </button>

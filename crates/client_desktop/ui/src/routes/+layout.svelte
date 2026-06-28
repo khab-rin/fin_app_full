@@ -11,61 +11,70 @@
 	
 </script>
 
-
 <svelte:head>
     <link rel="icon" href={favicon} />
 </svelte:head>
 
+<div class='app-container'>
 
-<div class="app-container">
-	{#if pageManager.settingsOnOff}
-		<SettingsMainMenu/>
+
+
+
+
+{#if pageManager.settingsOnOff}
+	<SettingsMainMenu/>
+{/if}
+<header class="top-bar">
+	<div class="user-avatar">
+		<span class="avatar-icon">👤</span>
+	</div>
+
+	<input type="text" class="search-input" placeholder="Поиск...">
+
+	<button 
+		class="param-button" 
+		onclick={() => pageManager.settingsOnOff = true}
+		disabled={pageManager.totalOff}>⚙️
+	</button>
+</header>
+
+
+
+<main class="main-content">
+	{#if pageManager.getPage}
+		<pageManager.getPage />
+	{:else}
+		{@render children()}
 	{/if}
-	<header class="top-bar">
-		<div class="user-avatar">
-			<span class="avatar-icon">👤</span>
-		</div>
-		<input type="text" class="search-input" placeholder="Поиск...">
-		<button 
-			class="param-btn" 
-			onclick={() => pageManager.settingsOnOff = true}
-			disabled={pageManager.totalOff}>⚙️
-		</button>
-	</header>
+</main>
+
+<footer class="down-bar">
+
+	<button
+		class="bar-button"
+		class:active={page.url.pathname === '/' }
+		onclick={() => goTo('/')}
+	>
+		<span class="bar-icon">🏠</span>
+		<span class="bar-label">Главная</span>
+	</button>
+
+	<button class="bar-button">
+		<span class="bar-icon">📊</span>
+		<span class="bar-label">Статистика</span>
+	</button>
+
+	<button class="bar-button">
+		<span class="bar-icon">📅</span>
+			<span class="bar-label">Календарь</span>
+	</button>
+
+	<button class="bar-button">
+		<span class="bar-icon">❓</span>
+		<span class="bar-label">Справка</span>
+	</button>
+
+</footer>
 
 
-
-	<main class="main-content">
-		{#if pageManager.getPage}
-			<pageManager.getPage />
-		{:else}
-			{@render children()}
-		{/if}
-	</main>
-
-	<footer class="bottom-nav">
-
-		<button
-			class="nav-item"
-			class:active={page.url.pathname === '/' }
-			onclick={() => goTo('/')}
-		>
-			<span class="nav-icon">🏠</span>
-			<span class="nav-label">Главная</span>
-		</button>
-		<button class="nav-item">
-			<span class="nav-icon">📊</span>
-			<span class="nav-label">Статистика</span>
-		</button>
-		<button class="nav-item">
-			<span class="nav-icon">📅</span>
-				<span class="nav-label">Календарь</span>
-		</button>
-		<button class="nav-item">
-			<span class="nav-icon">❓</span>
-			<span class="nav-label">Справка</span>
-		</button>
-	</footer>
 </div>
-
-

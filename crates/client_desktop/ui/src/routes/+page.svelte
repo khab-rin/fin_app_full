@@ -14,18 +14,18 @@
 <section class="grid-section">
   <div class="quick-links">
     <button class="grid-item" id="bank-statement-order">
-      <span class="btn-icon">📥</span>
-      <span class="btn-label">Загрузить банковскую выписку</span>
+      <span class="button-icon">📥</span>
+      <span class="button-label">Загрузить банковскую выписку</span>
     </button>
 
-    <button class="grid-item" id="payment-order-btn">
-      <span class="btn-icon">📄</span>
-      <span class="btn-label">Сформировать платежное поручение</span>
+    <button class="grid-item" id="payment-order-button">
+      <span class="button-icon">📄</span>
+      <span class="button-label">Сформировать платежное поручение</span>
     </button>
 
-    <button class="grid-item" id="tax-report-btn">
-      <span class="btn-icon">📊</span>
-      <span class="btn-label">Выгрузить отчет для налоговой</span>
+    <button class="grid-item" id="tax-report-button">
+      <span class="button-icon">📊</span>
+      <span class="button-label">Выгрузить отчет для налоговой</span>
     </button>
 
     <button class="grid-item empty">+</button>
@@ -39,23 +39,23 @@
 <section class="grid-section">
   <div class="grid-container">
     <button class="grid-item" onclick={() => goTo('/tax-reports')}>
-      <span class="btn-icon">🧾</span>
-      <span class="btn-label">Налоговые отчеты</span>
+      <span class="button-icon">🧾</span>
+      <span class="button-label">Налоговые отчеты</span>
     </button>
     
     <button class="grid-item" onclick={() => goTo('/ingest')}>
-      <span class="btn-icon">📂</span>
-      <span class="btn-label">Загрузка документов</span>
+      <span class="button-icon">📂</span>
+      <span class="button-label">Загрузка документов</span>
     </button>
 
     <button class="grid-item" onclick={() => loadPage('upload-docs')}>
-      <span class="btn-icon">✍️</span>
-      <span class="btn-label">Подписать документ</span>
+      <span class="button-icon">✍️</span>
+      <span class="button-label">Подписать документ</span>
     </button>
 
     <button class="grid-item" onclick={() => loadPage('upload-docs')}>
-      <span class="btn-icon">📈</span>
-      <span class="btn-label">Сформировать статистику</span>
+      <span class="button-icon">📈</span>
+      <span class="button-label">Сформировать статистику</span>
     </button>
   </div>
 </section>

@@ -135,12 +135,12 @@
             !currAuthStep.data.password.isValid
         }
         class="main-button"
-        id="auth-submit-btn"
+        id="auth-submit-button"
     >
-        <span class="navi-buttons.btn-icon">
+        <span class="navi-buttons.button-icon">
             {#if isPushed}⏳{:else}🔑{/if}
         </span>
-        <span class="btn-label">
+        <span class="button-label">
             {#if isPushed}Вход...{:else}Отправить{/if}
         </span>
     </button>

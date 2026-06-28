@@ -54,47 +54,62 @@
 </script>
 
 <div class="mchd-main">
-    <section class="medium-button-grid">
-        <button
-            type="button" 
-            class="medium-button"
-            onclick={makeTaxMchd}
-            disabled={isMakeTaxMchdPushed}>
-                Создать МЧД для ФНС
-        </button>
-
-        <button
-            type="button" 
-            class="medium-button"
-            onclick={makeHomeMchd}
-            disabled={isMakeHomeMchdPushed}>
-                Создать МЧД 
-        </button>
-
-        <div class="navi-buttons-row">
+    <section class="button-section">
+        <div class="button-grid-row">
             <button
-                class="nav-btn"
                 type="button"
-                onclick={handleGoBack}>
-                <span class="nav-btn-text">Назад</span>
+                class="medium-button"
+                onclick={makeTaxMchd}
+                disabled={isMakeTaxMchdPushed}
+            >
+                <span class="medium-button-span">
+                    Создать МЧД для ФНС
+                </span>
+            
             </button>
 
-            <button
-                class="nav-btn"
-                type="button"
-                onclick={handleGoMain}>
-                <span class="nav-btn-text">Главная страница</span>
-            </button>
+        </div>
 
+        <div class="button-grid-row">
             <button
-                class="nav-btn"
                 type="button"
-                onclick={handleGoNext}>
-                <span class="nav-btn-text">Вперед</span>
+                class="medium-button"
+                onclick={makeHomeMchd}
+                disabled={isMakeHomeMchdPushed}
+            >
+                <span class="navi-button-text">
+                    Создать МЧД
+                </span>
+            
             </button>
 
         </div>
     </section>
+
+
+        <div class="navi-buttons-row">
+            <button
+                class="nav-button"
+                type="button"
+                onclick={handleGoBack}>
+                <span class="nav-button-text">Назад</span>
+            </button>
+
+            <button
+                class="nav-button"
+                type="button"
+                onclick={handleGoMain}>
+                <span class="nav-button-text">Главная страница</span>
+            </button>
+
+            <button
+                class="nav-button"
+                type="button"
+                onclick={handleGoNext}>
+                <span class="nav-button-text">Вперед</span>
+            </button>
+
+        </div>
 </div>
 
 

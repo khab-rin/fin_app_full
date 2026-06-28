@@ -1,13 +1,11 @@
 @import 'tailwindcss';
 
-@import './auth.css';
-@import './header.css';
-@import './popovers.css';
-@import './input_group.css';
 @import './buttons.css';
 @import './check_box.css';
 @import './h_p.css';
-
+@import './input_group.css';
+@import "./layout.css";
+@import "./selector_dialog.css";
 
 
 :root {
@@ -29,7 +27,7 @@
   
   --radius-main: 12px;
   --radius-grid: 18px;
-  --radius-btn: 8px;
+  --radius-button: 8px;
   --max-width: 450px;
 }
 
@@ -85,7 +83,7 @@ body {
       background: var(--bg-card-active);
       color: white;
 
-      & .btn-label {
+      & .button-label {
         color: white;
       }
     }
@@ -97,12 +95,12 @@ body {
       color: #ccc;
     }
 
-    & .btn-icon {
+    & .button-icon {
       font-size: 24px;
       margin-bottom: 6px;
     }
 
-    & .btn-label {
+    & .button-label {
       font-size: 11px;
       font-weight: 600;
       color: var(--text-dark);
@@ -171,11 +169,11 @@ body {
         font-weight: 500;
       }
 
-      & .action-btn {
+      & .action-button {
         background: var(--accent-white);
         color: #000000;
         padding: 6px 14px;
-        border-radius: var(--radius-btn);
+        border-radius: var(--radius-button);
         font-size: 13px;
         font-weight: 600;
         text-transform: uppercase;

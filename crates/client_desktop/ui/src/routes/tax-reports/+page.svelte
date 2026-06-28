@@ -48,7 +48,7 @@
                     <div class="options">
                         {#each years as year (year)}
                             <button 
-                                class="opt-btn" 
+                                class="opt-button" 
                                 class:selected={selectedYear === year}
                                 onclick={() => selectedYear = year}
                             >
@@ -63,7 +63,7 @@
                     <div class="options">
                         {#each periods as period (period)}
                             <button 
-                                class="opt-btn" 
+                                class="opt-button" 
                                 class:selected={selectedPeriod === period}
                                 onclick={() => selectedPeriod = period}
                             >
@@ -73,7 +73,7 @@
                     </div>
                 </div>
 
-                <button class="generate-btn">Сформировать отчет</button>
+                <button class="generate-button">Сформировать отчет</button>
             </div>
         {/if}
     </div>
@@ -174,7 +174,7 @@
         gap: 8px;
     }
 
-    .opt-btn {
+    .opt-button {
         padding: 6px 12px;
         border: 1px solid #ddd;
         background: white;
@@ -183,13 +183,13 @@
         cursor: pointer;
     }
 
-    .opt-btn.selected {
+    .opt-button.selected {
         background: #007aff;
         color: white;
         border-color: #007aff;
     }
 
-    .generate-btn {
+    .generate-button {
         width: 100%;
         padding: 12px;
         background: #28a745;

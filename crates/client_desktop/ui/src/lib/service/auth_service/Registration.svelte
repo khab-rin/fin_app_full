@@ -367,12 +367,12 @@
                 onclick={makeInitDoc}
                 disabled={isFormValid}
                 class="main-button"
-                id="auth-make-doc-btn"
+                id="auth-make-doc-button"
             >
-                <span class="navi-buttons.btn-icon">
+                <span class="navi-buttons.button-icon">
                     {#if isPushedMakeDoc}⏳{:else}🔑{/if}
                 </span>
-                <span class="btn-label">
+                <span class="button-label">
                     {#if isPushedMakeDoc}Формирование документа...{:else}Сформировать заявление{/if}
                 </span>
             </button>
@@ -381,9 +381,9 @@
                 type="button" 
                 onclick={makeSecondStepTwoFlags}
                 class="main-button"
-                id="auth-goto-load-btn"
+                id="auth-goto-load-button"
             >
-                <span class="btn-label">
+                <span class="button-label">
                     Загрузить готовое
                 </span>
             </button>
@@ -442,7 +442,7 @@
                     />
                     <button 
                         type="button" 
-                        class="secondary-btn" 
+                        class="secondary-button" 
                         onclick={makeInitDoc}
                         disabled={isPushedReg}
                     >
@@ -464,7 +464,7 @@
                     />
                     <button 
                         type="button" 
-                        class="primary-btn" 
+                        class="primary-button" 
                         onclick={selectSigFile}
                         disabled={isPushedReg}
                     >
@@ -482,12 +482,12 @@
                     onclick={handleRegistrationSubmit}
                     disabled={isRegDataValid || isPushedReg}
                     class="main-button"
-                    id="auth-submit-btn"
+                    id="auth-submit-button"
                 >
-                    <span class="navi-buttons.btn-icon">
+                    <span class="navi-buttons.button-icon">
                         {#if isPushedReg}⏳{:else}🔑{/if}
                     </span>
-                    <span class="btn-label">
+                    <span class="button-label">
                         {#if isPushedReg}Регистрация...{:else}Отправить{/if}
                     </span>
                 </button>
@@ -509,7 +509,7 @@
                     />
                     <button 
                         type="button" 
-                        class="primary-btn" 
+                        class="primary-button" 
                         onclick={selectDocFile}
                         disabled={isPushedReg}
                     >
@@ -534,7 +534,7 @@
                     />
                     <button 
                         type="button" 
-                        class="primary-btn" 
+                        class="primary-button" 
                         onclick={selectSigFile}
                         disabled={isPushedReg}
                     >
@@ -552,12 +552,12 @@
                     onclick={handleRegistrationSubmit}
                     disabled={isRegDataValid || isPushedReg}
                     class="main-button"
-                    id="auth-submit-btn"
+                    id="auth-submit-button"
                 >
-                    <span class="navi-buttons.btn-icon">
+                    <span class="navi-buttons.button-icon">
                         {#if isPushedReg}⏳{:else}🔑{/if}
                     </span>
-                    <span class="btn-label">
+                    <span class="button-label">
                         {#if isPushedReg}Регистрация...{:else}Отправить{/if}
                     </span>
                 </button>
