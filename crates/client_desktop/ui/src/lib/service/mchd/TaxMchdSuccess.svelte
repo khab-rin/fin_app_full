@@ -87,50 +87,62 @@
 </script>
 
 
-<div >
-    <section class="input-section">
-        <div class="file-path-group">
-            <label class="input-group-label" for="xlsFile">
-                Выберите папку для сохранения XLS файла МЧД доверенности
-            </label>
-            <div class="file-path">
-                <input
-                    id='xlsFile'
-                    type="text"
-                    value={xmlPathSaved}
-                    class="file-path-input"
-                />
-                <button
-                    type="button"
-                    class="file-path-save"
-                    onclick={save_xml_file}
-                    disabled={xmlSavePushed}
-                    >
-                    Сохранить
-                </button>
-            </div>
-        </div>
 
-        <div class="file-path-group">
-            <label class="input-group-label" for="xlsFile">
-                Выберите папку для сохранения XLS файла МЧД доверенности
-            </label>
-            <div class="file-path">
-                <input
-                    id='xlsFile'
-                    type="text"
-                    value={docPathSaved}
-                    class="file-path-input"
-                />
-                <button
-                    type="button"
-                    class="file-path-save"
-                    onclick={save_doc_file}
-                    disabled={docSavePushed}
-                    >
-                    Сохранить
-                </button>
-            </div>
-        </div>
-    </section>
+<section class="input-section">
+    <div class="input-wide-button-grid">
+        <label class="input-wide-button-grid-label" for="xlsFile">
+            Сохранить XML файл
+        </label>
+  
+        <input
+            id="xlsFile"
+            type="text"
+            value={xmlPathSaved}
+            class="input-field"
+        />
+        <button
+            type="button"
+            class="wide-button"
+            onclick={save_xml_file}
+            disabled={xmlSavePushed}
+            >
+            Сохранить
+        </button>
+
+    </div>
+
+    <div class="input-wide-button-grid">
+        <label class="input-wide-button-grid-label" for="xlsFile">
+            Сохранить DOC файл
+        </label>
+  
+        <input
+            id="xlsFile"
+            type="text"
+            value={docPathSaved}
+            class="input-field"
+        />
+        <button
+            type="button"
+            class="wide-button"
+            onclick={save_doc_file}
+            disabled={docSavePushed}
+            >
+            Сохранить
+        </button>
+    </div>
+</section>
+
+<div class="main-button-group">
+    <button
+        type="button"
+        class="main-button"
+        id="SendMchd"
+        disabled={xmlPathSaved.length == 0}
+        >
+        <span class="main-button-span">
+            Отправить МЧД на регистрацию
+        </span>
+    </button>
+
 </div>

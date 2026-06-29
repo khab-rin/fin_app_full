@@ -2,9 +2,12 @@
 
 @import './buttons.css';
 @import './check_box.css';
+@import './combo.css';
 @import './h_p.css';
 @import './input_group.css';
 @import "./layout.css";
+@import "./pooling.css";
+@import "./popover.css";
 @import "./selector_dialog.css";
 
 

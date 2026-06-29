@@ -56,7 +56,7 @@
 
     <h6> Навигация по авторизации </h6>
 
-    <div class="navi-button-grid">
+    <div class="navi-button-group">
         <button
             class="medium-button"
             type="button"
@@ -68,7 +68,7 @@
         </button>
     </div>
 
-    <div class="navi-button-grid">
+    <div class="navi-button-group">
         <button
             class="medium-button"
             type="button"
@@ -81,7 +81,7 @@
         </button>
     </div>
 
-    <div class="navi-button-grid">
+    <div class="navi-button-group">
         <button
             class="medium-button"
             type="button"
@@ -94,7 +94,7 @@
         </button>
     </div>
 
-    <div class="navi-button-grid">
+    <div class="navi-button-group">
         <button
             class="medium-button"
             type="button"

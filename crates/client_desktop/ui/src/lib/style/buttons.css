@@ -1,9 +1,26 @@
 
-
-
 /* NAVI BUTTONS */
 
 .navi-button-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+    padding: 1rem;
+    margin-top: 2rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.navi-button-group {
+    flex: 0 0 calc(50% - 0.5rem); 
+    max-width: 220px;
+}
+
+
+/* MEDIUM BUTTON */
+
+.medium-button-section {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -13,13 +30,10 @@
     border-top: 1px solid #e5e7eb;
 }
 
-.navi-button-grid {
+.medium-button-group {
     flex: 1 1 180px; 
     max-width: 220px;
 }
-
-
-/* MEDIUM BUTTON */
 
 .medium-button {
     width: 100%;
@@ -56,9 +70,10 @@
 }
 
 
+
 /* MAIN BUTTON */
 
-.main-action-wrapper {
+.main-button-group {
     display: flex;
     justify-content: center;
     margin-top: 1.5rem;
@@ -98,6 +113,24 @@
    WIDE BUTTON (Универсальная широкая кнопка)
    ========================================================================== */
 
+.wide-button-section {
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 1rem;
+    width: 100%;
+    max-width: 400;
+    margin: 0 auto;
+}
+
+.wide-button-group {
+    width: 100%;
+    border-top: 1px solid #e5e7eb;
+}
+
 .wide-button {
   /* Позиционирование и размеры */
   display: flex;
@@ -119,7 +152,7 @@
   
   /* Цвета по умолчанию (светлая нейтральная тема) */
   color: #212529;
-  background-color: #ffffff;
+  background-color: #3e8b4280;
   border: 1px solid #dee2e6;
   
   /* Плавные анимации */
@@ -134,7 +167,7 @@
 
 /* Состояние: Наведение мыши (Hover) */
 .wide-button:hover:not(:disabled) {
-  background-color: #f8f9fa;
+  background-color: #05f539;
   border-color: #ced4da;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
@@ -165,6 +198,8 @@
 /* Внутренний спан для текста */
 .wide-button-span {
   display: inline-block;
+  width: 100%;
+  text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis; /* Если ник будет слишком длинным, он аккуратно обрежется троеточием */

@@ -1,0 +1,66 @@
+/* Общий контейнер со светло-оранжевым фоном */
+.pooling-section {
+    display: flex;
+    flex-wrap: wrap; /* Чтобы на мобильных экранах блоки красиво переносились */
+    align-items: center;
+    gap: 16px;
+    padding: 12px 20px;
+    background-color: #fff3e0; /* Мягкий, пастельный светло-оранжевый */
+    border: 1px solid #ffe0b2; /* На один тон темнее фона для аккуратной рамки */
+    border-radius: 8px;
+    font-family: system-ui, -apple-system, sans-serif;
+    width: max-content; /* Контейнер подстроится под размер контента */
+    max-width: 100%;
+}
+
+/* Блок статуса (Активен) */
+.pooling-active {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #e6f4ea; /* Мягкий зеленый фон */
+    color: #137333;            /* Темно-зеленый текст */
+    padding: 6px 12px;
+    border-radius: 20px;       /* Округлый лэйбл в виде пилюли */
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Пульсирующая зеленая точка */
+.pooling-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #1d9045;
+    border-radius: 50%;
+    animation: pooling-pulse 2s infinite ease-in-out;
+}
+
+/* Анимация пульсации для точки */
+@keyframes pooling-pulse {
+    0% { transform: scale(0.9); opacity: 0.6; }
+    50% { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(0.9); opacity: 0.6; }
+}
+
+/* Стили для блока с телефоном */
+.pooling-info-span {
+    font-size: 15px;
+    color: #e65100;            /* Глубокий оранжевый цвет для акцента на номере */
+    font-weight: 600;
+    background-color: rgba(255, 255, 255, 0.6); /* Белая полупрозрачная подложка */
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(230, 81, 0, 0.15);
+}
+
+/* Блок времени последнего обновления */
+.pooling-timestamp {
+    font-size: 14px;
+    color: #5f6368;            /* Спокойный серый цвет текста */
+    display: flex;
+    gap: 4px;
+}
+
+.pooling-timestamp strong {
+    color: #202124;            /* Само время делаем чуть контрастнее */
+}

@@ -25,6 +25,7 @@
     let isNickExist = $derived(currAuthStep.nick_names.includes(currAuthStep.data.nick.value));
 
     let isFormValid = $derived(
+        isNickExist ||
         isPushedMakeDoc ||
         !currAuthStep.data.nick.isValid ||
         !currAuthStep.data.surName.isValid ||
@@ -195,173 +196,170 @@
 
 </script>
 
-<div class="auth-card">
-    <p class="auth-text-step">
-        {currAuthStep.currentText}
-    </p>
 
-    <section hidden={firstStep}>
-        <div class="form-group">
-            <label for="nick">Никнейм (Логин для входа)</label>
-            <input 
-                id="nick" 
-                type="text" 
-                bind:value={currAuthStep.data.nick.value} 
-                disabled={isPushedMakeDoc}
-                placeholder="Придумайте уникальный логин"
-                class="input-field"
-                class:input-error={!currAuthStep.data.nick.isValid || isNickExist}
-            />
-            {#if !currAuthStep.data.nick.isValid}
-                <span class="error-message">Некорректный никнейм (от 1 до 50 символов)</span>
-            {/if}
-        </div>
+<section hidden={firstStep} class="input-section">
+    <div class="input-group">
+        <label for="nick">Никнейм (Логин для входа)</label>
+        <input 
+            id="nick" 
+            type="text" 
+            bind:value={currAuthStep.data.nick.value} 
+            disabled={isPushedMakeDoc}
+            placeholder="Придумайте уникальный логин"
+            class="input-field"
+            class:input-error={!currAuthStep.data.nick.isValid || isNickExist}
+        />
+        {#if !currAuthStep.data.nick.isValid}
+            <span class="input-error">Некорректный никнейм (от 1 до 50 символов)</span>
+        {/if}
+    </div>
 
-        <div class="form-group">
-            <label for="surName">Фамилия</label>
-            <input 
-                id="surName" 
-                type="text" 
-                bind:value={currAuthStep.data.surName.value} 
-                disabled={isPushedMakeDoc}
-                placeholder="Только русские буквы"
-                class="input-field"
-                class:input-error={!currAuthStep.data.surName.isValid}
-            />
-            {#if !currAuthStep.data.surName.isValid}
-                <span class="error-message">Некорректная фамилия</span>
-            {/if}
-        </div>
+    <div class="input-group">
+        <label for="surName">Фамилия</label>
+        <input 
+            id="surName" 
+            type="text" 
+            bind:value={currAuthStep.data.surName.value} 
+            disabled={isPushedMakeDoc}
+            placeholder="Только русские буквы"
+            class="input-field"
+            class:input-error={!currAuthStep.data.surName.isValid}
+        />
+        {#if !currAuthStep.data.surName.isValid}
+            <span class="input-error">Некорректная фамилия</span>
+        {/if}
+    </div>
 
-        <div class="form-group">
-            <label for="firstName">Имя</label>
-            <input 
-                id="firstName" 
-                type="text" 
-                bind:value={currAuthStep.data.firstName.value} 
-                disabled={isPushedMakeDoc}
-                placeholder="Только русские буквы"
-                class="input-field"
-                class:input-error={!currAuthStep.data.firstName.isValid}
-            />
-            {#if !currAuthStep.data.firstName.isValid}
-                <span class="error-message">Некорректное имя</span>
-            {/if}
-        </div>
+    <div class="input-group">
+        <label for="firstName">Имя</label>
+        <input 
+            id="firstName" 
+            type="text" 
+            bind:value={currAuthStep.data.firstName.value} 
+            disabled={isPushedMakeDoc}
+            placeholder="Только русские буквы"
+            class="input-field"
+            class:input-error={!currAuthStep.data.firstName.isValid}
+        />
+        {#if !currAuthStep.data.firstName.isValid}
+            <span class="input-error">Некорректное имя</span>
+        {/if}
+    </div>
 
-        <div class="form-group">
-            <label for="midName">Отчество (при наличии)</label>
-            <input 
-                id="midName" 
-                type="text" 
-                bind:value={currAuthStep.data.midName.value} 
-                disabled={isPushedMakeDoc}
-                placeholder="Только русские буквы"
-                class="input-field"
-                class:input-error={!currAuthStep.data.midName.isValid}
-            />
-            {#if !currAuthStep.data.midName.isValid}
-                <span class="error-message">Некорректное отчество</span>
-            {/if}
-        </div>
+    <div class="input-group">
+        <label for="midName">Отчество (при наличии)</label>
+        <input 
+            id="midName" 
+            type="text" 
+            bind:value={currAuthStep.data.midName.value} 
+            disabled={isPushedMakeDoc}
+            placeholder="Только русские буквы"
+            class="input-field"
+            class:input-error={!currAuthStep.data.midName.isValid}
+        />
+        {#if !currAuthStep.data.midName.isValid}
+            <span class="input-error">Некорректное отчество</span>
+        {/if}
+    </div>
 
-        <div class="form-group">
-            <label for="persInn">Личный ИНН</label>
-            <input 
-                id="persInn" 
-                type="text" 
-                bind:value={currAuthStep.data.persInn.value} 
-                disabled={isPushedMakeDoc}
-                placeholder="12 цифр"
-                class="input-field"
-                class:input-error={!currAuthStep.data.persInn.isValid}
-            />
-            {#if !currAuthStep.data.persInn.isValid}
-                <span class="error-message">Некорректный ИНН (должно быть 12 цифр)</span>
-            {/if}
-        </div>
+    <div class="input-group">
+        <label for="persInn">Личный ИНН</label>
+        <input 
+            id="persInn" 
+            type="text" 
+            bind:value={currAuthStep.data.persInn.value} 
+            disabled={isPushedMakeDoc}
+            placeholder="12 цифр"
+            class="input-field"
+            class:input-error={!currAuthStep.data.persInn.isValid}
+        />
+        {#if !currAuthStep.data.persInn.isValid}
+            <span class="input-error">Некорректный ИНН (должно быть 12 цифр)</span>
+        {/if}
+    </div>
 
-        <div class="form-group">
-            <label for="snils">СНИЛС</label>
-            <input 
-                id="snils" 
-                type="text" 
-                bind:value={currAuthStep.data.snils.value} 
-                disabled={isPushedMakeDoc}
-                placeholder="Формат: 000-000-000 00"
-                class="input-field"
-                class:input-error={!currAuthStep.data.snils.isValid}
-            />
-            {#if !currAuthStep.data.snils.isValid}
-                <span class="error-message">Некорректный СНИЛС</span>
-            {/if}
-        </div>
+    <div class="input-group">
+        <label for="snils">СНИЛС</label>
+        <input 
+            id="snils" 
+            type="text" 
+            bind:value={currAuthStep.data.snils.value} 
+            disabled={isPushedMakeDoc}
+            placeholder="Формат: 000-000-000 00"
+            class="input-field"
+            class:input-error={!currAuthStep.data.snils.isValid}
+        />
+        {#if !currAuthStep.data.snils.isValid}
+            <span class="input-error">Некорректный СНИЛС</span>
+        {/if}
+    </div>
 
-        <div class="form-group">
-            <label for="compInn">ИНН Организации</label>
-            <input 
-                id="compInn" 
-                type="text" 
-                bind:value={currAuthStep.data.compInn.value} 
-                disabled={isPushedMakeDoc}
-                placeholder="10 цифр"
-                class="input-field"
-                class:input-error={!currAuthStep.data.compInn.isValid}
-            />
-            {#if !currAuthStep.data.compInn.isValid}
-                <span class="error-message">Некорректный ИНН организации (должно быть 10 цифр)</span>
-            {/if}
-        </div>
+    <div class="input-group">
+        <label for="compInn">ИНН Организации</label>
+        <input 
+            id="compInn" 
+            type="text" 
+            bind:value={currAuthStep.data.compInn.value} 
+            disabled={isPushedMakeDoc}
+            placeholder="10 цифр"
+            class="input-field"
+            class:input-error={!currAuthStep.data.compInn.isValid}
+        />
+        {#if !currAuthStep.data.compInn.isValid}
+            <span class="input-error">Некорректный ИНН организации (должно быть 10 цифр)</span>
+        {/if}
+    </div>
 
-        <div class="form-group">
-            <label for="kpp">КПП</label>
-            <input 
-                id="kpp" 
-                type="text" 
-                bind:value={currAuthStep.data.kpp.value} 
-                disabled={isPushedMakeDoc}
-                placeholder="9 цифр"
-                class="input-field"
-                class:input-error={!currAuthStep.data.kpp.isValid}
-            />
-            {#if !currAuthStep.data.kpp.isValid}
-                <span class="error-message">Некорректный КПП (должно быть 9 цифр)</span>
-            {/if}
-        </div>
+    <div class="input-group">
+        <label for="kpp">КПП</label>
+        <input 
+            id="kpp" 
+            type="text" 
+            bind:value={currAuthStep.data.kpp.value} 
+            disabled={isPushedMakeDoc}
+            placeholder="9 цифр"
+            class="input-field"
+            class:input-error={!currAuthStep.data.kpp.isValid}
+        />
+        {#if !currAuthStep.data.kpp.isValid}
+            <span class="input-error">Некорректный КПП (должно быть 9 цифр)</span>
+        {/if}
+    </div>
 
-        <div class="form-group">
-            <label for="phone">Номер телефона</label>
-            <input 
-                id="phone" 
-                type="tel" 
-                bind:value={currAuthStep.data.phone.value} 
-                disabled={isPushedMakeDoc}
-                placeholder="+7 (900) 000-00-00"
-                class="input-field"
-                class:input-error={!currAuthStep.data.phone.isValid}
-            />
-            {#if !currAuthStep.data.phone.isValid}
-                <span class="error-message">Некорректный номер телефона</span>
-            {/if}
-        </div>
+    <div class="input-group">
+        <label for="phone">Номер телефона</label>
+        <input 
+            id="phone" 
+            type="tel" 
+            bind:value={currAuthStep.data.phone.value} 
+            disabled={isPushedMakeDoc}
+            placeholder="+7 (900) 000-00-00"
+            class="input-field"
+            class:input-error={!currAuthStep.data.phone.isValid}
+        />
+        {#if !currAuthStep.data.phone.isValid}
+            <span class="input-error">Некорректный номер телефона</span>
+        {/if}
+    </div>
 
-        <div class="form-group">
-            <label for="email">Электронная почта</label>
-            <input 
-                id="email" 
-                type="email" 
-                bind:value={currAuthStep.data.email.value} 
-                disabled={isPushedMakeDoc}
-                placeholder="example@mail.ru"
-                class="input-field"
-                class:input-error={!currAuthStep.data.email.isValid}
-            />
-            {#if !currAuthStep.data.email.isValid}
-                <span class="error-message">Некорректный email</span>
-            {/if}
-        </div>
+    <div class="input-group">
+        <label for="email">Электронная почта</label>
+        <input 
+            id="email" 
+            type="email" 
+            bind:value={currAuthStep.data.email.value} 
+            disabled={isPushedMakeDoc}
+            placeholder="example@mail.ru"
+            class="input-field"
+            class:input-error={!currAuthStep.data.email.isValid}
+        />
+        {#if !currAuthStep.data.email.isValid}
+            <span class="input-error">Некорректный email</span>
+        {/if}
+    </div>
 
-        <section class="navi-buttons">
+    <section class="navi-button-section">
+        <div class="navi-button-group">
             <button 
                 type="button" 
                 onclick={makeInitDoc}
@@ -376,10 +374,13 @@
                     {#if isPushedMakeDoc}Формирование документа...{:else}Сформировать заявление{/if}
                 </span>
             </button>
+        </div>
 
+        <div class="navi-button-group">
             <button 
                 type="button" 
                 onclick={makeSecondStepTwoFlags}
+                disabled={isFormValid}
                 class="main-button"
                 id="auth-goto-load-button"
             >
@@ -387,190 +388,179 @@
                     Загрузить готовое
                 </span>
             </button>
-
-        </section>
+        </div>
     </section>
+</section>
 
-    <section hidden={secondStep}>
-        <section>
-            
-            <div class="form-group">
-                <label for="password">Придумайте пароль приложения</label>
-                <input 
-                    id="password" 
-                    type="password" 
-                    bind:value={currAuthStep.data.password.value} 
-                    disabled={isPushedReg}
-                    placeholder="Минимум 6 символов"
-                    class="input-field"
-                    class:input-error={!currAuthStep.data.password.isValid}
-                />
-                {#if !currAuthStep.data.password.isValid}
-                    <span class="error-message">Слишком короткий или простой пароль</span>
-                {/if}
-            </div>
+<section hidden={secondStep} class="input-section">
 
-            <div class="form-group">
-                <label for="passwordRepeat">Повторите пароль</label>
-                <input 
-                    id="passwordRepeat" 
-                    type="password" 
-                    bind:value={passwordRepeat} 
-                    disabled={isPushedReg}
-                    placeholder="Введите пароль еще раз"
-                    class="input-field"
-                    class:input-error={currAuthStep.data.password.value !== passwordRepeat && passwordRepeat !== ''}
-                />
-                {#if currAuthStep.data.password.value !== passwordRepeat && passwordRepeat !== ''}
-                    <span class="error-message">Пароли не совпадают</span>
-                {/if}
-            </div>
-        </section>
+    <div class="input-group">
+        <label for="password">Придумайте пароль приложения</label>
+        <input 
+            id="password" 
+            type="password" 
+            bind:value={currAuthStep.data.password.value} 
+            disabled={isPushedReg}
+            placeholder="Минимум 6 символов"
+            class="input-field"
+            class:input-error={!currAuthStep.data.password.isValid}
+        />
+        {#if !currAuthStep.data.password.isValid}
+            <span class="input-error">Слишком короткий или простой пароль</span>
+        {/if}
+    </div>
 
+    <div class="input-group">
+        <label for="passwordRepeat">Повторите пароль</label>
+        <input 
+            id="passwordRepeat" 
+            type="password" 
+            bind:value={passwordRepeat} 
+            disabled={isPushedReg}
+            placeholder="Введите пароль еще раз"
+            class="input-field"
+            class:input-error={currAuthStep.data.password.value !== passwordRepeat && passwordRepeat !== ''}
+        />
+        {#if currAuthStep.data.password.value !== passwordRepeat && passwordRepeat !== ''}
+            <span class="input-error">Пароли не совпадают</span>
+        {/if}
+    </div>
 
 
-        <section hidden={secondStepOne}>
-            <div class="form-group">
-                <label for="docPathSave">Сформированное заявление (.doc)</label>
-                <div class="file-picker-wrapper">
-                    <input 
-                        id="docPathSave"
-                        type="text" 
-                        value={initDocPath} 
-                        disabled 
-                        class="input-field file-path-input" 
-                    />
-                    <button 
-                        type="button" 
-                        class="secondary-button" 
-                        onclick={makeInitDoc}
-                        disabled={isPushedReg}
-                    >
-                        Пересохранить
-                    </button>
-                </div>
-            </div>
+    <section hidden={secondStepOne} class='input-wide-button-section'>
+        
+        <div class="input-wide-button-grid">
+    
+            <label for="docPathSave">Сформированное заявление (.doc)</label>
 
-            <div class="form-group">
-                <label for="sigPathSave">Файл электронной подписи (.doc.sig)</label>
-                <div class="file-picker-wrapper">
-                    <input 
-                        id="sigPathSave"
-                        type="text" 
-                        value={signPath || 'Файл подписи не выбран...'} 
-                        disabled 
-                        class="input-field file-path-input"
-                        class:input-error={signPath === '' && isPushedReg}
-                    />
-                    <button 
-                        type="button" 
-                        class="primary-button" 
-                        onclick={selectSigFile}
-                        disabled={isPushedReg}
-                    >
-                        Обзор...
-                    </button>
-                </div>
-                {#if signPath === '' && isPushedReg}
-                    <span class="error-message">Необходимо прикрепить файл подписи</span>
-                {/if}
-            </div>
+            <input 
+                id="docPathSave"
+                type="text" 
+                value={initDocPath} 
+                class="input-field" 
+            />
+        
 
-            <div class="form-group">
-                <button 
-                    type="button" 
-                    onclick={handleRegistrationSubmit}
-                    disabled={isRegDataValid || isPushedReg}
-                    class="main-button"
-                    id="auth-submit-button"
-                >
-                    <span class="navi-buttons.button-icon">
-                        {#if isPushedReg}⏳{:else}🔑{/if}
-                    </span>
-                    <span class="button-label">
-                        {#if isPushedReg}Регистрация...{:else}Отправить{/if}
-                    </span>
-                </button>
-            </div>
+            <button 
+                type="button" 
+                class="wide-button" 
+                onclick={selectDocFile}
+                disabled={isPushedReg}
+            >
+                Выбрать файл
+            </button>
 
-        </section>
+            {#if initDocPath === ''}
+                <span class="input-error">Необходимо прикрепить файл подписи</span>
+            {/if}
 
-        <section hidden={secondStepTwo}>
-            <div class="form-group">
-                <label for="docPath">Документ заявления(.doc.sig)</label>
-                <div class="file-picker-wrapper">
-                    <input 
-                        id="docPath"
-                        type="text" 
-                        value={initDocPath || 'Файл подписи не выбран...'} 
-                        disabled 
-                        class="input-field file-path-input"
-                        class:input-error={initDocPath === '' && isPushedReg}
-                    />
-                    <button 
-                        type="button" 
-                        class="primary-button" 
-                        onclick={selectDocFile}
-                        disabled={isPushedReg}
-                    >
-                        Обзор...
-                    </button>
-                </div>
-                {#if signPath === '' && isPushedReg}
-                    <span class="error-message">Необходимо прикрепить заявление</span>
-                {/if}
-            </div>
-
-            <div class="form-group">
-                <label for="sigPath">Файл электронной подписи (.doc.sig)</label>
-                <div class="file-picker-wrapper">
-                    <input 
-                        id="sigPath"
-                        type="text" 
-                        value={signPath || 'Файл подписи не выбран...'} 
-                        disabled 
-                        class="input-field file-path-input"
-                        class:input-error={signPath === '' && isPushedReg}
-                    />
-                    <button 
-                        type="button" 
-                        class="primary-button" 
-                        onclick={selectSigFile}
-                        disabled={isPushedReg}
-                    >
-                        Обзор...
-                    </button>
-                </div>
-                {#if signPath === '' && isPushedReg}
-                    <span class="error-message">Необходимо прикрепить файл подписи</span>
-                {/if}
-            </div>
-
-            <div class="form-group">
-                <button 
-                    type="button" 
-                    onclick={handleRegistrationSubmit}
-                    disabled={isRegDataValid || isPushedReg}
-                    class="main-button"
-                    id="auth-submit-button"
-                >
-                    <span class="navi-buttons.button-icon">
-                        {#if isPushedReg}⏳{:else}🔑{/if}
-                    </span>
-                    <span class="button-label">
-                        {#if isPushedReg}Регистрация...{:else}Отправить{/if}
-                    </span>
-                </button>
-            </div>
+        </div>
+        
 
 
-        </section>
+        
+        <div class="input-wide-button-grid">
+            <label for="sigPathSave">Файл электронной подписи (.doc.sig)</label>
+
+            <input 
+                id="sigPathSave"
+                type="text" 
+                value={signPath} 
+                class="input-field" 
+            />
+    
+            <button 
+                type="button" 
+                class="wide-button" 
+                onclick={selectSigFile}
+                disabled={isPushedReg}
+            >
+                Выбрать файл
+            </button>
 
 
+            {#if signPath === ''}
+                <span class="input-error">Необходимо прикрепить файл подписи</span>
+            {/if}
+        </div>
     </section>
 
 
-</div>
+    <section hidden={secondStepTwo} class='input-wide-button-section'>
+        
+        <div class="input-wide-button-grid">
+    
+            <label for="docPathSave">Сформированное заявление (.doc)</label>
+
+            <input 
+                id="docPathSave"
+                type="text" 
+                value={initDocPath} 
+                class="input-field" 
+            />
+        
+
+            <button 
+                type="button" 
+                class="wide-button" 
+                onclick={selectDocFile}
+                disabled={isPushedReg}
+            >
+                Выбрать файл
+            </button>
+
+            {#if initDocPath === ''}
+                <span class="input-error">Необходимо прикрепить файл подписи</span>
+            {/if}
+
+        </div>
+
+        <div class="input-wide-button-grid">
+            <label for="sigPathSave">Файл электронной подписи (.doc.sig)</label>
+
+            <input 
+                id="sigPathSave"
+                type="text" 
+                value={signPath} 
+                class="input-field" 
+            />
+    
+            <button 
+                type="button" 
+                class="wide-button" 
+                onclick={selectSigFile}
+                disabled={isPushedReg}
+            >
+                Выбрать файл
+            </button>
+
+
+            {#if signPath === ''}
+                <span class="input-error">Необходимо прикрепить файл подписи</span>
+            {/if}
+        </div>
+    </section>
+
+    <div class="input-group">
+        <button 
+            type="button" 
+            onclick={handleRegistrationSubmit}
+            disabled={isRegDataValid || isPushedReg}
+            class="main-button"
+            id="auth-submit-button"
+        >
+            <span class="navi-buttons.button-icon">
+                {#if isPushedReg}⏳{:else}🔑{/if}
+            </span>
+            <span class="button-label">
+                {#if isPushedReg}Регистрация...{:else}Отправить{/if}
+            </span>
+        </button>
+    </div>
+
+
+</section>
+
 
 
 

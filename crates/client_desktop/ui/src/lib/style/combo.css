@@ -1,0 +1,31 @@
+.input-wide-button-grid {
+    display: flex;
+    flex-direction: column; /* Элементы идут строго друг под другом сверху вниз */
+    gap: 0.75rem; /* Зазор между элементами внутри рамки */
+    width: 100%;
+    box-sizing: border-box;
+    
+    /* Красивое выделение всего блока */
+    padding: 1.25rem;
+    background-color: rgba(62, 139, 66, 0.05); /* Легкий приятный зеленый фон */
+    border: 1px solid rgba(62, 139, 66, 0.2);   /* Нежная зеленая рамка */
+    border-radius: 12px;                        /* Скругление углов */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);  /* Легкая тень для объема */
+}
+
+/* Растягиваем все внутренние элементы на всю ширину выделенного поля */
+.input-wide-button-grid .input-group,
+.input-wide-button-grid .medium-button-group,
+.input-wide-button-grid .medium-button,
+.input-wide-button-grid .input-field {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Стили заголовка внутри рамки */
+.input-wide-button-grid-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1b3b1e; /* Темно-зеленый читаемый текст */
+    margin-bottom: 2px;
+}

@@ -53,63 +53,81 @@
     
 </script>
 
-<div class="mchd-main">
-    <section class="button-section">
-        <div class="button-grid-row">
-            <button
-                type="button"
-                class="medium-button"
-                onclick={makeTaxMchd}
-                disabled={isMakeTaxMchdPushed}
-            >
-                <span class="medium-button-span">
-                    Создать МЧД для ФНС
-                </span>
-            
-            </button>
 
-        </div>
+<section class="wide-button-section">
+    <div class="wide-button-group">
+        <button
+            type="button"
+            class="wide-button"
+            onclick={makeTaxMchd}
+            disabled={isMakeTaxMchdPushed}
+        >
+            <span class="wide-button-span">
+                Создать МЧД для ФНС
+            </span>
+        </button>
+    </div>
 
-        <div class="button-grid-row">
-            <button
-                type="button"
-                class="medium-button"
-                onclick={makeHomeMchd}
-                disabled={isMakeHomeMchdPushed}
-            >
-                <span class="navi-button-text">
-                    Создать МЧД
-                </span>
-            
-            </button>
+    <div class="wide-button-group">
+        <button
+            type="button"
+            class="wide-button"
+        >
+            <span class="wide-button-span">
+                Загрузить и отправить МЧД в ФНС
+            </span>
+        </button>
+    </div>
 
-        </div>
-    </section>
+    <div class="wide-button-group">
+        <button
+            type="button"
+            class="wide-button"
+            onclick={makeHomeMchd}
+            disabled={isMakeHomeMchdPushed}
+        >
+            <span class="wide-button-span">
+                Создать МЧД
+            </span>
+        
+        </button>
+
+    </div>
+</section>
+
+<section class="navi-button-section">
+    <div class="navi-button-group">
+        <button
+            class="medium-button"
+            type="button"
+            onclick={handleGoBack}>
+            <span class="navi-button-text">Назад</span>
+        </button>
+    </div>
+
+    <div class="navi-button-group">
+        <button
+            class="medium-button"
+            type="button"
+            onclick={handleGoNext}>
+            <span class="navi-button-text">Вперед</span>
+        </button>
+    </div>
+
+    <div class="navi-button-group">
+        <button
+            class="medium-button"
+            type="button"
+            onclick={handleGoMain}>
+            <span class="navi-button-text">Главное меню</span>
+        </button>
+    </div>
+
+    
+</section>
 
 
-        <div class="navi-buttons-row">
-            <button
-                class="nav-button"
-                type="button"
-                onclick={handleGoBack}>
-                <span class="nav-button-text">Назад</span>
-            </button>
+    
 
-            <button
-                class="nav-button"
-                type="button"
-                onclick={handleGoMain}>
-                <span class="nav-button-text">Главная страница</span>
-            </button>
-
-            <button
-                class="nav-button"
-                type="button"
-                onclick={handleGoNext}>
-                <span class="nav-button-text">Вперед</span>
-            </button>
-
-        </div>
-</div>
 
 

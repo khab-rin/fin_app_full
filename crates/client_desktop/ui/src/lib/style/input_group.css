@@ -4,7 +4,7 @@
     flex-direction: column;
     gap: 1.5rem; /* Отступ между группами полей */
     padding: 2rem;
-    background-color: #ffffff;
+    background-color: #a5bfc740;
     border-radius: 12px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     max-width: 500px;
@@ -33,17 +33,25 @@
     font-size: 1rem;
     transition: all 0.2s ease;
     outline: none;
+    background-color: #4c829280;
 }
 
 .input-field:focus {
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    background-color: #0da3d1a0;
 }
 
 .input-field:disabled {
-    background-color: #f3f4f6;
+    -webkit-appearance: none; /* Сбрасываем системные стили Safari/Chrome */
+    appearance: none;          /* Сбрасываем системные стили остальных браузеров */
+    
+    background-color: #4c829280 !important; /* Насильно красим в светло-серый */
+    color: #080000;                       /* Делаем текст внутри блеклым */
     cursor: not-allowed;
+    opacity: 1;                           /* Убираем возможную прозрачность от браузера */
 }
+
 
 /* Стилизация ошибки */
 .input-error {
@@ -54,8 +62,108 @@
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
 }
 
-.input-error-message {
+.input-error-span {
     font-size: 0.8rem;
     color: #ef4444;
     margin-top: -0.25rem;
+}
+
+/* ==========================================================================
+   СТИЛИ ДЛЯ СЕЛЕКТОРА ГРАЖДАНСТВА (INPUT-SELECT)
+   ========================================================================== */
+
+/* Контейнер группы (лейбл + селектор) */
+.input-select-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Лейбл */
+.input-select-group-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+/* Сам выпадающий список (Базовое состояние) */
+.input-select {
+    /* Сбрасываем жесткие системные стили операционной системы/браузера */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    width: 100%;
+    padding: 0.75rem 2.5rem 0.75rem 0.75rem; /* Справа отступ больше под стрелочку */
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.2s ease;
+    
+    /* Цвет фона (если нужен плотный, укоротите до #4c8292) */
+    background-color: #4c829280 !important; 
+    color: #ffffff; /* Белый цвет текста, чтобы отлично читался */
+
+    /* Добавляем красивую кастомную стрелочку svg белого цвета вместо стандартной */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+}
+
+/* Состояние фокуса (активно) */
+.input-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+    background-color: #4c8292 !important; /* Делаем чуть плотнее при фокусе */
+}
+
+/* Состояние, когда поле заблокировано (disabled) */
+.input-select:disabled {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    
+    cursor: not-allowed;
+    opacity: 1; /* Отключаем системное затухание Apple/Chrome */
+    
+    /* Сохраняем фирменный синеватый фон, но делаем его блеклым */
+    background-color: rgba(76, 130, 146, 0.4) !important; 
+    color: rgba(255, 255, 255, 0.5) !important;
+    
+    /* Меняем стрелочку на полупрозрачную */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-opacity='0.4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+}
+
+/* Стилизация внутренних опций списка (чтобы они не были белыми) */
+.input-select option {
+    background-color: #4c8292 !important; /* Плотный цвет для выпадающего меню */
+    color: #ffffff !important;
+}
+
+/* Опция-заглушка (Выберите статус...) в заблокированном списке */
+.input-select option:disabled {
+    color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* ==========================================================================
+   ОШИБКИ И СИГНАЛИЗАЦИЯ
+   ========================================================================== */
+
+/* Состояние ошибки на селекторе */
+.input-select.input-select-error {
+    border-color: #ef4444 !important;
+}
+
+.input-select.input-select-error:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+}
+
+/* Текст ошибки под селектором */
+.input-select-error-span {
+    display: block;
+    font-size: 0.8rem;
+    color: #ef4444;
+    margin-top: 0.25rem;
 }

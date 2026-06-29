@@ -4,11 +4,12 @@
     import { onMount } from "svelte";
 
     import {AuthStepType} from "$lib/models/Auth/AuthValues";
-
     import type {AuthStep} from "$lib/models/rustModels/AuthStep";
-	
     
     let isPolling = $state(false);
+    
+    // 1. Добавляем реактивную переменную для отображения секунд в HTML
+    let countdown = $state(4); 
     
     const externalId = AuthStepType.CallIn in currAuthStep.step ? currAuthStep.step.CallIn.external_id : "";
     const phone = AuthStepType.CallIn in currAuthStep.step ? currAuthStep.step.CallIn.phone : "";
@@ -45,50 +46,43 @@
 
         isPolling = true;
 
-
+        // 2. Интервал теперь срабатывает каждую 1 секунду вместо 4
         const interval = setInterval(() => {
-            if (isPolling) {
-                poll_back_api();
+            if (!isPolling) return;
+
+            // Уменьшаем секундомер на единицу
+            countdown -= 1;
+
+            // Когда счетчик дошел до 0 — пришло время стучаться на бэкенд
+            if (countdown <= 0) {
+                countdown = 4; // Сбрасываем визуальный счетчик обратно на 4
+                poll_back_api(); // Перенаправляем запрос в Tauri
             }
-        }, 4000);
+        }, 1000);
 
         return () => {
             clearInterval(interval);
         };
     });
-
 </script>
 
 
-<div class="auth-card">
-    <div class="callin">
+<div class="pooling-section">
+    <!-- Блок статуса -->
+    <div class="pooling-active">
+        <span class="pooling-dot"></span>
+        Автоматический мониторинг: Активен
+    </div>
 
-        {#if phone}
-            <div class="phone-display">
-                <span class="label">Номер для звонка:</span>
-                <span class="phone-number">{phone}</span>
-            </div>
-        {/if}
+    <div>
+        <p> Совершите бесплатный звонок по указанному номеру </p>
+        <span class="pooling-info-span">
+            {phone}
+        </span>
+    </div>
 
-        <div class="actions">
-            <a 
-                href="tel:{phone}"
-                class="call-button" 
-                class:disabled={isPolling}
-                aria-disabled={isPolling}
-                onclick={(e) => {
-                    if (isPolling) {
-                        e.preventDefault();
-                    }
-                }}
-            >
-                {#if isPolling}
-                    <span class="spinner"></span>
-                    Проверяем звонок...
-                {:else}
-                    Позвонить
-                {/if}
-            </a>
-        </div>
+    <!-- Блок времени -->
+    <div class="pooling-timestamp">
+        Следующая проверка через: <strong>{countdown} сек</strong>
     </div>
 </div>

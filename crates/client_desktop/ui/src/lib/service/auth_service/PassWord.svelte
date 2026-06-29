@@ -45,8 +45,8 @@
 
 </script>
 
-<div class="auth-card">
-    <div class="form-group">
+<div class="input-section">
+    <div class="input-group">
         <label for="nick">Имя пользователя</label>
         <input 
             id="nick" 
@@ -58,11 +58,11 @@
             class:input-error={!currAuthStep.data.nick.isValid}/>
         
         {#if !currAuthStep.data.nick.isValid}
-            <span class="error-message">Некорректный никнейм</span>
+            <span class="input-error">Некорректный никнейм</span>
         {/if}
     </div>
 
-    <div class="form-group">
+    <div class="input-group">
         <label for="persInn">ИНН физического лица</label>
         <input 
             id="persInn" 
@@ -74,11 +74,11 @@
             class:input-error={!currAuthStep.data.persInn.isValid}
         />
         {#if !currAuthStep.data.persInn.isValid}
-            <span class="error-message">Некорректный инн физического лица</span>
+            <span class="input-error">Некорректный инн физического лица</span>
         {/if}
     </div>
 
-    <div class="form-group">
+    <div class="input-group">
         <label for="compInn">ИНН организации</label>
         <input 
             id="innOrg" 
@@ -89,11 +89,11 @@
             class="input-field"
             class:input-error={!currAuthStep.data.compInn.isValid}/>
         {#if !currAuthStep.data.compInn.isValid}
-            <span class="error-message">Некорректный инн юридического лица</span>
+            <span class="input-error">Некорректный инн юридического лица</span>
         {/if}
     </div>
 
-    <div class="form-group">
+    <div class="input-group">
         <label for="kpp">КПП организации</label>
         <input 
             id="kppOrg" 
@@ -104,11 +104,11 @@
             class="input-field"
             class:input-error={!currAuthStep.data.kpp.isValid}/>
         {#if !currAuthStep.data.kpp.isValid}
-            <span class="error-message">Некорректный кпп</span>
+            <span class="input-error">Некорректный кпп</span>
         {/if}
     </div>
 
-    <div class="form-group">
+    <div class="input-group">
         <label for="password">Пароль</label>
         <input 
             id="password" 
@@ -119,29 +119,32 @@
             class="input-field"
             class:input-error={!currAuthStep.data.password.isValid}/>
         {#if !currAuthStep.data.password.isValid}
-            <span class="error-message">Пароль некоректен в рамках прилжоения</span>
+            <span class="input-error">Пароль некоректен в рамках прилжоения</span>
         {/if}
     </div>
 
-    <button 
-        type="button" 
-        onclick={handleAuthSubmit}
-        disabled={
-            isPushed || 
-            !currAuthStep.data.nick.isValid || 
-            !currAuthStep.data.persInn.isValid || 
-            !currAuthStep.data.compInn.isValid || 
-            !currAuthStep.data.kpp.isValid || 
-            !currAuthStep.data.password.isValid
-        }
-        class="main-button"
-        id="auth-submit-button"
-    >
-        <span class="navi-buttons.button-icon">
-            {#if isPushed}⏳{:else}🔑{/if}
-        </span>
-        <span class="button-label">
-            {#if isPushed}Вход...{:else}Отправить{/if}
-        </span>
-    </button>
+
+    <div class="main-button-group">
+        <button 
+            type="button" 
+            onclick={handleAuthSubmit}
+            disabled={
+                isPushed || 
+                !currAuthStep.data.nick.isValid || 
+                !currAuthStep.data.persInn.isValid || 
+                !currAuthStep.data.compInn.isValid || 
+                !currAuthStep.data.kpp.isValid || 
+                !currAuthStep.data.password.isValid
+            }
+            class="main-button"
+            id="auth-submit-button"
+        >
+            <span class="navi-buttons.button-icon">
+                {#if isPushed}⏳{:else}🔑{/if}
+            </span>
+            <span class="button-label">
+                {#if isPushed}Вход...{:else}Отправить{/if}
+            </span>
+        </button>
+    </div>
 </div>

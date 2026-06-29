@@ -20,15 +20,11 @@
         if (IsPushed) return;
         
         IsPushed = true;
-        closeAccountsModal(); // Закрываем окно сразу при выборе
-        currAuthStep.data.nick.value = selectedNick;
-
-        console.log("ОТПРАВЛЯЕМ НИК НА БЭКЕНД:", selectedNick);
+        closeAccountsModal();
         
         try {
             let next_step = await invoke<AuthStep>('cmd_session_by_nick', { nick: selectedNick });
-            console.log("БЭКЕНД УСПЕШНО ВЕРНУЛ ШАГ:", next_step);
-            
+            console.error("next_step = ", next_step);
             IsPushed = false;
             currAuthStep.add(next_step);
         } catch (err) {
@@ -83,7 +79,10 @@
                             <button 
                                 type="button" 
                                 class="wide-button"
-                                onclick={() => call_nick_handle(name)}
+                                onclick={() => {
+                                    currAuthStep.data.nick.value = name;
+                                    closeAccountsModal();}    
+                                }
                             >
                                 <span class="wide-button-span">{name}</span>
                             </button>
@@ -114,7 +113,7 @@
 </dialog>
 
 {#if currAuthStep.data.nick.value}
-    <div class="main-button-grid">
+    <div class="main-button-group">
         <button 
             type="button" 
             class="main-button" 
