@@ -4,8 +4,8 @@ use shared_lib::service::mchd::service::{MchdStep, NewMchdData, MchdInfo};
 use crate::state::ClientState;
 use crate::service::mchd::helper::check_update_user;
 use crate::sql_queries::persons::insert::person_no_sync::insert_person_no_sync;
-use crate::service::mchd::make_tax_poa::make_tax_poa;
-use crate::service::mchd::make_tax_success::make_mchd_step_tax_success;
+use crate::service::mchd::tax_mchd::make_tax_poa::make_tax_poa;
+use crate::service::mchd::tax_mchd::make_tax_success::make_mchd_step_tax_success;
 
 
 pub(crate) async fn make_new_tax_mchd(
@@ -51,9 +51,6 @@ pub(crate) async fn make_new_tax_mchd(
             return Ok(failed_result);
         }
     }
-
-    
-
 
     let poa_mchd = match make_tax_poa(&session, data) {
         Ok(p) => p,

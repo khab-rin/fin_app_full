@@ -7,12 +7,8 @@ CREATE TABLE IF NOT EXISTS users (
     password_hash TEXT NOT NULL,
     email VARCHAR NOT NULL,
 
-    mchd_tax_guid UUID,
-    tax_powers JSONB NOT NULL DEFAULT '{}'::jsonb,
-
-    mchd_home_guid UUID,
-    home_powers JSONB NOT NULL DEFAULT '{}'::jsonb,
-
+    guids UUID[] NOT NULL DEFAULT '{}',
+    
     sync_shard_id INTEGER DEFAULT floor(random() * 7),
 
     last_update TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -21,16 +17,20 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 
-CREATE OR REPLACE FUNCTION update_p2c_timestamp()
+CREATE OR REPLACE FUNCTION update_user_timestamp()
 RETURNS TRIGGER AS $$
 BEGIN
+    IF NEW.guids IS NULL OR (NEW.guids = '{}' AND OLD.guids != '{}') THEN
+        NEW.guids := OLD.guids;
+    END IF;
+
     NEW.last_update := CURRENT_TIMESTAMP;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-
-CREATE TRIGGER trg_update_p2c_timestamp
+-- Исправили имя триггера
+CREATE TRIGGER trg_update_user_timestamp
 BEFORE UPDATE ON users
 FOR EACH ROW
-EXECUTE FUNCTION update_p2c_timestamp();
+EXECUTE FUNCTION update_user_timestamp();

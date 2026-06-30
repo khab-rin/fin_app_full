@@ -1,15 +1,32 @@
 <script lang="ts">
+	import '$lib/style/global.css'
+
 	import { page } from '$app/state';
-    import '$lib/style/global.css'
     import favicon from '$lib/assets/favicon.svg';
 	import { goTo } from '$lib/rules/navigation';
+	import { fade } from 'svelte/transition';
+
 	import SettingsMainMenu from "$lib/service/Settings/SettingsMainMenu.svelte";
 	import {pageManager} from "$lib/models/MainManager/MainManager.svelte";
+	
 	let { children } = $props<{ children: import('svelte').Snippet }>();
 
+	let menuRef: HTMLElement | null = $state(null);
 
-	
+	function handlePointerOutside(event: PointerEvent) {
+		if (
+			pageManager.settingsOnOff && // Если меню открыто
+			menuRef && // И меню уже отрендерилось в DOM
+			!menuRef.contains(event.target as Node) && // И тап был НЕ по самому меню
+			!(event.target as HTMLElement).closest('.param-button') // И тап был НЕ по кнопке шестеренки
+		) {
+			pageManager.settingsOnOff = false; // Закрываем меню
+		}
+	}
+
 </script>
+
+<svelte:document onpointerdown={handlePointerOutside} />
 
 <svelte:head>
     <link rel="icon" href={favicon} />
@@ -18,12 +35,12 @@
 <div class='app-container'>
 
 
-
-
-
 {#if pageManager.settingsOnOff}
-	<SettingsMainMenu/>
+	<div bind:this={menuRef} transition:fade={{ duration: 150 }}>
+		<SettingsMainMenu/>
+	</div>
 {/if}
+
 <header class="top-bar">
 	<div class="user-avatar">
 		<span class="avatar-icon">👤</span>

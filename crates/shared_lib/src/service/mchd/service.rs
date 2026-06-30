@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use serde::{Serialize, Deserialize};
 
 use crate::sql_models::person::implements::Person;
@@ -8,21 +10,24 @@ use crate::service::mchd::tax_mchd::MchdTaxFields;
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub enum MchdStep {
+    HomeMchd { text: MchdInfo },
+    LendMchd {text: MchdInfo },
     Loading {text: MchdInfo },
-    TaxMchdMiss { pers: Person, text: MchdInfo },
-    HomeMchdMiss { pers: Person, text: MchdInfo },
-    TaxMchdFull { text: MchdInfo },
-    HomeMchdFull { text: MchdInfo },
-    TryLater {text: MchdInfo},
-    Success {text: MchdInfo},
-    WrongData {text: MchdInfo},
-    TaxMchdSuccess { 
+    ShowPowers {
+        tax_powers: HashSet<MchdPower>,
+        home_powers: HashSet<MchdPower>,
+        test: MchdInfo
+    },
+    Success { 
         doc_name: String1_255,
         doc_file: Vec<u8>,
         xml_name: String1_255,
         xml_file: Vec<u8>,
         text: MchdInfo
-     }
+    },
+    TaxMchd{ text: MchdInfo },
+    TryLater {text: MchdInfo},
+    WrongData {text: MchdInfo},
 }
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
@@ -51,11 +56,17 @@ pub enum MchdInfo {
     #[serde(rename = "Критическая ошибка на серверной части приложения...")]
     BackApiError,
 
-    #[serde(rename = "Доверенность успешно создана и проходит регистрацию в сервисе МЧД ФНС РФ")]
+    #[serde(rename = "Доверенность успешно создана, ознакомьтесь с доверенностью формате WORD, подпишите доверенность в формате XLS ЭЦП руководителя организации")]
     Success,
 
     #[serde(rename = "Введенные данные не соответствуют данным зарегистрированного пользователя")]
     WrongPerson,
+
+    #[serde(rename = "Загрузите сформированный XML файл доверенности и файл подписи")]
+    LendMchd,
+
+    #[serde(rename = "Ошибка при запросе в интернет, проверьте подключение к сети")]
+    ClientApiQueryError,
 
     #[serde(rename = "")]
     Nothing,
@@ -91,4 +102,11 @@ pub struct NewMchdData {
     pub user_is_citizen: IsCitizen,
     
     pub powers: std::collections::HashSet<MchdTaxFields>
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct RegisterMchdData {
+    pub xml_file: Vec<u8>,
+    pub sig_file: Vec<u8>,
+    pub user_id: BoxUuid
 }

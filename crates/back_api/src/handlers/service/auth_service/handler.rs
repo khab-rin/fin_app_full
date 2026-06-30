@@ -1,5 +1,6 @@
-use axum::{Json, extract::State};
 use std::sync::Arc;
+
+use axum::{Json, extract::State};
 
 use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{

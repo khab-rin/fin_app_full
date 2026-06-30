@@ -1,10 +1,7 @@
 SELECT
     jsonb_build_object(
         'user_id', u.user_id,
-        'mchd_tax_guid', u.mchd_tax_guid,
-        'tax_powers', u.tax_powers,
-        'mchd_home_guid', u.mchd_home_guid,
-        'home_powers', u.home_powers,
+        'guids', u.guids,
         'last_update', u.last_update
     ) AS "user!",
     to_jsonb(p) AS "person!",

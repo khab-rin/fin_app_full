@@ -1,10 +1,10 @@
 export const MchdStepType = {
-    Loading: 'Loading',
-    TryLater: "TryLater",
-    TaxMchdMiss: 'TaxMchdMiss',
-    TaxMchdFull: "TaxMchdFull",
-    HomeMchdMiss: "HomeMchdMiss",
-    HomeMchdFull: "HomeMchdFull",
-    TaxMchdSuccess: "TaxMchdSuccess",
+    HomeMchd: "HomeMchd",
+    LendMchd: "LendMchd",
+    Loading: "Loading",
+    ShowPowers: "ShowPowers",
     Success: "Success",
+    TaxMchd: "TaxMchd",
+    TryLater: "TryLater",
+    WrongData: "WrongData",
 } as const

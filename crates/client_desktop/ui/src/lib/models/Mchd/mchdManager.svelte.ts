@@ -2,21 +2,21 @@ import { invoke } from "@tauri-apps/api/core";
 
 import { FieldValidator } from "../Auth/FieldValidator.svelte";
 import { MchdStepType } from "./MchdValues";
-import { pageManager } from "../MainManager/MainManager.svelte";
 
 import type {MchdStep} from "$lib/models/rustModels/MchdStep";
 import type {MchdPowerInfo} from "$lib/models/rustModels/MchdPowerInfo";
 import type { MchdTaxFields } from "../rustModels/MchdTaxFields";
 
-import HomeMchdFull from "$lib/service/mchd/HomeMchdFull.svelte";
-import HomeMchdMiss from "$lib/service/mchd/HomeMchdFull.svelte";
-import TaxMchdMiss from "$lib/service/mchd/TaxMchdMiss.svelte";
-import TaxMchdFull from "$lib/service/mchd/TaxMchdFull.svelte";
+import HomeMchd from "$lib/service/mchd/HomeMchd.svelte";
+import LendMchd from "$lib/service/mchd/LendMchd.svelte";
 import Loading from "$lib/service/mchd/Loading.svelte";
+import ShowPowers from "$lib/service/mchd/ShowPowers.svelte";
+import Success from "$lib/service/mchd/Success.svelte";
+import TaxMchd from "$lib/service/mchd/TaxMchd.svelte";
+import WrongData from "$lib/service/mchd/WrongData.svelte";
+
+
 import TryLater from "$lib/service/mchd/TryLater.svelte";
-import TaxMchdSuccess from "$lib/service/mchd/TaxMchdSuccess.svelte";
-
-
 
 
 
@@ -46,9 +46,6 @@ class MchdManager {
     }
 
     add(next_step: MchdStep) {
-        if (MchdStepType.Success in next_step) {
-            pageManager.Page = null;
-        }
         this.steps.length = this.index + 1;
         this.steps.push(next_step);
         this.index++;
@@ -103,20 +100,22 @@ class MchdManager {
 
     get getPage() {
         const step = this.step;
-        if (MchdStepType.Loading in step) {
+        if (MchdStepType.HomeMchd in step) {
+            return HomeMchd
+        } else if (MchdStepType.LendMchd in step) {
+            return LendMchd
+        } else if (MchdStepType.Loading in step) {
             return Loading
+        } else if (MchdStepType.ShowPowers in step) {
+            return ShowPowers
+        } else if (MchdStepType.Success in step) {
+            return Success
+        } else if (MchdStepType.TaxMchd in step) {
+            return TaxMchd
         } else if (MchdStepType.TryLater in step) {
             return TryLater
-        } else if (MchdStepType.TaxMchdMiss in step) {
-            return TaxMchdMiss
-        } else if (MchdStepType.TaxMchdFull in step) {
-            return TaxMchdFull
-        } else if (MchdStepType.HomeMchdMiss in step) {
-            return HomeMchdMiss
-        } else if (MchdStepType.HomeMchdFull in step) {
-            return HomeMchdFull
-        } else if (MchdStepType.TaxMchdSuccess in step) {
-            return TaxMchdSuccess
+        } else if (MchdStepType.WrongData in step) {
+            return WrongData
         } else {
             return null
         }

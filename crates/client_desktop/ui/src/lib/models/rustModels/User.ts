@@ -3,4 +3,4 @@ import type { BoxUuid } from "./BoxUuid";
 import type { DateTime } from "./DateTime";
 import type { MchdPower } from "./MchdPower";
 
-export type User = { user_id: BoxUuid, mchd_tax_guid: BoxUuid | null, tax_powers: Array<MchdPower>, mchd_home_guid: BoxUuid | null, home_powers: Array<MchdPower>, last_update: DateTime, };
+export type User = { user_id: BoxUuid, guids: Array<BoxUuid>, tax_powers: { [key in MchdPower]?: BoxUuid }, home_powers: { [key in MchdPower]?: BoxUuid }, last_update: DateTime, };

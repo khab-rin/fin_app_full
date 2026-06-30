@@ -209,7 +209,7 @@ pub(crate) fn make_mchd_step_tax_success(
     let doc_file = html_text.into_bytes();
 
 
-    let success = MchdStep::TaxMchdSuccess { 
+    let success = MchdStep::Success { 
         doc_name, 
         doc_file, 
         xml_name, 

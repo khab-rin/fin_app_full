@@ -6,10 +6,6 @@
   }
 </script>
 
-<svelte:head>
-  <link href="https://googleapis.com" rel="stylesheet">
-</svelte:head>
-
 <!-- ВЕРХНИЙ БЛОК: Быстрые кнопки -->
 <section class="grid-section">
   <div class="quick-links">

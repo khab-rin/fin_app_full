@@ -6,19 +6,19 @@
     import {MchdStepType} from "$lib/models/Mchd/MchdValues";
     import {currentMchdStep} from "$lib/models/Mchd/mchdManager.svelte";
 
-    let xmlName: string = MchdStepType.TaxMchdSuccess in currentMchdStep.step ? 
-        currentMchdStep.step.TaxMchdSuccess.xml_name : "";
+    let xmlName: string = MchdStepType.Success in currentMchdStep.step ? 
+        currentMchdStep.step.Success.xml_name : "";
 
-    let xmlFile: Array<number> = MchdStepType.TaxMchdSuccess in currentMchdStep.step ? 
-        currentMchdStep.step.TaxMchdSuccess.xml_file : [];
+    let xmlFile: Array<number> = MchdStepType.Success in currentMchdStep.step ? 
+        currentMchdStep.step.Success.xml_file : [];
 
     const xmlFileBytes: Uint8Array = new Uint8Array(xmlFile);
 
-    let doc_name: string = MchdStepType.TaxMchdSuccess in currentMchdStep.step ? 
-        currentMchdStep.step.TaxMchdSuccess.doc_name : "";
+    let doc_name: string = MchdStepType.Success in currentMchdStep.step ? 
+        currentMchdStep.step.Success.doc_name : "";
 
-    let doc_file: Array<number> = MchdStepType.TaxMchdSuccess in currentMchdStep.step ? 
-        currentMchdStep.step.TaxMchdSuccess.doc_file : [];
+    let doc_file: Array<number> = MchdStepType.Success in currentMchdStep.step ? 
+        currentMchdStep.step.Success.doc_file : [];
 
     const docFileBytes: Uint8Array = new Uint8Array(doc_file);
 
@@ -132,17 +132,3 @@
         </button>
     </div>
 </section>
-
-<div class="main-button-group">
-    <button
-        type="button"
-        class="main-button"
-        id="SendMchd"
-        disabled={xmlPathSaved.length == 0}
-        >
-        <span class="main-button-span">
-            Отправить МЧД на регистрацию
-        </span>
-    </button>
-
-</div>

@@ -17,11 +17,10 @@ pub(crate) async fn set_user(
         phone,
         password_hash,
         email,
-        mchd_tax_guid,
-        tax_powers,
-        mchd_home_guid,
-        home_powers,
+        guids,
     } = set_data;
+
+    let guids_vec: Vec<uuid::Uuid> = guids.iter().map(|x| x.as_ref().clone()).collect();
 
     let user_dto = match sqlx::
         query_file_as!(
@@ -32,10 +31,8 @@ pub(crate) async fn set_user(
             phone.as_ref(),
             password_hash,
             email.as_ref(),
-            mchd_tax_guid.as_deref(),
-            serde_json::to_value(tax_powers).unwrap_or_default(),
-            mchd_home_guid.as_deref(),
-            serde_json::to_value(home_powers).unwrap_or_default(),
+            &guids_vec,
+
         ).fetch_one(&state.pool_fast).await {
             Ok(u) => u,
             Err(err) => {

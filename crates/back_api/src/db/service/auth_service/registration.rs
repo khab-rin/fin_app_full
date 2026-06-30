@@ -1,4 +1,6 @@
+use std::collections::HashSet;
 use std::sync::Arc;
+
 use argon2::{
     password_hash::{rand_core::OsRng, PasswordHasher, SaltString},
     Argon2
@@ -229,10 +231,7 @@ pub(crate) async fn register_new_user(
         phone,
         password_hash: server_password_hash,
         email,
-        mchd_tax_guid: None,
-        tax_powers: std::collections::HashSet::new(),
-        mchd_home_guid: None,
-        home_powers: std::collections::HashSet::new(),
+        guids: HashSet::new(),
     };
 
     let user = match set_user(state, &user_set_data).await {

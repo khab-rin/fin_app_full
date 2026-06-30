@@ -1,56 +1,33 @@
 <script lang='ts'>
     import {} from "$lib/models/Mchd/mchdManager.svelte";
-    import {invoke} from "@tauri-apps/api/core";
     import type {MchdStep} from "$lib/models/rustModels/MchdStep";
     import {currentMchdStep} from "$lib/models/Mchd/mchdManager.svelte";
-    import {pageManager} from "$lib/models/MainManager/MainManager.svelte";
 
-    let isMakeTaxMchdPushed = $state(false);
-    let isMakeHomeMchdPushed = $state(false);
+    let isTaxPushed = $state(false);
+    let isHomePushed = $state(false);
+    let isLendPushed = $state(false);
+    let isShowPowersPushed = $state(false);
 
-    async function makeTaxMchd() {
-        try {
-            isMakeTaxMchdPushed = true;
-            const next_step = await invoke<MchdStep>("cmd_check_user_mchd_tax");
-            currentMchdStep.step = next_step;
-            isMakeTaxMchdPushed = false;
-            currentMchdStep.add(next_step)
-        } catch(err) {
-            isMakeTaxMchdPushed = false;
-            console.log("FUN makeTaxMchd FAILED BY cmd_check_user_mchd_tax, err = ", err);
-            const next_step: MchdStep = {TryLater: {text: "Критическая ошибка на устройстве..."}};
-            currentMchdStep.step = next_step;
-        }
+    async function goToTaxMchd() {
+        isTaxPushed = true;
+        const next_step: MchdStep = {TaxMchd: {text: "Заполните поэтапно поля для доверенности в ФНС в том же формате, в каком они указаны в документах. Предупреждение: Сервис ФНС РФ МЧД проверяет данные на соответствие, проверяйте корректность всех полей"}};
+        isTaxPushed = false;
+        currentMchdStep.add(next_step)
     }
 
-    async function makeHomeMchd() {
-        try {
-            isMakeHomeMchdPushed = true;
-            const next_step = await invoke<MchdStep>("cmd_check_user_mchd_home");
-            isMakeHomeMchdPushed = false;
-            currentMchdStep.add(next_step)
-
-        } catch(err) {
-            isMakeHomeMchdPushed = false;
-            console.log("FUN makeTaxMchd FAILED BY cmd_check_user_mchd_tax, err = ", err);
-            const next_step: MchdStep = {TryLater: {text: "Критическая ошибка на устройстве..."}};
-            currentMchdStep.step = next_step;
-        }
+    async function goToHomeMchd() {
+        isHomePushed = true;
+        const next_step: MchdStep = {HomeMchd: {text: "Заполните поэтапно поля для доверенности в системе. Предупреждение: Сервис ФНС РФ МЧД проверяет данные на соответствие, проверяйте корректность всех полей"}};
+        isHomePushed = false;
+        currentMchdStep.add(next_step)
     }
 
-    function handleGoBack() {
-        currentMchdStep.back(); 
+    async function goToLendMchd() {
+        isLendPushed = true;
+        const next_step: MchdStep = {LendMchd: { text: "Загрузите сформированный XML файл доверенности и файл подписи"}}
+        isLendPushed = false;
+        currentMchdStep.add(next_step)
     }
-
-    function handleGoNext() {
-        currentMchdStep.next(); 
-    }
-
-    function handleGoMain() {
-        pageManager.Page = null; 
-    }
-
-    
 </script>
 
 
@@ -59,8 +36,8 @@
         <button
             type="button"
             class="wide-button"
-            onclick={makeTaxMchd}
-            disabled={isMakeTaxMchdPushed}
+            onclick={goToTaxMchd}
+            disabled={isTaxPushed}
         >
             <span class="wide-button-span">
                 Создать МЧД для ФНС
@@ -72,9 +49,26 @@
         <button
             type="button"
             class="wide-button"
+            onclick={goToHomeMchd}
+            disabled={isHomePushed}
         >
             <span class="wide-button-span">
-                Загрузить и отправить МЧД в ФНС
+                Создать МЧД
+            </span>
+        
+        </button>
+    </div>
+
+    <div class="wide-button-group">
+        <button
+            type="button"
+            class="wide-button"
+            onclick={goToLendMchd}
+            disabled={isLendPushed}
+
+            >
+            <span class='wide-button-span'>
+                Отправить подписанный МЧД
             </span>
         </button>
     </div>
@@ -83,48 +77,17 @@
         <button
             type="button"
             class="wide-button"
-            onclick={makeHomeMchd}
-            disabled={isMakeHomeMchdPushed}
-        >
-            <span class="wide-button-span">
-                Создать МЧД
+            disabled={isShowPowersPushed}
+            >
+            <span class='wide-button-span'>
+                Посмотреть текущие полномочия
             </span>
-        
         </button>
-
     </div>
+
 </section>
 
-<section class="navi-button-section">
-    <div class="navi-button-group">
-        <button
-            class="medium-button"
-            type="button"
-            onclick={handleGoBack}>
-            <span class="navi-button-text">Назад</span>
-        </button>
-    </div>
 
-    <div class="navi-button-group">
-        <button
-            class="medium-button"
-            type="button"
-            onclick={handleGoNext}>
-            <span class="navi-button-text">Вперед</span>
-        </button>
-    </div>
-
-    <div class="navi-button-group">
-        <button
-            class="medium-button"
-            type="button"
-            onclick={handleGoMain}>
-            <span class="navi-button-text">Главное меню</span>
-        </button>
-    </div>
-
-    
-</section>
 
 
     
