@@ -23,7 +23,7 @@ use crate::db::sql_queries::users::get::exists_user_by_pers_comp::exists_user_by
 use crate::db::sql_queries::persons::add::by_person::add_person;
 use crate::db::sql_queries::companys::get::company_by_inn_kpp::get_company_by_inn_kpp;
 use crate::db::sql_queries::companys::helper::make_new_company;
-use crate::db::sql_queries::users::set::user::set_user;
+use crate::db::sql_queries::users::add::user::add_user;
 use crate::db::sql_queries::sessions::set::new_session::new_session;
 use crate::db::service::auth_service::pers_sign_parser::person_checker;
 use crate::db::sql_queries::companys::add::company::add_company;
@@ -234,7 +234,7 @@ pub(crate) async fn register_new_user(
         guids: HashSet::new(),
     };
 
-    let user = match set_user(state, &user_set_data).await {
+    let user = match add_user(state, &user_set_data).await {
         Ok(u) => u,
         Err(err) => {
             tracing::error!(

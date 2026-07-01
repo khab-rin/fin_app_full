@@ -4,6 +4,7 @@ use shared_lib::service::mchd::tax_mchd::{MchdTaxFields, MchdPowerInfo};
 
 use crate::state::ClientState;
 use crate::service::mchd::tax_mchd::new_tax_mchd::make_new_tax_mchd;
+use crate::service::mchd::lend_mchd::lend_mchd::lend_mchd_to_back_api_for_register;
 
 
 #[tauri::command]
@@ -40,6 +41,8 @@ pub async fn cmd_lend_mchd(
     sig_file_path: String
 ) -> Result<MchdStep, Status> {
 
+    log::info!("cmd_lend_mchd running!!!");
 
-    Err(Status::Unknown)
+    lend_mchd_to_back_api_for_register(&state, &xml_file_path, &sig_file_path).await
+
 }

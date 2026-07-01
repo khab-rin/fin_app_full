@@ -16,14 +16,18 @@ pub enum MchdStep {
     ShowPowers {
         tax_powers: HashSet<MchdPower>,
         home_powers: HashSet<MchdPower>,
-        test: MchdInfo
+        text: MchdInfo
     },
-    Success { 
+    SuccessXmlDocFiles { 
         doc_name: String1_255,
         doc_file: Vec<u8>,
         xml_name: String1_255,
         xml_file: Vec<u8>,
         text: MchdInfo
+    },
+    SuccessRegisterMchd {
+        guid: BoxUuid,
+        text: TextInfo
     },
     TaxMchd{ text: MchdInfo },
     TryLater {text: MchdInfo},

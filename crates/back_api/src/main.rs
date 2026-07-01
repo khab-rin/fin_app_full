@@ -20,6 +20,8 @@ use crate::handlers::service::auth_service::handler::{
     register_user_by_crypto_handler
 };
 
+use crate::handlers::service::mchd::handler::register_mchd_hadler;
+
 use crate::handlers::sql::handlers::get_person_by_inn_handler;
 
 
@@ -102,6 +104,9 @@ async fn main() {
         ).route(
             ApiRoutes::AuthRegister.get_path(), 
             post(register_user_by_crypto_handler)
+        ).route(
+            ApiRoutes::MchdLend.get_path(),
+            post(register_mchd_hadler)
         ).route(
             ApiRoutes::SqlPersonGetByInn.get_path(), 
             post(get_person_by_inn_handler)

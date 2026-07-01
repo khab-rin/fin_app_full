@@ -6,7 +6,7 @@ use shared_lib::sql_models::user::implements::{User, UserSetData, UserDto};
 
 use crate::config::BackApiState;
 
-pub(crate) async fn set_user(
+pub(crate) async fn add_user(
     state: &Arc<BackApiState>,
     set_data: &UserSetData,
 ) -> Result<User, Status> {
@@ -25,7 +25,7 @@ pub(crate) async fn set_user(
     let user_dto = match sqlx::
         query_file_as!(
             UserDto,
-            "src/db/sql_queries/users/set/user.sql",
+            "src/db/sql_queries/users/add/user.sql",
             pers_id.as_ref(),
             comp_id.as_ref(),
             phone.as_ref(),

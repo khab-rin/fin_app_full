@@ -6,12 +6,12 @@
 
     let isLoadXmlFilePushed = $state(false);
     let isLoadSigFilePushed = $state(false);
-    let isLendMchdButtonPushed = $state(false);
+    let isLendMchdPushed = $state(false);
 
     let xmlFilePath = $state("");
     let sigFilePath = $state("");
 
-    let isDataReady = $derived(xmlFilePath.length != 0 && sigFilePath.length != 0);
+    let isDataReady = $derived(xmlFilePath.length == 0 || sigFilePath.length == 0);
 
     async function getXmlFilePath() {
         try {
@@ -54,18 +54,16 @@
             sigFilePath: sigFilePath
         }
         try {
-            isLendMchdButtonPushed = true;
+            isLendMchdPushed = true;
             let next_step: MchdStep = await invoke<MchdStep> ("cmd_lend_mchd", data);
-            isLendMchdButtonPushed = false;
+            isLendMchdPushed = false;
             currentMchdStep.add(next_step);
         } catch (err) {
             console.error("Ошибка при отправке данных в cmd_lend_mchd, err = ", err);
-            isLendMchdButtonPushed = false;
+            isLendMchdPushed = false;
             let next_step: MchdStep = {TryLater: {text: "Критическая ошибка на устройстве..."}};
             currentMchdStep.add(next_step);
         }
-        
-
     }
 
 </script>
@@ -89,7 +87,7 @@
             onclick={getXmlFilePath}
             disabled={isLoadXmlFilePushed}
             >
-            Сохранить
+            Загрузите xml файл
         </button>
 
     </div>
@@ -112,7 +110,7 @@
             onclick={getSigFilePath}
             disabled={isLoadSigFilePushed}
             >
-            Сохранить
+            Загрузите файл подписи
         </button>
 
     </div>
@@ -123,7 +121,7 @@
         type="button"
         id='lendMchdButton'
         class='main-button'
-        disabled={isLendMchdButtonPushed || isDataReady}
+        disabled={isLendMchdPushed || isDataReady}
         onclick={LendMchd}
 
         >

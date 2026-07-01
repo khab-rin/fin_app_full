@@ -24,7 +24,6 @@
         
         try {
             let next_step = await invoke<AuthStep>('cmd_session_by_nick', { nick: selectedNick });
-            console.error("next_step = ", next_step);
             IsPushed = false;
             currAuthStep.add(next_step);
         } catch (err) {
