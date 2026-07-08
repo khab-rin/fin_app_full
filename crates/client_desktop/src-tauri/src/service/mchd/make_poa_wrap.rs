@@ -3,7 +3,7 @@ use shared_lib::primitives::frozen::implements::{BoxUuid, Date};
 use shared_lib::primitives::frozen::implements_base::Digits7_7;
 use shared_lib::service::auth_service::client_state::ActiveSession;
 use shared_lib::service::mchd::service::NewMchdData;
-use shared_lib::static_data::mchd_const::{MCHD_KND};
+use shared_lib::static_data::mchd_powers::document_propertys::{MCHD_KND};
 use shared_lib::service::mchd::implements::{
     DelegatePowers, MchdPower, PoaRootKind, PoaWrap, PowerCommonType, PowerType, RootPoa
 };

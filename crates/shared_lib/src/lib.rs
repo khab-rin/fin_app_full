@@ -46,10 +46,10 @@ use super::*;
         service::mchd::poa::PoaMchd::export_all_to(output_dir)
             .expect("Не удалось экспортировать PoaMchd");
 
-        service::mchd::tax_mchd::MchdTaxFields::export_all_to(output_dir)
-            .expect("Не удалось экспортировать MchdTaxFields");
+        service::mchd::home_mchd_power::HomeMchdPower::export_all_to(output_dir)
+            .expect("Не удалось экспортировать HomeMchdPower");
         
-        service::mchd::tax_mchd::MchdPowerInfo::export_all_to(output_dir)
+        service::mchd::home_mchd_power::HomePowerInfo::export_all_to(output_dir)
             .expect("Не удалось экспортировать MchdPowerInfo")
     }
 }

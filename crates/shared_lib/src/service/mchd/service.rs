@@ -2,11 +2,10 @@ use std::collections::HashSet;
 
 use serde::{Serialize, Deserialize};
 
-use crate::sql_models::person::implements::Person;
 use crate::primitives::frozen::implements::*;
 use crate::primitives::frozen::implements_base::*;
 use crate::service::mchd::implements::*;
-use crate::service::mchd::tax_mchd::MchdTaxFields;
+use crate::service::mchd::home_mchd_power::HomeMchdPower;
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub enum MchdStep {
@@ -30,6 +29,7 @@ pub enum MchdStep {
         text: TextInfo
     },
     TaxMchd{ text: MchdInfo },
+
     TryLater {text: MchdInfo},
     WrongData {text: MchdInfo},
 }
@@ -38,6 +38,18 @@ pub enum MchdStep {
 pub enum MchdInfo {
     #[serde(rename = "Выберите тип доверенности, который нужно создать")]
     Loading,
+
+    #[serde(rename = "Выберите полномочия для сдачи отчетности в ФНС")]
+    TaxPowers,
+
+    #[serde(rename = "Выберите полномочия для обмена электронными документами с контрагентами")]
+    SignPowers,
+
+    #[serde(rename = "Выберите полномочия для работы в данной системе")]
+    HomePowers,
+
+    #[serde(rename = "Вы на этапе создания доверенности для сдачи отчетности в ФНС, внимательно заполните поля аналогично полям в личных и учредительных документах")]
+    TaxMchdNew,
 
     #[serde(rename = "В системе имеется МЧД для работы с ФНС. Если хотите обновить МЧД для работы с ФНС, нажмите кнопку удалить МЧД для работы с ФНС, затем пройдите создание МЧД заново (Осторожно! При удалении МЧД она больше не будет доступна)")]
     TaxMchdFull,
@@ -105,7 +117,48 @@ pub struct NewMchdData {
     pub user_passport_ussuer_code: String7_7,
     pub user_is_citizen: IsCitizen,
     
-    pub powers: std::collections::HashSet<MchdTaxFields>
+    pub powers: std::collections::HashSet<HomeMchdPower>
+}
+
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct SvelteMchdData {
+    pub tax_poa_num: String1_50,
+    pub tax_poa_end_date: Date,
+
+    pub sign_poa_num: String1_50,
+    pub sign_poa_end_date: Date,
+
+    pub home_poa_num: String1_50,
+    pub home_poa_end_date: Date,
+
+    pub manager_tittle: String1_255,
+    pub manager_sur_name: SurName,
+    pub manager_first_name: FirstName,
+    pub manager_mid_name: MidName,
+    pub manager_birth_day: Date,
+    pub manager_snils: Snils,
+    pub manager_inn: PersInn,
+    pub manager_is_citizen: IsCitizen,
+
+    pub user_sur_name: SurName,
+    pub user_first_name: FirstName,
+    pub user_mid_name: MidName,
+    pub user_birth_day: Date,
+    pub user_gender: Gender,
+    pub user_snils: Snils,
+    
+    pub user_inn: PersInn,
+    pub user_passport_number: PasspRfNumber,
+    pub user_passport_issue_date: Date,
+    pub user_passport_issueer: String1_4000,
+    pub user_passport_ussuer_code: String7_7,
+    pub user_is_citizen: IsCitizen,
+
+    pub tax_powers: std::collections::HashSet<HomeMchdPower>,
+    pub sign_powers: std::collections::HashSet<HomeMchdPower>,
+    pub home_powers: std::collections::HashSet<HomeMchdPower>
 }
 
 #[derive(Serialize, Deserialize, Debug)]

@@ -5,7 +5,7 @@ import { MchdStepType } from "./MchdValues";
 
 import type {MchdStep} from "$lib/models/rustModels/MchdStep";
 import type {MchdPowerInfo} from "$lib/models/rustModels/MchdPowerInfo";
-import type { MchdTaxFields } from "../rustModels/MchdTaxFields";
+import type { HomeMchdPower } from "../rustModels/HomeMchdPower";
 
 import HomeMchd from "$lib/service/mchd/HomeMchd.svelte";
 import LendMchd from "$lib/service/mchd/LendMchd.svelte";
@@ -121,7 +121,7 @@ class MchdManager {
         }
     }
 
-    async get_power_info(power: MchdTaxFields) {
+    async get_power_info(power: HomeMchdPower) {
         try {
             return await invoke<MchdPowerInfo>("cmd_get_power_info", { power: power })
         } catch(err) {

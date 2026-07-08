@@ -8,7 +8,7 @@ use shared_lib::service::mchd::service::NewMchdData;
 use shared_lib::primitives::frozen::implements::{
     BoxUuid, Date
 };
-use shared_lib::static_data::mchd_const::{MCHD_SYSTEM_INFO, MCHD_TAX_ORG_IDENT};
+use shared_lib::static_data::mchd_powers::document_propertys::{MCHD_SYSTEM_INFO, MCHD_TAX_ORG_IDENT};
 use shared_lib::primitives::frozen::implements_base::{
     Digits4_4, String1_1000
 };

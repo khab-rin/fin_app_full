@@ -117,7 +117,9 @@ async fn main() {
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.expect("msd");
 
-    tracing::info!("Сервер запущен на http://0.0.0");
+    if let Ok(addr) = listener.local_addr() {
+        tracing::info!("Сервер запущен на http://127.0.0.1:{}", addr.port());
+    }
 
     axum::serve(listener, app).await.expect("msg");
 }

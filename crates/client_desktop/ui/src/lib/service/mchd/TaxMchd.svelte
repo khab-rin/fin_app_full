@@ -4,12 +4,17 @@
     import { SvelteSet } from 'svelte/reactivity';
     import { currentMchdStep } from "$lib/models/Mchd/mchdManager.svelte"
 
-    import type { MchdTaxFields } from "$lib/models/rustModels/MchdTaxFields";
+    import type { HomeMchdPower } from "$lib/models/rustModels/HomeMchdPower";
     import type {MchdStep} from "$lib/models/rustModels/MchdStep";
 
 
-    let selectedPowers = new SvelteSet<MchdTaxFields>();
-    let allTaxPowers = $state<MchdTaxFields[]>([]);
+    let selectedTaxPowers = new SvelteSet<HomeMchdPower>();
+    let selectedBTBPowers = new SvelteSet<HomeMchdPower>();
+    let selectedHomePowers = new SvelteSet<HomeMchdPower>();
+
+    let allTaxPowers = $state<HomeMchdPower[]>([]);
+    let allBTBPowers = $state<HomeMchdPower[]>([]);
+    let allHomePowers = $state<HomeMchdPower[]>([]);
 
     let firstDone = $derived(
         !currentMchdStep.data.PoaNumber.isValid || 
@@ -39,58 +44,43 @@
         !currentMchdStep.data.userPassportUssuerCode.isValid ||
         !currentMchdStep.data.userIsCitizen.isValid);
 
-    let forthDone = $derived(selectedPowers.size == 0);
+    let taxPowersDone = $derived(firstDone || secondDone || thirdDone|| selectedTaxPowers.size == 0);
+    let btbPowersDone = $derived(firstDone || secondDone || thirdDone|| selectedBTBPowers.size == 0);
+    let homePowersDone = $derived(firstDone || secondDone || thirdDone|| selectedHomePowers.size == 0);
 
-    let allDone = $derived(firstDone || secondDone || thirdDone || forthDone)
 
-    let firstStep = $state(false);
-    let secondStep = $state(true);
-    let thirdStep = $state(true);
-    let forthStep = $state(true);
-    let allPowers = $state(false);
+    let isMakeTaxPowersPushed = $state(true);
+    let isMakeBTBPowersPushed = $state(true);
+    let isMakeHomePowersPushed = $state(true);
 
-    let isMainPushed = $state(false);
+    let steps = $state({
+        first: true,
+        second: false,
+        third: false,
+        taxPowers: false,
+        btbPowers: false,
+        homePowers: false
+    });
 
-    function switchFirstStep() {
-        firstStep = false;
-        secondStep = true;
-        thirdStep = true;
-        forthStep = true;
-    }
+    function activateStep(activeKey: keyof typeof steps) {
+    // Используем Object.keys и кастим ключ к правильному типу
+    (Object.keys(steps) as Array<keyof typeof steps>).forEach((key) => {
+        steps[key] = false;
+    });
+    
+    steps[activeKey] = true;
+}
 
-    function switchSecondStep() {
-        if ( firstDone ) {return;}
-        firstStep = true;
-        secondStep = false;
-        thirdStep = true;
-        forthStep = true;
-    }
-
-    function switchThirdStep() {
-        if (firstDone || secondDone) {return;}
-        firstStep = true;
-        secondStep = true;
-        thirdStep = false;
-        forthStep = true;
-    }
-
-    function switchForthStep() {
-        if (firstDone || secondDone || thirdDone) {return;}
-        firstStep = true;
-        secondStep = true;
-        thirdStep = true;
-        forthStep = false;
-    }
 
     async function loadPowers() {
         try {
-            allTaxPowers = await invoke<MchdTaxFields[]>("cmd_get_tax_powers");
+            allTaxPowers = await invoke<HomeMchdPower[]>("cmd_get_tax_powers");
         } catch(err) {
             console.error("Ошибка при получении полномочий:", err);
         }
     }
 
-    function togglePower(tax_power: MchdTaxFields) {
+    function togglePower(tax_power: HomeMchdPower) {
         if (selectedPowers.has(tax_power)) {
             selectedPowers.delete(tax_power);
         } else {

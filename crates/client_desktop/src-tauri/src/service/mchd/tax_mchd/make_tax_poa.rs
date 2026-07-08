@@ -14,7 +14,7 @@ use shared_lib::service::mchd::implements::{
 };
 use shared_lib::service::mchd::poa::PoaMchd;
 use shared_lib::service::mchd::service::NewMchdData;
-use shared_lib::static_data::mchd_const::{MCHD_R_T, MCHD_TAX_R_T,MCHD_TAX_ORG_IDENT, MCHD_XMLNS, MCHD_XMLNS_XSD, MCHD_XMLNS_XSI};
+use shared_lib::static_data::mchd_powers::document_propertys::{MCHD_R_T, MCHD_TAX_R_T,MCHD_TAX_ORG_IDENT, MCHD_XMLNS, MCHD_XMLNS_XSD, MCHD_XMLNS_XSI};
 
 use crate::service::mchd::make_poa_wrap::make_poa_wrap;
 
