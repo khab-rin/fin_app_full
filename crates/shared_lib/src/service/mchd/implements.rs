@@ -947,12 +947,12 @@ make_mchd_enum!(RussDocumCode, {
 });
 
 make_mchd_enum!(PoaReqElemsFlag, {
-    Main => "00000000",
-    MainEsia => "01000000",
-    MainNotarial => "00100000",
-    MainTax => "00010000",
-    MainEsiaNotarial => "01100000",
-    MainNotarialTax => "00110000",
-    MainEsiaNotarialTax => "01110000"
+    BTB => "00000000",
+    BTBEsia => "01000000",
+    BTBNotarial => "00100000",
+    BTBTax => "00010000",
+    BTBEsiaNotarial => "01100000",
+    BTBNotarialTax => "00110000",
+    BTBEsiaNotarialTax => "01110000"
 });
 

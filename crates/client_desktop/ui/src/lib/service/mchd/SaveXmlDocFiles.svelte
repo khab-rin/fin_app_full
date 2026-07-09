@@ -6,21 +6,18 @@
     import {MchdStepType} from "$lib/models/Mchd/MchdValues";
     import {currentMchdStep} from "$lib/models/Mchd/mchdManager.svelte";
 
-    let xmlName: string = MchdStepType.Success in currentMchdStep.step ? 
-        currentMchdStep.step.Success.xml_name : "";
+    let xmlName = $derived(MchdStepType.SaveXmlDocFiles in currentMchdStep.step ? 
+    currentMchdStep.step.SaveXmlDocFiles.xml_name : "");
+    let xmlFile = $derived(MchdStepType.SaveXmlDocFiles in currentMchdStep.step ? 
+        currentMchdStep.step.SaveXmlDocFiles.xml_file : []);
 
-    let xmlFile: Array<number> = MchdStepType.Success in currentMchdStep.step ? 
-        currentMchdStep.step.Success.xml_file : [];
+    let xmlFileBytes = $derived(new Uint8Array(xmlFile)); 
 
-    const xmlFileBytes: Uint8Array = new Uint8Array(xmlFile);
-
-    let doc_name: string = MchdStepType.Success in currentMchdStep.step ? 
-        currentMchdStep.step.Success.doc_name : "";
-
-    let doc_file: Array<number> = MchdStepType.Success in currentMchdStep.step ? 
-        currentMchdStep.step.Success.doc_file : [];
-
-    const docFileBytes: Uint8Array = new Uint8Array(doc_file);
+    let doc_name = $derived(MchdStepType.SaveXmlDocFiles in currentMchdStep.step ? 
+        currentMchdStep.step.SaveXmlDocFiles.doc_name : "");
+    let doc_file = $derived(MchdStepType.SaveXmlDocFiles in currentMchdStep.step ? 
+        currentMchdStep.step.SaveXmlDocFiles.doc_file : []);
+    let docFileBytes = $derived(new Uint8Array(doc_file));
 
 
     let xmlPathSaved = $state("");

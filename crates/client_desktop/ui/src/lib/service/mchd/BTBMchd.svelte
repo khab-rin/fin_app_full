@@ -8,13 +8,8 @@
     import type {MchdStep} from "$lib/models/rustModels/MchdStep";
 
 
-    let selectedTaxPowers = new SvelteSet<HomeMchdPower>();
-    let selectedBTBPowers = new SvelteSet<HomeMchdPower>();
-    let selectedHomePowers = new SvelteSet<HomeMchdPower>();
-
-    let allTaxPowers = $state<HomeMchdPower[]>([]);
-    let allBTBPowers = $state<HomeMchdPower[]>([]);
-    let allHomePowers = $state<HomeMchdPower[]>([]);
+    let selectedPowers = new SvelteSet<HomeMchdPower>();
+    let allPowers = $state<HomeMchdPower[]>([]);
 
     let firstDone = $derived(
         !currentMchdStep.data.PoaNumber.isValid || 
@@ -44,37 +39,52 @@
         !currentMchdStep.data.userPassportUssuerCode.isValid ||
         !currentMchdStep.data.userIsCitizen.isValid);
 
-    let taxPowersDone = $derived(firstDone || secondDone || thirdDone|| selectedTaxPowers.size == 0);
-    let btbPowersDone = $derived(firstDone || secondDone || thirdDone|| selectedBTBPowers.size == 0);
-    let homePowersDone = $derived(firstDone || secondDone || thirdDone|| selectedHomePowers.size == 0);
+    let forthDone = $derived(selectedPowers.size == 0);
 
+    let allDone = $derived(firstDone || secondDone || thirdDone || forthDone)
 
-    let isMakeTaxPowersPushed = $state(true);
-    let isMakeBTBPowersPushed = $state(true);
-    let isMakeHomePowersPushed = $state(true);
+    let firstStep = $state(false);
+    let secondStep = $state(true);
+    let thirdStep = $state(true);
+    let forthStep = $state(true);
+    let allPowersSelected = $state(false);
 
-    let steps = $state({
-        first: true,
-        second: false,
-        third: false,
-        taxPowers: false,
-        btbPowers: false,
-        homePowers: false
-    });
+    let isMainPushed = $state(false);
 
-    function activateStep(activeKey: keyof typeof steps) {
-    // Используем Object.keys и кастим ключ к правильному типу
-    (Object.keys(steps) as Array<keyof typeof steps>).forEach((key) => {
-        steps[key] = false;
-    });
-    
-    steps[activeKey] = true;
-}
+    function switchFirstStep() {
+        firstStep = false;
+        secondStep = true;
+        thirdStep = true;
+        forthStep = true;
+    }
 
+    function switchSecondStep() {
+        if ( firstDone ) {return;}
+        firstStep = true;
+        secondStep = false;
+        thirdStep = true;
+        forthStep = true;
+    }
+
+    function switchThirdStep() {
+        if (firstDone || secondDone) {return;}
+        firstStep = true;
+        secondStep = true;
+        thirdStep = false;
+        forthStep = true;
+    }
+
+    function switchForthStep() {
+        if (firstDone || secondDone || thirdDone) {return;}
+        firstStep = true;
+        secondStep = true;
+        thirdStep = true;
+        forthStep = false;
+    }
 
     async function loadPowers() {
         try {
-            allTaxPowers = await invoke<HomeMchdPower[]>("cmd_get_tax_powers");
+            allPowers = await invoke<HomeMchdPower[]>("cmd_get_all_btb_powers");
         } catch(err) {
             console.error("Ошибка при получении полномочий:", err);
         }
@@ -89,12 +99,12 @@
     }
 
     function selectAllPowers() {
-        if (allPowers) {
+        if (allPowersSelected) {
             selectedPowers.clear();
-            allPowers = false;
+            allPowersSelected = false;
         } else {
-            allTaxPowers.forEach(p => selectedPowers.add(p));
-            allPowers = true;
+            allPowers.forEach(p => selectedPowers.add(p));
+            allPowersSelected = true;
         }
     }
 
@@ -129,10 +139,10 @@
         }
 
         try {
-            const next_step = await invoke<MchdStep>("cmd_register_tax_mchd", {data: data})
+            const next_step = await invoke<MchdStep>("cmd_make_xml_doc_files", {data: data})
             currentMchdStep.add(next_step);
         } catch(err) {
-            console.error("cmd_register_tax_mchd FAILED, err = ", err);
+            console.error("cmd_make_xml_doc_files FAILED, err = ", err);
             const next_step: MchdStep = {TryLater: {text: "Критическая ошибка на устройстве..."}};
             currentMchdStep.add(next_step);
         }
@@ -550,21 +560,21 @@
     <label class="check-box-label">
         <input
             type="checkbox"
-            checked={allPowers}
+            checked={allPowersSelected}
             onchange={() => selectAllPowers()}
         />
         <span class="check-box-span">Выбрать все машинописные полномочия для взаимодействия с ФНС РФ</span>
     </label>
 
     <ul class="input-group">
-        {#each allTaxPowers as power (power)}
+        {#each allPowers as power (power)}
             <li class="check-box-li">
                 <label class="check-box-label">
                     <input
                         type="checkbox"
                         checked={selectedPowers.has(power)}
                         onchange={() => togglePower(power)}
-                        disabled={allPowers}
+                        disabled={allPowersSelected}
                     />
                     
                     <span class="check-box-small-span">{power}</span>
@@ -651,4 +661,3 @@
     </button>
 
 </div>
-

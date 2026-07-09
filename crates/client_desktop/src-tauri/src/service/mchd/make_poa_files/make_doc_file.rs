@@ -4,7 +4,7 @@ use shared_lib::service::auth_service::client_state::ActiveSession;
 use shared_lib::service::mchd::service::{MchdInfo, MchdStep, NewMchdData};
 use shared_lib::service::mchd::poa::PoaMchd;
 
-pub(crate) fn make_mchd_step_tax_success(
+pub(crate) fn add_doc_to_xml_file(
     session: &ActiveSession,
     poa_mchd: &PoaMchd,
     data: &NewMchdData
@@ -209,12 +209,12 @@ pub(crate) fn make_mchd_step_tax_success(
     let doc_file = html_text.into_bytes();
 
 
-    let success = MchdStep::SuccessXmlDocFiles { 
+    let success = MchdStep::SaveXmlDocFiles { 
         doc_name, 
         doc_file, 
         xml_name, 
         xml_file, 
-        text: MchdInfo::Success
+        text: MchdInfo::SaveXmlDocFiles
     };
 
     Ok(success)

@@ -13,13 +13,13 @@ use shared_lib::service::mchd::implements::{
     PoaReqElemsFlag
 };
 use shared_lib::service::mchd::poa::PoaMchd;
-use shared_lib::service::mchd::service::NewMchdData;
+use shared_lib::service::mchd::service::{NewMchdData, MchdType};
 use shared_lib::static_data::mchd_powers::document_propertys::{MCHD_R_T, MCHD_TAX_R_T,MCHD_TAX_ORG_IDENT, MCHD_XMLNS, MCHD_XMLNS_XSD, MCHD_XMLNS_XSI};
 
 use crate::service::mchd::make_poa_wrap::make_poa_wrap;
 
 
-pub(crate) fn make_tax_poa(
+pub(crate) fn make_poa(
     session: &ActiveSession,
     data: &NewMchdData
 ) -> Result<PoaMchd, Status> {
@@ -37,32 +37,40 @@ pub(crate) fn make_tax_poa(
         format!("{}_{}{:02}{:02}_{}", MCHD_R_T, years, month, days, mchd_num)
     );
 
-    let tax_file_identificator = String1_255::unchecked(
-        format!("{}_{}_{}_{}{}_{}{:02}{:02}_{}", 
-        MCHD_TAX_R_T, 
-        MCHD_TAX_ORG_IDENT, 
-        MCHD_TAX_ORG_IDENT, 
-        comp_inn, 
-        kpp, 
-        years,
-        month,
-        days,
-        mchd_num)
-    );
 
-    let tax_poa = PoaMchd {
+    let tax_file_identificator = match data.mchd_type {
+        MchdType::FnsMchd => Some(String1_255::unchecked(
+            format!("{}_{}_{}_{}{}_{}{:02}{:02}_{}", 
+            MCHD_TAX_R_T, 
+            MCHD_TAX_ORG_IDENT, 
+            MCHD_TAX_ORG_IDENT, 
+            comp_inn, 
+            kpp, 
+            years,
+            month,
+            days,
+            mchd_num))),
+        _ => None
+    };
+
+    let required_elements = match data.mchd_type {
+        MchdType::FnsMchd => PoaReqElemsFlag::BTBTax,
+        _ => PoaReqElemsFlag::BTB
+    };
+
+    let poa = PoaMchd {
         xmlns_xsi: MCHD_XMLNS_XSI.to_string(),
         xmlns_xsd: MCHD_XMLNS_XSD.to_string(),
         xmlns: MCHD_XMLNS.to_string(),
         version_format: FormatVersion::Emchd1,
-        required_elements: PoaReqElemsFlag::MainTax,
+        required_elements,
         flie_identificator,
-        tax_file_identificator: Some(tax_file_identificator),
+        tax_file_identificator,
         oid: None,
         text_info: None,
         poa: make_poa_wrap(session, data, &mchd_num, &today)?
 
     };
 
-    Ok(tax_poa)
+    Ok(poa)
 }

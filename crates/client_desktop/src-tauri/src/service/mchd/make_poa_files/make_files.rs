@@ -4,11 +4,11 @@ use shared_lib::service::mchd::service::{MchdStep, NewMchdData, MchdInfo};
 use crate::state::ClientState;
 use crate::service::mchd::helper::check_update_user;
 use crate::sql_queries::persons::insert::person_no_sync::insert_person_no_sync;
-use crate::service::mchd::tax_mchd::make_tax_poa::make_tax_poa;
-use crate::service::mchd::tax_mchd::make_tax_success::make_mchd_step_tax_success;
+use crate::service::mchd::make_poa_files::make_poa::make_poa;
+use crate::service::mchd::make_poa_files::make_doc_file::add_doc_to_xml_file;
 
 
-pub(crate) async fn make_new_tax_mchd(
+pub(crate) async fn make_xml_doc_files(
     state: &ClientState,
     data: &NewMchdData
 ) -> Result<MchdStep, Status> {
@@ -27,32 +27,29 @@ pub(crate) async fn make_new_tax_mchd(
 
     let mut person = session.session_user.person.clone();
 
-    if !check_update_user(&mut person, data) {
-        
-        return Ok(MchdStep::WrongData { text: MchdInfo::WrongPerson })
-    }
+    if check_update_user(&mut person, data) {
+        match state.update_person(person.clone()).await {
+            Ok(_) => {},
+            Err(err) => {
+                log::error!(
+                    "FUN make_new_tax_mchd FAILED BY state.update_person, err = {}", err
+                );
+                return Ok(failed_result);
+            }
+        }
 
-    match state.update_person(person.clone()).await {
-        Ok(_) => {},
-        Err(err) => {
-            log::error!(
-                "FUN make_new_tax_mchd FAILED BY state.update_person, err = {}", err
-            );
-            return Ok(failed_result);
+        match insert_person_no_sync(state, &person).await {
+            Ok(_) => {},
+            Err(err) => {
+                log::error!(
+                    "FUN make_new_tax_mchd FAILED BY insert_person_no_sync, err = {}", err
+                );
+                return Ok(failed_result);
+            }
         }
     }
 
-    match insert_person_no_sync(state, &person).await {
-        Ok(_) => {},
-        Err(err) => {
-            log::error!(
-                "FUN make_new_tax_mchd FAILED BY insert_person_no_sync, err = {}", err
-            );
-            return Ok(failed_result);
-        }
-    }
-
-    let poa_mchd = match make_tax_poa(&session, data) {
+    let poa_mchd = match make_poa(&session, data) {
         Ok(p) => p,
         Err(err) => {
             log::error!(
@@ -62,6 +59,6 @@ pub(crate) async fn make_new_tax_mchd(
         }
     };
 
-    make_mchd_step_tax_success(&session, &poa_mchd, data)
+    add_doc_to_xml_file(&session, &poa_mchd, data)
     
 }

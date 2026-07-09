@@ -2,7 +2,7 @@ use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::{BoxUuid, Date};
 use shared_lib::primitives::frozen::implements_base::Digits7_7;
 use shared_lib::service::auth_service::client_state::ActiveSession;
-use shared_lib::service::mchd::service::NewMchdData;
+use shared_lib::service::mchd::service::{NewMchdData, MchdType};
 use shared_lib::static_data::mchd_powers::document_propertys::{MCHD_KND};
 use shared_lib::service::mchd::implements::{
     DelegatePowers, MchdPower, PoaRootKind, PoaWrap, PowerCommonType, PowerType, RootPoa
@@ -10,7 +10,7 @@ use shared_lib::service::mchd::implements::{
 
 
 use crate::service::mchd::make_poametadata::make_poametadata;
-use crate::service::mchd::make_principalinfo::make_principal_info;
+use crate::service::mchd::make_principal_wrap::make_principal_wrap;
 use crate::service::mchd::make_delegate_wrap::make_delegate_wrap;
 
 
@@ -21,8 +21,13 @@ pub(crate) fn make_poa_wrap(
     today: &Date
 ) -> Result<PoaWrap, Status> {
 
+    let code_knd = match data.mchd_type {
+        MchdType::FnsMchd => Some(Digits7_7::unchecked(MCHD_KND)),
+        _ => None
+    };
+
     let poa_wrap = PoaWrap {
-        code_knd: Some(Digits7_7::unchecked(MCHD_KND)),
+        code_knd,
         poa_doc: PoaRootKind::RootPoa(Box::new(make_root_poa(session, data, mchd_num, today)?))
     };
 
@@ -38,7 +43,7 @@ pub(crate) fn make_root_poa(
 
     let poa_metadata = make_poametadata(data, mchd_num, today);
 
-    let principal_info = match make_principal_info(session, data) {
+    let principal_wrap = match make_principal_wrap(session, data) {
         Ok(p) => p,
         Err(err) => {
             log::error!(
@@ -67,7 +72,7 @@ pub(crate) fn make_root_poa(
 
     let root_poa = RootPoa {
         poa_metadata,
-        principal: vec!(principal_info),
+        principal: vec!(principal_wrap),
         delegate: vec!(delegate_wrap),
         delegate_powers,
         notarial_certification: None

@@ -4,7 +4,7 @@ use shared_lib::service::mchd::implements::{
     PoaTypeRedelegatable
 
 };
-use shared_lib::service::mchd::service::NewMchdData;
+use shared_lib::service::mchd::service::{NewMchdData, MchdType};
 use shared_lib::primitives::frozen::implements::{
     BoxUuid, Date
 };
@@ -21,8 +21,16 @@ pub(crate) fn make_poametadata(
 ) -> PoaMetadata {
 
     
+    let tax_org_ident = match data.mchd_type {
+        MchdType::FnsMchd => Some(Digits4_4::unchecked(MCHD_TAX_ORG_IDENT)),
+        _ => None
+        
+    };
 
-    let tax_org_ident = Digits4_4::unchecked(MCHD_TAX_ORG_IDENT);
+    let tax_org_idents = match &tax_org_ident {
+        Some(i) => vec!(i.clone()),
+        None => vec!()
+    };
 
     let mchd_system_info_str = format!("{}{}", MCHD_SYSTEM_INFO, mchd_num);
 
@@ -39,8 +47,8 @@ pub(crate) fn make_poametadata(
         registration_date: None, 
         issue_date: today.clone(), 
         life_date: data.poa_end_date.clone(), 
-        tax_org_ident: Some(tax_org_ident.clone()), 
-        tax_org_idents: vec!(tax_org_ident), 
+        tax_org_ident, 
+        tax_org_idents, 
         mchd_system_info, 
         irrevocable_poa: None,  
     };

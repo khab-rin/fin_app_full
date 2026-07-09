@@ -84,7 +84,7 @@
 
     async function loadPowers() {
         try {
-            allPowers = await invoke<HomeMchdPower[]>("cmd_get_all_home_powers");
+            allPowers = await invoke<HomeMchdPower[]>("cmd_get_all_fns_powers");
         } catch(err) {
             console.error("Ошибка при получении полномочий:", err);
         }

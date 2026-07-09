@@ -1,10 +1,12 @@
 export const MchdStepType = {
+    BTBMchd: "BTBMchd",
+    FnsMchd: "FnsMchd",
     HomeMchd: "HomeMchd",
     LendMchd: "LendMchd",
     Loading: "Loading",
+    SaveXmlDocFiles: "SaveXmlDocFiles",
     ShowPowers: "ShowPowers",
-    Success: "Success",
-    TaxMchd: "TaxMchd",
+    SuccessRegisterMchd: "SuccessRegisterMchd",
     TryLater: "TryLater",
     WrongData: "WrongData",
 } as const

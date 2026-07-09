@@ -21,7 +21,7 @@ use shared_lib::service::mchd::implements::{
 
 
 
-pub(crate) fn make_principal_info(
+pub(crate) fn make_principal_wrap(
     session: &ActiveSession,
     data: &NewMchdData
 ) -> Result<PrincipalWrap, Status> {
