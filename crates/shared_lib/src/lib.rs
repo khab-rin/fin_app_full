@@ -50,7 +50,10 @@ use super::*;
             .expect("Не удалось экспортировать HomeMchdPower");
         
         service::mchd::home_mchd_power::HomePowerInfo::export_all_to(output_dir)
-            .expect("Не удалось экспортировать MchdPowerInfo")
+            .expect("Не удалось экспортировать MchdPowerInfo");
+
+        service::mchd::service::MchdType::export_all_to(output_dir)
+            .expect("Не удалось экспортировать MchdType");
     }
 }
 

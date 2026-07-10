@@ -1,6 +1,8 @@
+use std::collections::HashSet;
+
 use serde::{Serialize, Deserialize};
 
-use crate::primitives::frozen::implements_base::{String1_255, String6_255};
+use crate::primitives::frozen::implements_base::{String1_255, String1_10000, String6_255};
 use crate::service::mchd::implements::MchdPower;
 use crate::static_data::mchd_powers::powers_fns::*;
 use crate::static_data::mchd_powers::powers_btb::*;
@@ -143,6 +145,8 @@ pub enum HomeMchdPower {
     H911,
     H1010,
     H1011,
+
+    Unknown,
 }
 
 impl HomeMchdPower {
@@ -228,6 +232,8 @@ impl HomeMchdPower {
             Self::H1010 => &H1010,
             Self::H1011 => &H1011,
 
+            Self::Unknown => &UNKNOWN
+
         }
     }
 
@@ -236,6 +242,42 @@ impl HomeMchdPower {
         let code = String6_255::unchecked(data.code);
         let name = String1_255::unchecked(data.name);
         MchdPower { powers_mnemonic: None, powers_code: code, powers_name: name, poa_limitations: vec!() }
+    }
+
+    pub fn make_text_power(powers: &HashSet<HomeMchdPower>) -> String1_10000 {
+        let mut powers_str: Vec<String> = vec!();
+        for power in powers {
+            let data = power.get_power_info();
+            powers_str.push(data.name.to_string());
+        }
+
+        String1_10000::unchecked(powers_str.join(", "))
+    }
+
+    pub fn parse_text_power(power_text: &str) -> Self {
+        let t = power_text.trim();
+
+        if t == H110.name { Self::H110 }
+        else if t == H111.name { Self::H111 }
+        else if t == H210.name { Self::H210 }
+        else if t == H211.name { Self::H211 }
+        else if t == H310.name { Self::H310 }
+        else if t == H311.name { Self::H311 }
+        else if t == H410.name { Self::H410 }
+        else if t == H411.name { Self::H411 }
+        else if t == H510.name { Self::H510 }
+        else if t == H511.name { Self::H511 }
+        else if t == H610.name { Self::H610 }
+        else if t == H611.name { Self::H611 }
+        else if t == H710.name { Self::H710 }
+        else if t == H711.name { Self::H711 }
+        else if t == H810.name { Self::H810 }
+        else if t == H811.name { Self::H811 }
+        else if t == H910.name { Self::H910 }
+        else if t == H911.name { Self::H911 }
+        else if t == H1010.name { Self::H1010 }
+        else if t == H1011.name { Self::H1011 }
+        else { Self::Unknown }
     }
 
     pub fn get_all_tax_powers() -> Vec<HomeMchdPower> {

@@ -14,9 +14,9 @@ use shared_lib::service::mchd::implements::{
 };
 use shared_lib::service::mchd::poa::PoaMchd;
 use shared_lib::service::mchd::service::{NewMchdData, MchdType};
-use shared_lib::static_data::mchd_powers::document_propertys::{MCHD_R_T, MCHD_TAX_R_T,MCHD_TAX_ORG_IDENT, MCHD_XMLNS, MCHD_XMLNS_XSD, MCHD_XMLNS_XSI};
+use shared_lib::static_data::mchd_powers::document_propertys::{MCHD_R_T, MCHD_TAX_R_T, MCHD_XMLNS, MCHD_XMLNS_XSD, MCHD_XMLNS_XSI};
 
-use crate::service::mchd::make_poa_wrap::make_poa_wrap;
+use crate::service::mchd::make_poa_elems::poa_wrap::make_poa_wrap;
 
 
 pub(crate) fn make_poa(
@@ -37,13 +37,16 @@ pub(crate) fn make_poa(
         format!("{}_{}{:02}{:02}_{}", MCHD_R_T, years, month, days, mchd_num)
     );
 
+    let a: String = comp_inn.chars().take(4).collect();
+    let k = a.clone();
+
 
     let tax_file_identificator = match data.mchd_type {
         MchdType::FnsMchd => Some(String1_255::unchecked(
             format!("{}_{}_{}_{}{}_{}{:02}{:02}_{}", 
             MCHD_TAX_R_T, 
-            MCHD_TAX_ORG_IDENT, 
-            MCHD_TAX_ORG_IDENT, 
+            a, 
+            k, 
             comp_inn, 
             kpp, 
             years,

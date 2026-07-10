@@ -9,9 +9,10 @@ use shared_lib::service::mchd::implements::{
 };
 
 
-use crate::service::mchd::make_poametadata::make_poametadata;
-use crate::service::mchd::make_principal_wrap::make_principal_wrap;
-use crate::service::mchd::make_delegate_wrap::make_delegate_wrap;
+use crate::service::mchd::make_poa_elems::poa_metadata::make_poametadata;
+use crate::service::mchd::make_poa_elems::principal_wrap::make_principal_wrap;
+use crate::service::mchd::make_poa_elems::delegate_wrap::make_delegate_wrap;
+use crate::service::mchd::make_poa_elems::powers::make_delegate_powers;
 
 
 pub(crate) fn make_poa_wrap(
@@ -41,7 +42,7 @@ pub(crate) fn make_root_poa(
     today: &Date
 ) -> Result<RootPoa, Status> {
 
-    let poa_metadata = make_poametadata(data, mchd_num, today);
+    let poa_metadata = make_poametadata(session, data, mchd_num, today);
 
     let principal_wrap = match make_principal_wrap(session, data) {
         Ok(p) => p,
@@ -53,22 +54,11 @@ pub(crate) fn make_root_poa(
         }
     };
 
+    let delegate_powers = make_delegate_powers(data);
+
     let delegate_wrap = make_delegate_wrap(data);
 
-    let mut powers: Vec<MchdPower> = vec!();
-
-    for field in data.powers.iter().cloned() {
-        let power = field.make_mchd_power();
-        powers.push(power);
-    }
-
-    let delegate_powers = DelegatePowers {
-        power_type: PowerType::MachineReadable,
-        power_common_type: PowerCommonType::Individual,
-        redelegate_power_loss: None,
-        power_text: None,
-        mchd_powers: powers
-    };
+    
 
     let root_poa = RootPoa {
         poa_metadata,

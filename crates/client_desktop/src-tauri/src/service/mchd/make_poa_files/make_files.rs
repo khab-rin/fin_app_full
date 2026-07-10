@@ -4,7 +4,7 @@ use shared_lib::service::mchd::service::{MchdStep, NewMchdData, MchdInfo};
 use crate::state::ClientState;
 use crate::service::mchd::helper::check_update_user;
 use crate::sql_queries::persons::insert::person_no_sync::insert_person_no_sync;
-use crate::service::mchd::make_poa_files::make_poa::make_poa;
+use crate::service::mchd::make_poa_elems::poa::make_poa;
 use crate::service::mchd::make_poa_files::make_doc_file::add_doc_to_xml_file;
 
 

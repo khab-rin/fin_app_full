@@ -1,5 +1,5 @@
 macro_rules! frozen_primitives {
-    ($avail:vis $name:ident, $validator:expr, $data_type:ty, $label:literal) => {
+    ($avail:vis $name:ident, $validator:expr, $data_type:ty, $label:literal, $formatter:expr) => {
         #[derive(Debug, Clone, Ord, PartialOrd, Serialize, Deserialize, ts_rs::TS)]
         #[serde(try_from = "String", into = "String")]
         #[ts(as = "String")] 
@@ -25,6 +25,9 @@ macro_rules! frozen_primitives {
                 Self { data: val.into() }
             }
 
+            pub fn beat_string(&self) -> String {
+                $formatter(&self.data)
+            }
         }
 
         impl std::str::FromStr for $name {
@@ -129,7 +132,6 @@ macro_rules! frozen_primitives {
                 < $data_type as ::sqlx::postgres::PgHasArrayType >::array_type_info()
             }
         }
-
     };
 }
 

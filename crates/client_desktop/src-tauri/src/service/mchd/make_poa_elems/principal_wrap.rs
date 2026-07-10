@@ -1,6 +1,7 @@
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::Region;
-use shared_lib::service::mchd::service::NewMchdData;
+use shared_lib::primitives::frozen::implements::{FirstName, MidName, Region, Snils, SurName};
+use shared_lib::primitives::frozen::implements_base::String1_255;
+use shared_lib::service::mchd::service::{MchdType, NewMchdData};
 use shared_lib::service::auth_service::client_state::ActiveSession;
 use shared_lib::primitives::composite::implements::Fio;
 use shared_lib::service::mchd::implements::{
@@ -130,7 +131,7 @@ pub(crate) fn make_russ_organization(
         address: Some(make_address(session))
     };
 
-    return Ok(a);
+    Ok(a)
 }
 
 
@@ -154,7 +155,7 @@ pub(crate) fn make_address(
 
     PostalAddress {
         region,
-        fias_id,
+        fias_id: None,
         address
     }
 }
@@ -177,8 +178,8 @@ pub(crate) fn make_root_manager_wrap_person(
     WrapPerson {
         principal_notarial_status: None,
         inn: Some(data.manager_inn.clone()),
-        snils: Some(data.manager_snils.clone()),
-        position: Some(data.manager_tittle.clone()),
+        snils: Some(Snils::unchecked(data.manager_snils.beat_string())),
+        position: Some(String1_255::unchecked(data.manager_tittle.beat_string())),
         direct_authority_doc: None,
         person: make_root_manager_person_mchd(data)
     }
@@ -188,9 +189,14 @@ pub(crate) fn make_root_manager_person_mchd(
     data: &NewMchdData
 ) -> PersonMchd {
 
+    let is_citizen = match data.mchd_type {
+        MchdType::FnsMchd => Some(data.manager_is_citizen),
+        _ => None
+    };
+
     PersonMchd {
         gender: None,
-        is_citizen: Some(data.manager_is_citizen),
+        is_citizen,
         ern_num: None,
         birth_day: Some(data.manager_birth_day.clone()),
         birth_place: None,
@@ -198,9 +204,9 @@ pub(crate) fn make_root_manager_person_mchd(
         tel_number: None,
         email: None,
         fio: Fio {
-            first_name: data.manager_first_name.clone(),
-            sur_name: data.manager_sur_name.clone(),
-            mid_name: Some(data.manager_mid_name.clone())
+            first_name: FirstName::unchecked(data.manager_first_name.beat_string()),
+            sur_name: SurName::unchecked(data.manager_sur_name.beat_string()),
+            mid_name: Some(MidName::unchecked(data.manager_mid_name.beat_string()))
         },
         address: None,
         person_docums: None

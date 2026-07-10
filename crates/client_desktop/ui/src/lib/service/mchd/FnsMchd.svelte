@@ -6,6 +6,7 @@
 
     import type { HomeMchdPower } from "$lib/models/rustModels/HomeMchdPower";
     import type {MchdStep} from "$lib/models/rustModels/MchdStep";
+    import type {MchdType} from "$lib/models/rustModels/MchdType";
 
 
     let selectedPowers = new SvelteSet<HomeMchdPower>();
@@ -135,6 +136,7 @@
             userPassportIssueer: currentMchdStep.data.userPassportIssueer.value,
             userPassportUssuerCode: currentMchdStep.data.userPassportUssuerCode.value,
             userIsCitizen: currentMchdStep.data.userIsCitizen.value,
+            mchdType: "FnsMchd" satisfies MchdType,
             powers: Array.from(selectedPowers)
         }
 

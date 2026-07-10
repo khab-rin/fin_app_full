@@ -1,35 +1,36 @@
+use shared_lib::service::auth_service::client_state::ActiveSession;
+
 use shared_lib::service::mchd::implements::{
     PoaMetadata,
     PoaTypeRevocable,
     PoaTypeRedelegatable
 
 };
+
+
 use shared_lib::service::mchd::service::{NewMchdData, MchdType};
 use shared_lib::primitives::frozen::implements::{
     BoxUuid, Date
 };
-use shared_lib::static_data::mchd_powers::document_propertys::{MCHD_SYSTEM_INFO, MCHD_TAX_ORG_IDENT};
+use shared_lib::static_data::mchd_powers::document_propertys::MCHD_SYSTEM_INFO;
 use shared_lib::primitives::frozen::implements_base::{
     Digits4_4, String1_1000
 };
 
 
 pub(crate) fn make_poametadata(
+    session: &ActiveSession,
     data: &NewMchdData,
     mchd_num: &BoxUuid,
     today: &Date
 ) -> PoaMetadata {
 
-    
+    let ident: String = session.session_user.company.comp_inn.as_ref().chars().take(4).collect();
+
     let tax_org_ident = match data.mchd_type {
-        MchdType::FnsMchd => Some(Digits4_4::unchecked(MCHD_TAX_ORG_IDENT)),
+        MchdType::FnsMchd => Some(Digits4_4::unchecked(ident)),
         _ => None
         
-    };
-
-    let tax_org_idents = match &tax_org_ident {
-        Some(i) => vec!(i.clone()),
-        None => vec!()
     };
 
     let mchd_system_info_str = format!("{}{}", MCHD_SYSTEM_INFO, mchd_num);
@@ -48,7 +49,7 @@ pub(crate) fn make_poametadata(
         issue_date: today.clone(), 
         life_date: data.poa_end_date.clone(), 
         tax_org_ident, 
-        tax_org_idents, 
+        tax_org_idents: vec!(), 
         mchd_system_info, 
         irrevocable_poa: None,  
     };

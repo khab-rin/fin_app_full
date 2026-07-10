@@ -30,3 +30,5 @@ pub const H911: HomePowerInfo = HomePowerInfo { code: "H911", name: "Форми�
 
 pub const H1010: HomePowerInfo = HomePowerInfo { code: "H1010", name: "Просматривать маркетинговые отчеты и аналитику кампаний" };
 pub const H1011: HomePowerInfo = HomePowerInfo { code: "H1011", name: "Управлять рекламными бюджетами, подрядчиками и маркетинговыми акциями (полный доступ)" };
+
+pub const UNKNOWN: HomePowerInfo = HomePowerInfo { code: "Unknown", name: "Неизвестное полномиче" };
