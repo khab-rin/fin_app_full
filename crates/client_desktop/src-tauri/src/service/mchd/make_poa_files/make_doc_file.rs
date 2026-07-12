@@ -59,9 +59,9 @@ pub(crate) fn add_doc_to_xml_file(
         None => {
             log::error!(
                 "FUN make_mchd_step_tax_success FAILED BY MISS session.session_user.company.metadata.comp_name, err = {}",
-                Status::DadataMissFields
+                Status::RequiredFieldsMiss
             );
-            return Err(Status::DadataMissFields);
+            return Err(Status::RequiredFieldsMiss);
         }
     };
 
@@ -70,9 +70,9 @@ pub(crate) fn add_doc_to_xml_file(
         None => {
             log::error!(
                 "FUN make_mchd_step_tax_success FAILED BY MISS session.session_user.company.metadata.comp_name.full_egrul_name, err = {}",
-                Status::DadataMissFields
+                Status::RequiredFieldsMiss
             );
-            return Err(Status::DadataMissFields);
+            return Err(Status::RequiredFieldsMiss);
         }
     };
 

@@ -31,7 +31,14 @@ pub(crate) fn make_poa(
     let month = today.as_ref().month();
     let days = today.as_ref().day();
     let comp_inn = session.session_user.company.comp_inn.as_ref();
-    let kpp = session.session_user.company.kpp.as_ref();
+    
+    let kpp_raw = session.session_user.company.kpp.to_string();
+
+    let kpp = match kpp_raw.as_str() {
+        "0" => "",
+        _ => &kpp_raw, // Возвращаем ссылку на kpp_raw
+    };
+
 
     let flie_identificator = String1_255::unchecked(
         format!("{}_{}{:02}{:02}_{}", MCHD_R_T, years, month, days, mchd_num)

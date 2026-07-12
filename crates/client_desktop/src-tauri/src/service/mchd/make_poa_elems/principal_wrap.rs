@@ -1,5 +1,5 @@
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::{FirstName, MidName, Region, Snils, SurName};
+use shared_lib::primitives::frozen::implements::{FirstName, MidName, Ogrn, Region, Snils, SurName};
 use shared_lib::primitives::frozen::implements_base::String1_255;
 use shared_lib::service::mchd::service::{MchdType, NewMchdData};
 use shared_lib::service::auth_service::client_state::ActiveSession;
@@ -32,9 +32,19 @@ pub(crate) fn make_principal_wrap(
         _ => PrincipalIdentity::IndividualEntrepreneur
     };
 
+    let principal = match make_principal(session, data) {
+        Ok(p) => p,
+        Err(err) => {
+            log::error!(
+                "FUN make_principal FAILED BY FUN make_principal, err = {:?}", err
+            );
+            return Err(err);
+        }
+    };
+
     let principal_info = PrincipalWrap { 
         principal_identity, 
-        principal: make_principal(session, data)?
+        principal
     };
 
     Ok(principal_info)
@@ -47,10 +57,30 @@ pub(crate) fn make_principal(
     data: &NewMchdData
 ) -> Result<Principal, Status> {
 
+    let russian_org = match make_russ_org_principal(session, data) {
+        Ok(o) => o,
+        Err(err) => {
+            log::error!(
+                "FUN make_principal FAILED BY FUN make_russ_org_principal, err = {:?}", err
+            );
+            return Err(err);
+        }
+    };
+
+    let ip = match make_ip_principal(session, data) {
+        Ok(i) => i,
+        Err(err) => {
+            log::error!(
+                "FUN make_principal FAILED BY FUN make_ip_principal, err = {:?}", err
+            );
+            return Err(err);
+        }
+    };
+
     let principal = Principal {
-        russian_org: make_russ_org_principal(session, data)?,
+        russian_org,
         foreign_org: None,
-        ip: make_ip_principal(session, data),
+        ip,
         person: None
     };
 
@@ -66,7 +96,16 @@ pub(crate) fn make_russ_org_principal(
         return Ok(None)
     }
     
-    let russ_organization = make_russ_organization(session, data)?;
+    let russ_organization = match make_russ_organization(session) {
+        Ok(o) => o,
+        Err(err) => {
+            log::error!(
+                "FUN make_principal FAILED BY FUN make_russ_org_principal, err = {:?}", err
+            );
+            return Err(err);
+        }
+    };
+    
     let root_manager = make_rootmanager(data);
 
     let russ_organization_principal = RussOrgPrincipal {
@@ -81,18 +120,9 @@ pub(crate) fn make_russ_org_principal(
     Ok(Some(russ_organization_principal))
 }
 
-pub(crate) fn make_ip_principal(
-    session: &ActiveSession,
-    data: &NewMchdData
-) -> Option<IpPrincipal> {
-    
-    None
-}
-
 
 pub(crate) fn make_russ_organization(
     session: &ActiveSession,
-    data: &NewMchdData
 ) -> Result<RussOrganization, Status> {
 
     let comp_name_data = match session.session_user.company.metadata.comp_name.clone() {
@@ -100,9 +130,9 @@ pub(crate) fn make_russ_organization(
         None => {
             log::error!(
                 "FUN make_russ_organization FAILED BY MISS session.session_user.company.metadata.comp_name, err = {}",
-                Status::DadataMissFields
+                Status::RequiredFieldsMiss
             );
-            return Err(Status::DadataMissFields);
+            return Err(Status::RequiredFieldsMiss);
         }
     };
 
@@ -111,9 +141,9 @@ pub(crate) fn make_russ_organization(
         None => {
             log::error!(
                 "FUN make_russionorgenization FAILED BY MISS session.session_user.company.metadata.comp_name.full_egrul_name, err = {}",
-                Status::DadataMissFields
+                Status::RequiredFieldsMiss
             );
-            return Err(Status::DadataMissFields);
+            return Err(Status::RequiredFieldsMiss);
         }
     };
 
@@ -212,4 +242,64 @@ pub(crate) fn make_root_manager_person_mchd(
         person_docums: None
 
     }
+}
+
+
+
+pub(crate) fn make_ip_principal(
+    session: &ActiveSession,
+    data: &NewMchdData
+) -> Result<Option<IpPrincipal>, Status> {
+
+    if session.session_user.company.comp_inn.len() == 10 {
+        return Ok(None);
+    }
+
+    let ogrnip = match session.session_user.company.metadata.ogrn.clone() {
+        Some(o) => Ogrn::unchecked(o.beat_string()),
+        None => {
+            log::error!(
+                "FUN make_ip_principal FAILED BY MISS session.session_user.company.metadata.ogrn, err = {:?}", Status::RequiredFieldsMiss
+            );
+            return Err(Status::RequiredFieldsMiss);
+        }
+    };
+
+    let fio = Fio {
+        sur_name: SurName::unchecked(data.manager_sur_name.beat_string()),
+        first_name: FirstName::unchecked(data.manager_first_name.beat_string()),
+        mid_name: Some(MidName::unchecked(data.manager_mid_name.beat_string()))
+    };
+
+    let is_citizen = match data.mchd_type {
+        MchdType::FnsMchd => Some(data.manager_is_citizen),
+        _ => None
+    };
+
+    let person: PersonMchd = PersonMchd {
+        gender: None,
+        is_citizen,
+        ern_num: None,
+        birth_day: Some(data.manager_birth_day.clone()),
+        birth_place: None,
+        country_code: None,
+        tel_number: None,
+        email: None,
+        fio,
+        address: None,
+        person_docums: None
+
+    };
+
+    let ip_principal = IpPrincipal {
+        principal_notarial_status: None,
+        name: None,
+        ogrnip,
+        inn: session.session_user.person.pers_inn.clone(),
+        snils: Snils::unchecked(session.session_user.person.metadata.snils.beat_string()),
+        direct_authority_doc: None,
+        person
+    };
+    
+    Ok(Some(ip_principal))
 }

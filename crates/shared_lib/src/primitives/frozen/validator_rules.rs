@@ -91,7 +91,7 @@ pub fn init_comp_inn_from_str(inn: &str) -> Result<Box<str>, Status> {
 pub(crate) fn init_kpp_from_str(kpp: &str) -> Result<Box<str>, Status> {
     let kpp = kpp.trim().to_uppercase();
     if kpp.is_empty() || kpp == "0" || kpp == "000000000" {
-        return Ok("0".into());
+        return Ok("".into());
     }
     get_is_kpp_reg().is_match(&kpp)
         .then(|| kpp.into_boxed_str())
@@ -113,18 +113,26 @@ pub(crate) fn init_bic_from_str(bic: &str) -> Result<Box<str>, Status> {
 }
 
 pub(crate) fn init_ogrn_from_str(ogrn: &str) -> Result<Box<str>, Status> {
-    let ogrn = ogrn.trim();
-    if !get_is_ogrn_reg().is_match(ogrn) {
+    let cleaned_ogrn: String = ogrn.chars().filter(|c| c.is_ascii_digit()).collect();
+    
+    let n = cleaned_ogrn.len();
+    if n != 13 && n != 15 {
         return Err(Status::ValidOgrn);
     }
-    let n = ogrn.len();
-    let head: u64 = ogrn[..n-1].parse().map_err(|_| Status::ValidOgrn)?;
-    let last: u8 = ogrn.as_bytes()[n-1] - b'0';
+    if !get_is_ogrn_reg().is_match(&cleaned_ogrn) {
+        return Err(Status::ValidOgrn);
+    }
+    let head: u64 = cleaned_ogrn[..n-1].parse().map_err(|_| Status::ValidOgrn)?;
+    let last: u8 = cleaned_ogrn.as_bytes()[n-1] - b'0';
+    
     let divider = if n == 13 { 11 } else { 13 };
     let expected = ((head % divider) % 10) as u8;
 
-    if expected == last { Ok(ogrn.into()) } 
-    else { Err(Status::ValidOgrn) }
+    if expected == last { 
+        Ok(cleaned_ogrn.into_boxed_str()) 
+    } else { 
+        Err(Status::ValidOgrn) 
+    }
 }
 
 pub(crate) fn str_to_decimal(value: &str) -> Result<Decimal, Status> {

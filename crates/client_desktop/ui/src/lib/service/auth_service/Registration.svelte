@@ -46,6 +46,11 @@
         initDocPath.length == 0 ||
         signPath.length == 0
     );
+
+    let docPathsLoaded = $derived(initDocPath.length == 0 || signPath.length == 0 || !currAuthStep.data.password.isValid || passwordRepeat != currAuthStep.data.password.value);
+
+
+
     
     function makeInitregistrationFlags() {
         firstStep = false;
@@ -380,7 +385,6 @@
             <button 
                 type="button" 
                 onclick={makeSecondStepTwoFlags}
-                disabled={isFormValid}
                 class="main-button"
                 id="auth-goto-load-button"
             >
@@ -545,7 +549,7 @@
         <button 
             type="button" 
             onclick={handleRegistrationSubmit}
-            disabled={isRegDataValid || isPushedReg}
+            disabled={docPathsLoaded || isPushedReg}
             class="main-button"
             id="auth-submit-button"
         >

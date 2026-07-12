@@ -115,7 +115,7 @@ pub enum Status {
     BackSmsRuBalance = 500,
     BackApiError = 501,
     CryptoServerError = 502,
-    DadataMissFields = 503,
+    RequiredFieldsMiss = 503,
 
     // ==========================================
     // 600-я группа: Ошибки выполнения HTTP/сетевых запросов

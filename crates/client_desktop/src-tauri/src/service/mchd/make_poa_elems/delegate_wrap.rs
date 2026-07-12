@@ -86,7 +86,7 @@ pub(crate) fn make_delegate_passport(
     PersonDocum {
         doc_code: RussDocumCode::PasspRf,
         doc_ser_num: String1_25::unchecked(data.user_passport_number.beat_string()),
-        doc_date: data.manager_birth_day.clone(),
+        doc_date: data.user_passport_issue_date.clone(),
         issued_by: Some(data.user_passport_issueer.clone()),
         issued_code: Some(data.user_passport_ussuer_code.clone()),
         exp_date: None
