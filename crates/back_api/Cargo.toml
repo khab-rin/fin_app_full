@@ -28,7 +28,7 @@ chrono = { workspace = true }
 
 toml = { workspace = true }
 
-reqwest = { workspace = true, features = ["json", "rustls", "query"] }
+reqwest = { workspace = true, features = ["json", "rustls", "query", "cookies", "form"] }
 tower-http = { workspace = true, features = ["trace"] }
 reqwest-middleware = { workspace = true, features = ["json", "query"]  }
 reqwest-retry = { workspace = true }

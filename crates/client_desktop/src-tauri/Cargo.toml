@@ -27,7 +27,7 @@ tauri-plugin-log = { workspace = true }
 tauri-plugin-fs = { workspace = true}
 ts-rs = { workspace = true }
 
-reqwest = { workspace = true, features = ["json", "rustls", "query"] }
+reqwest = { workspace = true, features = ["json", "rustls", "query", "cookies", "form"] }
 reqwest-middleware = { workspace = true, features = ["json", "query"]  }
 reqwest-retry = { workspace = true }
 

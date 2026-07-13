@@ -11,7 +11,7 @@ shared_lib = { path = "crates/shared_lib" }
 
 axum = { version = "0.7", default-features = false, features = ["tokio", "json", "http1"] }
 
-reqwest = { version = "=0.13", features = ["json", "rustls", "query"] }
+reqwest = { version = "=0.13", features = ["json", "rustls", "query", "cookies", "form"] }
 tower-http = { version = "0.5", features = ["trace"] }
 reqwest-middleware = { version = "0.5", features = ["json", "query"] }
 reqwest-retry = { version = "0.9" }
