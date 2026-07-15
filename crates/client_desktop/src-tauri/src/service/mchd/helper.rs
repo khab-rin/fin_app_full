@@ -2,7 +2,7 @@ use shared_lib::sql_models::person::implements::Person;
 use shared_lib::service::mchd::service::NewMchdData;
 use shared_lib::sql_models::person::implements::{PassportRf, PasspRfCode};
 
-pub(crate) fn check_update_user(
+pub(crate) fn check_mchd_user(
     person: &mut Person,
     data: &NewMchdData
 ) -> bool {

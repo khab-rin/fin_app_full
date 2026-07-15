@@ -114,6 +114,7 @@
         let data = {
             poaNumber: currentMchdStep.data.PoaNumber.value,
             poaEndDate: currentMchdStep.data.PoaEndDate.value,
+            taxOrgIdent: currentMchdStep.data.taxOrgIdent.value,
 
             managerTittle: currentMchdStep.data.managerTitle.value,
             managerSurName: currentMchdStep.data.managerSurName.value,

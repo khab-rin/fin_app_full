@@ -29,7 +29,6 @@ pub async fn register_user(
     let failed_result = AuthStep::TryLater { text: TextInfo::ClientApiSystemError };
 
     let SvelteRegistrationData { 
-        nick, 
         sur_name, 
         first_name, 
         mid_name, 
@@ -167,8 +166,18 @@ pub async fn register_user(
         }
     }
 
+    let sur_name = success_result.user.person.metadata.fio.sur_name.clone();
+
+
+    let comp_name = success_result.user.company.metadata.comp_name.as_ref() // <-- добавили .as_ref() для внешнего Option
+        .and_then(|c| c.short_egrul_name.as_ref())
+        .map(|s| s.to_string())
+        .unwrap_or_else(|| "Неизвестная компания".to_string());
+    
+    let nick = format!("{}_{}", sur_name, comp_name);
+
     let nick_data = NickData {
-        nick: nick.clone(),
+        nick,
         pers_inn: pers_inn.clone(),
         comp_inn: comp_inn.clone(),
         kpp: kpp.clone()

@@ -35,7 +35,7 @@ pub(crate) async fn lend_mchd_to_back_api_for_register(
         }
     };
 
-    let sig_file = match std::fs::read(xml_file_path) {
+    let sig_file = match std::fs::read(sig_file_path) {
         Ok(d) => d,
         Err(err) => {
             log::error!(

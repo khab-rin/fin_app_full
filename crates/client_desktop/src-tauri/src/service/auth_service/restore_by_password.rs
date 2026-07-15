@@ -89,8 +89,18 @@ pub(crate) async fn restore_by_password(
         }
     }
 
+    let sur_name = success_result.user.person.metadata.fio.sur_name.clone();
+
+
+    let comp_name = success_result.user.company.metadata.comp_name.as_ref() // <-- добавили .as_ref() для внешнего Option
+        .and_then(|c| c.short_egrul_name.as_ref())
+        .map(|s| s.to_string())
+        .unwrap_or_else(|| "Неизвестная компания".to_string());
+    
+    let nick = format!("{}_{}", sur_name, comp_name);
+
     let nick_data = NickData {
-        nick: data.nick.clone(),
+        nick,
         pers_inn: data.pers_inn.clone(),
         comp_inn: data.comp_inn.clone(),
         kpp: data.kpp.clone()

@@ -66,7 +66,7 @@ pub(crate) fn add_nick_data(
 
 pub(crate) fn get_nick_names(
     state: &ClientState,
-) -> Result<Vec<String1_50>, Status> {
+) -> Result<Vec<String>, Status> {
 
     let file_path = match get_nick_data_path(state) {
         Ok(f) => f,
@@ -88,7 +88,7 @@ pub(crate) fn get_nick_names(
         }
     };
 
-    let res: Vec<String1_50> = nick_datas.into_iter().map(|x| x.nick).collect();
+    let res: Vec<String> = nick_datas.into_iter().map(|x| x.nick).collect();
 
     Ok(res)
 }
@@ -96,7 +96,7 @@ pub(crate) fn get_nick_names(
 
 pub(crate) fn get_nick_data_by_nick(
     state: &ClientState,
-    nick: &String1_50
+    nick: &String
 ) -> Result<Option<NickData>, Status> {
 
     let file_path = match get_nick_data_path(state) {
@@ -120,7 +120,7 @@ pub(crate) fn get_nick_data_by_nick(
     };
 
     for nick_data in nick_datas {
-        if nick_data.nick == nick {
+        if nick_data.nick == nick.clone() {
             return Ok(Some(nick_data));
         }
     }

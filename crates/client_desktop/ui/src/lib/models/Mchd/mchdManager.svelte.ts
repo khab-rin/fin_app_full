@@ -54,6 +54,8 @@ class MchdManager {
     data = $state({
         PoaNumber: new FieldValidator("String1_50", "1"),
         PoaEndDate: new FieldValidator("Date", "18.06.2028"),
+        taxOrgIdent: new FieldValidator("Digits4_4", "1655"),
+
 
         managerTitle: new FieldValidator("String1_255", "Директор"),
         managerSurName: new FieldValidator("SurName", "Хабипов"),

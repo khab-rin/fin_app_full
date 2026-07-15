@@ -2,6 +2,5 @@
 import type { CompInn } from "./CompInn";
 import type { Kpp } from "./Kpp";
 import type { PersInn } from "./PersInn";
-import type { String1_50 } from "./String1_50";
 
-export type NickData = { nick: String1_50, pers_inn: PersInn, comp_inn: CompInn, kpp: Kpp, };
+export type NickData = { nick: string, pers_inn: PersInn, comp_inn: CompInn, kpp: Kpp, };

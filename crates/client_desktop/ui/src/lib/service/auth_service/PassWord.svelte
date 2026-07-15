@@ -10,7 +10,6 @@
         if (isPushed) return;
        
         if (
-            !currAuthStep.data.nick.isValid || 
             !currAuthStep.data.persInn.isValid || 
             !currAuthStep.data.compInn.isValid ||
             !currAuthStep.data.kpp.isValid ||
@@ -18,7 +17,6 @@
         ) return;
 
         const sendData: PasswordDataClientShort = {
-            nick: currAuthStep.data.nick.value,
             password: currAuthStep.data.password.value,
             pers_inn: currAuthStep.data.persInn.value,
             comp_inn: currAuthStep.data.compInn.value,
@@ -46,21 +44,6 @@
 </script>
 
 <div class="input-section">
-    <div class="input-group">
-        <label for="nick">Имя пользователя</label>
-        <input 
-            id="nick" 
-            type="text" 
-            bind:value={currAuthStep.data.nick.value} 
-            disabled={isPushed}
-            placeholder="Введите ваш никнейм"
-            class="input-field" 
-            class:input-error={!currAuthStep.data.nick.isValid}/>
-        
-        {#if !currAuthStep.data.nick.isValid}
-            <span class="input-error">Некорректный никнейм</span>
-        {/if}
-    </div>
 
     <div class="input-group">
         <label for="persInn">ИНН физического лица</label>
@@ -130,7 +113,6 @@
             onclick={handleAuthSubmit}
             disabled={
                 isPushed || 
-                !currAuthStep.data.nick.isValid || 
                 !currAuthStep.data.persInn.isValid || 
                 !currAuthStep.data.compInn.isValid || 
                 !currAuthStep.data.kpp.isValid || 

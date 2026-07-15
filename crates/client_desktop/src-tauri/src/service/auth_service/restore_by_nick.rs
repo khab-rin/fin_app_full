@@ -15,7 +15,7 @@ use crate::state::{init_session, ClientState};
 
 pub(crate) async fn restore_session_by_nick(
     state: &ClientState,
-    nick: &String1_50
+    nick: &String
 ) -> Result<AuthStep, Status> {
 
     let device_id = match get_device_id() {

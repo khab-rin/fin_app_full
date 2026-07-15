@@ -14,7 +14,8 @@
 
     let firstDone = $derived(
         !currentMchdStep.data.PoaNumber.isValid || 
-        !currentMchdStep.data.PoaEndDate.isValid);
+        !currentMchdStep.data.PoaEndDate.isValid ||
+        !currentMchdStep.data.taxOrgIdent.isValid);
 
     let secondDone = $derived(
         !currentMchdStep.data.managerTitle.isValid ||
@@ -114,6 +115,7 @@
         let data = {
             poaNumber: currentMchdStep.data.PoaNumber.value,
             poaEndDate: currentMchdStep.data.PoaEndDate.value,
+            taxOrgIdent: currentMchdStep.data.taxOrgIdent.value,
 
             managerTittle: currentMchdStep.data.managerTitle.value,
             managerSurName: currentMchdStep.data.managerSurName.value,
@@ -187,6 +189,25 @@
         />
         {#if !currentMchdStep.data.PoaEndDate.isValid}
             <span class="input-error-span">Некорректная дата</span>
+        {/if}
+    </div>
+
+    <div class="input-group">
+        <label class="input-group-label" for="taxOrgIdent">
+            4-значный номер налоговой
+            <span class='input-tool' data-input-tool="если вы уверены что не меняли место регистрации организации и в вашей налоговой не происходило слияний\разделений с момента регистрации вашей организации (ип), то это первые 4 цифры инн. В противном случае посмотрите этот код в сданной отчетности">?</span>
+        </label>
+        <input
+            id="taxOrgIdent"
+            type="text"
+            bind:value={currentMchdStep.data.taxOrgIdent.value}
+            disabled={isMainPushed}
+            placeholder="Введите 4-значный номер налоговой в которой Вы подаете отчетность"
+            class="input-field"
+            class:input-error={!currentMchdStep.data.taxOrgIdent.isValid}
+        />
+        {#if !currentMchdStep.data.taxOrgIdent.isValid}
+            <span class="input-error-span">Некорректный номер</span>
         {/if}
     </div>
 </section>

@@ -1,3 +1,5 @@
+use std::fmt::format;
+
 use shared_lib::Status;
 use shared_lib::service::auth_service::client_state::{NickData, UserLogInfo};
 use shared_lib::service::auth_service::implements::IngoingData;
@@ -12,7 +14,6 @@ pub(crate) async  fn make_ingoing_doc(
 ) -> Result<Vec<u8>, Status> {
 
     let IngoingData { 
-        nick,
         sur_name, 
         first_name, 
         mid_name, 
@@ -128,8 +129,10 @@ pub(crate) async  fn make_ingoing_doc(
 
     let hash_string = hash_res.to_hex().to_string();
 
+    let nick = format!("{}_{}_{}", sur_name, comp_inn, kpp);
+
     let new_nick_data = NickData {
-        nick: nick.clone(),
+        nick,
         pers_inn: pers_inn.clone(),
         comp_inn: comp_inn.clone(),
         kpp: kpp.clone()

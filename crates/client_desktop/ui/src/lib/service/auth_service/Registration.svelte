@@ -22,10 +22,8 @@
     let initDocPath = $state("");
     let signPath = $state("");
 
-    let isNickExist = $derived(currAuthStep.nick_names.includes(currAuthStep.data.nick.value));
 
     let isFormValid = $derived(
-        isNickExist ||
         isPushedMakeDoc ||
         !currAuthStep.data.nick.isValid ||
         !currAuthStep.data.surName.isValid ||
@@ -47,7 +45,12 @@
         signPath.length == 0
     );
 
-    let docPathsLoaded = $derived(initDocPath.length == 0 || signPath.length == 0 || !currAuthStep.data.password.isValid || passwordRepeat != currAuthStep.data.password.value);
+    let docPathsLoaded = $derived(
+        initDocPath.length == 0 || 
+        signPath.length == 0 || 
+        !currAuthStep.data.password.isValid || 
+        passwordRepeat != currAuthStep.data.password.value
+    );
 
 
 
@@ -116,7 +119,6 @@
         
 
         const ingoingData: IngoingData = {
-            nick: currAuthStep.data.nick.value,
             sur_name: currAuthStep.data.surName.value,
             first_name: currAuthStep.data.firstName.value,
             mid_name: currAuthStep.data.midName.value.trim() || null,
@@ -167,7 +169,6 @@
         if (isRegDataValid) return;
 
         const regData: SvelteRegistrationData = {
-            nick: currAuthStep.data.nick.value,
             sur_name: currAuthStep.data.surName.value,
             first_name: currAuthStep.data.firstName.value,
             mid_name: currAuthStep.data.midName.value,
@@ -203,21 +204,6 @@
 
 
 <section hidden={firstStep} class="input-section">
-    <div class="input-group">
-        <label for="nick">Никнейм (Логин для входа)</label>
-        <input 
-            id="nick" 
-            type="text" 
-            bind:value={currAuthStep.data.nick.value} 
-            disabled={isPushedMakeDoc}
-            placeholder="Придумайте уникальный логин"
-            class="input-field"
-            class:input-error={!currAuthStep.data.nick.isValid || isNickExist}
-        />
-        {#if !currAuthStep.data.nick.isValid}
-            <span class="input-error">Некорректный никнейм (от 1 до 50 символов)</span>
-        {/if}
-    </div>
 
     <div class="input-group">
         <label for="surName">Фамилия</label>

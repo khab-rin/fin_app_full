@@ -92,7 +92,6 @@ pub struct TokenDeviceData {
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub struct PasswordDataClientShort {
-    pub nick: String1_50,
     pub password: String,
     pub pers_inn: PersInn,
     pub comp_inn: CompInn,
@@ -163,7 +162,6 @@ pub struct SmsruGetResResponse {
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub struct SvelteRegistrationData {
-    pub nick: String1_50,
     pub sur_name: SurName,
     pub first_name: FirstName,
     pub mid_name: MidName,
@@ -180,7 +178,6 @@ pub struct SvelteRegistrationData {
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub struct IngoingData {
-    pub nick: String1_50,
     pub sur_name: SurName,
     pub first_name: FirstName,
     pub mid_name: Option<MidName>,

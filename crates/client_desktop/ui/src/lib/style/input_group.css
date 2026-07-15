@@ -167,3 +167,43 @@
     color: #ef4444;
     margin-top: 0.25rem;
 }
+
+
+.input-tool {
+    cursor: help;
+    border: 1px solid #aaa;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 10px;
+    color: #666;
+    margin-left: 5px;
+    position: relative;
+    display: inline-block;
+}
+
+.input-tool::after {
+    content: attr(data-input-tool);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 120%; /* Появление под знаком вопроса */
+    width: 300px; /* Фиксируем ширину для длинного текста */
+    padding: 10px;
+    background: #333;
+    color: #fff;
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 1.4;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 100;
+    pointer-events: none; /* Чтобы подсказка не "перехватывала" мышь */
+    text-align: left;
+    white-space: normal; /* Разрешаем перенос строк */
+}
+
+.input-tool:hover::after {
+    visibility: visible;
+    opacity: 1;
+}

@@ -25,10 +25,8 @@ pub(crate) fn make_poametadata(
     today: &Date
 ) -> PoaMetadata {
 
-    let ident: String = session.session_user.company.comp_inn.as_ref().chars().take(4).collect();
-
     let tax_org_ident = match data.mchd_type {
-        MchdType::FnsMchd => Some(Digits4_4::unchecked(ident)),
+        MchdType::FnsMchd => Some(data.tax_org_ident.clone()),
         _ => None
         
     };

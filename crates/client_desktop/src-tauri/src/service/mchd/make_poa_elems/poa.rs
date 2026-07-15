@@ -36,7 +36,7 @@ pub(crate) fn make_poa(
 
     let kpp = match kpp_raw.as_str() {
         "0" => "",
-        _ => &kpp_raw, // Возвращаем ссылку на kpp_raw
+        _ => &kpp_raw,
     };
 
 
@@ -44,7 +44,7 @@ pub(crate) fn make_poa(
         format!("{}_{}{:02}{:02}_{}", MCHD_R_T, years, month, days, mchd_num)
     );
 
-    let a: String = comp_inn.chars().take(4).collect();
+    let a = data.tax_org_ident.to_string();
     let k = a.clone();
 
 

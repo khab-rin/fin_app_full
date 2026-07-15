@@ -21,7 +21,7 @@ pub struct UserLogInfo {
 
 #[derive(Serialize, Deserialize, Eq, Hash, PartialEq, Clone, ts_rs::TS)]
 pub struct NickData {
-    pub nick: String1_50,
+    pub nick: String,
     pub pers_inn: PersInn,
     pub comp_inn: CompInn,
     pub kpp: Kpp

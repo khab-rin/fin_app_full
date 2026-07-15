@@ -2,7 +2,7 @@ use shared_lib::Status;
 use shared_lib::service::mchd::service::{MchdStep, NewMchdData, MchdInfo};
 
 use crate::state::ClientState;
-use crate::service::mchd::helper::check_update_user;
+use crate::service::mchd::helper::check_mchd_user;
 use crate::sql_queries::persons::insert::person_no_sync::insert_person_no_sync;
 use crate::service::mchd::make_poa_elems::poa::make_poa;
 use crate::service::mchd::make_poa_files::make_doc_file::add_doc_to_xml_file;
@@ -27,7 +27,7 @@ pub(crate) async fn make_xml_doc_files(
 
     let mut person = session.session_user.person.clone();
 
-    if check_update_user(&mut person, data) {
+    if check_mchd_user(&mut person, data) {
         match state.update_person(person.clone()).await {
             Ok(_) => {},
             Err(err) => {
@@ -47,6 +47,8 @@ pub(crate) async fn make_xml_doc_files(
                 return Ok(failed_result);
             }
         }
+    } else {
+        return Ok(MchdStep::WrongData { text: MchdInfo::WrongPerson });
     }
 
     let poa_mchd = match make_poa(&session, data) {

@@ -2,6 +2,5 @@
 import type { CompInn } from "./CompInn";
 import type { Kpp } from "./Kpp";
 import type { PersInn } from "./PersInn";
-import type { String1_50 } from "./String1_50";
 
-export type PasswordDataClientShort = { nick: String1_50, password: string, pers_inn: PersInn, comp_inn: CompInn, kpp: Kpp, };
+export type PasswordDataClientShort = { password: string, pers_inn: PersInn, comp_inn: CompInn, kpp: Kpp, };

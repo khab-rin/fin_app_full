@@ -39,6 +39,9 @@ rand = { workspace = true }
 blake3 = { workspace = true }
 
 regex = { workspace = true }
+base64 = "0.22.1"
+directories = { workspace = true }
+home = "0.5.12"
 
 
 

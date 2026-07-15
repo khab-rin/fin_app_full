@@ -4,6 +4,7 @@ use crate::primitives::frozen::implements::*;
 use crate::primitives::frozen::implements_base::*;
 use crate::service::mchd::implements::*;
 use crate::service::mchd::home_mchd_power::HomeMchdPower;
+use crate::service::mchd::poa::PoaMchd;
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub enum MchdStep {
@@ -82,7 +83,8 @@ pub enum MchdInfo {
 pub struct NewMchdData {
     pub poa_number: String1_50,
     pub poa_end_date: Date,
-
+    pub tax_org_ident: Digits4_4,
+ 
     pub manager_tittle: String1_255,
     pub manager_sur_name: SurName,
     pub manager_first_name: FirstName,
@@ -123,4 +125,9 @@ pub enum MchdType {
     BTBMchd,
     FnsMchd,
     HomeMchd
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct MchdStorage {
+    pub storage: std::collections::HashMap<BoxUuid, PoaMchd>
 }

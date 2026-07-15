@@ -90,6 +90,7 @@ pub enum Status {
     FileCreateError = 250,
     FileReadError = 251,
     FileWriteError = 252,
+    DirCreateError = 253,
 
     // ==========================================
     // 300-я группа: Ошибки Баз Данных (Sqlite)
@@ -107,6 +108,7 @@ pub enum Status {
     DataCorruptionErr = 401,
     SystemLogicErr = 402,
     ClientSessionMissError = 403,
+    ResponseMappingError = 404,
 
     // ==========================================
     // 500-я группа: Ошибки интеграции с внешними API и сервисами

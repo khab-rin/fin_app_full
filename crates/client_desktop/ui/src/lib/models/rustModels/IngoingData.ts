@@ -7,7 +7,6 @@ import type { MidName } from "./MidName";
 import type { PersInn } from "./PersInn";
 import type { Phone } from "./Phone";
 import type { Snils } from "./Snils";
-import type { String1_50 } from "./String1_50";
 import type { SurName } from "./SurName";
 
-export type IngoingData = { nick: String1_50, sur_name: SurName, first_name: FirstName, mid_name: MidName | null, pers_inn: PersInn, snils: Snils, comp_inn: CompInn, kpp: Kpp, phone: Phone, email: Email, };
+export type IngoingData = { sur_name: SurName, first_name: FirstName, mid_name: MidName | null, pers_inn: PersInn, snils: Snils, comp_inn: CompInn, kpp: Kpp, phone: Phone, email: Email, };

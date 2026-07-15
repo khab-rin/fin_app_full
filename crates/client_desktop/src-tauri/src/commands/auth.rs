@@ -79,7 +79,7 @@ pub async fn cmd_session_by_password(
 #[tauri::command]
 pub async fn cmd_session_by_nick(
     state: tauri::State<'_, ClientState>,
-    nick: String1_50
+    nick: String
 ) -> Result<AuthStep, Status> {
 
     log::info!("cmd_session_by_nick running!!!!");
@@ -93,7 +93,7 @@ pub async fn cmd_session_by_nick(
 #[tauri::command]
 pub fn cmd_get_nick_names(
     state: tauri::State<'_, ClientState>
-) -> Result<Vec<String1_50>, Status> {
+) -> Result<Vec<String>, Status> {
 
     log::debug!("cmd_get_nick_names running");
 
