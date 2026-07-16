@@ -2,6 +2,5 @@
 import type { BoxUuid } from "./BoxUuid";
 import type { MchdInfo } from "./MchdInfo";
 import type { String1_255 } from "./String1_255";
-import type { TextInfo } from "./TextInfo";
 
-export type MchdStep = { "BTBMchd": { text: MchdInfo, } } | { "FnsMchd": { text: MchdInfo, } } | { "HomeMchd": { text: MchdInfo, } } | { "LendMchd": { text: MchdInfo, } } | { "Loading": { text: MchdInfo, } } | { "SaveXmlDocFiles": { doc_name: String1_255, doc_file: Array<number>, xml_name: String1_255, xml_file: Array<number>, text: MchdInfo, } } | { "ShowPowers": { text: MchdInfo, } } | { "SuccessRegisterMchd": { guid: BoxUuid, text: TextInfo, } } | { "TryLater": { text: MchdInfo, } } | { "WrongData": { text: MchdInfo, } };
+export type MchdStep = { "BTBMchd": { text: MchdInfo, } } | { "FnsMchd": { text: MchdInfo, } } | { "HomeMchd": { text: MchdInfo, } } | { "LendMchd": { text: MchdInfo, } } | { "Loading": { text: MchdInfo, } } | { "SaveXmlDocFiles": { doc_name: String1_255, doc_file: Array<number>, xml_name: String1_255, xml_file: Array<number>, text: MchdInfo, } } | { "ShowPowers": { text: MchdInfo, } } | { "SuccessRegisterMchd": { guide: BoxUuid, text: MchdInfo, } } | { "TryLater": { text: MchdInfo, } } | { "WrongData": { text: MchdInfo, } };

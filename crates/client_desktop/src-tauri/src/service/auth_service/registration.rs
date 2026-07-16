@@ -3,8 +3,7 @@ use shared_lib::primitives::frozen::implements::{BoxUuid, DateTime};
 use shared_lib::service::auth_service::implements::{
     AuthStep, 
     RegistrationData, 
-    SvelteRegistrationData,
-    TextInfo
+    AuthInfo
 };
 use shared_lib::service::auth_service::client_state::NickData;
 use shared_lib::service::api_routes::implements::ApiRoutes;
@@ -26,7 +25,7 @@ pub async fn register_user(
 
     log::debug!("register_user running");
 
-    let failed_result = AuthStep::TryLater { text: TextInfo::ClientApiSystemError };
+    let failed_result = AuthStep::TryLater { text: AuthInfo::ClientApiSystemError };
 
     let SvelteRegistrationData { 
         sur_name, 
@@ -73,7 +72,7 @@ pub async fn register_user(
             log::error!(
                 "FUN register_user FAILED BY FUN get_device_id, err = {:?}", err
             );
-            return Ok(AuthStep::TryLater {text: TextInfo::ClientApiSystemError});
+            return Ok(AuthStep::TryLater {text: AuthInfo::ClientApiSystemError});
         }
     };
 
@@ -96,7 +95,7 @@ pub async fn register_user(
                 "FUN register_user FAILED BY FILE READ, tech_err = {}, local_err = {}",
                 err, Status::FileReadError
             );
-            return Ok(AuthStep::TryLater {text: TextInfo::ClientApiSystemError});
+            return Ok(AuthStep::TryLater {text: AuthInfo::ClientApiSystemError});
         }
     };
 
@@ -107,7 +106,7 @@ pub async fn register_user(
                 "FUN register_user FAILED BY FILE READ, tech_err = {}, local_err = {}",
                 err, Status::FileReadError
             );
-            return Ok(AuthStep::TryLater {text: TextInfo::ClientApiSystemError});
+            return Ok(AuthStep::TryLater {text: AuthInfo::ClientApiSystemError});
         }
     };
 
@@ -136,7 +135,7 @@ pub async fn register_user(
             log::error!(
                 "FUN register_user FAILED BY POST QUERY TO BACK API, local_err = {:?}", err
             );
-            return Ok(AuthStep::TryLater {text: TextInfo::ClientApiQueryError});
+            return Ok(AuthStep::TryLater {text: AuthInfo::ClientApiQueryError});
         }
     };
 

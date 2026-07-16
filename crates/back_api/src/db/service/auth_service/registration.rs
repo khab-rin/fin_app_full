@@ -15,7 +15,7 @@ use shared_lib::service::auth_service::implements::{
     RegistrationData, 
     AuthStep,
     CryptoServiceResponse,
-    TextInfo
+    AuthInfo
 };
 
 use crate::config::BackApiState;
@@ -60,7 +60,7 @@ pub(crate) async fn register_new_user(
             failed_data = ?failed_data,
             "PERSON LEND ANOTHER FILE"
         );
-        return Ok(AuthStep::NeedRegistration {text: TextInfo::MissedFile});
+        return Ok(AuthStep::RegisterStep1 {text: AuthInfo::MissedFile});
     }
 
     let crypto_verify_request = CryptoVerifyData {
@@ -87,7 +87,7 @@ pub(crate) async fn register_new_user(
                     failed_data = ?failed_data,
                     "FUN register_new_user FAILED BY REQUEST TO CRYPTO SERVICE"
                 );
-                return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
+                return Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
             }
         };
     
@@ -96,7 +96,7 @@ pub(crate) async fn register_new_user(
             failed_data = ?failed_data,
             "FUN register_new_user FAILED BY REQUEST TO CRYPTO SERVICE - CONNECTION PROBLEMS"
         );
-        return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
+        return Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
     }
 
 
@@ -111,27 +111,27 @@ pub(crate) async fn register_new_user(
                 failed_data = ?failed_data,
                 "FUN register_new_user FAILED BY MAPPING CryptoVerifyPersonResponse"
             );
-            return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
+            return Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
         }
     };
 
 
     if !crypto_response.is_signed {
-        return Ok(AuthStep::NeedRegistration { text: TextInfo::WrongSignFile });
+        return Ok(AuthStep::RegisterStep1 { text: AuthInfo::WrongSignFile });
     }
 
 
     match person_checker(&crypto_response.text, &person) {
         Ok(true) => {},
         Ok(false) => {
-            return Ok(AuthStep::NeedRegistration { text: TextInfo::WrongPerson });
+            return Ok(AuthStep::RegisterStep1 { text: AuthInfo::WrongPerson });
         }
         Err(err) => {
             tracing::error!(
                 err = ?err,
                 "FUN register_new_user FAILED BY FUN person_checker"
             );
-            return Ok(AuthStep::TryLater { text: TextInfo::BackApiError });
+            return Ok(AuthStep::TryLater { text: AuthInfo::BackApiError });
         }
     }
    
@@ -142,7 +142,7 @@ pub(crate) async fn register_new_user(
                 err = ?err,
                 "FUN register_new_user FAILED BY ADD PERSON SQL QUERY"
             );
-            return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
+            return Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
         }
     };
 
@@ -172,7 +172,7 @@ pub(crate) async fn register_new_user(
                                 err = ?err,
                                 "FUN register_new_user FAILED BY FUN add_company"
                             );
-                            return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
+                            return Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
                         }
                     }
                 },
@@ -182,7 +182,7 @@ pub(crate) async fn register_new_user(
                         failed_data = ?failed_data,
                         "FUN register_new_user FAILED BY FUN make_new_company"
                     );
-                    return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
+                    return Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
                 }
             }
         }
@@ -205,7 +205,7 @@ pub(crate) async fn register_new_user(
 
 
     if exist_flag {
-        return Ok(AuthStep::NeedPassword{text: TextInfo::UserAlreadyExists});
+        return Ok(AuthStep::Password{text: AuthInfo::UserAlreadyExists});
     }
 
     let salt = SaltString::generate(&mut OsRng);
@@ -221,7 +221,7 @@ pub(crate) async fn register_new_user(
                 failed_data = ?failed_data,
                 "FUN register_new_user FAILED BY ARGON2 HASHING PASSWORD"
             );
-            return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
+            return Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
         }
     };
 
@@ -242,7 +242,7 @@ pub(crate) async fn register_new_user(
                 failed_data = ?failed_data,
                 "FUN register_new_user FAILED BY FUN set_user"
             );
-            return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
+            return Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
         }
     };
 
@@ -254,7 +254,7 @@ pub(crate) async fn register_new_user(
                 failed_data = ?failed_data,
                 "FUN register_new_user FAILED BY new_session FUN"
             );
-            return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
+            return Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
         }
     };
 

@@ -4,7 +4,7 @@ use shared_lib::service::api_routes::implements::ApiRoutes;
 use shared_lib::service::auth_service::implements::{
     AuthStep, 
     TokenDeviceData,
-    TextInfo
+    AuthInfo
 };
 
 use crate::back_api::post_query::post_query_back_api;
@@ -24,7 +24,7 @@ pub(crate) async fn restore_session_by_nick(
             log::error!(
                 "FUN restore_session_by_nick FAILED BY FUN get_device_id, err = {:?}", err
             );
-            return Ok(AuthStep::TryLater {text: TextInfo::ClientApiSystemError});
+            return Ok(AuthStep::TryLater {text: AuthInfo::ClientApiSystemError});
         }
     };
 
@@ -34,13 +34,13 @@ pub(crate) async fn restore_session_by_nick(
             log::error!(
                 "FUN restore_session_by_nick FAILED BY FUN get_nick_data_by_nick, local_err = {}", err
             );
-            return Ok(AuthStep::TryLater { text: TextInfo::ClientApiSystemError });
+            return Ok(AuthStep::TryLater { text: AuthInfo::ClientApiSystemError });
         }
     };
 
     let nick_data = match nick_data_option {
         Some(d) => d,
-        None => return Ok(AuthStep::NeedPassword { text: TextInfo::MissToken })
+        None => return Ok(AuthStep::Password { text: AuthInfo::MissToken })
     };
 
     let key_ = format!("{}{}{}", nick_data.pers_inn, nick_data.comp_inn, nick_data.kpp);
@@ -51,14 +51,14 @@ pub(crate) async fn restore_session_by_nick(
             log::error!(
                 "FUN restore_session_by_nick FAILED BY FUN get_keyring_data, local_err = {}", err
             );
-            return Ok(AuthStep::TryLater { text: TextInfo::ClientApiSystemError });
+            return Ok(AuthStep::TryLater { text: AuthInfo::ClientApiSystemError });
         }
     };
 
     let token = match user_log_data.token {
         Some(t) => t,
         None =>  {
-            return Ok(AuthStep::NeedPassword { text: TextInfo::MissToken });
+            return Ok(AuthStep::Password { text: AuthInfo::MissToken });
         }
     };
 
@@ -76,7 +76,7 @@ pub(crate) async fn restore_session_by_nick(
             log::error!(
                 "FUN restore_session_by_nick FAILED BY FUN post_query_back_api, local_err = {}", err
             );
-            return Ok(AuthStep::TryLater { text: TextInfo::ClientApiSystemError });
+            return Ok(AuthStep::TryLater { text: AuthInfo::ClientApiSystemError });
         }
     };
 
@@ -87,7 +87,7 @@ pub(crate) async fn restore_session_by_nick(
                 "FUN restore_session_by_nick FAILED BY POST QUERY TO BACK API, err = {:?}, local_err = {:?}",
                 err, Status::MappingError
             );
-            return Ok(AuthStep::TryLater {text: TextInfo::ClientApiSystemError});
+            return Ok(AuthStep::TryLater {text: AuthInfo::ClientApiSystemError});
         }
     };
 
@@ -98,7 +98,7 @@ pub(crate) async fn restore_session_by_nick(
                 log::error!(
                     "FUN restore_session_by_nick FAILED BY FUN init_session, local_err = {}", err
                 );
-                return Ok(AuthStep::TryLater { text: TextInfo::ClientApiSystemError });
+                return Ok(AuthStep::TryLater { text: AuthInfo::ClientApiSystemError });
             }
         }
     }

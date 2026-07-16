@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{ 
-    AuthStep, ExternalDeviceData, SessionUserToken, SmsRuResponseTextCode, TextInfo
+    AuthStep, ExternalDeviceData, SessionUserToken, SmsRuResponseTextCode, AuthInfo
 };
 
 use crate::config::BackApiState;
@@ -28,7 +28,7 @@ pub(crate) async fn make_session_by_tel_call(
                 local_err = ?err,
                 "FUN make_session_by_tel_call FAILED BY FUN get_user_time_by_device_external"
             );
-            return Ok(AuthStep::TryLater { text: TextInfo::BackApiError });
+            return Ok(AuthStep::TryLater { text: AuthInfo::BackApiError });
         }
     };
 
@@ -36,7 +36,7 @@ pub(crate) async fn make_session_by_tel_call(
 
     let (user_id, expires_t) = match expire_option {
         Some((a, b)) => (a, b),
-        None => return Ok(AuthStep::NeedRegistration { text: TextInfo::MissUserNeedRegistration })
+        None => return Ok(AuthStep::RegisterStep1 { text: AuthInfo::MissUserNeedRegistration })
     };
 
 
@@ -48,21 +48,21 @@ pub(crate) async fn make_session_by_tel_call(
                 err = ?err,
                 "FUN restore_user_by_tel_call FAILED IN CALL FUN smsru_get_cf"
             );
-            return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
+            return Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
         }
     };
 
     match phone_cf {
         SmsRuResponseTextCode::Polling => {
-            return Ok(AuthStep::CallInWaiting { text: TextInfo::CallInWaiting });
+            return Ok(AuthStep::CallInWaiting { text: AuthInfo::CallInWaiting });
         },
         SmsRuResponseTextCode::SuccessConfirmed => {},
         SmsRuResponseTextCode::TimeOut => {
-            let res = AuthStep::NeedPassword { text: TextInfo::CallInnTimeOut };
+            let res = AuthStep::Password { text: AuthInfo::CallInnTimeOut };
             return Ok(res)
         },
         SmsRuResponseTextCode::UnknownCode => {
-            return Ok(AuthStep::TryLater { text: TextInfo::BackApiError })
+            return Ok(AuthStep::TryLater { text: AuthInfo::BackApiError })
         }
     }
 
@@ -74,7 +74,7 @@ pub(crate) async fn make_session_by_tel_call(
                 err = ?err,
                 "FUN restore_user_by_tel_call FAILED BY FUN new_session"
             );
-            return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
+            return Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
         }
     };
 
@@ -86,7 +86,7 @@ pub(crate) async fn make_session_by_tel_call(
                 err = ?err,
                 "FUN restore_user_by_tel_call FAILED BY FUN get_user_by_user_id"
             );
-            return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
+            return Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
         }
     };
 

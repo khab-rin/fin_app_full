@@ -3,7 +3,7 @@ use shared_lib::service::api_routes::implements::ApiRoutes;
 use shared_lib::service::auth_service::implements::{
     AuthStep, 
     ExternalDeviceData,
-    TextInfo
+    AuthInfo
 };
 use shared_lib::service::auth_service::client_state::{NickData, UserLogInfo};
 use shared_lib::primitives::frozen::implements_base::String1_50;
@@ -20,7 +20,7 @@ pub(crate) async fn make_session_by_tel_call(
     nick: &String1_50
 ) -> Result<AuthStep, Status> {
 
-    let failed_result = AuthStep::TryLater { text: TextInfo::ClientApiSystemError };
+    let failed_result = AuthStep::TryLater { text: AuthInfo::ClientApiSystemError };
 
     let device_id = match get_device_id() {
         Ok(d) => d,
@@ -28,7 +28,7 @@ pub(crate) async fn make_session_by_tel_call(
             log::error!(
                 "FUN make_session_by_tel_call FAILED BY FUN get_device_id, err = {:?}", err
             );
-            return Ok(AuthStep::TryLater {text: TextInfo::ClientApiSystemError});
+            return Ok(AuthStep::TryLater {text: AuthInfo::ClientApiSystemError});
         }
     };
 
@@ -56,7 +56,7 @@ pub(crate) async fn make_session_by_tel_call(
                 "FUN restore_by_password FAILED BY POST QUERY TO BACK API, err = {:?}, local_err = {:?}",
                 err, Status::MappingError
             );
-            return Ok(AuthStep::TryLater {text: TextInfo::ClientApiSystemError});
+            return Ok(AuthStep::TryLater {text: AuthInfo::ClientApiSystemError});
         }
     };
 
@@ -111,7 +111,7 @@ pub(crate) async fn make_session_by_tel_call(
         Ok(_) => Ok(AuthStep::SuccessShort {}),
         Err(err) => {
             log::error!("FUN restore_by_password FAILED BY init_session, err = {}",err);
-            Ok(AuthStep::TryLater { text: TextInfo::ClientApiSystemError })
+            Ok(AuthStep::TryLater { text: AuthInfo::ClientApiSystemError })
         }
     }
 }

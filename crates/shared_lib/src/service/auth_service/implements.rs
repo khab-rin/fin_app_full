@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 
 use crate::sql_models::person::implements::Person;
-use crate::primitives::frozen::implements_base::String1_50;
 use crate::primitives::frozen::implements::{BoxUuid, CompInn, Email, FirstName, Kpp, MidName, Password, PersInn, Phone, Snils, SurName};
 use crate::service::auth_service::client_state::SessionUser;
 
@@ -14,52 +13,24 @@ pub struct SessionUserToken {
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub enum AuthStep {
-    Loading { text: TextInfo },
-    NickName { text: TextInfo },
-    NeedPassword {text: TextInfo},
-    NeedRegistration {text: TextInfo},
-    CallIn { phone: Phone, external_id: String, text: TextInfo },
-    CallInWaiting { text: TextInfo },
+    CallIn { phone: Phone, external_id: String, text: AuthInfo },
+    CallInWaiting { text: AuthInfo },
+    Loading { text: AuthInfo },
+    NickName { text: AuthInfo },
+    Password {text: AuthInfo},
+    RegisterStep1 {text: AuthInfo},
+    RegisterStep2 {text: AuthInfo},
+    
     SuccessFull { session_user_token: Box<SessionUserToken> },
     SuccessShort {},
-    TryLater { text: TextInfo },
-    TokenDevicePairMiss { text: TextInfo }
+    TokenDevicePairMiss { text: AuthInfo },
+    TryLater { text: AuthInfo },  
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, ts_rs::TS,)]
-pub enum TextInfo {
-    #[serde(rename = "Пользователь не найден, требуется пройти регистрацию")]
-    MissUserNeedRegistration,
-
-    #[serde(rename = "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение")]
-    ClientApiSystemError,
-
-    #[serde(rename = "Ошибка при запросе в интернет, проверьте подключение к сети")]
-    ClientApiQueryError,
-
+pub enum AuthInfo {
     #[serde(rename = "Ошибка в работе серверной части приложения, попробуйте авторизоваться позже, либо сделайте запрос в техподдержку")]
     BackApiError,
-
-    #[serde(rename = "Возможная попытка несанкцианированного доступа")]
-    IllegalAccess,
-
-    #[serde(rename = "Пароль к связке входных параметров неверный")]
-    WrongPassword,
-
-    #[serde(rename = "Некорректные файлы подписи, пройдите процесс заново")]
-    WrongSignFile,
-
-    #[serde(rename = "Пользователь с данными входными данными уже существует, введите пароль")]
-    UserAlreadyExists,
-
-    #[serde(rename = "Выявлены различия в файле заявлении и подписанном файле, пройдите регистрацию заново")]
-    MissedFile,
-
-    #[serde(rename = "Выявлены различия в данных пользователя и данных владельца подписи, пройдите регистрацию заново")]
-    WrongPerson,
-    
-    #[serde(rename = "Пользователь не найден на устройстве, требуется авторизоваться по паролю или пройти регистрацию")]
-    NewUserInSystem,
 
     #[serde(rename = "Вход пользователя с нового устройста, для подтверждения позвоните с указанного при регистрации номера по указанному номеру в течение 5 минут, затем нажмите далее. Звонок бесплатный и скинется после первого гудка")]
     CallIn,
@@ -70,17 +41,54 @@ pub enum TextInfo {
     #[serde(rename = "Звонок по указанному номеру не был осуществлен, позвоните по этому номеру")]
     CallInWaiting,
 
+    #[serde(rename = "Ошибка при запросе в интернет, проверьте подключение к сети")]
+    ClientApiQueryError,
+
+    #[serde(rename = "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение")]
+    ClientApiSystemError,
+
     #[serde(rename = "Выберите из списка нужного пользователя, в случае отсутствия авторизуйтесь через пароль, либо зарегистрируйтесь")]
     InitInfo,
+
+    #[serde(rename = "Возможная попытка несанкцианированного доступа")]
+    IllegalAccess,
 
     #[serde(rename = "Страница загружается, подождите пожалуйста. В случае зависания попробуйте обновить или перезагрузить приложение")]
     LoadingInfo,
 
+    #[serde(rename = "Выявлены различия в файле заявлении и подписанном файле, пройдите регистрацию заново")]
+    MissedFile,
+
     #[serde(rename = "Пользователь не существует, либо не прошел регистрацию, либо не синхронизирован. Попробуйте войти по паролю, либо пройдите регистрацию")]
     MissToken,
 
+    #[serde(rename = "Пользователь не найден, требуется пройти регистрацию")]
+    MissUserNeedRegistration,
+
+    #[serde(rename = "Пользователь не найден на устройстве, требуется авторизоваться по паролю или пройти регистрацию")]
+    NewUserInSystem,
+
+    #[serde(rename = "Заполните поля регистрации строго как в документах")]
+    RegisterStep1,
+
+    #[serde(rename = "Укажите путь до xml файла заявления и путь до файла открепленной подписи. Подпись должна быть для указанного файла xml")]
+    RegisterStep2,
+
+    #[serde(rename = "Пользователь с данными входными данными уже существует, введите пароль")]
+    UserAlreadyExists,
+
+    #[serde(rename = "Пароль к связке входных параметров неверный")]
+    WrongPassword,
+
+    #[serde(rename = "Выявлены различия в данных пользователя и данных владельца подписи, пройдите регистрацию заново")]
+    WrongPerson,
+
+    #[serde(rename = "Некорректные файлы подписи, пройдите процесс заново")]
+    WrongSignFile,
+
     #[serde(rename = "")]
     Nothing,
+    
 }
 
 
@@ -161,22 +169,7 @@ pub struct SmsruGetResResponse {
 
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
-pub struct SvelteRegistrationData {
-    pub sur_name: SurName,
-    pub first_name: FirstName,
-    pub mid_name: MidName,
-    pub pers_inn: PersInn,
-    pub snils: Snils,
-    pub comp_inn: CompInn,
-    pub kpp: Kpp,
-    pub password: Password,
-    pub phone: Phone,
-    pub email: Email,
-    pub document_path: String,  
-    pub signature_path: String, 
-}
-
-#[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
+#[ts(rename_all = "camelCase")]
 pub struct IngoingData {
     pub sur_name: SurName,
     pub first_name: FirstName,
@@ -187,23 +180,24 @@ pub struct IngoingData {
     pub kpp: Kpp,
     pub phone: Phone,
     pub email: Email,
+    pub password: Password
 }
 
-
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
+#[ts(rename_all = "camelCase")]
 pub struct RegistrationData {
-    pub person: Person,
-    pub comp_inn: CompInn,
-    pub kpp: Kpp,
-    pub password: String,
-    pub device_id: BoxUuid,
-    pub phone: Phone,
-    pub email: Email,
-    pub doc_hash: String,
-    #[serde(with = "serde_bytes")]
-    pub document: Vec<u8>,  
-    #[serde(with = "serde_bytes")]
-    pub signature: Vec<u8>, 
+    pub password: Password,
+    pub json_file_path: String,  
+    pub sign_file_path: String, 
+}
+
+#[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
+#[ts(rename_all = "camelCase")]
+pub struct InitFiles {
+    pub doc_name: String,
+    pub doc_file: Vec<u8>,
+    pub json_name: String,  
+    pub json_file: Vec<u8>, 
 }
 
 

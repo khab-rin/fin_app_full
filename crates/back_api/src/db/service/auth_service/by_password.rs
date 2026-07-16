@@ -13,7 +13,7 @@ use shared_lib::service::auth_service::implements::{
 use shared_lib::service::auth_service::implements::{
     PasswordDataClient,
     TokenDeviceData,
-    TextInfo
+    AuthInfo
 };
 
 use crate::db::sql_queries::users::get::auth_check_passw_by_authdata::get_restore_password_data;
@@ -37,14 +37,14 @@ pub(crate) async fn restore_session_by_passord(
                 failed_data = ?failed_data,
                 "FUN restore_session_by_passord FAILED BY get_restore_password_data FUN"
             );
-            return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
+            return Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
         }
     };
 
     let auth_check_password = match auth_check_password_option {
         Some(a) => a,
         None => {
-            return Ok(AuthStep::NeedRegistration {text: TextInfo::MissUserNeedRegistration});
+            return Ok(AuthStep::RegisterStep1 {text: AuthInfo::MissUserNeedRegistration});
         }
     };
 
@@ -62,7 +62,7 @@ pub(crate) async fn restore_session_by_passord(
                 user = %user_id,
                 "WRONG PASSWORD DATA IN SQL Users"
             );
-            return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
+            return Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
         }
     };
 
@@ -74,7 +74,7 @@ pub(crate) async fn restore_session_by_passord(
                 user_id = %user_id,
                 "USER_SENDED_WRONG_PASSWORD!!!"
             );
-            return Ok(AuthStep::NeedPassword {text: TextInfo::WrongPassword});
+            return Ok(AuthStep::Password {text: AuthInfo::WrongPassword});
             }  
         };
     
@@ -94,20 +94,20 @@ pub(crate) async fn restore_session_by_passord(
                 user_id = %user_id,
                 "FUN restore_session_by_passord FAILED ON GETTING CALL BACK PHONE BY FUN smsru_get_phone"
             );
-            return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
+            return Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
         }
     };
 
     match new_cf(state, &user_id, &data.device_id, &external_id).await {
         Ok(true) => {
-            Ok(AuthStep::CallIn { phone: call_phone, external_id, text: TextInfo::CallIn })
+            Ok(AuthStep::CallIn { phone: call_phone, external_id, text: AuthInfo::CallIn })
         }
         Ok(false) => {
             tracing::error!(
                 user_id = %user_id,
                 "WRONG LOGIC IN FUN new_cf AND SQL QUERYS" 
             );
-            Ok(AuthStep::TryLater {text: TextInfo::BackApiError})
+            Ok(AuthStep::TryLater {text: AuthInfo::BackApiError})
         }
         Err(err) => {
             tracing::error!(
@@ -115,7 +115,7 @@ pub(crate) async fn restore_session_by_passord(
                 err = ?err,
                 "WRONG LOGIC IN FUN new_cf AND SQL QUERYS" 
             );
-            Ok(AuthStep::TryLater {text: TextInfo::BackApiError})
+            Ok(AuthStep::TryLater {text: AuthInfo::BackApiError})
         } 
     }
     

@@ -4,7 +4,7 @@ use shared_lib::service::auth_service::implements::{
     PasswordDataClient,
     PasswordDataClientShort,
     AuthStep,
-    TextInfo
+    AuthInfo
 };
 use shared_lib::service::auth_service::client_state::NickData;
 
@@ -26,7 +26,7 @@ pub(crate) async fn restore_by_password(
         Ok(i) => i,
         Err(err) => {
             log::error!("FUN restore_by_password FAILED BY FUN get_keyring_data, err = {}", err);
-            return Ok(AuthStep::TryLater { text: TextInfo::ClientApiSystemError });
+            return Ok(AuthStep::TryLater { text: AuthInfo::ClientApiSystemError });
         }
     };
 
@@ -58,7 +58,7 @@ pub(crate) async fn restore_by_password(
         Ok(r) => r,
         Err(err) => {
             log::error!("FUN restore_by_password FAILED BY FUN post_query_back_api, err = {}", err);
-            return Ok(AuthStep::TryLater { text: TextInfo::BackApiError});
+            return Ok(AuthStep::TryLater { text: AuthInfo::BackApiError});
         }
     };
 
@@ -70,7 +70,7 @@ pub(crate) async fn restore_by_password(
                 "FUN restore_by_password FAILED BY POST QUERY TO BACK API, err = {:?}, local_err = {:?}",
                 err, Status::MappingError
             );
-            return Ok(AuthStep::TryLater {text: TextInfo::ClientApiSystemError});
+            return Ok(AuthStep::TryLater {text: AuthInfo::ClientApiSystemError});
         }
     };
 
@@ -85,7 +85,7 @@ pub(crate) async fn restore_by_password(
         Ok(_) => {},
         Err(err) => {
             log::error!("FUN restore_by_password FAILED by writing UserLogInfo, err = {}", err);
-            return Ok(AuthStep::TryLater { text: TextInfo::ClientApiSystemError });
+            return Ok(AuthStep::TryLater { text: AuthInfo::ClientApiSystemError });
         }
     }
 
@@ -110,7 +110,7 @@ pub(crate) async fn restore_by_password(
         Ok(_) => {},
         Err(err) => {
             log::error!("FUN restore_by_password FAILED BY FUN add_nick_data, err = {}", err);
-            return Ok(AuthStep::TryLater { text: TextInfo::ClientApiSystemError });
+            return Ok(AuthStep::TryLater { text: AuthInfo::ClientApiSystemError });
         }
     }
 
@@ -118,7 +118,7 @@ pub(crate) async fn restore_by_password(
         Ok(_) => Ok(AuthStep::SuccessShort {}),
         Err(err) => {
             log::error!("FUN restore_by_password FAILED BY init_session, err = {}",err);
-            Ok(AuthStep::TryLater { text: TextInfo::ClientApiSystemError })
+            Ok(AuthStep::TryLater { text: AuthInfo::ClientApiSystemError })
         }
     }
 

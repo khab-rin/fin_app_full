@@ -4,9 +4,10 @@ import type { Email } from "./Email";
 import type { FirstName } from "./FirstName";
 import type { Kpp } from "./Kpp";
 import type { MidName } from "./MidName";
+import type { Password } from "./Password";
 import type { PersInn } from "./PersInn";
 import type { Phone } from "./Phone";
 import type { Snils } from "./Snils";
 import type { SurName } from "./SurName";
 
-export type IngoingData = { sur_name: SurName, first_name: FirstName, mid_name: MidName | null, pers_inn: PersInn, snils: Snils, comp_inn: CompInn, kpp: Kpp, phone: Phone, email: Email, };
+export type IngoingData = { surName: SurName, firstName: FirstName, midName: MidName | null, persInn: PersInn, snils: Snils, compInn: CompInn, kpp: Kpp, phone: Phone, email: Email, password: Password, };

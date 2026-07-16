@@ -1,12 +1,13 @@
 export const AuthStepType = {
-    Loading: 'Loading',
-    NickName: 'NickName',
-    NeedPassword: 'NeedPassword',
-    NeedRegistration: 'NeedRegistration',
     CallIn: 'CallIn',
     CallInWaiting: 'CallInWaiting',
+    Loading: 'Loading',
+    NickName: 'NickName',
+    Password: "Password",
+    RegisterStep1: "RegisterStep1",
+    RegisterStep2: "RegisterStep2",
     SuccessFull: 'SuccessFull',
     SuccessShort: 'SuccessShort',
-    TryLater: 'TryLater',
     TokenDevicePairMiss: 'TokenDevicePairMiss',
+    TryLater: 'TryLater',
 } as const;

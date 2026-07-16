@@ -5,7 +5,7 @@ use shared_lib::service::auth_service::implements::{
     TokenDeviceData, 
     SessionUserToken, 
     AuthStep,
-    TextInfo
+    AuthInfo
 };
 
 use crate::config::BackApiState;
@@ -25,7 +25,7 @@ pub(crate) async fn restore_session_by_token(
                 failed_data = ?payload,
                 "FUN get_user FAILED BY FUN get_user_by_device_token"
             );
-            return Ok(AuthStep::TryLater {text: TextInfo::BackApiError});
+            return Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
         }
     };
 
@@ -42,7 +42,7 @@ pub(crate) async fn restore_session_by_token(
                 }
             };
             return Ok(AuthStep::TokenDevicePairMiss { 
-                text: TextInfo::IllegalAccess 
+                text: AuthInfo::IllegalAccess 
             });
         }
     };

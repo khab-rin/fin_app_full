@@ -2,16 +2,16 @@ use std::fmt::format;
 
 use shared_lib::Status;
 use shared_lib::service::auth_service::client_state::{NickData, UserLogInfo};
-use shared_lib::service::auth_service::implements::IngoingData;
+use shared_lib::service::auth_service::implements::{IngoingData, InitFiles};
 
 use crate::service::auth_service::nick_data::add_nick_data;
 use crate::service::auth_service::key_ring::{write_keyring_data, get_keyring_data};
 use crate::state::ClientState;
 
-pub(crate) async  fn make_ingoing_doc(
+pub(crate) async  fn make_init_files(
     state: &ClientState,
     data: &IngoingData
-) -> Result<Vec<u8>, Status> {
+) -> Result<InitFiles, Status> {
 
     let IngoingData { 
         sur_name, 
@@ -22,7 +22,8 @@ pub(crate) async  fn make_ingoing_doc(
         comp_inn, 
         kpp, 
         phone, 
-        email 
+        email ,
+        password
     } = data;
 
     let full_name = match mid_name {

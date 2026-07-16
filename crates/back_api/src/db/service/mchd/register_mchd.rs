@@ -5,6 +5,11 @@ use shared_lib::service::mchd::poa::PoaMchd;
 
 use crate::config::BackApiState;
 use crate::db::sql_queries::users::set::guid_by_user_id::set_guid_by_user_id;
+use crate::db::service::mchd::mchd_storage::{
+    get_mchd_storage,
+    add_new_mchd,
+    write_mchd_storage_to_file
+};
 
 pub(crate) async fn register_mchd(
     state: &BackApiState,
@@ -79,8 +84,39 @@ pub(crate) async fn register_mchd(
         }
     }
     
-    let client = state.config.get_std_client();
+    let storage = match get_mchd_storage() {
+        Ok(s) => s,
+        Err(err) => {
+            tracing::error!(
+                local_err = ?err,
+                "FUN register_mchd FAILED BY FUN get_mchd_storage"
+            );
+            return Ok(failed_result);
+        }
+    };
+
+    let new_storage = match add_new_mchd(poa, storage) {
+        Ok(s) => s,
+        Err(err) => {
+            tracing::error!(
+                local_err = ?err,
+                "FUN register_mchd FAILED BY FUN add_new_mchd"
+            );
+            return Ok(failed_result);
+        }
+    };
+
+    match write_mchd_storage_to_file(new_storage) {
+        Ok(_) => {},
+        Err(err) => {
+            tracing::error!(
+                local_err = ?err,
+                "FUN register_mchd FAILED BY FUN write_mchd_storage_to_file"
+            );
+            return Ok(failed_result);
+        }
+    }
 
     
-    Ok(failed_result)
+    Ok(MchdStep::SuccessRegisterMchd { guide, text: MchdInfo::SuccessRegisterMchd })
 }

@@ -1,15 +1,14 @@
 use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{
-    AuthStep, IngoingData, PasswordDataClientShort, SvelteRegistrationData, TextInfo
+    AuthStep, IngoingData, PasswordDataClientShort, AuthInfo, RegistrationData, InitFiles
 };
-use shared_lib::service::auth_service::client_state::NickData;
 use shared_lib::primitives::frozen::implements_base::String1_50;
 
 use crate::state::ClientState;
 use crate::service::auth_service::restore_by_nick::restore_session_by_nick;
 use crate::service::auth_service::restore_by_password::restore_by_password;
 use crate::service::auth_service::nick_data::get_nick_names;
-use crate::service::auth_service::ingoing_data::make_ingoing_doc;
+use crate::service::auth_service::ingoing_data::make_init_files;
 use crate::service::auth_service::registration::register_user;
 use crate::service::auth_service::make_session_by_tell_call::make_session_by_tel_call;
 
@@ -33,11 +32,11 @@ pub async  fn cmd_is_state_active_init(
                     "tech_err = {}, local_err = {}",
                     err, Status::SystemErr
                 );
-                Ok(AuthStep::Loading { text: TextInfo::LoadingInfo})
+                Ok(AuthStep::Loading { text: AuthInfo::LoadingInfo})
             }
         }
     } else {
-        Ok(AuthStep::Loading { text: TextInfo::LoadingInfo})
+        Ok(AuthStep::Loading { text: AuthInfo::LoadingInfo})
     }
 }
 
@@ -86,7 +85,7 @@ pub async fn cmd_session_by_nick(
 
     match restore_session_by_nick(&state, &nick).await {
         Ok(res) => Ok(res),
-        Err(_) => Ok(AuthStep::TryLater { text: TextInfo::ClientApiSystemError })
+        Err(_) => Ok(AuthStep::TryLater { text: AuthInfo::ClientApiSystemError })
     }
 }
 
@@ -102,14 +101,14 @@ pub fn cmd_get_nick_names(
 
 
 #[tauri::command]
-pub async  fn cmd_make_ingoing_doc(
+pub async  fn cmd_make_init_files(
     state: tauri::State<'_, ClientState>,
     data: IngoingData
-) -> Result<Vec<u8>, Status> {
+) -> Result<InitFiles, Status> {
 
     log::debug!("cmd_make_ingoing_doc running");
 
-    let res = make_ingoing_doc(&state, &data).await;
+    let res = make_init_files(&state, &data).await;
     
     if res.is_err() {
         log::debug!("cmd_make_ingoing_doc failed");
@@ -122,7 +121,7 @@ pub async  fn cmd_make_ingoing_doc(
 #[tauri::command]
 pub async fn cmd_register_user(
     state: tauri::State<'_, ClientState>,
-    data: SvelteRegistrationData
+    data: RegistrationData
 ) -> Result<AuthStep, Status> {
 
     log::debug!("cmd_register_user running");

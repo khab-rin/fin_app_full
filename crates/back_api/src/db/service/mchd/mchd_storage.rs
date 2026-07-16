@@ -53,7 +53,7 @@ pub(crate) fn get_mchd_data_path() -> Result<PathBuf, Status> {
 
 
 
-pub(crate) fn get_mchd_data() -> Result<MchdStorage, Status> {
+pub(crate) fn get_mchd_storage() -> Result<MchdStorage, Status> {
 
     let path = match get_mchd_data_path() {
         Ok(p) => p,
