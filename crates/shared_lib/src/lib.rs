@@ -31,8 +31,8 @@ use super::*;
         service::auth_service::implements::ExternalDeviceData::export_all_to(output_dir)
             .expect("Не удалось экспортировать ExternalDeviceData");
 
-        service::auth_service::implements::IngoingData::export_all_to(output_dir)
-            .expect("Не удалось экспортировать IngoingData");
+        service::auth_service::implements::RegInitData::export_all_to(output_dir)
+            .expect("Не удалось экспортировать RegInitData");
 
         service::auth_service::implements::InitFiles::export_all_to(output_dir)
             .expect("Не удалось экспортировать InitFiles");

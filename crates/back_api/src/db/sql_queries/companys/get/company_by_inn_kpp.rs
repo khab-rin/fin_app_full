@@ -7,7 +7,7 @@ use shared_lib::sql_models::company::implements::{Company, CompanyDto};
 use crate::config::BackApiState;
 
 pub(crate) async fn get_company_by_inn_kpp(
-    state: &Arc<BackApiState>,
+    state: &BackApiState,
     inn: &CompInn,
     kpp: &Kpp
 

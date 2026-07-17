@@ -1,24 +1,44 @@
-use std::sync::Arc;
-
 use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::{BoxUuid, PersInn, DateTime};
 use shared_lib::sql_models::person::implements::{Person, PersonDto};
 
 use crate::config::BackApiState;
+use crate::db::sql_queries::persons::get::person_by_inn::get_person_by_inn;
 
 pub(crate) async fn add_person(
-    state: &Arc<BackApiState>,
+    state: &BackApiState,
     person: &Person
 ) -> Result<Person, Status> {
 
-    let person_option = match sqlx::
+    let exist_person_option = match get_person_by_inn(state, &person.pers_inn).await {
+        Ok(o) => o,
+        Err(err) => {
+            tracing::error!(
+                local_err = ?err,
+                "FUN add_person FAILED BY FUN get_person_by_inn"
+            );
+            return Err(err);
+        }
+    };
+
+    let person = match exist_person_option {
+        Some(mut exist_person) => {
+            exist_person.metadata.merge(person.metadata.clone());
+            exist_person
+        },
+        None => {person.clone()}
+    };
+
+
+
+    let person_dto = match sqlx::
         query_file_as!(
             PersonDto,
             "src/db/sql_queries/persons/add/by_person.sql",
             person.pers_id.as_ref(),
             person.pers_inn.as_ref(),
             serde_json::to_value(&person.metadata).unwrap_or_default()
-        ).fetch_optional(&state.pool_fast)
+        ).fetch_one(&state.pool_fast)
         .await {
             Ok(r) => r,
             Err(err) => {
@@ -31,16 +51,6 @@ pub(crate) async fn add_person(
             }
         };
 
-    let person_dto = match person_option {
-        Some(r) => r,
-        None => {
-            tracing::error!(
-                local_err = ?Status::SqlQueryWrongLogic,
-                "FUN add_person FAILED BY WRONG QUERY LOGIC"
-            );
-            return Err(Status::SqlQueryWrongLogic);
-        }
-    };
 
     match person_dto.try_into() {
         Ok(p) => Ok(p),

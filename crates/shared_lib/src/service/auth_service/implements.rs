@@ -15,14 +15,22 @@ pub struct SessionUserToken {
 pub enum AuthStep {
     CallIn { phone: Phone, external_id: String, text: AuthInfo },
     CallInWaiting { text: AuthInfo },
+
+    InitUserSuccess {},
+    InitUserDuplicate {tel: String, email: String, text: AuthInfo},
+
     Loading { text: AuthInfo },
+    
     NickName { text: AuthInfo },
+
     Password {text: AuthInfo},
+    
     RegisterStep1 {text: AuthInfo},
     RegisterStep2 {text: AuthInfo},
     
     SuccessFull { session_user_token: Box<SessionUserToken> },
     SuccessShort {},
+    
     TokenDevicePairMiss { text: AuthInfo },
     TryLater { text: AuthInfo },  
 }
@@ -74,7 +82,7 @@ pub enum AuthInfo {
     #[serde(rename = "Укажите путь до xml файла заявления и путь до файла открепленной подписи. Подпись должна быть для указанного файла xml")]
     RegisterStep2,
 
-    #[serde(rename = "Пользователь с данными входными данными уже существует, введите пароль")]
+    #[serde(rename = "Пользователь с данными входными данными уже существует, авторизуйтей по паролю, либо пройдите процедуру восстановления пароля по эл. почте/номеру телефона")]
     UserAlreadyExists,
 
     #[serde(rename = "Пароль к связке входных параметров неверный")]
@@ -170,7 +178,7 @@ pub struct SmsruGetResResponse {
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 #[ts(rename_all = "camelCase")]
-pub struct IngoingData {
+pub struct RegInitData {
     pub sur_name: SurName,
     pub first_name: FirstName,
     pub mid_name: Option<MidName>,

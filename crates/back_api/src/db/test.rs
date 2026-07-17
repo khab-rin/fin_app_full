@@ -1,6 +1,10 @@
+use shared_lib::primitives::frozen::implements::{CompInn, Kpp};
+use crate::db::parsers::dadata::inn_kpp_query::parse_company_by_inn_kpp;
+
 #[cfg(test)]
 mod tests {
     use serde::Serialize;
+    use shared_lib::primitives::frozen::implements::{Kpp, CompInn};
     use std::fs::{self, File};
     use std::io::{self, Write};
     use std::time::{SystemTime, UNIX_EPOCH};
@@ -21,6 +25,13 @@ mod tests {
         iat: u64,
         exp: u64,
         state: String,
+    }
+
+    async fn test_dadata() {
+        let inn = CompInn::unchecked("161101510882");
+        let kpp = Kpp::unchecked("");
+        
+
     }
 
     fn base64url_encode<T: Serialize>(data: &T) -> String {

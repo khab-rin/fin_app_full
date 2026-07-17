@@ -6,7 +6,7 @@
     import {currAuthStep} from "$lib/models/Auth/AuthStep.svelte";
     import type {AuthStep} from "$lib/models/rustModels/AuthStep";
 
-    import type {IngoingData} from "$lib/models/rustModels/IngoingData";
+    import type {RegInitData} from "$lib/models/rustModels/RegInitData";
     import type {InitFiles} from "$lib/models/rustModels/InitFiles"
 
     
@@ -54,7 +54,7 @@
     async function makeInitDocs() {
         if (isPushedMakeDocs) return;
         isPushedMakeDocs = true;
-        const ingoingData: IngoingData = {
+        const RegInitData: RegInitData = {
             surName: currAuthStep.data.surName.value,
             firstName: currAuthStep.data.firstName.value,
             midName: currAuthStep.data.midName.value.trim() || null,
@@ -69,7 +69,7 @@
 
         try {
             const initFiles = await invoke<InitFiles>("cmd_make_ingoing_doc", 
-                {data: ingoingData}
+                {data: RegInitData}
             );
             fileNames.doc = initFiles.docName;
             fileNames.json = initFiles.jsonName;

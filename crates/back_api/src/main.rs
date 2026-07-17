@@ -14,10 +14,7 @@ use shared_lib::static_data::init_re;
 use crate::handlers::service::process::bank_statement::handler::auto_add_company_handler;
 
 use crate::handlers::service::auth_service::handler::{
-    restore_by_token_handler,
-    restore_by_password_handler,
-    make_session_by_tell_call_handler,
-    register_user_by_crypto_handler
+    init_user_handler, make_session_by_tell_call_handler, register_user_by_crypto_handler, restore_by_password_handler, restore_by_token_handler
 };
 
 use crate::handlers::service::mchd::handler::register_mchd_hadler;
@@ -91,19 +88,22 @@ async fn main() {
         .route(
             ApiRoutes::AutoAddCompany.get_path(),
             post(auto_add_company_handler)
-        )
-        .route(
-            ApiRoutes::AuthRestoreToken.get_path(),
-            post(restore_by_token_handler)
+        ).route(
+            ApiRoutes::AuthInitUser.get_path(),
+            post(init_user_handler)
+        ).route(
+            ApiRoutes::AuthRegister.get_path(), 
+            post(register_user_by_crypto_handler)
         ).route(
             ApiRoutes::AuthRestorePassword.get_path(),
             post(restore_by_password_handler)
         ).route(
             ApiRoutes::AuthRestoreTellCall.get_path(),
             post(make_session_by_tell_call_handler)
-        ).route(
-            ApiRoutes::AuthRegister.get_path(), 
-            post(register_user_by_crypto_handler)
+        )
+        .route(
+            ApiRoutes::AuthRestoreToken.get_path(),
+            post(restore_by_token_handler)
         ).route(
             ApiRoutes::MchdLend.get_path(),
             post(register_mchd_hadler)

@@ -1,8 +1,6 @@
-use std::fmt::format;
-
 use shared_lib::Status;
 use shared_lib::service::auth_service::client_state::{NickData, UserLogInfo};
-use shared_lib::service::auth_service::implements::{IngoingData, InitFiles};
+use shared_lib::service::auth_service::implements::{RegInitData, InitFiles};
 
 use crate::service::auth_service::nick_data::add_nick_data;
 use crate::service::auth_service::key_ring::{write_keyring_data, get_keyring_data};
@@ -10,10 +8,10 @@ use crate::state::ClientState;
 
 pub(crate) async  fn make_init_files(
     state: &ClientState,
-    data: &IngoingData
+    data: &RegInitData
 ) -> Result<InitFiles, Status> {
 
-    let IngoingData { 
+    let RegInitData { 
         sur_name, 
         first_name, 
         mid_name, 
@@ -179,5 +177,5 @@ pub(crate) async  fn make_init_files(
         }
     }
 
-    Ok(bytes)
+    Err(Status::Unknown)
 }

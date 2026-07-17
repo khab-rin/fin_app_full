@@ -1,6 +1,6 @@
 use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{
-    AuthStep, IngoingData, PasswordDataClientShort, AuthInfo, RegistrationData, InitFiles
+    AuthStep, RegInitData, PasswordDataClientShort, AuthInfo, RegistrationData, InitFiles
 };
 use shared_lib::primitives::frozen::implements_base::String1_50;
 
@@ -13,6 +13,29 @@ use crate::service::auth_service::registration::register_user;
 use crate::service::auth_service::make_session_by_tell_call::make_session_by_tel_call;
 
 
+#[tauri::command]
+pub fn cmd_get_nick_names(
+    state: tauri::State<'_, ClientState>
+) -> Result<Vec<String>, Status> {
+
+    log::debug!("cmd_get_nick_names running");
+
+    get_nick_names(&state)
+}
+
+
+
+
+#[tauri::command]
+pub async  fn cmd_is_state_active_fast(
+    state: tauri::State<'_, ClientState>
+) -> Result<bool, Status> {
+
+    log::debug!("cmd_is_state_active_fast running!!!!");
+
+    let session = state.session.lock().await;
+    Ok(session.is_some())
+}
 
 
 #[tauri::command]
@@ -40,18 +63,6 @@ pub async  fn cmd_is_state_active_init(
     }
 }
 
-
-#[tauri::command]
-pub async  fn cmd_is_state_active_fast(
-    state: tauri::State<'_, ClientState>
-) -> Result<bool, Status> {
-
-    log::debug!("cmd_is_state_active_fast running!!!!");
-
-    let session = state.session.lock().await;
-    Ok(session.is_some())
-}
-
 #[tauri::command]
 pub async fn cmd_logout(
     state: tauri::State<'_, ClientState>
@@ -64,46 +75,11 @@ pub async fn cmd_logout(
     Ok(())
 }
 
-#[tauri::command]
-pub async fn cmd_session_by_password(
-    state: tauri::State<'_, ClientState>,
-    data: PasswordDataClientShort
-) -> Result<AuthStep, Status> {
-
-    log::debug!("cmd_session_by_password running!!!!");
-
-    restore_by_password(&state, &data).await
-}
-
-#[tauri::command]
-pub async fn cmd_session_by_nick(
-    state: tauri::State<'_, ClientState>,
-    nick: String
-) -> Result<AuthStep, Status> {
-
-    log::info!("cmd_session_by_nick running!!!!");
-
-    match restore_session_by_nick(&state, &nick).await {
-        Ok(res) => Ok(res),
-        Err(_) => Ok(AuthStep::TryLater { text: AuthInfo::ClientApiSystemError })
-    }
-}
-
-#[tauri::command]
-pub fn cmd_get_nick_names(
-    state: tauri::State<'_, ClientState>
-) -> Result<Vec<String>, Status> {
-
-    log::debug!("cmd_get_nick_names running");
-
-    get_nick_names(&state)
-}
-
 
 #[tauri::command]
 pub async  fn cmd_make_init_files(
     state: tauri::State<'_, ClientState>,
-    data: IngoingData
+    data: RegInitData
 ) -> Result<InitFiles, Status> {
 
     log::debug!("cmd_make_ingoing_doc running");
@@ -129,6 +105,33 @@ pub async fn cmd_register_user(
     let res = register_user(&state, &data).await;
 
     res
+}
+
+
+#[tauri::command]
+pub async fn cmd_session_by_nick(
+    state: tauri::State<'_, ClientState>,
+    nick: String
+) -> Result<AuthStep, Status> {
+
+    log::info!("cmd_session_by_nick running!!!!");
+
+    match restore_session_by_nick(&state, &nick).await {
+        Ok(res) => Ok(res),
+        Err(_) => Ok(AuthStep::TryLater { text: AuthInfo::ClientApiSystemError })
+    }
+}
+
+
+#[tauri::command]
+pub async fn cmd_session_by_password(
+    state: tauri::State<'_, ClientState>,
+    data: PasswordDataClientShort
+) -> Result<AuthStep, Status> {
+
+    log::debug!("cmd_session_by_password running!!!!");
+
+    restore_by_password(&state, &data).await
 }
 
 

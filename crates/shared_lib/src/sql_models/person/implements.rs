@@ -57,22 +57,24 @@ pub struct PersonMetadata {
     pub gender: Option<Gender>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub birth_day: Option<Date>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub phone: Option<Phone>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub email: Option<Email>,
+    #[serde(default)]
+    pub phone: std::collections::HashSet<Phone>,
+    #[serde(default)]
+    pub email: std::collections::HashSet<Email>,
 }
 
 impl PersonMetadata {
     pub fn merge(&mut self, new: Self) {
-        self.passport = new.passport.or(self.passport.take());
-        self.address = new.address.or(self.address.take());
-        self.gender = new.gender.or(self.gender);
-        self.birth_day = new.birth_day.or(self.birth_day.take());
-        self.phone = new.phone.or(self.phone.take());
-        self.email = new.email.or(self.email.take());
+        if new.passport.is_some()  { self.passport = new.passport; }
+        if new.address.is_some()   { self.address = new.address; }
+        if new.gender.is_some()    { self.gender = new.gender; }
+        if new.birth_day.is_some() { self.birth_day = new.birth_day; }
+        self.phone.extend(new.phone);
+        self.email.extend(new.email);
     }
 }
+
+
 
 
 make_document!(PassportRf, PasspRfCode, PasspRfNumber);

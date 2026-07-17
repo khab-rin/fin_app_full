@@ -118,6 +118,7 @@ pub enum Status {
     BackApiError = 501,
     CryptoServerError = 502,
     RequiredFieldsMiss = 503,
+    DadataResponseError = 504,
 
     // ==========================================
     // 600-я группа: Ошибки выполнения HTTP/сетевых запросов

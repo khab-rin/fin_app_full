@@ -10,4 +10,4 @@ import type { Phone } from "./Phone";
 import type { Snils } from "./Snils";
 import type { SurName } from "./SurName";
 
-export type IngoingData = { surName: SurName, firstName: FirstName, midName: MidName | null, persInn: PersInn, snils: Snils, compInn: CompInn, kpp: Kpp, phone: Phone, email: Email, password: Password, };
+export type RegInitData = { surName: SurName, firstName: FirstName, midName: MidName | null, persInn: PersInn, snils: Snils, compInn: CompInn, kpp: Kpp, phone: Phone, email: Email, password: Password, };

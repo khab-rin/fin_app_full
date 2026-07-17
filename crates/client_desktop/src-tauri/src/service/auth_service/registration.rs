@@ -20,185 +20,185 @@ use crate::service::auth_service::key_ring::{get_keyring_data, write_keyring_dat
 
 pub async fn register_user(
     state: &ClientState,
-    data: &SvelteRegistrationData
+    data: &RegistrationData
 ) -> Result<AuthStep , Status> {
-
-    log::debug!("register_user running");
-
     let failed_result = AuthStep::TryLater { text: AuthInfo::ClientApiSystemError };
+    // log::debug!("register_user running");
 
-    let SvelteRegistrationData { 
-        sur_name, 
-        first_name, 
-        mid_name, 
-        pers_inn, 
-        snils, 
-        comp_inn, 
-        kpp, 
-        password, 
-        phone, 
-        email, 
-        document_path, 
-        signature_path 
-    } = data;
+    // 
 
-    let fio = Fio { 
-        sur_name: sur_name.clone(), 
-        first_name: first_name.clone(), 
-        mid_name: Some(mid_name.clone()) 
-    };
+    // let SvelteRegistrationData { 
+    //     sur_name, 
+    //     first_name, 
+    //     mid_name, 
+    //     pers_inn, 
+    //     snils, 
+    //     comp_inn, 
+    //     kpp, 
+    //     password, 
+    //     phone, 
+    //     email, 
+    //     document_path, 
+    //     signature_path 
+    // } = data;
 
-    let metadata = PersonMetadata {
-        fio, 
-        snils: snils.clone(), 
-        phone: Some(phone.clone()), 
-        email: Some(email.clone()), 
-        passport: None, 
-        address: None, 
-        gender: None, 
-        birth_day: None
-    };
+    // let fio = Fio { 
+    //     sur_name: sur_name.clone(), 
+    //     first_name: first_name.clone(), 
+    //     mid_name: Some(mid_name.clone()) 
+    // };
 
-    let person = Person {
-        pers_id: BoxUuid::unchecked(uuid::Uuid::new_v4()),
-        pers_inn: pers_inn.clone(),
-        metadata,
-        last_update: DateTime::unchecked(chrono::Utc::now())
-    };
+    // let metadata = PersonMetadata {
+    //     fio, 
+    //     snils: snils.clone(), 
+    //     phone: Some(phone.clone()), 
+    //     email: Some(email.clone()), 
+    //     passport: None, 
+    //     address: None, 
+    //     gender: None, 
+    //     birth_day: None
+    // };
 
-    let device_id = match get_device_id() {
-        Ok(d) => d,
-        Err(err) => {
-            log::error!(
-                "FUN register_user FAILED BY FUN get_device_id, err = {:?}", err
-            );
-            return Ok(AuthStep::TryLater {text: AuthInfo::ClientApiSystemError});
-        }
-    };
+    // let person = Person {
+    //     pers_id: BoxUuid::unchecked(uuid::Uuid::new_v4()),
+    //     pers_inn: pers_inn.clone(),
+    //     metadata,
+    //     last_update: DateTime::unchecked(chrono::Utc::now())
+    // };
 
-    let key_ = format!("{}{}{}", pers_inn, comp_inn, kpp);
+    // let device_id = match get_device_id() {
+    //     Ok(d) => d,
+    //     Err(err) => {
+    //         log::error!(
+    //             "FUN register_user FAILED BY FUN get_device_id, err = {:?}", err
+    //         );
+    //         return Ok(AuthStep::TryLater {text: AuthInfo::ClientApiSystemError});
+    //     }
+    // };
 
-    let mut user_log_info = match get_keyring_data(state, &key_) {
-        Ok(i) => i,
-        Err(err) => {
-            log::error!(
-                "FUN register_user FAILED BY FUN get_keyring_data, err = {}", err
-            );
-            return Ok(failed_result);
-        }
-    };
+    // let key_ = format!("{}{}{}", pers_inn, comp_inn, kpp);
 
-    let document = match std::fs::read(document_path) {
-        Ok(d) => d,
-        Err(err) => {
-            log::error!(
-                "FUN register_user FAILED BY FILE READ, tech_err = {}, local_err = {}",
-                err, Status::FileReadError
-            );
-            return Ok(AuthStep::TryLater {text: AuthInfo::ClientApiSystemError});
-        }
-    };
+    // let mut user_log_info = match get_keyring_data(state, &key_) {
+    //     Ok(i) => i,
+    //     Err(err) => {
+    //         log::error!(
+    //             "FUN register_user FAILED BY FUN get_keyring_data, err = {}", err
+    //         );
+    //         return Ok(failed_result);
+    //     }
+    // };
 
-    let signature = match std::fs::read(signature_path) {
-        Ok(s) => s,
-        Err(err) => {
-            log::error!(
-                "FUN register_user FAILED BY FILE READ, tech_err = {}, local_err = {}",
-                err, Status::FileReadError
-            );
-            return Ok(AuthStep::TryLater {text: AuthInfo::ClientApiSystemError});
-        }
-    };
+    // let document = match std::fs::read(document_path) {
+    //     Ok(d) => d,
+    //     Err(err) => {
+    //         log::error!(
+    //             "FUN register_user FAILED BY FILE READ, tech_err = {}, local_err = {}",
+    //             err, Status::FileReadError
+    //         );
+    //         return Ok(AuthStep::TryLater {text: AuthInfo::ClientApiSystemError});
+    //     }
+    // };
 
-    let password_hash = blake3::hash(password.as_bytes()).to_hex().to_string();
+    // let signature = match std::fs::read(signature_path) {
+    //     Ok(s) => s,
+    //     Err(err) => {
+    //         log::error!(
+    //             "FUN register_user FAILED BY FILE READ, tech_err = {}, local_err = {}",
+    //             err, Status::FileReadError
+    //         );
+    //         return Ok(AuthStep::TryLater {text: AuthInfo::ClientApiSystemError});
+    //     }
+    // };
 
-    let registration_data = RegistrationData {
-        person: person.clone(),
-        comp_inn: comp_inn.clone(),
-        kpp: kpp.clone(),
-        password: password_hash,
-        device_id,
-        phone: phone.clone(),
-        email: email.clone(),
-        doc_hash: user_log_info.init_file_hash.clone(),
-        document,  
-        signature,
-    };
+    // let password_hash = blake3::hash(password.as_bytes()).to_hex().to_string();
 
-    let response = match post_query_back_api(
-            state, 
-            state.config.get_std_client(), 
-            ApiRoutes::AuthRegister, 
-            &registration_data).await {
-        Ok(r) => r, 
-        Err(err) => {
-            log::error!(
-                "FUN register_user FAILED BY POST QUERY TO BACK API, local_err = {:?}", err
-            );
-            return Ok(AuthStep::TryLater {text: AuthInfo::ClientApiQueryError});
-        }
-    };
+    // let registration_data = RegistrationData {
+    //     person: person.clone(),
+    //     comp_inn: comp_inn.clone(),
+    //     kpp: kpp.clone(),
+    //     password: password_hash,
+    //     device_id,
+    //     phone: phone.clone(),
+    //     email: email.clone(),
+    //     doc_hash: user_log_info.init_file_hash.clone(),
+    //     document,  
+    //     signature,
+    // };
 
-    let auth_step:AuthStep = match response.json().await {
-        Ok(s) => s,
-        Err(err) => {
-            log::error!(
-                "FUN register_user FAILED BY MAPPING RESPONSE, err = {:?}, local_err = {:?}",
-                err, Status::MappingError
-            );
-            return Ok(failed_result);
-        }
-    };
+    // let response = match post_query_back_api(
+    //         state, 
+    //         state.config.get_std_client(), 
+    //         ApiRoutes::AuthRegister, 
+    //         &registration_data).await {
+    //     Ok(r) => r, 
+    //     Err(err) => {
+    //         log::error!(
+    //             "FUN register_user FAILED BY POST QUERY TO BACK API, local_err = {:?}", err
+    //         );
+    //         return Ok(AuthStep::TryLater {text: AuthInfo::ClientApiQueryError});
+    //     }
+    // };
 
-    let success_result = match auth_step {
-        AuthStep::SuccessFull {session_user_token} => session_user_token,
-        _ => return Ok(auth_step)
-    };
+    // let auth_step:AuthStep = match response.json().await {
+    //     Ok(s) => s,
+    //     Err(err) => {
+    //         log::error!(
+    //             "FUN register_user FAILED BY MAPPING RESPONSE, err = {:?}, local_err = {:?}",
+    //             err, Status::MappingError
+    //         );
+    //         return Ok(failed_result);
+    //     }
+    // };
 
-    user_log_info.token = Some(success_result.token.clone());
+    // let success_result = match auth_step {
+    //     AuthStep::SuccessFull {session_user_token} => session_user_token,
+    //     _ => return Ok(auth_step)
+    // };
 
-    match write_keyring_data(state, &key_, &user_log_info) {
-        Ok(_) => {},
-        Err(err) => {
-            log::error!("FUN register_user FAILED by writing UserLogInfo, err = {}", err);
-            return Ok(failed_result);
-        }
-    }
+    // user_log_info.token = Some(success_result.token.clone());
 
-    let sur_name = success_result.user.person.metadata.fio.sur_name.clone();
+    // match write_keyring_data(state, &key_, &user_log_info) {
+    //     Ok(_) => {},
+    //     Err(err) => {
+    //         log::error!("FUN register_user FAILED by writing UserLogInfo, err = {}", err);
+    //         return Ok(failed_result);
+    //     }
+    // }
+
+    // let sur_name = success_result.user.person.metadata.fio.sur_name.clone();
 
 
-    let comp_name = success_result.user.company.metadata.comp_name.as_ref() // <-- добавили .as_ref() для внешнего Option
-        .and_then(|c| c.short_egrul_name.as_ref())
-        .map(|s| s.to_string())
-        .unwrap_or_else(|| "Неизвестная компания".to_string());
+    // let comp_name = success_result.user.company.metadata.comp_name.as_ref() // <-- добавили .as_ref() для внешнего Option
+    //     .and_then(|c| c.short_egrul_name.as_ref())
+    //     .map(|s| s.to_string())
+    //     .unwrap_or_else(|| "Неизвестная компания".to_string());
     
-    let nick = format!("{}_{}", sur_name, comp_name);
+    // let nick = format!("{}_{}", sur_name, comp_name);
 
-    let nick_data = NickData {
-        nick,
-        pers_inn: pers_inn.clone(),
-        comp_inn: comp_inn.clone(),
-        kpp: kpp.clone()
-    };
+    // let nick_data = NickData {
+    //     nick,
+    //     pers_inn: pers_inn.clone(),
+    //     comp_inn: comp_inn.clone(),
+    //     kpp: kpp.clone()
+    // };
 
-    match add_nick_data(state, &nick_data) {
-        Ok(_) => {},
-        Err(err) => {
-            log::error!("FUN register_user FAILED BY FUN add_nick_data, err = {}", err);
-            return Ok(failed_result);
-        }
-    }
+    // match add_nick_data(state, &nick_data) {
+    //     Ok(_) => {},
+    //     Err(err) => {
+    //         log::error!("FUN register_user FAILED BY FUN add_nick_data, err = {}", err);
+    //         return Ok(failed_result);
+    //     }
+    // }
 
 
-    match init_session(state, success_result.as_ref()).await {
-        Ok(_) => Ok(AuthStep::SuccessShort {}),
-        Err(err) => {
-            log::error!("FUN register_user FAILED BY init_session, err = {}",err);
-            Ok(failed_result)
-        }
-    }
-
+    // match init_session(state, success_result.as_ref()).await {
+    //     Ok(_) => Ok(AuthStep::SuccessShort {}),
+    //     Err(err) => {
+    //         log::error!("FUN register_user FAILED BY init_session, err = {}",err);
+    //         Ok(failed_result)
+    //     }
+    // }
+    Ok(failed_result)
 }
  
 
