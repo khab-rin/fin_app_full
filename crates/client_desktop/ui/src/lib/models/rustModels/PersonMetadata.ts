@@ -8,4 +8,4 @@ import type { PassportRf } from "./PassportRf";
 import type { Phone } from "./Phone";
 import type { Snils } from "./Snils";
 
-export type PersonMetadata = { snils: Snils, fio: Fio, passport: PassportRf | null, address: AdrWrap | null, gender: Gender | null, birth_day: Date | null, phone: Phone | null, email: Email | null, };
+export type PersonMetadata = { snils: Snils, fio: Fio, passport: PassportRf | null, address: AdrWrap | null, gender: Gender | null, birth_day: Date | null, phone: Array<Phone>, email: Array<Email>, };

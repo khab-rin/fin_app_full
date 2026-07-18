@@ -16,9 +16,6 @@ pub enum AuthStep {
     CallIn { phone: Phone, external_id: String, text: AuthInfo },
     CallInWaiting { text: AuthInfo },
 
-    InitUserSuccess {},
-    InitUserDuplicate {tel: String, email: String, text: AuthInfo},
-
     Loading { text: AuthInfo },
     
     NickName { text: AuthInfo },
@@ -26,6 +23,14 @@ pub enum AuthStep {
     Password {text: AuthInfo},
     
     RegisterStep1 {text: AuthInfo},
+    RegisterStep1Duplicate {tel: String, email: String, text: AuthInfo},
+    RegisterStep1Success {
+        doc_name: String,
+        doc_file: Vec<u8>,
+        json_name: String,  
+        json_file: Vec<u8>,
+        text: AuthInfo
+    },
     RegisterStep2 {text: AuthInfo},
     
     SuccessFull { session_user_token: Box<SessionUserToken> },
@@ -78,6 +83,9 @@ pub enum AuthInfo {
 
     #[serde(rename = "Заполните поля регистрации строго как в документах")]
     RegisterStep1,
+
+    #[serde(rename = "Сохраните файлы, ознакомьтесь с заявлением в формате doc и подпишите ЭЦП физ лица пользователя документ в формате json")]
+    RegisterStep1Success,
 
     #[serde(rename = "Укажите путь до xml файла заявления и путь до файла открепленной подписи. Подпись должна быть для указанного файла xml")]
     RegisterStep2,
@@ -176,7 +184,8 @@ pub struct SmsruGetResResponse {
 }
 
 
-#[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
+#[derive(Serialize, Deserialize, Debug, Clone, ts_rs::TS)]
+#[serde(rename_all = "camelCase")]
 #[ts(rename_all = "camelCase")]
 pub struct RegInitData {
     pub sur_name: SurName,

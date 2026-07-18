@@ -8,7 +8,7 @@ use crate::state::ClientState;
 use crate::service::auth_service::restore_by_nick::restore_session_by_nick;
 use crate::service::auth_service::restore_by_password::restore_by_password;
 use crate::service::auth_service::nick_data::get_nick_names;
-use crate::service::auth_service::ingoing_data::make_init_files;
+use crate::service::auth_service::register_step1::register_step1;
 use crate::service::auth_service::registration::register_user;
 use crate::service::auth_service::make_session_by_tell_call::make_session_by_tel_call;
 
@@ -77,18 +77,14 @@ pub async fn cmd_logout(
 
 
 #[tauri::command]
-pub async  fn cmd_make_init_files(
+pub async  fn cmd_register_step1(
     state: tauri::State<'_, ClientState>,
     data: RegInitData
-) -> Result<InitFiles, Status> {
+) -> Result<AuthStep, Status> {
 
-    log::debug!("cmd_make_ingoing_doc running");
+    log::debug!("cmd_register_step1 running");
 
-    let res = make_init_files(&state, &data).await;
-    
-    if res.is_err() {
-        log::debug!("cmd_make_ingoing_doc failed");
-    }
+    let res = register_step1(&state, &data).await;
 
     res
 }

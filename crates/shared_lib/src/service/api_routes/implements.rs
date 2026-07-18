@@ -1,7 +1,7 @@
 pub enum ApiRoutes {
     AutoAddCompany,
-    AuthInitUser,
     AuthRegister,
+    AuthRegisterStep1,
     AuthRestorePassword,
     AuthRestoreTellCall,
     AuthRestoreToken,
@@ -13,8 +13,8 @@ impl ApiRoutes {
     pub fn get_path(&self) -> &str {
         match self {
             Self::AutoAddCompany => "/api/companys/auto-add",
-            Self::AuthInitUser => "/api/auth/init_user",
             Self::AuthRegister => "/api/auth/register_user",
+            Self::AuthRegisterStep1 => "/api/auth/register_step1",
             Self::AuthRestorePassword => "/api/auth/restore_by_password",
             Self::AuthRestoreTellCall => "/api/auth/restore_by_tel_call",
             Self::AuthRestoreToken => "/api/auth/restore_by_token",

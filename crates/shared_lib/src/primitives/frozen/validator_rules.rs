@@ -405,7 +405,7 @@ pub(crate) fn init_password_from_str(password: &str) -> Result<Box<str>, Status>
     let len = password.chars().count();
 
     // Проверяем диапазон от 8 до 20 символов включительно
-    (8..=20).contains(&len)
+    (8..=100).contains(&len)
         .then(|| password.into())
         .ok_or(Status::ValidPassword)
 }

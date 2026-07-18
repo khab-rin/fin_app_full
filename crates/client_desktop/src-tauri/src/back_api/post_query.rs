@@ -55,14 +55,34 @@ where
         };
     
     if !response.status().is_success() {
-        let back_err = response
-            .json::<Status>()
-            .await
-            .unwrap_or(Status::Unknown);
-        log::error!(
-            "FUN post_query_back_api FAILED, BACK API GIVE WRONG STATUS. Backend error code: {}, local_err = {:?}",
-            back_err, Status::BackApiError
-        );
+        let status_code = response.status();
+        
+        let is_json = response
+            .headers()
+            .get(reqwest::header::CONTENT_TYPE)
+            .and_then(|v| v.to_str().ok())
+            .map(|s| s.contains("application/json"))
+            .unwrap_or(false);
+
+        if is_json {
+            let back_err = response
+                .json::<Status>()
+                .await
+                .unwrap_or(Status::Unknown);
+                
+            log::error!(
+                "BACK API REJECTED REQUEST! Status: {}, Backend Enum Error: {:?}",
+                status_code, back_err
+            );
+        } else {
+            let err_body = response.text().await.unwrap_or_else(|_| "Empty body".to_string());
+            
+            log::error!(
+                "BACK API CRASHED OR REJECTED BY MIDDLEWARE! Status: {}, Raw Response: {}",
+                status_code, err_body
+            );
+        }
+
         return Err(Status::BackApiError);
     }
 

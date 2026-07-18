@@ -18,9 +18,10 @@ use crate::db::sql_queries::companys::add::company::add_company;
 use crate::db::sql_queries::users::add::user::add_user;
 use crate::db::service::auth_service::helper::{mask_email, mask_phone};
 use crate::db::parsers::dadata::inn_kpp_query::parse_company_by_inn_kpp;
+use crate::db::service::auth_service::make_init_files::make_init_files;
 
 
-pub(crate) async fn init_user(
+pub(crate) async fn register_step1(
     state: &BackApiState,
     data: &RegInitData
 ) -> Result<AuthStep, Status> {
@@ -57,36 +58,36 @@ pub(crate) async fn init_user(
         }
     };
 
-    match existed_user_option {
-        Some(u) => {
-            let tel_email_option = match get_user_phone_mail_by_id(state, &u.user_id).await {
-                Ok(o) => o,
-                Err(err) => {
-                    tracing::error!(
-                        local_err = ?err,
-                        "FUN init_user FAILED BY FUN get_user_phone_mail_by_id"
-                    );
-                    return Ok(failed_result);
-                }
-            };
-            match tel_email_option {
-                Some((tel, email)) => {
-                    return Ok(AuthStep::InitUserDuplicate { 
-                        tel: mask_phone(tel.as_ref()), 
-                        email: mask_email(email.as_ref()), 
-                        text: AuthInfo::UserAlreadyExists });
-                }
-                None => {
-                    tracing::error!(
-                        local_err = ?&Status::SystemLogicErr,
-                        "FUN init_user FAILED BY SYSTEM LOGIC ERROR --> USER EXIST, TEL EMAIL MISS"
-                    );
-                    return Ok(failed_result);
-                }
+    if let Some(u) = existed_user_option {
+        let tel_email_option = match get_user_phone_mail_by_id(state, &u.user_id).await {
+            Ok(o) => o,
+            Err(err) => {
+                tracing::error!(
+                    local_err = ?err,
+                    "FUN init_user FAILED BY FUN get_user_phone_mail_by_id"
+                );
+                return Ok(failed_result);
             }
-        },
-        None => {}
+        };
+
+        match tel_email_option {
+            Some((tel, email)) => {
+                return Ok(AuthStep::RegisterStep1Duplicate { 
+                    tel: mask_phone(tel.as_ref()), 
+                    email: mask_email(email.as_ref()), 
+                    text: AuthInfo::UserAlreadyExists 
+                });
+            }
+            None => {
+                tracing::error!(
+                    local_err = ?&Status::SystemLogicErr,
+                    "FUN init_user FAILED BY SYSTEM LOGIC ERROR --> USER EXIST, TEL EMAIL MISS"
+                );
+                return Ok(failed_result);
+            }
+        }
     }
+
     
     let new_person = Person {
         pers_id: BoxUuid::unchecked(uuid::Uuid::new_v4()),
@@ -167,8 +168,8 @@ pub(crate) async fn init_user(
     };
 
 
-    let _ = match add_user(state, &user_set_data).await {
-        Ok(_) => {},
+    let user = match add_user(state, &user_set_data).await {
+        Ok(u) => {u},
         Err(err) => {
             tracing::error!(
                 local_err = ?err,
@@ -178,6 +179,8 @@ pub(crate) async fn init_user(
         }
     };
 
+    let user_id = user.user_id;
 
-    Ok(AuthStep::InitUserSuccess {  })
+    make_init_files(state, &user_id).await
+
 }

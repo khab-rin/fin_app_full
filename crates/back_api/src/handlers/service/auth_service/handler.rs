@@ -16,16 +16,23 @@ use crate::db::service::auth_service::by_device_token::restore_session_by_token;
 use crate::db::service::auth_service::by_password::restore_session_by_passord;
 use crate::db::service::auth_service::registration::register_new_user;
 use crate::db::service::auth_service::by_tel_call::make_session_by_tel_call;
-use crate::db::service::auth_service::init_user::init_user;
+use crate::db::service::auth_service::reg_step1::register_step1;
 
 
-pub async fn init_user_handler(
+pub async fn register_step1_handler(
     State(state) : State<Arc<BackApiState>>,
     Json(payload) : Json<RegInitData>
 ) -> Result<Json<AuthStep>, Status> {
 
-    let res = init_user(&state, &payload).await?;
-    
+
+    tracing::info!("register_step1_handler running!!");
+
+    tracing::info!("Сырой JSON долетел: {:?}", payload);
+
+    let res = register_step1(&state, &payload).await?;
+
+
+
     Ok(Json(res))
 }
 

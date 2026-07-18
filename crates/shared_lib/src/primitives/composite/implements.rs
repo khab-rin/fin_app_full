@@ -15,6 +15,19 @@ pub struct Fio {
     pub mid_name: Option<MidName>,
 }
 
+impl Fio {
+    pub fn make_full_name(&self) -> String {
+        match &self.mid_name {
+            Some(mid) => {
+                format!("{} {} {}", self.sur_name, self.first_name, mid)
+            }
+            None => {
+                format!("{} {}", self.sur_name, self.first_name)
+            }
+        }
+    }
+}
+
 
 
 #[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash, sqlx::Type, ts_rs::TS)]

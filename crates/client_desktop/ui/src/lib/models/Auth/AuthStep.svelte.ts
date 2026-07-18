@@ -11,11 +11,14 @@ import Loading from "$lib/service/auth_service/Loading.svelte";
 import NickName from "$lib/service/auth_service/NickName.svelte";
 import Password from "$lib/service/auth_service/PassWord.svelte";
 import RegisterStep1 from "$lib/service/auth_service/RegisterStep1.svelte";
+import RegisterStep1Success from '$lib/service/auth_service/RegisterStep1Success.svelte';
 import RegisterStep2 from "$lib/service/auth_service/RegisterStep2.svelte";
 import TryLater from "$lib/service/auth_service/TryLater.svelte";
 
 
+
 import { invoke } from '@tauri-apps/api/core';
+
 
 class SvelteAuthStep {
     step = $state<AuthStep>({
@@ -143,6 +146,8 @@ class SvelteAuthStep {
             return Password
         } else if (AuthStepType.RegisterStep1 in step) {
             return RegisterStep1
+        } else if (AuthStepType.RegisterStep1Success in step) {
+            return RegisterStep1Success
         } else if (AuthStepType.RegisterStep2 in step) {
             return RegisterStep2
         } else {

@@ -4,7 +4,7 @@ pub(crate) mod ingoing_data;
 
 pub(crate) mod key_ring;
 
-pub(crate) mod make_init_files;
+pub(crate) mod register_step1;
 
 pub(crate) mod make_session_by_tell_call;
 

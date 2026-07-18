@@ -8,7 +8,6 @@
     
     let isPolling = $state(false);
     
-    // 1. Добавляем реактивную переменную для отображения секунд в HTML
     let countdown = $state(4); 
     
     const externalId = AuthStepType.CallIn in currAuthStep.step ? currAuthStep.step.CallIn.external_id : "";
