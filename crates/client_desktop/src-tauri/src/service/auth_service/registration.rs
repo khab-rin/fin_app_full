@@ -2,7 +2,7 @@ use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::{BoxUuid, DateTime};
 use shared_lib::service::auth_service::implements::{
     AuthStep, 
-    RegistrationData, 
+    RegFilesData, 
     AuthInfo
 };
 use shared_lib::service::auth_service::client_state::NickData;
@@ -20,7 +20,7 @@ use crate::service::auth_service::key_ring::{get_keyring_data, write_keyring_dat
 
 pub async fn register_user(
     state: &ClientState,
-    data: &RegistrationData
+    data: &RegFilesData
 ) -> Result<AuthStep , Status> {
     let failed_result = AuthStep::TryLater { text: AuthInfo::ClientApiSystemError };
     // log::debug!("register_user running");

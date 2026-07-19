@@ -34,14 +34,8 @@ use super::*;
         service::auth_service::implements::RegInitData::export_all_to(output_dir)
             .expect("Не удалось экспортировать RegInitData");
 
-        service::auth_service::implements::InitFiles::export_all_to(output_dir)
-            .expect("Не удалось экспортировать InitFiles");
-
         service::auth_service::implements::PasswordDataClientShort::export_all_to(output_dir)
             .expect("Не удалось экспортировать PasswordDataClientShort");
-
-        service::auth_service::implements::RegistrationData::export_all_to(output_dir)
-            .expect("Не удалось экспортировать RegistrationData");
 
         service::mchd::home_mchd_power::HomeMchdPower::export_all_to(output_dir)
             .expect("Не удалось экспортировать HomeMchdPower");

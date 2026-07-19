@@ -9,89 +9,27 @@ use crate::db::sql_queries::users::get::tel_mail_by_id::get_user_phone_mail_by_i
 
 pub(crate) async fn make_init_files(
     state: &BackApiState,
+    data: &RegInitData,
     user_id: &BoxUuid
 ) -> Result<AuthStep, Status> {
     let failed_result = AuthStep::TryLater { text: AuthInfo::BackApiError};
 
-    let elem_option = match get_user_phone_mail_by_id(state, user_id).await {
-        Ok(o) => o,
-        Err(err) => {
-            tracing::error!(
-                local_err = ?err,
-                "make_init_files FAILED BY FUN get_user_phone_mail_by_id"
-            );
-            return Ok(failed_result);
-        }
-    };
+    let RegInitData { 
+        sur_name, 
+        first_name,
+        mid_name, 
+        pers_inn, 
+        snils, 
+        comp_inn, 
+        kpp, 
+        phone, 
+        email, 
+        ..
+    } = data;
 
-    let (phone, email) = match elem_option {
-        Some(e) => e,
-        None => {
-            tracing::error!(
-                local_err = ?Status::SystemLogicErr,
-                "make_init_files FAILED BY SystemLogicErr"
-            );
-            return Ok(failed_result);
-        }
-    };
-
-    let person_option = match get_person_by_userid(state, user_id).await {
-        Ok(o) => o,
-        Err(err) => {
-            tracing::error!(
-                local_err = ?err,
-                "make_init_files FAILED BY FUN get_person_by_userid"
-            );
-            return Ok(failed_result);
-        }
-    };
-
-    let person = match person_option {
-        Some(u) => u,
-        None => {
-            tracing::error!(
-                local_err = ?Status::SystemLogicErr,
-                "make_init_files FAILED BY SystemLogicErr"
-            );
-            return Ok(failed_result);
-        }
-    };
-
-    let company_option = match get_company_by_userid(state, user_id).await {
-        Ok(c) => c,
-        Err(err) => {
-            tracing::error!(
-                local_err = ?err,
-                "make_init_files FAILED BY FUN get_company_by_userid"
-            );
-            return Ok(failed_result);
-        }
-    };
-
-    let company = match company_option {
-        Some(c) => c,
-        None => {
-            tracing::error!(
-                local_err = ?Status::SystemLogicErr,
-                "make_init_files FAILED BY SystemLogicErr"
-            );
-            return Ok(failed_result);
-        }
-    };
-
-    let full_name = person.metadata.fio.make_full_name(); 
-
-    let data = RegInitData {
-        sur_name: person.metadata.fio.sur_name,
-        first_name: person.metadata.fio.first_name,
-        mid_name: person.metadata.fio.mid_name,
-        pers_inn: person.pers_inn,
-        snils: person.metadata.snils,
-        comp_inn: company.comp_inn,
-        kpp: company.kpp,
-        phone,
-        email,
-        password: Password::unchecked("val"),
+    let full_name = match mid_name {
+        Some(m) => format!("{} {} {}", sur_name.as_ref(), first_name.as_ref(), m.as_ref()),
+        None => format!("{} {}", sur_name.as_ref(), first_name.as_ref())
     };
 
 

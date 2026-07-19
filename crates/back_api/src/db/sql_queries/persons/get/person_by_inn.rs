@@ -6,13 +6,13 @@ use crate::config::BackApiState;
 
 pub(crate) async fn get_person_by_inn(
     state: &BackApiState,
-    inn: &PersInn
+    pers_inn: &PersInn
 ) -> Result<Option<Person>, Status> {
 
     let person_dto_option = match sqlx::query_file_as!(
         PersonDto,
         "src/db/sql_queries/persons/get/person_by_inn.sql",
-        inn.as_ref()
+        pers_inn.as_ref()
     ).fetch_optional(&state.pool_fast).await {
         Ok(o) => o,
         Err(err) => {

@@ -39,6 +39,7 @@ pub async fn run_lib() {
         .plugin(tauri_plugin_fs::init())
         .invoke_handler(tauri::generate_handler![
             commands::auth::cmd_get_nick_names,
+            commands::auth::cmd_get_device_id,
             commands::auth::cmd_is_state_active_fast,
             commands::auth::cmd_is_state_active_init,
             commands::auth::cmd_logout,

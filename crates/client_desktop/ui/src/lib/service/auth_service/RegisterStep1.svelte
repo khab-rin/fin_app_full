@@ -1,15 +1,22 @@
 <script lang='ts'>
+    import {onMount} from "svelte";
 	import { invoke } from "@tauri-apps/api/core";
     
     import {currAuthStep} from "$lib/models/Auth/AuthStep.svelte";
     import type {AuthStep} from "$lib/models/rustModels/AuthStep";
 
     import type {RegInitData} from "$lib/models/rustModels/RegInitData";
+    import type {BoxUuid} from "$lib/models/rustModels/BoxUuid";
 
     
     let isPushedMakeDocs = $state(false);
 
     let passwordRepeat = $state("");
+
+    
+
+    let deviceId = "";
+    
 
     let isDataValid = $derived(
         !currAuthStep.data.surName.isValid ||
@@ -28,7 +35,7 @@
     async function finishStep1() {
         if (isPushedMakeDocs) return;
         isPushedMakeDocs = true;
-        const RegInitData: RegInitData = {
+        const regInitData: RegInitData = {
             surName: currAuthStep.data.surName.value,
             firstName: currAuthStep.data.firstName.value,
             midName: currAuthStep.data.midName.value.trim() || null,
@@ -38,12 +45,12 @@
             kpp: currAuthStep.data.kpp.value,
             phone: currAuthStep.data.phone.value,
             email: currAuthStep.data.email.value,
-            password: currAuthStep.data.password.value
+            password: currAuthStep.data.password.value,
         };
 
         try {
             const next_step = await invoke<AuthStep>("cmd_register_step1", 
-                {data: RegInitData}
+                {data: regInitData}
             );
             isPushedMakeDocs = false;
             currAuthStep.add(next_step);
@@ -54,6 +61,16 @@
             currAuthStep.add(next_step);
         }
     }
+
+    onMount(async() => {
+        try {
+            deviceId = await invoke<BoxUuid>("cmd_get_device_id", {}); 
+        } catch(err) {
+            console.error("FAILED BY cmd_register_step1, err = ", err);
+            const next_step: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
+            currAuthStep.add(next_step);
+        }
+    });
 
 </script>
 

@@ -197,24 +197,15 @@ pub struct RegInitData {
     pub kpp: Kpp,
     pub phone: Phone,
     pub email: Email,
-    pub password: Password
-}
-
-#[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
-#[ts(rename_all = "camelCase")]
-pub struct RegistrationData {
     pub password: Password,
-    pub json_file_path: String,  
-    pub sign_file_path: String, 
+    pub device_id: BoxUuid
 }
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 #[ts(rename_all = "camelCase")]
-pub struct InitFiles {
-    pub doc_name: String,
-    pub doc_file: Vec<u8>,
-    pub json_name: String,  
-    pub json_file: Vec<u8>, 
+pub struct RegFilesData {
+    pub json_file: Vec<u8>,  
+    pub sign_file: Vec<u8>, 
 }
 
 
@@ -225,7 +216,7 @@ pub struct CryptoVerifyData {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct CryptoServiceResponse {
+pub struct PersonSignCheckResult {
     pub is_signed: bool,
     pub text: String
 }

@@ -1,16 +1,26 @@
 use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{
-    AuthStep, RegInitData, PasswordDataClientShort, AuthInfo, RegistrationData, InitFiles
+    AuthStep, RegInitData, PasswordDataClientShort, AuthInfo, RegFilesData
 };
 use shared_lib::primitives::frozen::implements_base::String1_50;
+use shared_lib::primitives::frozen::implements::BoxUuid;
 
 use crate::state::ClientState;
+use crate::service::auth_service::helper::get_device_id;
 use crate::service::auth_service::restore_by_nick::restore_session_by_nick;
 use crate::service::auth_service::restore_by_password::restore_by_password;
 use crate::service::auth_service::nick_data::get_nick_names;
 use crate::service::auth_service::register_step1::register_step1;
 use crate::service::auth_service::registration::register_user;
 use crate::service::auth_service::make_session_by_tell_call::make_session_by_tel_call;
+
+#[tauri::command]
+pub fn cmd_get_device_id() -> Result<BoxUuid, Status> {
+
+    log::debug!("cmd_get_device_id running");
+
+    get_device_id()
+}
 
 
 #[tauri::command]
@@ -93,7 +103,7 @@ pub async  fn cmd_register_step1(
 #[tauri::command]
 pub async fn cmd_register_user(
     state: tauri::State<'_, ClientState>,
-    data: RegistrationData
+    data: RegFilesData
 ) -> Result<AuthStep, Status> {
 
     log::debug!("cmd_register_user running");

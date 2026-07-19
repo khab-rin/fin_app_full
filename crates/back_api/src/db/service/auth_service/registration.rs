@@ -12,9 +12,8 @@ use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{
     SessionUserToken,
     CryptoVerifyData, 
-    RegistrationData, 
+    RegFilesData, 
     AuthStep,
-    CryptoServiceResponse,
     AuthInfo
 };
 
@@ -32,7 +31,7 @@ use crate::db::sql_queries::companys::add::company::add_company;
 
 pub(crate) async fn register_new_user(
     state: &Arc<BackApiState>,
-    payload: RegistrationData
+    payload: RegFilesData
 ) -> Result<AuthStep, Status> {
 
     // let RegistrationData { 

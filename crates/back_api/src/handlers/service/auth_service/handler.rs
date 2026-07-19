@@ -5,7 +5,7 @@ use axum::{Json, extract::State};
 use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{
     TokenDeviceData,
-    RegistrationData,
+    RegFilesData,
     AuthStep,
     PasswordDataClient,
     ExternalDeviceData, RegInitData
@@ -16,7 +16,7 @@ use crate::db::service::auth_service::by_device_token::restore_session_by_token;
 use crate::db::service::auth_service::by_password::restore_session_by_passord;
 use crate::db::service::auth_service::registration::register_new_user;
 use crate::db::service::auth_service::by_tel_call::make_session_by_tel_call;
-use crate::db::service::auth_service::reg_step1::register_step1;
+use crate::db::service::auth_service::register_step1::register_step1;
 
 
 pub async fn register_step1_handler(
@@ -48,7 +48,7 @@ pub async fn make_session_by_tell_call_handler(
 
 pub async fn register_user_by_crypto_handler(
     State(state): State<Arc<BackApiState>>,
-    Json(payload): Json<RegistrationData>
+    Json(payload): Json<RegFilesData>
 ) -> Result<Json<AuthStep>, Status> {
 
     tracing::debug!("register_user_by_crypto_handler Running!!!!!!");

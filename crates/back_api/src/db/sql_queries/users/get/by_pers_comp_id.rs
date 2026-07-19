@@ -4,7 +4,7 @@ use shared_lib::sql_models::user::implements::{UserDto, User};
 
 use crate::config::BackApiState;
 
-pub(crate) async fn get_user_by_inn_pers_comp_kpp(
+pub(crate) async fn get_user_by_pers_comp_id(
     state: &BackApiState, 
     pers_id: &BoxUuid,
     comp_id: &BoxUuid,

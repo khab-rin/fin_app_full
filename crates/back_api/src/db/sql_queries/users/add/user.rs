@@ -3,7 +3,7 @@ use shared_lib::primitives::frozen::implements::{BoxUuid, DateTime};
 use shared_lib::sql_models::user::implements::{User, UserSetData, UserDto};
 
 use crate::config::BackApiState;
-use crate::db::sql_queries::users::get::by_pers_comp_id::get_user_by_inn_pers_comp_kpp;
+use crate::db::sql_queries::users::get::by_pers_comp_id::get_user_by_pers_comp_id;
 
 pub(crate) async fn add_user(
     state: &BackApiState,
@@ -21,7 +21,7 @@ pub(crate) async fn add_user(
 
     let guids_vec: Vec<uuid::Uuid> = guids.iter().map(|x| x.as_ref().clone()).collect();
 
-    let exist_user_dto_option = match get_user_by_inn_pers_comp_kpp(state, pers_id, comp_id).await {
+    let exist_user_dto_option = match get_user_by_pers_comp_id(state, pers_id, comp_id).await {
         Ok(o) => o,
         Err(err) => {
             tracing::error!(

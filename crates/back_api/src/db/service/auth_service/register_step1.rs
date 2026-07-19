@@ -38,7 +38,8 @@ pub(crate) async fn register_step1(
         kpp, 
         phone, 
         email, 
-        password 
+        password ,
+        ..
     } = data;
 
 
@@ -181,6 +182,6 @@ pub(crate) async fn register_step1(
 
     let user_id = user.user_id;
 
-    make_init_files(state, &user_id).await
+    make_init_files(state, data, &user_id).await
 
 }
