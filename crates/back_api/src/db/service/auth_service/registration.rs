@@ -11,7 +11,6 @@ use shared_lib::sql_models::user::implements::UserSetData;
 use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{
     SessionUserToken,
-    CryptoVerifyData, 
     RegFilesData, 
     AuthStep,
     AuthInfo

@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-use crate::sql_models::person::implements::Person;
 use crate::primitives::frozen::implements::{BoxUuid, CompInn, Email, FirstName, Kpp, MidName, Password, PersInn, Phone, Snils, SurName};
 use crate::service::auth_service::client_state::SessionUser;
 
@@ -23,7 +22,18 @@ pub enum AuthStep {
     Password {text: AuthInfo},
     
     RegisterStep1 {text: AuthInfo},
-    RegisterStep1Duplicate {tel: String, email: String, text: AuthInfo},
+    RegisterStep1Duplicate {
+        sur_name: String,
+        first_name: String,
+        mid_name: String,
+        pers_inn: String,
+        snils: String,
+        comp_inn: String,
+        kpp: String,
+        phone: String,
+        email: String,
+        text: AuthInfo
+    },
     RegisterStep1Success {
         doc_name: String,
         doc_file: Vec<u8>,
@@ -201,18 +211,19 @@ pub struct RegInitData {
     pub device_id: BoxUuid
 }
 
-#[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
-#[ts(rename_all = "camelCase")]
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct RegFilesData {
     pub json_file: Vec<u8>,  
     pub sign_file: Vec<u8>, 
 }
 
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CryptoVerifyData {
-    pub document: Vec<u8>,
-    pub signature: Vec<u8>,
+#[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(rename_all = "camelCase")]
+pub struct RegFilesPathData {
+    pub json_path: String,  
+    pub sign_path: String, 
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -221,4 +232,23 @@ pub struct PersonSignCheckResult {
     pub text: String
 }
 
+
+
+#[derive(Serialize, Deserialize, ts_rs::TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(rename_all = "camelCase")]
+pub enum AuthTs {
+    AuthInfo(AuthInfo),
+    AuthStep(AuthStep),
+
+    ExternalDeviceData(ExternalDeviceData),
+
+    NickData(crate::service::auth_service::client_state::NickData),
+
+    RegFilesPathData(RegFilesPathData),
+    RegInitData(RegInitData),
+    PasswordDataClientShort(PasswordDataClientShort),
+    
+    
+}
 

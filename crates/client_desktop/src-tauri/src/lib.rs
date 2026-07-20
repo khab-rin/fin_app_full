@@ -44,7 +44,7 @@ pub async fn run_lib() {
             commands::auth::cmd_is_state_active_init,
             commands::auth::cmd_logout,
             commands::auth::cmd_register_step1,
-            commands::auth::cmd_register_user,
+            commands::auth::cmd_register_step2,
             commands::auth::cmd_session_by_nick,
             commands::auth::cmd_session_by_password,
             commands::auth::cmd_session_by_tel_call,

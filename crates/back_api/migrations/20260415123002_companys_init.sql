@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS companys (
     comp_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     comp_inn VARCHAR(12) NOT NULL,
-    kpp VARCHAR(9) NOT NULL DEFAULT '0',
+    kpp VARCHAR(9) NOT NULL DEFAULT '',
     comp_type VARCHAR(10) NOT NULL,
     comp_status VARCHAR(12) NOT NULL DEFAULT 'ACTIVE',
     metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
@@ -11,7 +11,10 @@ CREATE TABLE IF NOT EXISTS companys (
         CHECK (comp_inn ~ '^([0-9]{10}|[0-9]{12})$'),
 
     CONSTRAINT is_kpp
-        CHECK (kpp ~ '^[0-9]{9}$' OR LENGTH(comp_inn) = 12),
+        CHECK (
+            (LENGTH(comp_inn) = 12 AND kpp = '') OR
+            (LENGTH(comp_inn) = 10 AND kpp ~ '^[0-9]{9}$')
+        ),
 
     CONSTRAINT valid_type
         CHECK (comp_type in ('BANK', 'GOV', 'IP', 'COM_ENT')),
@@ -29,19 +32,24 @@ RETURNS TRIGGER AS $$
 BEGIN
     NEW.comp_type := UPPER(NEW.comp_type);
     NEW.comp_status := UPPER(NEW.comp_status);
+
     IF (TG_OP = 'UPDATE') THEN
-        IF (NEW.comp_inn <> OLD.comp_inn) or (NEW.comp_type <> OLD.comp_type) THEN
+        IF (NEW.comp_inn <> OLD.comp_inn) OR (NEW.comp_type <> OLD.comp_type) THEN
             RAISE EXCEPTION 'Запрещено менять ИНН или Тип организации';
         END IF;
     END IF;
 
-
     IF LENGTH(NEW.comp_inn) = 12 THEN
         IF NEW.comp_type != 'IP' AND NEW.comp_type IS NOT NULL THEN
-            RAISE EXCEPTION 'Пара ИНН - ТИП ошибочна';
+            RAISE EXCEPTION 'Пара ИНН - ТИП ошибочна: для ИНН из 12 цифр тип должен быть IP';
         END IF;
-        NEW.kpp := '0';
+        
+        NEW.kpp := '';
         NEW.comp_type := 'IP';
+    ELSIF LENGTH(NEW.comp_inn) = 10 THEN
+        IF NEW.comp_type = 'IP' THEN
+            RAISE EXCEPTION 'Пара ИНН - ТИП ошибочна: организация с ИНН из 10 цифр не может быть IP';
+        END IF;
     END IF;
 
     NEW.last_update := CURRENT_TIMESTAMP;
@@ -49,10 +57,3 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
-
-DROP TRIGGER IF EXISTS process_input_trigger ON companys;
-
-CREATE TRIGGER process_input_trigger
-BEFORE INSERT OR UPDATE ON companys
-FOR EACH ROW EXECUTE FUNCTION process_input();

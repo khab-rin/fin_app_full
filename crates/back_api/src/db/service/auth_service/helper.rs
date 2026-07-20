@@ -1,14 +1,24 @@
-pub(crate) fn mask_phone(phone: &str) -> String {
-    let chars: Vec<char> = phone.chars().collect();
-    if chars.len() <= 7 {
-        return "****".to_string(); // Если номер подозрительно короткий
+pub(crate) fn mask_string(s: &str) -> String {
+    let chars: Vec<char> = s.chars().collect();
+    let total_len = chars.len();
+
+    // Для слишком коротких строк (меньше 4 символов) маскируем целиком
+    if total_len < 4 {
+        return "*".repeat(total_len.max(4));
     }
-    
-    let start: String = chars[..5].iter().collect();
-    let end: String = chars[chars.len() - 2..].iter().collect();
-    let stars = "*".repeat(chars.len() - 7);
-    
-    format!("{}{}{}", start, stars, end)
+
+    // Вычисляем 25% от длины строки (округление вниз)
+    let visible_count = total_len / 4;
+
+    // Если 25% дает 0 (для строк длиной 4..7 символов), показываем хотя бы по 1 символу
+    let show_start = visible_count.max(1);
+    let show_end = visible_count.max(1);
+
+    let start: String = chars[..show_start].iter().collect();
+    let end: String = chars[total_len - show_end..].iter().collect();
+    let stars_count = total_len - show_start - show_end;
+
+    format!("{}{}{}", start, "*".repeat(stars_count), end)
 }
 
 pub(crate) fn mask_email(email: &str) -> String {

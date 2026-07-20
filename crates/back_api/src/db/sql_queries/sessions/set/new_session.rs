@@ -1,4 +1,3 @@
-use std::sync::Arc;
 
 use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::BoxUuid;
@@ -6,7 +5,7 @@ use shared_lib::primitives::frozen::implements::BoxUuid;
 use crate::config::BackApiState;
 
 pub(crate) async fn new_session(
-    state: &Arc<BackApiState>,
+    state: &BackApiState,
     user_id: &BoxUuid,
     device_id: &BoxUuid
 ) -> Result<BoxUuid, Status> {

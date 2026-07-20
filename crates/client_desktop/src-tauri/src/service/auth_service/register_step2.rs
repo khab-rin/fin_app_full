@@ -1,68 +1,77 @@
+use std::fmt::format;
+
 use shared_lib::Status;
-use shared_lib::service::api_routes::implements::ApiRoutes;
+
 use shared_lib::service::auth_service::implements::{
-    PasswordDataClient,
-    PasswordDataClientShort,
-    AuthStep,
-    AuthInfo
+    AuthStep, AuthInfo, RegFilesPathData, RegFilesData
 };
 use shared_lib::service::auth_service::client_state::NickData;
+use shared_lib::service::api_routes::implements::ApiRoutes;
 
-use crate::state::{ClientState, init_session};
+
+use crate::state::ClientState;
+use crate::state::init_session;
 use crate::back_api::post_query::post_query_back_api;
-use crate::service::auth_service::helper::get_device_id;
+use crate::service::auth_service::key_ring::write_keyring_token;
 use crate::service::auth_service::nick_data::add_nick_data;
-use crate::service::auth_service::key_ring::{write_keyring_token, get_keyring_token};
 
 
-pub(crate) async fn restore_by_password(
+pub(crate) async fn register_step2(
     state: &ClientState,
-    data: &PasswordDataClientShort
+    data: &RegFilesPathData
 ) -> Result<AuthStep, Status> {
 
     let failed_result = AuthStep::TryLater { text: AuthInfo::ClientApiSystemError };
 
-    let key_ = format!("{}{}{}", data.pers_inn, data.comp_inn, data.kpp);
+    let RegFilesPathData { json_path, sign_path } = data;
 
-
-    let device_id = match get_device_id() {
-        Ok(d) => d,
+    let json_file = match std::fs::read(json_path) {
+        Ok(f) => f,
         Err(err) => {
             log::error!(
-                "FUN restore_by_password FAILED BY FUN get_device_id, err = {:?}", err
+                "FUN register_step2 FAILED BY std::fs::read(json_path), tech_err = {:?}, local_err = {:?}",
+                err, Status::FileReadError
             );
             return Ok(failed_result);
         }
     };
 
-    let password_hash = blake3::hash(data.password.clone().as_bytes()).to_hex().to_string();
-
-    let password_data = PasswordDataClient {
-        password: password_hash,
-        device_id,
-        pers_inn: data.pers_inn.clone(),
-        comp_inn: data.comp_inn.clone(),
-        kpp: data.kpp.clone()
-    };
-
-    let response = match post_query_back_api(
-            state, 
-            state.config.get_std_client(), 
-            ApiRoutes::AuthRestorePassword, 
-            &password_data).await {
-        Ok(r) => r,
+    let sign_file = match std::fs::read(sign_path) {
+        Ok(f) => f,
         Err(err) => {
-            log::error!("FUN restore_by_password FAILED BY FUN post_query_back_api, err = {}", err);
+            log::error!(
+                "FUN register_step2 FAILED BY std::fs::read(sign_path), tech_err = {:?}, local_err = {:?}",
+                err, Status::FileReadError
+            );
             return Ok(failed_result);
         }
     };
 
+    let reg_files_data = RegFilesData {
+        json_file, sign_file
+    };
 
-    let auth_step:AuthStep = match response.json().await {
+
+    let response = match post_query_back_api(
+            state,
+            state.config.get_std_client(),
+            ApiRoutes::AuthRegisterStep2,
+            &reg_files_data
+    ).await {
+        Ok(r) => r,
+        Err(err) => {
+            log::error!(
+                "FUN register_step2 FAILED BY POST QUERY TO BACK API, local_err = {:?}", err
+            );
+            return Ok(failed_result);
+        }
+    };
+
+    let auth_step: AuthStep = match response.json().await {
         Ok(s) => s,
         Err(err) => {
             log::error!(
-                "FUN restore_by_password FAILED BY POST QUERY TO BACK API, err = {:?}, local_err = {:?}",
+                "FUN register_step2 FAILED BY MAPPING RESPONSE, err = {:?}, local_err = {:?}",
                 err, Status::MappingError
             );
             return Ok(failed_result);
@@ -121,5 +130,5 @@ pub(crate) async fn restore_by_password(
         }
     }
 
-    
+
 }

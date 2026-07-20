@@ -1,16 +1,11 @@
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::{BoxUuid, Password};
 use shared_lib::service::auth_service::implements::{AuthInfo, AuthStep, RegInitData};
 
 use crate::config::BackApiState;
-use crate::db::sql_queries::persons::get::person_by_userid::get_person_by_userid;
-use crate::db::sql_queries::companys::get::company_by_userid::get_company_by_userid;
-use crate::db::sql_queries::users::get::tel_mail_by_id::get_user_phone_mail_by_id;
 
 pub(crate) async fn make_init_files(
     state: &BackApiState,
     data: &RegInitData,
-    user_id: &BoxUuid
 ) -> Result<AuthStep, Status> {
     let failed_result = AuthStep::TryLater { text: AuthInfo::BackApiError};
 
@@ -18,12 +13,6 @@ pub(crate) async fn make_init_files(
         sur_name, 
         first_name,
         mid_name, 
-        pers_inn, 
-        snils, 
-        comp_inn, 
-        kpp, 
-        phone, 
-        email, 
         ..
     } = data;
 

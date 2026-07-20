@@ -4,7 +4,7 @@
     import {currAuthStep} from '$lib/models/Auth/AuthStep.svelte';
 
     import type {AuthStep} from '$lib/models/rustModels/AuthStep';
-    import type {RegistrationData} from '$lib/models/rustModels/RegistrationData';
+    import type {RegFilesPathData} from '$lib/models/rustModels/RegFilesPathData';
 
 
     let isPushedRegister = $state(false);
@@ -82,13 +82,12 @@
     async function register() {
         if (isPushedRegister) return;
         isPushedRegister = true;
-        let data: RegistrationData = {
-            password: currAuthStep.data.password.value,
-            jsonFilePath: jsonFilePath,
-            signFilePath: signFilePath
+        let data: RegFilesPathData = {
+            jsonPath: jsonFilePath,
+            signPath: signFilePath
         };
         try {
-            const next_step: AuthStep = await invoke<AuthStep>("cmd_register", {
+            const next_step: AuthStep = await invoke<AuthStep>("cmd_register_step2", {
                 data: data
             });
 

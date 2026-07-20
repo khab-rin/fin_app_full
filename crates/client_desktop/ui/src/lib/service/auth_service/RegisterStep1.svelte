@@ -46,6 +46,7 @@
             phone: currAuthStep.data.phone.value,
             email: currAuthStep.data.email.value,
             password: currAuthStep.data.password.value,
+            deviceId: deviceId
         };
 
         try {

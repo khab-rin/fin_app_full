@@ -1,4 +1,10 @@
-use argon2::{PasswordHash, Argon2, PasswordVerifier};
+use argon2::{
+    password_hash::{
+        rand_core::OsRng,
+        PasswordHasher, SaltString
+    },
+    Argon2
+};
 
 use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{
@@ -9,12 +15,19 @@ use shared_lib::service::auth_service::implements::{
     PersonSignCheckResult
 };
 use shared_lib::service::api_routes::implements::CryptoApiRoutes;
+use shared_lib::sql_models::user::implements::UserSetData;
+use shared_lib::service::auth_service::implements::SessionUserToken;
+use shared_lib::service::auth_service::client_state::SessionUser;
 
 
 use crate::config::BackApiState;
+use crate::db::service::auth_service::helper::{mask_email, mask_string};
 use crate::db::sql_queries::persons::get::person_by_inn::get_person_by_inn;
 use crate::db::sql_queries::companys::get::company_by_inn_kpp::get_company_by_inn_kpp;
-use crate::db::sql_queries::users::get::passw_tel_mail_by_pers_comp_id::{self, get_passw_rel_mail_by_pers_comp_id};
+use crate::db::sql_queries::users::get::by_inn_pers_comp_kpp::get_user_by_inn_pers_comp_kpp;
+use crate::db::sql_queries::users::get::tel_mail_by_id::get_user_phone_mail_by_id;
+use crate::db::sql_queries::users::add::user::add_user;
+use crate::db::sql_queries::sessions::set::new_session::new_session;
 
 
 
@@ -27,7 +40,7 @@ pub(crate) async fn register_step2(
 
     let RegFilesData { 
         json_file, 
-        sign_file 
+        ..
     } = data;
 
     let json_content = match String::from_utf8(json_file.clone()) {
@@ -112,67 +125,61 @@ pub(crate) async fn register_step2(
         }
     };
 
-    let record_option = match get_passw_rel_mail_by_pers_comp_id(
+
+    let existed_user_option = match get_user_by_inn_pers_comp_kpp(
             state, 
-            &company.comp_id, 
-            &person.pers_id).await {
+            &pers_inn, 
+            &comp_inn, 
+            &kpp).await {
         Ok(o) => o,
         Err(err) => {
             tracing::error!(
                 local_err = ?err,
-                "FUN register_step2 FAILED BY FUN get_passw_rel_mail_by_pers_comp_id"
-            );
-            return Ok(failed_result);
-        } 
-    };
-
-    let (password_hash, prev_phone, prev_email) = match record_option {
-        Some(record) => record,
-        None => {
-            tracing::error!(
-                local_err = ?Status::SystemLogicErr,
-                "FUN register_step2 FAILED BY WRONG SYSTEM LOGIC,USER JUST MUST BE IN DATA"
+                "FUN init_user FAILED BY FUN get_user_by_inn_pers_comp_kpp"
             );
             return Ok(failed_result);
         }
     };
 
-    if 
-            sur_name != person.metadata.fio.sur_name ||
-            first_name != person.metadata.fio.first_name ||
-            mid_name != person.metadata.fio.mid_name ||
-            pers_inn != person.pers_inn ||
-            snils != person.metadata.snils ||
-            comp_inn != company.comp_inn ||
-            kpp != company.kpp ||
-            phone != prev_phone ||
-            email != prev_email {
-        
-        return Ok(failed_result);
+    if let Some(u) = existed_user_option {
+        let tel_email_option = match get_user_phone_mail_by_id(state, &u.user_id).await {
+            Ok(o) => o,
+            Err(err) => {
+                tracing::error!(
+                    local_err = ?err,
+                    "FUN init_user FAILED BY FUN get_user_phone_mail_by_id"
+                );
+                return Ok(failed_result);
+            }
+        };
+
+        match tel_email_option {
+            Some((prev_tel, prev_email)) => {
+                return Ok(AuthStep::RegisterStep1Duplicate { 
+                    sur_name: mask_string(sur_name.as_ref()),
+                    first_name: mask_string(first_name.as_ref()),
+                    mid_name: mid_name.as_deref().map(|s| mask_string(s)).unwrap_or_default(),
+                    pers_inn: mask_string(pers_inn.as_ref()),
+                    snils: mask_string(snils.as_ref()),
+                    comp_inn: mask_string(comp_inn.as_ref()),
+                    kpp: mask_string(kpp.as_ref()),
+                    phone: mask_string(prev_tel.as_ref()),
+                    email: mask_email(prev_email.as_ref()),
+                    text: AuthInfo::UserAlreadyExists 
+                });
+            }
+            None => {
+                tracing::error!(
+                    local_err = ?&Status::SystemLogicErr,
+                    "FUN init_user FAILED BY SYSTEM LOGIC ERROR --> USER EXIST, TEL EMAIL MISS"
+                );
+                return Ok(failed_result);
+            }
+        }
     }
 
-    let argon2_items = match PasswordHash::new(&password_hash) {
-        Ok(i) => i,
-        Err(err) => {
-            tracing::error!(
-                tech_err = ?err,
 
-                "FUN register_step2 BY WRONG PASSWORD DATA IN SQL Users"
-            );
-            return Ok(failed_result);
-        } 
-    };
 
-    match Argon2::default().verify_password(password.to_string().as_bytes(), &argon2_items) {
-        Ok(_) => {},
-        Err(err) => {
-            tracing::warn!(
-                tech_err = ?err,
-                "USER_SENDED_WRONG_PASSWORD!!!"
-            );
-            return Ok(AuthStep::Password {text: AuthInfo::WrongPassword});
-        }    
-    }
 
     let crypto_url = format!(
         "{}/{}",
@@ -180,21 +187,50 @@ pub(crate) async fn register_step2(
         CryptoApiRoutes::CryptoVerifyPerson.get_path().trim_start_matches('/')
     );
 
-    let response = match state.config.get_inst_client()
-            .post(&crypto_url)
-            .json(&data)
-            .send()
-            .await {
+    // 1. Отправка запроса
+    let response = match state
+        .config
+        .get_inst_client()
+        .post(&crypto_url)
+        .json(&data)
+        .send()
+        .await
+    {
         Ok(r) => r,
         Err(err) => {
+            // Логируем URL, отправляемые данные и подробную ошибку reqwest
             tracing::error!(
+                target: "back_api::crypto_client",
+                url = %crypto_url,
+                payload = ?data,
                 err = ?err,
+                is_timeout = err.is_timeout(),
+                is_connect = err.is_connect(),
                 local_err = ?Status::QueryGetRequestErr,
-                "FUN register_step2 FAILED BY REQUEST TO CRYPTO SERVICE"
+                "FUN register_step2 FAILED BY NETWORK/CONNECT TO CRYPTO SERVICE"
             );
             return Ok(failed_result);
         }
     };
+
+    // 2. Проверка HTTP-статуса ответа (4xx / 5xx)
+    if !response.status().is_success() {
+        let status_code = response.status();
+        
+        // Пытаемся вычитать тело ошибки от криптосервиса
+        let error_body = response.text().await.unwrap_or_else(|_| "Failed to read body".to_string());
+
+        tracing::error!(
+            target: "back_api::crypto_client",
+            url = %crypto_url,
+            http_status = %status_code,
+            response_body = %error_body,
+            payload = ?data,
+            local_err = ?Status::QueryGetRequestErr,
+            "FUN register_step2 FAILED: CRYPTO SERVICE RETURNED ERROR STATUS"
+        );
+        return Ok(failed_result);
+    }
 
     if !response.status().is_success() {
         tracing::error!(
@@ -217,19 +253,70 @@ pub(crate) async fn register_step2(
         }
     };
 
-
     if !check_result.is_signed {
         return Ok(AuthStep::RegisterStep1 {text: AuthInfo::WrongSignFile})
     }
 
 
+    let salt = SaltString::generate(&mut OsRng);
+    let hasher = Argon2::default();
 
+    let argon2_hash = match hasher.hash_password(password.as_ref().as_bytes(), &salt) {
+        Ok(h) => h.to_string(),
+        Err(err) => {
+            tracing::error!(
+                tech_err = ?err,
+                local_err = ?Status::SystemErr,
+                "FUN register_step2 FAILED BY FUN arg2.hash_password"
+            );
+            return Ok(failed_result);
+        }
+    };
 
+    let user_set_data = UserSetData {
+        pers_id: person.pers_id.clone(),
+        comp_id: company.comp_id.clone(),
 
+        phone: phone.clone(),
+        password_hash: argon2_hash,
+        email: email.clone(),
 
+        guids: std::collections::HashSet::new()
+    };
 
+    let user = match add_user(state, &user_set_data).await {
+        Ok(u) => u,
+        Err(err) => {
+            tracing::error!(
+                local_err = ?err,
+                "FUN register_step2 FAILED BY FUN  add_user"
+            );
+            return Ok(failed_result);
+        }
+    };
 
+    let token = match new_session(state, &user.user_id, &device_id).await {
+        Ok(t) => t,
+        Err(err) => {
+            tracing::error!(
+                local_err = ?err,
+                "FUN register_step2 FAILED BY FUN new_session"
+            );
+            return Ok(failed_result);
+        }
+    };
 
+    let res = AuthStep::SuccessFull {
+        session_user_token: Box::new(SessionUserToken {
+            token,
+            user: SessionUser {
+                person,
+                company,
+                user,
+            }
+        })
+    };
 
-    Ok(failed_result)
+    Ok(res)
+
 }

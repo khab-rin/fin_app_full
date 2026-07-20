@@ -21,5 +21,6 @@ encoding_rs = { workspace = true }
 
 tokio = { workspace = true }
 serde =  {workspace = true}
+serde_json = {workspace = true}
 uuid = { workspace = true }
 

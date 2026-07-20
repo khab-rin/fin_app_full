@@ -8,7 +8,8 @@ use shared_lib::service::auth_service::implements::{
     RegFilesData,
     AuthStep,
     PasswordDataClient,
-    ExternalDeviceData, RegInitData
+    ExternalDeviceData, 
+    RegInitData,
 };
 
 use crate::config::BackApiState;
@@ -17,6 +18,7 @@ use crate::db::service::auth_service::by_password::restore_session_by_passord;
 use crate::db::service::auth_service::registration::register_new_user;
 use crate::db::service::auth_service::by_tel_call::make_session_by_tel_call;
 use crate::db::service::auth_service::register_step1::register_step1;
+use crate::db::service::auth_service::register_step2::register_step2;
 
 
 pub async fn register_step1_handler(
@@ -24,14 +26,24 @@ pub async fn register_step1_handler(
     Json(payload) : Json<RegInitData>
 ) -> Result<Json<AuthStep>, Status> {
 
-
     tracing::info!("register_step1_handler running!!");
-
-    tracing::info!("Сырой JSON долетел: {:?}", payload);
 
     let res = register_step1(&state, &payload).await?;
 
 
+
+    Ok(Json(res))
+}
+
+pub async fn register_step2_handler(
+    State(state) : State<Arc<BackApiState>>,
+    Json(payload) : Json<RegFilesData>
+) -> Result<Json<AuthStep>, Status> {
+
+
+    tracing::info!("register_step2_handler running!!");
+
+    let res = register_step2(&state, &payload).await?;
 
     Ok(Json(res))
 }

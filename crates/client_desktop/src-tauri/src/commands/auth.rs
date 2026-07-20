@@ -1,6 +1,6 @@
 use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{
-    AuthStep, RegInitData, PasswordDataClientShort, AuthInfo, RegFilesData
+    AuthInfo, AuthStep, PasswordDataClientShort, RegFilesPathData, RegInitData
 };
 use shared_lib::primitives::frozen::implements_base::String1_50;
 use shared_lib::primitives::frozen::implements::BoxUuid;
@@ -11,7 +11,7 @@ use crate::service::auth_service::restore_by_nick::restore_session_by_nick;
 use crate::service::auth_service::restore_by_password::restore_by_password;
 use crate::service::auth_service::nick_data::get_nick_names;
 use crate::service::auth_service::register_step1::register_step1;
-use crate::service::auth_service::registration::register_user;
+use crate::service::auth_service::register_step2::register_step2;
 use crate::service::auth_service::make_session_by_tell_call::make_session_by_tel_call;
 
 #[tauri::command]
@@ -101,14 +101,14 @@ pub async  fn cmd_register_step1(
 
 
 #[tauri::command]
-pub async fn cmd_register_user(
+pub async  fn cmd_register_step2(
     state: tauri::State<'_, ClientState>,
-    data: RegFilesData
+    data: RegFilesPathData
 ) -> Result<AuthStep, Status> {
 
-    log::debug!("cmd_register_user running");
-    
-    let res = register_user(&state, &data).await;
+    log::debug!("cmd_register_step2 running");
+
+    let res = register_step2(&state, &data).await;
 
     res
 }

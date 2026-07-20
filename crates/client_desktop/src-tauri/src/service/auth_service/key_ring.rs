@@ -1,14 +1,12 @@
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements_base::String1_50;
-use shared_lib::service::auth_service::client_state::UserLogInfo;
+use shared_lib::primitives::frozen::implements::BoxUuid;
 
 use crate::state::ClientState;
-use crate::service::auth_service::nick_data::get_nick_data_by_nick;
 
-pub(crate) fn get_keyring_data(
+pub(crate) fn get_keyring_token(
     state: &ClientState,
-    key_: &String
-) -> Result<UserLogInfo, Status> {
+    key_: &str
+) -> Result<Option<BoxUuid>, Status> {
 
     let app_name = state.app_handle.package_info().name.as_str();
 
@@ -16,75 +14,66 @@ pub(crate) fn get_keyring_data(
         Ok(e) => e,
         Err(err) => {
             log::error!(
-                "FUN get_keyring_data FAILED BY keyring::Entry::new, teck_err = {:?}, local_err = {:?}", 
+                "FUN get_keyring_token FAILED BY keyring::Entry::new, teck_err = {:?}, local_err = {:?}", 
                 err, Status::SystemErr
             );
             return Err(Status::SystemErr);
         }
     };
 
-    let json_data = match entry.get_password() {
+    let token_str = match entry.get_password() {
         Ok(d) => d,
-        Err(keyring::Error::NoEntry) => return Ok(UserLogInfo::default()),
+        Err(keyring::Error::NoEntry) => return Ok(None),
         Err(err) => {
             log::error!(
-                "FUN get_keyring_data FAILED BY entry.get_password, teck_err = {:?}, local_err = {:?}", 
+                "FUN get_keyring_token FAILED BY entry.get_password, teck_err = {:?}, local_err = {:?}", 
                 err, Status::SystemErr
             );
             return Err(Status::SystemErr);
         }
     };
 
-    let user_log_data: UserLogInfo = match serde_json::from_str(&json_data) {
-        Ok(d) => d,
+    let token = match BoxUuid::new(&token_str) {
+        Ok(t) => t,
         Err(err) => {
             log::error!(
-                "FUN get_keyring_data FAILED BY mapping UserLogInfo, tech_err = {:?}, local_err = {:?}", 
-                err, Status::MappingError
+                "FUN get_keyring_token FAILED BY BoxUuid::new(&token_str), local_err = {:?}",
+                err
             );
-            return Err(Status::SystemErr);
+            return Err(Status::SystemLogicErr);
         }
     };
 
-    Ok(user_log_data)
+    Ok(Some(token))
 } 
 
 
-pub(crate) fn write_keyring_data (
+pub(crate) fn write_keyring_token (
     state: &ClientState,
-    key_: &String,
-    log_info: &UserLogInfo
-) -> Result<bool, Status> {
+    key_: &str,
+    token: &BoxUuid
+) -> Result<(), Status> {
 
     let app_name = state.app_handle.package_info().name.as_str();
 
-    let log_info_json = match serde_json::to_string(log_info) {
-        Ok(l) => l,
-        Err(err) => {
-            log::error!(
-                "FUN write_log_info FAILED BY MAPPING UserLogInfo, tech_err = {}, local_err = {}",
-                err, Status::MappingError
-            );
-            return Err(Status::MappingError);
-        }
-    };
+    let token_string = token.to_string();
 
     let entry = match keyring::Entry::new(app_name, key_) {
         Ok(e) => e,
         Err(err) => {
             log::error!(
-                "FUN write_log_info failed BY keyring::Entry::new, tech_err = {}, local_err = {}",
+                "FUN write_keyring_data failed BY keyring::Entry::new, tech_err = {}, local_err = {}",
                 err, Status::SystemErr
             );
             return Err(Status::SystemErr);
         }
     };
 
-    match entry.set_password(&log_info_json) {
-        Ok(_) => Ok(true),
+    match entry.set_password(&token_string) {
+        Ok(_) => Ok(()),
         Err(err) => {
             log::error!(
-                "FUN write_log_info failed BY keyring::entry.set_password, tech_err = {}, local_err = {}",
+                "FUN write_keyring_data failed BY keyring::entry.set_password, tech_err = {}, local_err = {}",
                 err, Status::SystemErr
             );
             Err(Status::SystemErr)
@@ -94,9 +83,9 @@ pub(crate) fn write_keyring_data (
 }
 
 
-pub(crate) fn delete_keyring_data(
+pub(crate) fn delete_keyring_token(
     state: &ClientState,
-    key_: &String
+    key_: &str
 ) -> Result<bool, Status> {
 
     let app_name = state.app_handle.package_info().name.as_str();
@@ -105,7 +94,7 @@ pub(crate) fn delete_keyring_data(
         Ok(e) => e,
         Err(err) => {
             log::error!(
-                "FUN write_log_info failed BY keyring::Entry::new, tech_err = {}, local_err = {}",
+                "FUN delete_keyring_data failed BY keyring::Entry::new, tech_err = {}, local_err = {}",
                 err, Status::SystemErr
             );
             return Err(Status::SystemErr);
@@ -123,5 +112,4 @@ pub(crate) fn delete_keyring_data(
             Err(Status::SystemErr)
         }
     }
-
 }

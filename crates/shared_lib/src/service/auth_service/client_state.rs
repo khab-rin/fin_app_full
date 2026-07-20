@@ -12,12 +12,6 @@ use crate::sql_models::user::implements::User;
 use crate::service::auth_service::general::time_parser;
 
 
-#[derive(Serialize, Deserialize, Clone, Debug, Default)]
-pub struct UserLogInfo {
-    pub init_file_hash: String,
-    pub token: Option<BoxUuid>
-}
-
 
 #[derive(Serialize, Deserialize, Eq, Hash, PartialEq, Clone, ts_rs::TS)]
 pub struct NickData {

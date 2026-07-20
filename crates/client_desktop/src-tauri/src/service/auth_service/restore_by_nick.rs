@@ -9,7 +9,7 @@ use shared_lib::service::auth_service::implements::{
 
 use crate::back_api::post_query::post_query_back_api;
 use crate::service::auth_service::helper::get_device_id;
-use crate::service::auth_service::key_ring::get_keyring_data;
+use crate::service::auth_service::key_ring::get_keyring_token;
 use crate::service::auth_service::nick_data::get_nick_data_by_nick;
 use crate::state::{init_session, ClientState};
 
@@ -45,7 +45,7 @@ pub(crate) async fn restore_session_by_nick(
 
     let key_ = format!("{}{}{}", nick_data.pers_inn, nick_data.comp_inn, nick_data.kpp);
 
-    let user_log_data = match get_keyring_data(state, &key_) {
+    let token_option = match get_keyring_token(state, &key_) {
         Ok(u) => u,
         Err(err) => {
             log::error!(
@@ -55,7 +55,7 @@ pub(crate) async fn restore_session_by_nick(
         }
     };
 
-    let token = match user_log_data.token {
+    let token = match token_option {
         Some(t) => t,
         None =>  {
             return Ok(AuthStep::Password { text: AuthInfo::MissToken });

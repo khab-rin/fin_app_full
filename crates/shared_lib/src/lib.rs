@@ -22,20 +22,8 @@ use super::*;
         primitives::svelte_validate::SvelteValidator::export_all_to(output_dir)
             .expect("Не удалось экспортировать SvelteValidator");
 
-        service::auth_service::client_state::NickData::export_all_to(output_dir)
-            .expect("Не удалось экспортировать UserLogInfo");
-
-        service::auth_service::implements::AuthStep::export_all_to(output_dir)
+        service::auth_service::implements::AuthTs::export_all_to(output_dir)
             .expect("Не удалось экспортировать AuthStep");
-
-        service::auth_service::implements::ExternalDeviceData::export_all_to(output_dir)
-            .expect("Не удалось экспортировать ExternalDeviceData");
-
-        service::auth_service::implements::RegInitData::export_all_to(output_dir)
-            .expect("Не удалось экспортировать RegInitData");
-
-        service::auth_service::implements::PasswordDataClientShort::export_all_to(output_dir)
-            .expect("Не удалось экспортировать PasswordDataClientShort");
 
         service::mchd::home_mchd_power::HomeMchdPower::export_all_to(output_dir)
             .expect("Не удалось экспортировать HomeMchdPower");

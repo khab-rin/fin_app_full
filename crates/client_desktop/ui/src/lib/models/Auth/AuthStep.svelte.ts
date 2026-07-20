@@ -73,7 +73,6 @@ class SvelteAuthStep {
     }
 
     data = $state({
-        nick: new FieldValidator("String1_50", "KhabipovBeton"),
         surName: new FieldValidator("SurName", "Хабипов"),
         firstName: new FieldValidator("FirstName", "Ринат"),
         midName: new FieldValidator("MidName", "Ришатович"),

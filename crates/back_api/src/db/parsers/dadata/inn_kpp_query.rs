@@ -43,8 +43,6 @@ pub(crate) async fn parse_company_by_inn_kpp(
         return Err(Status::QueryPostRequestErr);
     }
 
-    std::println!("{:?}", response);
-
     let resp_wrap:DadaRespWrap = response
         .json()
         .await

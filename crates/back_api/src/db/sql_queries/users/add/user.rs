@@ -19,7 +19,7 @@ pub(crate) async fn add_user(
         guids,
     } = set_data;
 
-    let guids_vec: Vec<uuid::Uuid> = guids.iter().map(|x| x.as_ref().clone()).collect();
+    let guids_vec: Vec<uuid::Uuid> = guids.iter().map(|x| *x.as_ref()).collect();
 
     let exist_user_dto_option = match get_user_by_pers_comp_id(state, pers_id, comp_id).await {
         Ok(o) => o,
@@ -72,7 +72,7 @@ pub(crate) async fn add_user(
                 failed_data = ?set_data,
                 "FUN set_user FAILED BY MAPPING User FROM UserDto"
             );
-            return Err(Status::MappingError);
+            Err(Status::MappingError)
         }
     }
 
