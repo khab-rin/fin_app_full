@@ -16,8 +16,7 @@
 
     let IsDataReady = $derived(
         jsonFilePath.length == 0 ||
-        signFilePath.length == 0 ||
-        !currAuthStep.data.password.isValid
+        signFilePath.length == 0
     );
 
 
@@ -150,21 +149,6 @@
             Загрузите файл подписи
         </button>
 
-    </div>
-
-    <div class="input-group">
-        <label for="password">Пароль</label>
-        <input 
-            id="password" 
-            type="password" 
-            bind:value={currAuthStep.data.password.value}
-            disabled={isPushedRegister} 
-            placeholder="Введите пароль"
-            class="input-field"
-            class:input-error={!currAuthStep.data.password.isValid}/>
-        {#if !currAuthStep.data.password.isValid}
-            <span class="input-error">Пароль некоректен в рамках прилжоения</span>
-        {/if}
     </div>
 </section>
 

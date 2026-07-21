@@ -21,7 +21,10 @@ use crate::handlers::service::auth_service::handler::{
     restore_by_token_handler
 };
 
-use crate::handlers::service::mchd::handler::register_mchd_hadler;
+use crate::handlers::service::mchd::handler::{
+    register_mchd_hadler,
+    show_powers_handler
+};
 
 use crate::handlers::sql::handlers::get_person_by_inn_handler;
 
@@ -111,6 +114,9 @@ async fn main() {
         ).route(
             ApiRoutes::MchdLend.get_path(),
             post(register_mchd_hadler)
+        ).route(
+            ApiRoutes::MchdShowPowers.get_path(),
+            post(show_powers_handler)
         ).route(
             ApiRoutes::SqlPersonGetByInn.get_path(), 
             post(get_person_by_inn_handler)

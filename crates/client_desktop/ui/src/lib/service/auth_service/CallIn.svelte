@@ -17,7 +17,6 @@
 
     let data = {
         externalId: externalId,
-        nick: currAuthStep.data.nick.value
     };
 
     async function poll_back_api() {

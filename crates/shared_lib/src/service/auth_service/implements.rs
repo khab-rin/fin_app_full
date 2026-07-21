@@ -79,9 +79,6 @@ pub enum AuthInfo {
     #[serde(rename = "Страница загружается, подождите пожалуйста. В случае зависания попробуйте обновить или перезагрузить приложение")]
     LoadingInfo,
 
-    #[serde(rename = "Выявлены различия в файле заявлении и подписанном файле, пройдите регистрацию заново")]
-    MissedFile,
-
     #[serde(rename = "Пользователь не существует, либо не прошел регистрацию, либо не синхронизирован. Попробуйте войти по паролю, либо пройдите регистрацию")]
     MissToken,
 
@@ -105,9 +102,6 @@ pub enum AuthInfo {
 
     #[serde(rename = "Пароль к связке входных параметров неверный")]
     WrongPassword,
-
-    #[serde(rename = "Выявлены различия в данных пользователя и данных владельца подписи, пройдите регистрацию заново")]
-    WrongPerson,
 
     #[serde(rename = "Некорректные файлы подписи, пройдите процесс заново")]
     WrongSignFile,
@@ -212,12 +206,6 @@ pub struct RegInitData {
 }
 
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct RegFilesData {
-    pub json_file: Vec<u8>,  
-    pub sign_file: Vec<u8>, 
-}
-
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(rename_all = "camelCase")]
@@ -225,13 +213,6 @@ pub struct RegFilesPathData {
     pub json_path: String,  
     pub sign_path: String, 
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct PersonSignCheckResult {
-    pub is_signed: bool,
-    pub text: String
-}
-
 
 
 #[derive(Serialize, Deserialize, ts_rs::TS)]

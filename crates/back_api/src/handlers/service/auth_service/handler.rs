@@ -5,17 +5,16 @@ use axum::{Json, extract::State};
 use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{
     TokenDeviceData,
-    RegFilesData,
     AuthStep,
     PasswordDataClient,
     ExternalDeviceData, 
     RegInitData,
 };
+use shared_lib::service::crypto_service::implements::CheckSignDocData;
 
 use crate::config::BackApiState;
 use crate::db::service::auth_service::by_device_token::restore_session_by_token;
 use crate::db::service::auth_service::by_password::restore_session_by_passord;
-use crate::db::service::auth_service::registration::register_new_user;
 use crate::db::service::auth_service::by_tel_call::make_session_by_tel_call;
 use crate::db::service::auth_service::register_step1::register_step1;
 use crate::db::service::auth_service::register_step2::register_step2;
@@ -30,14 +29,12 @@ pub async fn register_step1_handler(
 
     let res = register_step1(&state, &payload).await?;
 
-
-
     Ok(Json(res))
 }
 
 pub async fn register_step2_handler(
     State(state) : State<Arc<BackApiState>>,
-    Json(payload) : Json<RegFilesData>
+    Json(payload) : Json<CheckSignDocData>
 ) -> Result<Json<AuthStep>, Status> {
 
 
@@ -53,19 +50,6 @@ pub async fn make_session_by_tell_call_handler(
     Json(payload) : Json<ExternalDeviceData>
 ) -> Result<Json<AuthStep>, Status> {
     let res = make_session_by_tel_call(&state, &payload).await?;
-
-    Ok(Json(res))
-}
-
-
-pub async fn register_user_by_crypto_handler(
-    State(state): State<Arc<BackApiState>>,
-    Json(payload): Json<RegFilesData>
-) -> Result<Json<AuthStep>, Status> {
-
-    tracing::debug!("register_user_by_crypto_handler Running!!!!!!");
-
-    let res = register_new_user(&state, payload).await?;
 
     Ok(Json(res))
 }

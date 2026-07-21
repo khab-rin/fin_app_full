@@ -33,8 +33,6 @@ pub fn cmd_get_power_info(
 }
 
 
-
-
 #[tauri::command]
 pub async fn cmd_lend_mchd(
     state: tauri::State<'_, ClientState>,

@@ -3,6 +3,7 @@ pub(crate) mod make_poa_elems;
 pub(crate) mod make_poa_files;
 
 pub(crate) mod helper;
+pub(crate) mod show_powers;
 pub(crate) mod test_file;
 
 

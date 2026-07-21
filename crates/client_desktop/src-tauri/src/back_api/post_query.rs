@@ -56,30 +56,37 @@ where
     
     if !response.status().is_success() {
         let status_code = response.status();
+        let headers = response.headers().clone();
         
-        let is_json = response
-            .headers()
+        let is_json = headers
             .get(reqwest::header::CONTENT_TYPE)
             .and_then(|v| v.to_str().ok())
             .map(|s| s.contains("application/json"))
             .unwrap_or(false);
 
+        // Читаем сырое тело ответа
+        let raw_body = response.text().await.unwrap_or_else(|_| "<failed to read body>".to_string());
+
         if is_json {
-            let back_err = response
-                .json::<Status>()
-                .await
-                .unwrap_or(Status::Unknown);
-                
-            log::error!(
-                "BACK API REJECTED REQUEST! Status: {}, Backend Enum Error: {:?}",
-                status_code, back_err
-            );
+            // Пробуем распарсить сырой текст в статус, чтобы при неудаче сохранить сырой JSON в логе
+            match serde_json::from_str::<Status>(&raw_body) {
+                Ok(back_err) => {
+                    log::error!(
+                        "BACK API REJECTED REQUEST! url: {}, status: {}, backend_enum_err: {:?}, raw_body: {}",
+                        back_api_url, status_code, back_err, raw_body
+                    );
+                }
+                Err(parse_err) => {
+                    log::error!(
+                        "BACK API RETURNED JSON BUT DESERIALIZE TO Status FAILED! url: {}, status: {}, parse_err: {}, raw_body: {}",
+                        back_api_url, status_code, parse_err, raw_body
+                    );
+                }
+            }
         } else {
-            let err_body = response.text().await.unwrap_or_else(|_| "Empty body".to_string());
-            
             log::error!(
-                "BACK API CRASHED OR REJECTED BY MIDDLEWARE! Status: {}, Raw Response: {}",
-                status_code, err_body
+                "BACK API CRASHED OR REJECTED WITH NON-JSON! url: {}, status: {}, headers: {:?}, raw_body: {}",
+                back_api_url, status_code, headers, raw_body
             );
         }
 

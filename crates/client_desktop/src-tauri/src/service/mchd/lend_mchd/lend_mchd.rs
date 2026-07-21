@@ -62,14 +62,22 @@ pub(crate) async fn lend_mchd_to_back_api_for_register(
         Ok(r) => r, 
         Err(err) => {
             log::error!(
-                "FUN register_user FAILED BY POST QUERY TO BACK API, local_err = {:?}", err
+                "FUN lend_mchd_to_back_api_for_register FAILED BY POST QUERY TO BACK API, local_err = {:?}", err
             );
             return Ok(MchdStep::TryLater {text: MchdInfo::ClientApiQueryError});
         }
     };
-    
-    
 
+    let mchd_step = match response.json().await {
+        Ok(d) => d,
+        Err(err) => {
+            log::error!(
+                "FUN lend_mchd_to_back_api_for_register FAILED BY MAPPING MchdStep, tech_err = {:?}, local_err = {:?}",
+                err, Status::MappingError
+            );
+            return Ok(failed_result);
+        }
+    };
 
-    Err(Status::Unknown)
+    Ok(mchd_step)
 }

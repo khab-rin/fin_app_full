@@ -6,6 +6,7 @@ pub enum ApiRoutes {
     AuthRestoreTellCall,
     AuthRestoreToken,
     MchdLend,
+    MchdShowPowers,
     SqlPersonGetByInn
 }
 
@@ -19,6 +20,7 @@ impl ApiRoutes {
             Self::AuthRestoreTellCall => "/api/auth/restore_by_tel_call",
             Self::AuthRestoreToken => "/api/auth/restore_by_token",
             Self::MchdLend => "/api/mchd/lend_mchd_for_register",
+            Self::MchdShowPowers => "/api/mchd/lend_show_powers",
             Self::SqlPersonGetByInn => "/api/sql/person_get_by_inn"
         }
     }

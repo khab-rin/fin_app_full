@@ -145,10 +145,9 @@ pub async fn cmd_session_by_password(
 pub async fn cmd_session_by_tel_call(
     state: tauri::State<'_, ClientState>,
     external_id: String,
-    nick: String1_50
 ) -> Result<AuthStep, Status> {
     
-    let res = make_session_by_tel_call(&state, &external_id, &nick).await?;
+    let res = make_session_by_tel_call(&state, &external_id).await?;
     
     Ok(res)
 

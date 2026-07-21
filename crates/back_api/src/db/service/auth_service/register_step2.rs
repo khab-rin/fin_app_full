@@ -9,9 +9,11 @@ use argon2::{
 use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{
     RegInitData, 
-    RegFilesData, 
     AuthInfo, 
     AuthStep,
+};
+use shared_lib::service::crypto_service::implements::{
+    CheckSignDocData,
     PersonSignCheckResult
 };
 use shared_lib::service::api_routes::implements::CryptoApiRoutes;
@@ -33,17 +35,17 @@ use crate::db::sql_queries::sessions::set::new_session::new_session;
 
 pub(crate) async fn register_step2(
     state: &BackApiState,
-    data: &RegFilesData
+    data: &CheckSignDocData
 ) -> Result<AuthStep, Status> {
 
     let failed_result = AuthStep::TryLater { text: AuthInfo::BackApiError };
 
-    let RegFilesData { 
-        json_file, 
+    let CheckSignDocData { 
+        init_file, 
         ..
     } = data;
 
-    let json_content = match String::from_utf8(json_file.clone()) {
+    let json_content = match String::from_utf8(init_file.clone()) {
         Ok(c) => c,
         Err(err) => {
             tracing::error!(
@@ -187,7 +189,6 @@ pub(crate) async fn register_step2(
         CryptoApiRoutes::CryptoVerifyPerson.get_path().trim_start_matches('/')
     );
 
-    // 1. Отправка запроса
     let response = match state
         .config
         .get_inst_client()
@@ -198,11 +199,9 @@ pub(crate) async fn register_step2(
     {
         Ok(r) => r,
         Err(err) => {
-            // Логируем URL, отправляемые данные и подробную ошибку reqwest
             tracing::error!(
                 target: "back_api::crypto_client",
                 url = %crypto_url,
-                payload = ?data,
                 err = ?err,
                 is_timeout = err.is_timeout(),
                 is_connect = err.is_connect(),
@@ -213,11 +212,9 @@ pub(crate) async fn register_step2(
         }
     };
 
-    // 2. Проверка HTTP-статуса ответа (4xx / 5xx)
     if !response.status().is_success() {
         let status_code = response.status();
         
-        // Пытаемся вычитать тело ошибки от криптосервиса
         let error_body = response.text().await.unwrap_or_else(|_| "Failed to read body".to_string());
 
         tracing::error!(
@@ -225,16 +222,8 @@ pub(crate) async fn register_step2(
             url = %crypto_url,
             http_status = %status_code,
             response_body = %error_body,
-            payload = ?data,
             local_err = ?Status::QueryGetRequestErr,
             "FUN register_step2 FAILED: CRYPTO SERVICE RETURNED ERROR STATUS"
-        );
-        return Ok(failed_result);
-    }
-
-    if !response.status().is_success() {
-        tracing::error!(
-            "FUN register_step2 FAILED BY REQUEST TO CRYPTO SERVICE"
         );
         return Ok(failed_result);
     }

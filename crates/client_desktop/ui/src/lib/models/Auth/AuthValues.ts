@@ -9,6 +9,7 @@ export const AuthStepType = {
     Password: "Password",
 
     RegisterStep1: "RegisterStep1",
+    RegisterStep1Duplicate: "RegisterStep1Duplicate",
     RegisterStep1Success: 'RegisterStep1Success',
     RegisterStep2: "RegisterStep2",
 

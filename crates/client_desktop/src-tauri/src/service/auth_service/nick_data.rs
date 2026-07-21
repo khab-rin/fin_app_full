@@ -3,7 +3,6 @@ use std::io::{Read};
 use tauri::Manager;
 
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements_base::String1_50;
 use shared_lib::service::auth_service::client_state::NickData;
 
 use crate::state::ClientState;
@@ -96,7 +95,7 @@ pub(crate) fn get_nick_names(
 
 pub(crate) fn get_nick_data_by_nick(
     state: &ClientState,
-    nick: &String
+    nick: &str
 ) -> Result<Option<NickData>, Status> {
 
     let file_path = match get_nick_data_path(state) {
@@ -120,7 +119,7 @@ pub(crate) fn get_nick_data_by_nick(
     };
 
     for nick_data in nick_datas {
-        if nick_data.nick == nick.clone() {
+        if nick_data.nick == nick {
             return Ok(Some(nick_data));
         }
     }
@@ -256,7 +255,7 @@ pub(crate) fn save_nick_datas(
                 "FUN save_nick_data FAILED BY std::io::Write::write_all, tech_err = {}, local_err = {}",
                 err, Status::FileWriteError
             );
-            return Err(Status::SystemErr);
+            Err(Status::SystemErr)
         }
     }
 

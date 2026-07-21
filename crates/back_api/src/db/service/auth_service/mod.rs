@@ -7,7 +7,6 @@ pub(crate) mod make_init_files;
 pub(crate) mod register_step1;
 pub(crate) mod register_step2;
 pub(crate) mod pers_sign_parser;
-pub(crate) mod registration;
 pub(crate) mod send_warn_mail;
 pub(crate) mod smsru_cf_query;
 pub(crate) mod smsru_phone_query;
