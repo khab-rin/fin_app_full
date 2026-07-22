@@ -28,6 +28,5 @@ pub(crate) async fn show_powers_handler(
 
     let res = show_powers(&state, &user_id).await?;
 
-
     Ok(Json(res))
 }

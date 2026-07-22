@@ -21,6 +21,9 @@ pub enum MchdStep {
         text: MchdInfo
     },
     ShowPowers {
+        fns: std::collections::HashSet<HomeMchdPower>,
+        btb: std::collections::HashSet<HomeMchdPower>,
+        home: std::collections::HashSet<HomeMchdPower>,
         text: MchdInfo
     },
     

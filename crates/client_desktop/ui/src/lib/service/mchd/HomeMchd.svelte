@@ -88,6 +88,8 @@
             allPowers = await invoke<HomeMchdPower[]>("cmd_get_all_home_powers");
         } catch(err) {
             console.error("Ошибка при получении полномочий:", err);
+            const next_step: MchdStep = {TryLater: {text: "Критическая ошибка на устройстве..."}};
+            currentMchdStep.add(next_step);
         }
     }
 

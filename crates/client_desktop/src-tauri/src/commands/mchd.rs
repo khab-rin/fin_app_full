@@ -5,6 +5,7 @@ use shared_lib::service::mchd::home_mchd_power::{HomeMchdPower, HomePowerInfo};
 use crate::state::ClientState;
 use crate::service::mchd::make_poa_files::make_files::make_xml_doc_files;
 use crate::service::mchd::lend_mchd::lend_mchd::lend_mchd_to_back_api_for_register;
+use crate::service::mchd::show_powers::show_powers;
 
 
 #[tauri::command]
@@ -63,7 +64,9 @@ pub async fn cmd_show_powers(
     state: tauri::State<'_, ClientState>,
 ) -> Result<MchdStep, Status> {
 
-    Ok(MchdStep::ShowPowers { text: MchdInfo::ShowPowers })
+    log::info!("cmd_show_powers running!!!");
+    
+    show_powers(&state).await
 
 }
 
