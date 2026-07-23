@@ -93,8 +93,6 @@ pub(crate) async fn register_mchd(
         return Ok(MchdStep::WrongData { text: MchdInfo::WrongSignFile})
     }
 
-    tracing::info!(text = %check_result.text);
-
     let xml_content = match String::from_utf8(xml_file.clone()) {
         Ok(c) => c,
         Err(err) => {

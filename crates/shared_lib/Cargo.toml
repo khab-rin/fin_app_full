@@ -35,3 +35,6 @@ tracing-subscriber = { workspace = true }
 tracing-appender = { workspace = true }
 
 ts-rs = { workspace = true }
+
+strum = { workspace = true }
+strum_macros = { workspace = true }

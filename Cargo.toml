@@ -58,3 +58,6 @@ ts-rs = { version = "10.1", features = ["serde-compat", "no-serde-warnings"] }
 directories = "6.0.0"
 keyring = { version = "3.6.3", features = ["sync-secret-service", "crypto-rust"] }
 machine-uid = "0.5.4"
+
+strum = { version = "0.28", features = ["derive"] }
+strum_macros = "0.28.0"

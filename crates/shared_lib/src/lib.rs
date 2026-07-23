@@ -1,10 +1,11 @@
-pub mod err_models;
-pub mod  primitives;
-pub mod  static_data;
-pub mod  parsers;
-pub mod  service;
-pub mod  sql_models;
 pub mod alias_types;
+pub mod err_models;
+pub mod parsers;
+pub mod primitives;
+pub mod service;
+pub mod static_data;
+pub mod sql_models;
+
 
 pub use crate::err_models::implements::Status;
 
