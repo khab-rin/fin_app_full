@@ -1,10 +1,10 @@
 use serde::{Deserialize, Serialize};
 use strum::{AsRefStr, Display, EnumString};
 
+
 #[derive(
     Debug,
     Clone,
-    Copy,
     PartialEq,
     Eq,
     Hash,
@@ -14,6 +14,7 @@ use strum::{AsRefStr, Display, EnumString};
     EnumString,
     Display,
     AsRefStr,
+    ts_rs::TS
 )]
 #[sqlx(type_name = "TEXT")]
 pub enum Account {

@@ -12,7 +12,7 @@ use crate::state::ClientState;
 
 pub(crate) async fn parse_comment(
     state: &ClientState,
-    operation: &OperationReadFields
+    operation: &StatementFields
 ) -> Result<OperationParseData, Status> {
 
     let session = match state.get_session().await {
@@ -24,9 +24,12 @@ pub(crate) async fn parse_comment(
     };
 
     let own_inn = &session.session_user.company.comp_inn;
+    let own_kpp = &session.session_user.company.kpp;
     
     let comment = &*operation.doc_comment;
+    
     let low = comment.to_lowercase();
+
     let mut parse_data = OperationParseData::default();
     
     if operation.pay_inn == own_inn && operation.rec_inn == own_inn { parse_data.is_own_operation = true;}
@@ -137,7 +140,9 @@ pub(crate) async fn bank_parser<P: AsRef<Path>>(
         parse_result.status.insert(Status::FileReadError); 
     }
 
-    let mut data_iter = buffer.split("СекцияДокумент=");
+    let mut data_iter = buffer.split("СекцияД");
+
+    
 
     let mut head_block = match data_iter.next() {
         Some(val) => val.trim(),
@@ -155,7 +160,7 @@ pub(crate) async fn bank_parser<P: AsRef<Path>>(
         Some(_) => {},
         None => {
             log::error!(
-                "local_err = {}, FUN bank_parser FAILED BY MAPPING HEAD BLOCK", 
+                "local_err = {}, FUN bank_parser FAILED BY MAPPING HEAD BLOCK 1", 
                 Status::FileInvalideData
             );
         }
@@ -165,7 +170,7 @@ pub(crate) async fn bank_parser<P: AsRef<Path>>(
         Some(b) => b,
         None => {
             log::error!(
-                "local_err = {}, FUN bank_parser FAILED BY MAPPING HEAD BLOCK", 
+                "local_err = {}, FUN bank_parser FAILED BY MAPPING HEAD BLOCK 2", 
                 Status::FileInvalideData
             );
             return Err(Status::FileInvalideData)
@@ -205,9 +210,11 @@ pub(crate) async fn bank_parser<P: AsRef<Path>>(
             }
         }
 
-        match OperationReadFields::from_map(&block_map) {
+        match StatementFields::from_map(&block_map) {
             Ok(read_fields) => {
                 let parse_data = parse_comment(state, &read_fields).await.unwrap_or_default(); 
+                log::info!("read_fields = {:?}", read_fields);
+                log::info!("read_fields = {:?}", parse_data);
                 parse_result.correct_lines.push(
                     ParsedOperation {
                         read_fields, parse_data

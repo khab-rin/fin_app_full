@@ -3,8 +3,10 @@ use std::collections::HashSet;
 use crate::Status;
 use crate::primitives::frozen::implements::*;
 use crate::primitives::frozen::implements_base::{PayType, CompanyName, IdentStatus};
+use crate::sql_models::operation::implements::DocType;
 
-make_struct!(pub OperationReadFields, [
+make_struct!(pub StatementFields, [
+    (doc_type, DocType, "окумент"),
     (doc_number, DocNum, "Номер"),
     (doc_date, Date, "Дата"),
     (doc_amount, RubF, "Сумма"),
@@ -62,7 +64,7 @@ pub struct OperationParseData {
 
 #[derive(Debug, Clone)]
 pub struct ParsedOperation {
-    pub read_fields: OperationReadFields,
+    pub read_fields: StatementFields,
     pub parse_data: OperationParseData
 }
 
