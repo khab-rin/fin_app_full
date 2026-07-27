@@ -55,7 +55,7 @@ pub(crate) async fn parse_company_by_inn_kpp(
         })
         .map_err(|_| Status::MappingError)?;
 
-    let metadata_option = match resp_wrap.suggestions.iter().next() {
+    let metadata_option = match resp_wrap.suggestions.first() {
         Some(m) => m.data.clone(),
         None => {
             tracing::error!(

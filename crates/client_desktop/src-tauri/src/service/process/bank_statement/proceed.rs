@@ -8,7 +8,7 @@ use shared_lib::service::api_routes::implements::ApiRoutes;
 
 use crate::state::ClientState;
 use crate::parsers::bank_statement::parser::bank_parser;
-use crate::sql_queries::companys::sync_company::query::sync_local_companys;
+use crate::sql_queries::companys::add::query::sync_local_companys;
 use crate::service::process::bank_statement::make_inn_kpp_vec::{make_inn_kpp_map_func};
 
 

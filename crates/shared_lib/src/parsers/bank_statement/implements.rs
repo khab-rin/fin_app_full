@@ -1,15 +1,16 @@
-use std::collections::HashSet;
+use std::collections::{HashSet, HashMap};
 
 use crate::Status;
 use crate::primitives::frozen::implements::*;
 use crate::primitives::frozen::implements_base::{PayType, CompanyName, IdentStatus};
-use crate::sql_models::operation::implements::DocType;
+use crate::primitives::composite::implements::RasBicAcc;
+use crate::sql_models::operation::implements::{DocType, Operation};
 
-make_struct!(pub StatementFields, [
+make_struct!(pub BlockFields, [
     (doc_type, DocType, "окумент"),
-    (doc_number, DocNum, "Номер"),
+    (doc_num, DocNum, "Номер"),
     (doc_date, Date, "Дата"),
-    (doc_amount, RubF, "Сумма"),
+    (statement_amount, RubF, "Сумма"),
 
     (pay_acc, RasAcc, "ПлательщикСчет"),
     (pay_date, Option<Date>, "ДатаСписано"),
@@ -45,11 +46,11 @@ make_struct!(pub StatementHead,[
 ]);
 
 #[derive(Debug, Clone, Default)]
-pub struct OperationParseData {
+pub struct BlockCommentData {
     pub is_own_operation: bool,
     pub is_tax: bool,
     pub dates: Vec<Date>,
-    pub doc_nums: Vec<DocNum>,
+    pub doc_num: Option<DocNum>,
     pub is_period: bool,
     pub is_contract: bool,
     pub is_komis: bool,
@@ -63,16 +64,15 @@ pub struct OperationParseData {
 }
 
 #[derive(Debug, Clone)]
-pub struct ParsedOperation {
-    pub read_fields: StatementFields,
-    pub parse_data: OperationParseData
+pub struct ParsedBlock {
+    pub block_fields: BlockFields,
+    pub comment_data: BlockCommentData
+}
+
+pub struct StatementParseResult {
+    pub text: String,
+    pub operations: Vec<Operation>
 }
 
 
-#[derive(Debug, Clone, Default)]
-pub struct ParseBankStatRes {
-    pub status: std::collections::HashSet<Status>,
-    pub st_head: Option<StatementHead>,
-    pub correct_lines: Vec<ParsedOperation>,
-    pub wrong_lines: Vec<std::collections::HashMap<String, String>>
-}
+pub type InnKppMapAcc = HashMap<(CompInn, Kpp), HashSet<RasBicAcc>>;

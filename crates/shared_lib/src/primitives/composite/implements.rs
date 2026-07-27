@@ -33,8 +33,8 @@ impl Fio {
 #[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash, sqlx::Type, ts_rs::TS)]
 #[sqlx(type_name = "jsonb")]
 pub struct RasBicAcc {
-    bic: Bic,
-    ras_acc: RasAcc,
+    pub bic: Bic,
+    pub ras_acc: RasAcc,
 }
 
 impl RasBicAcc {
@@ -61,8 +61,8 @@ impl RasBicAcc {
 #[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash, sqlx::Type)]
 #[sqlx(type_name = "jsonb")]
 pub struct CorBicAcc {
-    bic: Bic,
-    cor_acc: CorAcc
+    pub bic: Bic,
+    pub cor_acc: CorAcc
 }
 
 impl CorBicAcc {

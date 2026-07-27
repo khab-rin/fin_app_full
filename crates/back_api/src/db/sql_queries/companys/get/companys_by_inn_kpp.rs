@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use shared_lib::Status;
 use shared_lib::sql_models::company::implements::{Company, CompanyDto};
 use shared_lib::primitives::frozen::implements::{BoxUuid, CompInn, Kpp, CompType, CompStatus, DateTime};
@@ -8,18 +6,16 @@ use crate::config::BackApiState;
 use crate::db::sql_queries::companys::helper::dto_to_company_vec;
 
 pub(crate) async fn get_companys_by_inn_kpp(
-    state: &Arc<BackApiState>,
-    data: &(Vec<String>, Vec<String>)
-
+    state: &BackApiState,
+    comp_inn_data: &[String],
+    kpp_data: &[String]
 ) -> Result<Vec<Company>, Status> {
-    
-    let (inn_data, kpp_data) = data;
 
     let companys_dto = match sqlx::
         query_file_as!(
             CompanyDto,
             "src/db/sql_queries/companys/get/companys_by_inn_kpp.sql",
-            &inn_data[..],
+            &comp_inn_data[..],
             &kpp_data[..]
         ).fetch_all(&state.pool_long).await {
             Ok(d) => d,
@@ -32,6 +28,6 @@ pub(crate) async fn get_companys_by_inn_kpp(
             }
         };
 
-    Ok(dto_to_company_vec(companys_dto))
+    dto_to_company_vec(companys_dto)
 
 }

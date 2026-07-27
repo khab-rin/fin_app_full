@@ -26,5 +26,5 @@ pub(crate) async fn get_companys_by_id(
             )
         }).map_err(|_| Status::SqlQueryWrongLogic)?;
 
-    Ok(dto_to_company_vec(companys_dto))
+    dto_to_company_vec(companys_dto)
 }

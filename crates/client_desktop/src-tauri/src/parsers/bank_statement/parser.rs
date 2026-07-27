@@ -3,7 +3,7 @@ use std::path::Path;
 use std::fs;
 use shared_lib::parsers::bank_statement::implements::{*};
 use shared_lib::err_models::implements::Status;
-use shared_lib::primitives::frozen::implements::{Date, DocNum, RubF, RasAcc};
+use shared_lib::primitives::frozen::implements::{Date, DocNum, RasAcc, RubF, TextInfo};
 use shared_lib::static_data::primitives_re::*;
 use encoding_rs::WINDOWS_1251;
 
@@ -11,9 +11,8 @@ use crate::state::ClientState;
 
 
 pub(crate) async fn parse_comment(
-    state: &ClientState,
-    operation: &StatementFields
-) -> Result<OperationParseData, Status> {
+    comment: &TextInfo
+) -> Result<BlockCommentData, Status> {
 
     let session = match state.get_session().await {
         Ok(s) => s,
@@ -102,139 +101,3 @@ pub(crate) async fn parse_comment(
     Ok(parse_data)
 }
 
-
-
-pub(crate) async fn bank_parser<P: AsRef<Path>>(
-    state: &ClientState,
-    path: P
-) -> Result<ParseBankStatRes, Status> {
-    let own_ras_acc = RasAcc::new("40802810629370001827").expect("123");
-
-    let mut parse_result = ParseBankStatRes::default();
-
-    let bytes = match fs::read(path).map_err(|_| Status::FileReadError) {
-        Ok(b) => b,
-        Err(err) => {
-            log::error!(
-                "tech_err = {}, local_err = {}
-                FUN bank_parser FAILED BY READING FILE",
-                err, Status::FileReadError
-            );
-            return Err(Status::FileReadError);
-        }
-    };
-
-    let (buffer, wr_bytes) = match String::from_utf8(bytes) {
-        Ok(good_utf8) => { (good_utf8, false) }
-        Err(err) => {
-            let win1251_bytes = err.into_bytes();
-            let (cow, _, wr_bytes) = WINDOWS_1251.decode(&win1251_bytes);
-            (cow.into_owned(), wr_bytes)
-        }
-    };
-
-    if wr_bytes { 
-        log::error!(
-            "FUN bank_parser WRONG BYTES IN BANK STATEMENT"
-        );
-        parse_result.status.insert(Status::FileReadError); 
-    }
-
-    let mut data_iter = buffer.split("СекцияД");
-
-    
-
-    let mut head_block = match data_iter.next() {
-        Some(val) => val.trim(),
-        None => {
-            log::error!(
-                "err = {}, FUN bank_parser INVALIDE DATA IN BANK STATEMENT", Status::FileInvalideData
-            );
-            return Err(Status::FileInvalideData);
-        }
-    };
-
-    let mut head_block_iter = head_block.split("СекцияРасчСчет");
-
-    match head_block_iter.next() {
-        Some(_) => {},
-        None => {
-            log::error!(
-                "local_err = {}, FUN bank_parser FAILED BY MAPPING HEAD BLOCK 1", 
-                Status::FileInvalideData
-            );
-        }
-    }
-
-    let head = match head_block_iter.next() {
-        Some(b) => b,
-        None => {
-            log::error!(
-                "local_err = {}, FUN bank_parser FAILED BY MAPPING HEAD BLOCK 2", 
-                Status::FileInvalideData
-            );
-            return Err(Status::FileInvalideData)
-        }
-    };
-
-    let mut block_map:HashMap<&str, &str> = HashMap::new();
-
-    for s in head.lines() {
-        if let Some((key, value)) = s.split_once('=') {
-            block_map.insert(key.trim(), value.trim());
-        }
-    }
-
-    let head = match StatementHead::from_map(&block_map) {
-        Ok(h) => h,
-        Err(err) => {
-            log::error!(
-                "local_err = {}, FUN bank_parser FAILED BY MAPPING HEAD",
-                err
-            );
-            return Err(Status::MappingError);
-        }
-    };
-
-    if head.head_acc != own_ras_acc { return Err(Status::FileInvalideData); }
-
-    parse_result.st_head = Some(head);
-
-
-    for block in data_iter {
-        let block = block.trim();
-        let mut block_map: HashMap<&str, &str> = HashMap::new();
-        for line in block.lines() {
-            if let Some((key, value)) = line.split_once('=') {
-                block_map.insert(key.trim(), value.trim());
-            }
-        }
-
-        match StatementFields::from_map(&block_map) {
-            Ok(read_fields) => {
-                let parse_data = parse_comment(state, &read_fields).await.unwrap_or_default(); 
-                log::info!("read_fields = {:?}", read_fields);
-                log::info!("read_fields = {:?}", parse_data);
-                parse_result.correct_lines.push(
-                    ParsedOperation {
-                        read_fields, parse_data
-                    }
-                );
-            }
-            Err(err) =>  {
-                log::error!(
-                    "local_err = {}, FUN bank_parser FAILED BY PARSED OPERATION", err
-                );
-                parse_result.status.insert(err);
-                let wrong_line:HashMap<String, String> = block_map
-                    .iter()
-                    .map(|(k, v)| (k.to_string(), v.to_string()))
-                    .collect();
-                parse_result.wrong_lines.push(wrong_line);
-            }
-        }
-    }
-
-     Ok(parse_result)
-    
-}

@@ -11,7 +11,7 @@ use tracing_subscriber::{fmt, prelude::*, EnvFilter};
 use shared_lib::service::api_routes::implements::ApiRoutes;
 use shared_lib::static_data::init_re;
 
-use crate::handlers::service::process::bank_statement::handler::auto_add_company_handler;
+use crate::handlers::sql::handlers::sql_new_companys_handler;
 
 use crate::handlers::service::auth_service::handler::{
     register_step1_handler, 
@@ -93,9 +93,6 @@ async fn main() {
 
     let app: Router = Router::new()
         .route(
-            ApiRoutes::AutoAddCompany.get_path(),
-            post(auto_add_company_handler)
-        ).route(
             ApiRoutes::AuthRegisterStep1.get_path(),
             post(register_step1_handler)
         ).route(
@@ -117,6 +114,9 @@ async fn main() {
         ).route(
             ApiRoutes::MchdShowPowers.get_path(),
             post(show_powers_handler)
+        ).route(
+            ApiRoutes::SqlComppanysAddByInnKpp.get_path(),
+            post(sql_new_companys_handler)
         ).route(
             ApiRoutes::SqlPersonGetByInn.get_path(), 
             post(get_person_by_inn_handler)

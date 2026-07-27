@@ -1,33 +1,31 @@
-use std::sync::Arc;
 use futures::stream::{self, StreamExt};
 
 use shared_lib::Status;
 use shared_lib::primitives::frozen::implements::{BoxUuid, CompInn, Kpp, CompType, CompStatus, DateTime};
 use shared_lib::sql_models::company::implements::{Company, CompanyDto};
-use shared_lib::alias_types::implements::{InnKppAccMap, InnKppAccVec};
+use shared_lib::parsers::bank_statement::implements::InnKppMapAcc;
 
 use crate::config::BackApiState;
-use crate::db::parsers::dadata::parser::dadata_reqwest_func;
 use crate::db::sql_queries::companys::get::companys_by_inn_kpp::get_companys_by_inn_kpp;
+use crate::db::parsers::dadata::inn_kpp_query::parse_company_by_inn_kpp;
 
 use crate::db::sql_queries::companys::add::helper::{
-    make_inn_kpp_pairs,
     fresh_bank_acc,
-    make_company,
-    make_insert_data,
 };
 use crate::db::sql_queries::companys::helper::dto_to_company_vec;
 
-pub(crate) async fn sync_server_companys(
-    state: &Arc<BackApiState>, 
-    data_vec:InnKppAccVec
+pub(crate) async fn update_companys(
+    state: &BackApiState, 
+    data: &mut InnKppMapAcc
 ) -> Result<Vec<Company>, Status> {
 
-    let mut data:InnKppAccMap = data_vec.into_iter().collect();
+    let comp_inn_data: Vec<String> = data.iter().map(|(x, _)| x.0.to_string()).collect();
+    let kpp_data: Vec<String> = data.iter().map(|(x, _)| x.1.to_string()).collect();
 
-    let inn_kpp_data = make_inn_kpp_pairs(&data);
-
-    let mut companys = match get_companys_by_inn_kpp(state, &inn_kpp_data).await {
+    let mut prev_companys = match get_companys_by_inn_kpp(
+            state,
+            &comp_inn_data,
+            &kpp_data).await {
         Ok(c) => c,
         Err(err) => {
             tracing::error!(
@@ -38,47 +36,69 @@ pub(crate) async fn sync_server_companys(
         }
     };
 
-    fresh_bank_acc(&mut data, &mut companys); 
+    fresh_bank_acc(data, &mut prev_companys); 
 
-    let mut dadata_stream = stream::iter(data)
-        .map(|((inn, kpp), accounts)| {
-            async move {
-                let func_res = dadata_reqwest_func(state, &inn, &kpp).await;
-                (inn, kpp, accounts, func_res)
-            }
-        }).buffer_unordered(4);
+    let mut new_companys: Vec< Company> = vec!();
 
+    let mut tasks_vec = vec!();
 
-    while let Some((inn, kpp, accounts, func_res)) = dadata_stream.next().await {
-                match make_company(inn.clone(), kpp.clone(), accounts, func_res) {
-            Ok(new_company) => companys.push(new_company),
+    for ((comp_inn, kpp), _) in data.iter() {
+        let comp_inn_clone = comp_inn.clone();
+        let kpp_clone = kpp.clone();
+        tasks_vec.push(async move {
+            parse_company_by_inn_kpp(state, &comp_inn_clone, &kpp_clone).await
+        });
+    };
+
+    let mut dadata_stream = stream::iter(tasks_vec).buffer_unordered(4);
+
+    while let Some(res) = dadata_stream.next().await {
+        match res {
+            Ok(c) => {new_companys.push(c)},
             Err(err) => {
                 tracing::error!(
-                    err_name = ?err,
-                    inn = %inn,
-                    kpp = %kpp 
-                )
-            }
+                    err = ?err,
+                    "FUN sync_server_companys FAILED BY FUN parse_company_by_inn_kpp"
+                );
+                return Err(err);
+            } 
         }
     }
-   
-    let (
-        inn_d, 
-        kpp_d, 
-        type_d, 
-        status_d, 
-        mt_d
-        ) = make_insert_data(companys);
 
-    let seen_companys_dto = sqlx::
+    fresh_bank_acc(data, &mut new_companys); 
+
+    for comp in prev_companys {
+        new_companys.push(comp);
+    }
+        
+   
+    let mut comp_id: Vec<uuid::Uuid> = vec!();
+    let mut comp_inn: Vec<String> = vec!();
+    let mut kpp: Vec<String> = vec!();
+    let mut comp_type: Vec<String> = vec!();
+    let mut comp_status: Vec<String> = vec!();
+    let mut metadata: Vec<serde_json::Value> = vec!();
+
+    for comp in new_companys {
+        comp_id.push(comp.comp_id.as_ref().clone());
+        comp_inn.push(comp.comp_inn.to_string());
+        kpp.push(comp.kpp.to_string());
+        comp_type.push(comp.comp_type.as_str().to_string());
+        comp_status.push(comp.comp_status.as_str().to_string());
+        metadata.push(serde_json::to_value(&comp.metadata).unwrap_or_default());
+    }
+
+
+    let companys_dto = sqlx::
         query_file_as!(
             CompanyDto,
             "src/db/sql_queries/companys/add/sync_companys.sql",
-            &inn_d[..],
-            &kpp_d[..],
-            &type_d[..],
-            &status_d[..],
-            &mt_d[..]
+            &comp_id[..],
+            &comp_inn[..],
+            &kpp[..],
+            &comp_type[..],
+            &comp_status[..],
+            &metadata[..]
         ).fetch_all(&state.pool_long)
         .await
         .inspect_err(|err| {
@@ -90,8 +110,7 @@ pub(crate) async fn sync_server_companys(
         .map_err(|_| Status::SqlQueryWrongLogic)?;
 
     
-    
-    Ok(dto_to_company_vec(seen_companys_dto))
+    dto_to_company_vec(companys_dto)
 }
 
     

@@ -1,15 +1,17 @@
 INSERT INTO companys(
+    comp_id,
     comp_inn, 
     kpp, 
     comp_type, 
     comp_status, 
     metadata) 
 SELECT * FROM UNNEST(
-    $1::text[], 
+    $1::uuid[], 
     $2::text[], 
     $3::text[],
     $4::text[],
-    $5::jsonb[])
+    $5::text[],
+    $6::jsonb[])
 ON CONFLICT (comp_inn, kpp) DO UPDATE SET
     comp_status = EXCLUDED.comp_status,
     metadata = EXCLUDED.metadata,

@@ -1,5 +1,4 @@
 pub enum ApiRoutes {
-    AutoAddCompany,
     AuthRegisterStep1,
     AuthRegisterStep2,
     AuthRestorePassword,
@@ -7,13 +6,14 @@ pub enum ApiRoutes {
     AuthRestoreToken,
     MchdLend,
     MchdShowPowers,
+    SqlComppanysAddByInnKpp,
     SqlPersonGetByInn
 }
 
 impl ApiRoutes {
     pub fn get_path(&self) -> &str {
         match self {
-            Self::AutoAddCompany => "/api/companys/auto-add",
+            
             Self::AuthRegisterStep1 => "/api/auth/register_step1",
             Self::AuthRegisterStep2 => "/api/auth/register_step2",
             Self::AuthRestorePassword => "/api/auth/restore_by_password",
@@ -21,6 +21,7 @@ impl ApiRoutes {
             Self::AuthRestoreToken => "/api/auth/restore_by_token",
             Self::MchdLend => "/api/mchd/lend_mchd_for_register",
             Self::MchdShowPowers => "/api/mchd/lend_show_powers",
+            Self::SqlComppanysAddByInnKpp => "/api/companys/add_by_inn_kpp",
             Self::SqlPersonGetByInn => "/api/sql/person_get_by_inn"
         }
     }
