@@ -11,31 +11,60 @@ use crate::primitives::traits::ParseFromStrMapValue;
 
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, ts_rs::TS)]
+pub struct OperationRaw {
+    pub oper_id: BoxUuid,
+    pub user_id: BoxUuid,
+
+    pub comp_id: BoxUuid,
+    pub ctrpty_id: BoxUuid,
+    pub contract_id: Option<BoxUuid>,
+
+    pub debet: Option<Account>,
+    pub credit: Option<Account>,
+    pub amount: RubF,
+    pub oper_date: Date,
+
+    pub doc_type: Option<DocType>,
+    pub doc_num: Option<String>,
+    pub doc_date: Option<Date>,
+
+    pub is_storno: bool,
+    pub is_del: bool,
+
+    pub entr_date: DateTime,
+
+    pub external_id: String,
+
+    pub is_sync: Option<bool>,
+}
+
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, ts_rs::TS)]
 pub struct Operation {
-    oper_id: BoxUuid,
-    user_id: BoxUuid,
+    pub oper_id: BoxUuid,
+    pub user_id: BoxUuid,
 
-    comp_id: BoxUuid,
-    ctrpty_id: BoxUuid,
-    contract_id: Option<BoxUuid>,
+    pub comp_id: BoxUuid,
+    pub ctrpty_id: BoxUuid,
+    pub contract_id: Option<BoxUuid>,
 
-    debet: Account,
-    credit: Account,
-    amount: RubF,
-    oper_date: Date,
+    pub debet: Account,
+    pub credit: Account,
+    pub amount: RubF,
+    pub oper_date: Date,
 
-    doc_type: DocType,
-    doc_num: String,
-    doc_date: Date,
+    pub doc_type: DocType,
+    pub doc_num: String,
+    pub doc_date: Date,
 
-    is_storno: bool,
-    is_del: bool,
+    pub is_storno: bool,
+    pub is_del: bool,
 
-    entr_date: DateTime,
+    pub entr_date: DateTime,
 
-    external_id: String,
+    pub external_id: String,
 
-    is_sync: Option<bool>,
+    pub is_sync: Option<bool>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize,  ts_rs::TS)]

@@ -10,13 +10,11 @@ use shared_lib::parsers::bank_statement::implements::{
     InnKppMapAcc
 };
 use shared_lib::sql_models::operation::implements::Operation;
-use shared_lib::primitives::frozen::implements::{CompInn, Kpp};
 use shared_lib::primitives::composite::implements::RasBicAcc;
 
-use crate::sql_queries::companys::add;
 use crate::state::ClientState;
 use crate::parsers::bank_statement::helper::make_statement_block_map;
-use crate::parsers::bank_statement::parser::parse_comment;
+use crate::parsers::bank_statement::comment_parser::parse_comment;
 use crate::sql_queries::companys::add::new_companys::add_companys_by_inn_cpp_acc;
 
 
@@ -26,11 +24,9 @@ pub(crate) async fn parse_statement(
     path: &String
 ) -> Result<StatementParseResult, Status> {
 
-    let mut res: Vec<Operation> = vec!();
-
     let failed_result = StatementParseResult {
         text: "Критическая ошибка, попробуйте позже".to_string(),
-        operations: res.clone()
+        operations: vec!()
     };
 
     let mut new_companys: InnKppMapAcc = HashMap::new();
@@ -110,7 +106,7 @@ pub(crate) async fn parse_statement(
     if head.head_acc != ras_bic_acc.ras_acc {
         return Ok(StatementParseResult {
             text: "Загружена выписка с ошибочного расчетного счета".to_string(),
-            operations: res
+            operations: vec!()
         });
     }
 
@@ -127,15 +123,7 @@ pub(crate) async fn parse_statement(
             }
         };
 
-        let comment_data = match parse_comment(&block_fields.doc_comment) {
-            Ok(d) => d,
-            Err(err) => {
-                log::error!(
-                    "local_err = {:?}, FUN parse_statement FAILED BY MAPPING BLOCK", err
-                );
-                return Ok(failed_result);
-            }
-        };
+        let comment_data = parse_comment(&block_fields.doc_comment);
 
         let pay_rass_bic_acc = match RasBicAcc::new(
                 block_fields.pay_bic.clone(),
@@ -183,7 +171,7 @@ pub(crate) async fn parse_statement(
         }
     }
 
-
+    
 
 
 

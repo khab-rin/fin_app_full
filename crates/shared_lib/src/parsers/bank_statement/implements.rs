@@ -47,10 +47,9 @@ make_struct!(pub StatementHead,[
 
 #[derive(Debug, Clone, Default)]
 pub struct BlockCommentData {
-    pub is_own_operation: bool,
     pub is_tax: bool,
     pub dates: Vec<Date>,
-    pub doc_num: Option<DocNum>,
+    pub doc_num: HashSet<String>,
     pub is_period: bool,
     pub is_contract: bool,
     pub is_komis: bool,

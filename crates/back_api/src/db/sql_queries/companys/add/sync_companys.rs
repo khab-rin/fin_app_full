@@ -9,18 +9,18 @@ use crate::config::BackApiState;
 use crate::db::sql_queries::companys::get::companys_by_inn_kpp::get_companys_by_inn_kpp;
 use crate::db::parsers::dadata::inn_kpp_query::parse_company_by_inn_kpp;
 
-use crate::db::sql_queries::companys::add::helper::{
-    fresh_bank_acc,
+use crate::db::sql_queries::companys::helper::{
+    dto_to_company_vec, 
+    fresh_bank_acc
 };
-use crate::db::sql_queries::companys::helper::dto_to_company_vec;
 
 pub(crate) async fn update_companys(
     state: &BackApiState, 
     data: &mut InnKppMapAcc
 ) -> Result<Vec<Company>, Status> {
 
-    let comp_inn_data: Vec<String> = data.iter().map(|(x, _)| x.0.to_string()).collect();
-    let kpp_data: Vec<String> = data.iter().map(|(x, _)| x.1.to_string()).collect();
+    let comp_inn_data: Vec<String> = data.keys().map(|x| x.0.to_string()).collect();
+    let kpp_data: Vec<String> = data.keys().map(|x| x.1.to_string()).collect();
 
     let mut prev_companys = match get_companys_by_inn_kpp(
             state,
@@ -80,7 +80,7 @@ pub(crate) async fn update_companys(
     let mut metadata: Vec<serde_json::Value> = vec!();
 
     for comp in new_companys {
-        comp_id.push(comp.comp_id.as_ref().clone());
+        comp_id.push(*comp.comp_id.as_ref());
         comp_inn.push(comp.comp_inn.to_string());
         kpp.push(comp.kpp.to_string());
         comp_type.push(comp.comp_type.as_str().to_string());

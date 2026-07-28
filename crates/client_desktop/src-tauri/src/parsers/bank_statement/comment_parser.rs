@@ -1,59 +1,38 @@
-use std::collections::HashMap;
-use std::path::Path;
-use std::fs;
+
 use shared_lib::parsers::bank_statement::implements::{*};
-use shared_lib::err_models::implements::Status;
-use shared_lib::primitives::frozen::implements::{Date, DocNum, RasAcc, RubF, TextInfo};
+use shared_lib::primitives::frozen::implements::{Date, DocNum, RubF, TextInfo};
 use shared_lib::static_data::primitives_re::*;
-use encoding_rs::WINDOWS_1251;
-
-use crate::state::ClientState;
 
 
-pub(crate) async fn parse_comment(
+
+pub(crate) fn parse_comment(
     comment: &TextInfo
-) -> Result<BlockCommentData, Status> {
+) -> BlockCommentData {
 
-    let session = match state.get_session().await {
-        Ok(s) => s,
-        Err(err) => {
-            log::error!("FUN parse_comment FAILED BY MISSING state");
-            return Err(err);
-        }
-    };
-
-    let own_inn = &session.session_user.company.comp_inn;
-    let own_kpp = &session.session_user.company.kpp;
-    
-    let comment = &*operation.doc_comment;
-    
     let low = comment.to_lowercase();
 
-    let mut parse_data = OperationParseData::default();
+    let mut parse_data = BlockCommentData::default();
     
-    if operation.pay_inn == own_inn && operation.rec_inn == own_inn { parse_data.is_own_operation = true;}
-    if low.contains("личные средства") { parse_data.is_own_operation = true; }
-
-    if operation.doc_maker_status.is_some() { parse_data.is_tax = true }
-
     parse_data.is_period = low.contains("за период");
+
     if !parse_data.is_period && low.contains(" с ") && low.contains(" по ") {parse_data.is_period = true}
 
-    parse_data.is_contract = low.contains("договор");
-
+    parse_data.is_contract = low.contains("договор") || low.contains("контракт");
 
     parse_data.is_salary = low.contains("заработн") || low.contains("зарплата");
 
     parse_data.is_invoice = low.contains("счет") || low.contains("cчёт");
 
-    parse_data.is_penalty = low.contains("штраф") || low.contains("взыскан") || 
-        low.contains("неустой") || low.contains("пени");
+    parse_data.is_penalty = low.contains("штраф") || 
+        low.contains("взыскан") || 
+        low.contains("неустой") || 
+        low.contains("пени");
     
-    parse_data.is_komis = low.contains("комисси");
+    parse_data.is_komis = low.contains("комисс");
 
     parse_data.is_credit = low.contains("кредит") || low.contains("депоз");
-    if !parse_data.is_credit && !parse_data.is_penalty && low.contains("процент") {parse_data.is_credit = true}
 
+    if !parse_data.is_credit && !parse_data.is_penalty && low.contains("процент") {parse_data.is_credit = true}
 
     for cap in get_scan_dates_reg()
         .captures_iter(comment) {
@@ -69,10 +48,7 @@ pub(crate) async fn parse_comment(
     for cap in get_scan_doc_nums_reg()
         .captures_iter(comment) {
             if let Some(num) = cap.get(1) {
-                match DocNum::new(num.as_str()) {
-                    Ok(dd) => parse_data.doc_nums.push(dd),
-                    Err(err) => {parse_data.errors.insert(err); }
-                }
+                parse_data.doc_num.insert(num.as_str().to_string());
             }
         }
     
@@ -87,8 +63,6 @@ pub(crate) async fn parse_comment(
         }
     }
 
-
-  
     if let Some(cap) = get_scan_nds_amount_reg()
         .captures(&low) {
             let v = cap.get(1).unwrap().as_str();
@@ -98,6 +72,7 @@ pub(crate) async fn parse_comment(
             }
         }
     
-    Ok(parse_data)
+    
+    parse_data
 }
 

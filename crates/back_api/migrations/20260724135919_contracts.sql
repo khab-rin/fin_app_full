@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS contracts (
     ctrpty_id UUID NOT NULL REFERENCES companys(comp_id) ON DELETE CASCADE,
 
 
-    contract_num VARCHAR(100) NOT NULL DEFAULT 'б/д',
+    contract_num VARCHAR(100) NOT NULL DEFAULT 'б/н',
     contract_date DATE NOT NULL,
     title VARCHAR(255) NOT NULL DEFAULT '',
 

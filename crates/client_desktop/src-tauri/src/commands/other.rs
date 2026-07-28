@@ -1,18 +1,19 @@
-use shared_lib::Status;
+use shared_lib::{Status, primitives::composite::implements::RasBicAcc};
 use crate::state::ClientState;
 use shared_lib::primitives::svelte_validate::SvelteValidator;
-use crate::service::process::bank_statement::proceed::process_statement;
+use crate::parsers::bank_statement::statment_parser::parse_statement;
 
 
 #[tauri::command]
 pub async fn cmd_process_bank_statement(
     state: tauri::State<'_, ClientState>,
+    ras_bic_acc: RasBicAcc,
     path: String
 ) -> Result<(), Status> {
 
     log::info!("cmd_process_bank_statement running");
 
-    match process_statement(&state, path).await {
+    match parse_statement(&state, &ras_bic_acc, &path).await {
         Ok(_) => {
             Ok(())
         }
