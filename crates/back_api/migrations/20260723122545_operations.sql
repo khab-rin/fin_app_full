@@ -1,10 +1,10 @@
 CREATE TABLE IF NOT EXISTS operations (
     oper_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(user_id),
 
-    comp_id UUID NOT NULL REFERENCES companys(comp_id) ON DELETE CASCADE,
-    ctrpty_id UUID NOT NULL REFERENCES companys(comp_id) ON DELETE CASCADE,
-    contract_id UUID REFERENCES contracts(contract_id) ON DELETE CASCADE,
+    comp_id UUID NOT NULL REFERENCES companys(comp_id),
+    ctrpty_id UUID NOT NULL REFERENCES companys(comp_id),
+    contract_id UUID REFERENCES contracts(contract_id),
 
     debet VARCHAR(10) NOT NULL,
     credit VARCHAR(10) NOT NULL,

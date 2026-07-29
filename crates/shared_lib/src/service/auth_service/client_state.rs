@@ -4,8 +4,8 @@ use std::sync::OnceLock;
 use serde::{Serialize, Deserialize};
 use reqwest::header::HeaderMap;
 
-use crate::primitives::frozen::implements::{BoxUuid, PersInn, CompInn, Kpp, Phone};
-use crate::primitives::frozen::implements_base::String1_50;
+use crate::primitives::frozen::text::{BoxUuid, PersInn, CompInn, Kpp, Phone};
+use crate::primitives::frozen::text_base::String1_50;
 use crate::sql_models::company::implements::Company;
 use crate::sql_models::person::implements::Person;
 use crate::sql_models::user::implements::User;

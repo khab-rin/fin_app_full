@@ -1,5 +1,5 @@
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::Password;
+use shared_lib::primitives::frozen::text::Password;
 
 use shared_lib::service::auth_service::implements::{RegInitData, AuthStep, AuthInfo};
 use shared_lib::service::api_routes::implements::ApiRoutes;

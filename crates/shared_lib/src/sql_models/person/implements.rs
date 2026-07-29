@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 
-use crate::primitives::frozen::implements::{*};
-use crate::primitives::frozen::implements_base::*;
+use crate::primitives::frozen::text::{*};
+use crate::primitives::frozen::text_base::*;
 use crate::primitives::composite::implements::Fio;
 use crate::parsers::dadata::implements::AdrWrap;
 use crate::service::mchd::implements::Gender;

@@ -1,6 +1,6 @@
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::{BoxUuid, Date};
-use shared_lib::primitives::frozen::implements_base::Digits7_7;
+use shared_lib::primitives::frozen::text::{BoxUuid, Date};
+use shared_lib::primitives::frozen::text_base::Digits7_7;
 use shared_lib::service::auth_service::client_state::ActiveSession;
 use shared_lib::service::mchd::service::{NewMchdData, MchdType};
 use shared_lib::static_data::mchd_powers::document_propertys::{MCHD_KND};

@@ -1,5 +1,5 @@
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::{BoxUuid, DateTime};
+use shared_lib::primitives::frozen::text::{BoxUuid, DateTime};
 use shared_lib::primitives::composite::implements::Fio;
 use shared_lib::sql_models::person::implements::{Person, PersonMetadata};
 use shared_lib::service::auth_service::implements::{AuthInfo, AuthStep, RegInitData};

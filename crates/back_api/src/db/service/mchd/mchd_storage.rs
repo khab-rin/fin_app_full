@@ -7,7 +7,7 @@ use shared_lib::service::mchd::implements::RootPoa;
 use shared_lib::service::mchd::poa::PoaMchd;
 use shared_lib::service::mchd::service::MchdStorage;
 use shared_lib::service::mchd::implements::PoaRootKind;
-use shared_lib::primitives::frozen::implements::{BoxUuid, Date};
+use shared_lib::primitives::frozen::text::{BoxUuid, Date};
 
 
 

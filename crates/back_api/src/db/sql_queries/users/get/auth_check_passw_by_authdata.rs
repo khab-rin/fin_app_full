@@ -5,7 +5,7 @@ use shared_lib::service::auth_service::implements::{
     PasswordDataBackApi
 };
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::{BoxUuid, Phone};
+use shared_lib::primitives::frozen::text::{BoxUuid, Phone};
 
 use crate::config::BackApiState;
 

@@ -1,9 +1,9 @@
 CREATE TABLE IF NOT EXISTS contracts (
     contract_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     
-    user_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
-    comp_id UUID NOT NULL REFERENCES companys(comp_id) ON DELETE CASCADE,
-    ctrpty_id UUID NOT NULL REFERENCES companys(comp_id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(user_id),
+    comp_id UUID NOT NULL REFERENCES companys(comp_id),
+    ctrpty_id UUID NOT NULL REFERENCES companys(comp_id),
 
 
     contract_num VARCHAR(100) NOT NULL DEFAULT 'б/н',

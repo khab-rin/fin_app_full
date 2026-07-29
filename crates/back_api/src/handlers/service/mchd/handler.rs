@@ -4,7 +4,7 @@ use axum::{Json, extract::State};
 
 use shared_lib::Status;
 use shared_lib::service::mchd::service::{MchdStep, RegisterMchdData};
-use shared_lib::primitives::frozen::implements::BoxUuid;
+use shared_lib::primitives::frozen::text::BoxUuid;
 
 use crate::config::BackApiState;
 use crate::db::service::mchd::register_mchd::register_mchd;

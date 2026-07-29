@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 
 use crate::Status;
-use crate::primitives::frozen::implements::{Bic, RasAcc, CorAcc, SurName, MidName, FirstName};
+use crate::primitives::frozen::text::{Bic, RasAcc, CorAcc, SurName, MidName, FirstName};
 use crate::primitives::composite::validator_rules::*;
 
 

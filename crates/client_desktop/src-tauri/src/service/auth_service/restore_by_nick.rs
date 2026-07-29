@@ -1,5 +1,5 @@
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements_base::String1_50;
+use shared_lib::primitives::frozen::text_base::String1_50;
 use shared_lib::service::api_routes::implements::ApiRoutes;
 use shared_lib::service::auth_service::implements::{
     AuthStep, 

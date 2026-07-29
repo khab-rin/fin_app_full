@@ -9,11 +9,11 @@ use shared_lib::service::mchd::implements::{
 
 
 use shared_lib::service::mchd::service::{NewMchdData, MchdType};
-use shared_lib::primitives::frozen::implements::{
+use shared_lib::primitives::frozen::text::{
     BoxUuid, Date
 };
 use shared_lib::static_data::mchd_powers::document_propertys::MCHD_SYSTEM_INFO;
-use shared_lib::primitives::frozen::implements_base::{
+use shared_lib::primitives::frozen::text_base::{
     Digits4_4, String1_1000
 };
 

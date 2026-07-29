@@ -1,6 +1,6 @@
 
 use shared_lib::parsers::bank_statement::implements::{*};
-use shared_lib::primitives::frozen::implements::{Date, DocNum, RubF, TextInfo};
+use shared_lib::primitives::frozen::text::{Date, DocNum, RubF, TextInfo};
 use shared_lib::static_data::primitives_re::*;
 
 

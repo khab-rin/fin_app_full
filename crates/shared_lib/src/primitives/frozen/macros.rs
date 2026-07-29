@@ -65,11 +65,6 @@ macro_rules! frozen_primitives {
             }
         }
 
-        impl std::convert::From<$name> for $data_type {
-            fn from(value: $name) -> $data_type {
-                value.data
-            }
-        }
 
         impl std::convert::From<$name> for String {
             fn from(value: $name) -> String {
@@ -91,31 +86,70 @@ macro_rules! frozen_primitives {
             }
         }
 
-        impl<DB: sqlx::Database> sqlx::Type<DB> for $name 
-        where 
-            $data_type: sqlx::Type<DB> 
-        {
-            fn type_info() -> DB::TypeInfo {
-                <$data_type as sqlx::Type<DB>>::type_info()
+        impl sqlx::Type<sqlx::Sqlite> for $name {
+            fn type_info() -> <sqlx::Sqlite as sqlx::Database>::TypeInfo {
+                <String as sqlx::Type<sqlx::Sqlite>>::type_info()
             }
         }
 
-        impl<'q, DB: sqlx::Database> sqlx::Encode<'q, DB> for $name 
-        where 
-            $data_type: sqlx::Encode<'q, DB> 
-        {
-            fn encode_by_ref(&self, buf: &mut DB::ArgumentBuffer<'q>) -> Result<sqlx::encode::IsNull, Box<dyn std::error::Error + Send + Sync>> {
-                <$data_type as sqlx::Encode<'q, DB>>::encode_by_ref(&self.data, buf)
+        impl<'q> sqlx::Encode<'q, sqlx::Sqlite> for $name {
+            fn encode_by_ref(
+                &self,
+                buf: &mut <sqlx::Sqlite as sqlx::Database>::ArgumentBuffer<'q>,
+            ) -> Result<sqlx::encode::IsNull, Box<dyn std::error::Error + Send + Sync>> {
+                let s = ($formatter)(&self.data);
+                
+                <String as sqlx::Encode<'q, sqlx::Sqlite>>::encode(s, buf)
             }
         }
 
-        impl<'r, DB: sqlx::Database> sqlx::Decode<'r, DB> for $name 
+        impl<'r> sqlx::Decode<'r, sqlx::Sqlite> for $name {
+            fn decode(
+                value: <sqlx::Sqlite as sqlx::Database>::ValueRef<'r>,
+            ) -> Result<Self, Box<dyn std::error::Error + Send + Sync>> {
+  
+                let raw_str = <String as sqlx::Decode<'r, sqlx::Sqlite>>::decode(value)?;
+    
+                let validated = Self::new(&raw_str)
+                    .map_err(|e| format!("Failed to decode {}: {}", stringify!($name), e))?;
+                
+                Ok(validated)
+            }
+        }
+
+        
+        
+        impl sqlx::Type<sqlx::Postgres> for $name 
         where 
-            $data_type: sqlx::Decode<'r, DB> 
+            $data_type: sqlx::Type<sqlx::Postgres> 
         {
-            fn decode(value: DB::ValueRef<'r>) -> Result<Self, Box<dyn std::error::Error + Send + Sync>> {
-                let data = <$data_type as sqlx::Decode<'r, DB>>::decode(value)?;
-                Ok(Self::unchecked(data))
+            fn type_info() -> sqlx::postgres::PgTypeInfo {
+                <$data_type as sqlx::Type<sqlx::Postgres>>::type_info()
+            }
+        }
+
+        impl<'q> sqlx::Encode<'q, sqlx::Postgres> for $name 
+        where 
+            $data_type: sqlx::Encode<'q, sqlx::Postgres>
+        {
+            fn encode_by_ref(
+                &self,
+                buf: &mut <sqlx::Postgres as sqlx::Database>::ArgumentBuffer<'q>,
+            ) -> Result<sqlx::encode::IsNull, Box<dyn std::error::Error + Send + Sync>> {
+                <$data_type as sqlx::Encode<'q, sqlx::Postgres>>::encode_by_ref(&self.data, buf)
+            }
+        }
+
+        impl<'r> sqlx::Decode<'r, sqlx::Postgres> for $name {
+            fn decode(
+                value: <sqlx::Postgres as sqlx::Database>::ValueRef<'r>,
+            ) -> Result<Self, Box<dyn std::error::Error + Send + Sync>> {
+                let raw_str = <String as sqlx::Decode<'r, sqlx::Postgres>>::decode(value)?;
+                
+                let validated = Self::new(&raw_str)
+                    .map_err(|e| format!("Failed to decode {}: {}", stringify!($name), e))?;
+                
+                Ok(validated)
             }
         }
 
@@ -187,7 +221,7 @@ macro_rules! make_enum_frozen {
 
 macro_rules! gen_str_validator {
     ($name:ident, $min:expr, $max:expr, $err:expr) => {
-        pub(crate) fn $name(val: &str) -> Result<Box<str>, $crate::err_models::implements::Status> {
+        pub(crate) fn $name(val: &str) -> Result<String, $crate::err_models::implements::Status> {
             let s = val.trim();
             let n = s.chars().count();
             if ($min..=$max).contains(&n) { return Ok(s.into());}
@@ -198,7 +232,7 @@ macro_rules! gen_str_validator {
 
 macro_rules! gen_digit_validator {
     ($name:ident, $min:expr, $max:expr, $err:expr) => {
-        pub(crate) fn $name(val: &str) -> Result<Box<str>, $crate::err_models::implements::Status> {
+        pub(crate) fn $name(val: &str) -> Result<String, $crate::err_models::implements::Status> {
             let s = val.trim();
             let mut clean_s = String::with_capacity(s.len());
             let mut digit_count = 0;
@@ -214,7 +248,7 @@ macro_rules! gen_digit_validator {
                 }
             }
             if ($min..=$max).contains(&digit_count) {
-                return Ok(clean_s.into_boxed_str());
+                return Ok(clean_s.into());
             }
             Err($err)
         }

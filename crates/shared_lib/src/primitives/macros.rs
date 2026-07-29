@@ -65,7 +65,7 @@ macro_rules! impl_is_zero {
     ($name:ident) => {
         impl $name {
             pub fn is_zero(&self) -> bool {
-                self.data.as_ref() == "0"
+                self.data == ""
             }
         }
     };

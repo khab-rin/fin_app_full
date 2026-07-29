@@ -1,4 +1,4 @@
-use shared_lib::primitives::frozen::implements::{PersInn, BoxUuid, DateTime};
+use shared_lib::primitives::frozen::text::{PersInn, BoxUuid, DateTime};
 use shared_lib::Status;
 use shared_lib::sql_models::person::implements::{Person, PersonDto};
 use uuid::Uuid;

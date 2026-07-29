@@ -1,5 +1,5 @@
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::BoxUuid;
+use shared_lib::primitives::frozen::text::BoxUuid;
 
 use crate::state::ClientState;
 

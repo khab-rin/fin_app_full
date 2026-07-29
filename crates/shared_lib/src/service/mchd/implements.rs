@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 
-use crate::primitives::frozen::implements::{BoxUuid, Date, CompInn, PersInn, Kpp, Ogrn, Phone, Region, RubF, Snils};
-use crate::primitives::frozen::implements_base::*;
+use crate::primitives::frozen::text::{BoxUuid, Date, CompInn, PersInn, Kpp, Ogrn, Phone, Region, RubF, Snils};
+use crate::primitives::frozen::text_base::*;
 use crate::primitives::composite::implements::Fio;
 
 // АдрТип

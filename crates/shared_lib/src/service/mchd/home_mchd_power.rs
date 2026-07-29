@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use serde::{Serialize, Deserialize};
 
-use crate::primitives::frozen::implements_base::{String1_255, String1_10000, String6_255};
+use crate::primitives::frozen::text_base::{String1_255, String1_10000, String6_255};
 use crate::service::mchd::implements::MchdPower;
 use crate::static_data::mchd_powers::powers_fns::*;
 use crate::static_data::mchd_powers::powers_btb::*;

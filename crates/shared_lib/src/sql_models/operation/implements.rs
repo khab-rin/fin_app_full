@@ -4,38 +4,45 @@ use std::str::FromStr;
 use std::convert::Infallible;
 
 use crate::Status;
-use crate::primitives::frozen::implements::{BoxUuid, RubF, DateTime, Date};
+use crate::primitives::frozen::text::{DocNum,BoxUuid, RubF, DateTime, Date};
 use crate::sql_models::operation::account::Account;
 use crate::primitives::traits::ParseFromStrMapValue;
+use crate::sql_models::company::implements::Company;
+use crate::sql_models::contracts::implements::Contract;
 
 
-
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS)]
 pub struct OperationRaw {
     pub oper_id: BoxUuid,
     pub user_id: BoxUuid,
 
     pub comp_id: BoxUuid,
-    pub ctrpty_id: BoxUuid,
-    pub contract_id: Option<BoxUuid>,
+    pub ctrpty: Company,
+    pub contract: ContractOption,
 
-    pub debet: Option<Account>,
-    pub credit: Option<Account>,
+    pub debet: Account,
+    pub credit: Account,
     pub amount: RubF,
-    pub oper_date: Date,
+    pub oper_date: Option<Date>,
 
-    pub doc_type: Option<DocType>,
-    pub doc_num: Option<String>,
-    pub doc_date: Option<Date>,
+    pub doc_type: DocType,
+    pub doc_num: DocNum,
+    pub doc_date: Date,
 
     pub is_storno: bool,
     pub is_del: bool,
 
-    pub entr_date: DateTime,
+    pub entr_date: Date,
 
-    pub external_id: String,
+    pub external_id: i64,
 
     pub is_sync: Option<bool>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS)]
+pub struct ContractOption {
+    current: Option<Contract>,
+    contracts: Vec<Contract>
 }
 
 

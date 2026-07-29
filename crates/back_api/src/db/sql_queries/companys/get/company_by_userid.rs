@@ -1,4 +1,4 @@
-use shared_lib::primitives::frozen::implements::{CompInn, BoxUuid, DateTime, Kpp, CompType, CompStatus};
+use shared_lib::primitives::frozen::text::{CompInn, BoxUuid, DateTime, Kpp, CompType, CompStatus};
 use shared_lib::Status;
 use shared_lib::sql_models::company::implements::{Company, CompanyDto};
 

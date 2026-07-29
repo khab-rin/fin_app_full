@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-use crate::primitives::frozen::implements_base::{String1_255, String1_5000};
+use crate::primitives::frozen::text_base::{String1_255, String1_5000};
 use crate::service::mchd::implements::{FormatVersion, PoaWrap, PoaReqElemsFlag};
 
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]

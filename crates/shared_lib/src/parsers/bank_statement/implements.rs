@@ -1,8 +1,8 @@
 use std::collections::{HashSet, HashMap};
 
 use crate::Status;
-use crate::primitives::frozen::implements::*;
-use crate::primitives::frozen::implements_base::{PayType, CompanyName, IdentStatus};
+use crate::primitives::frozen::text::*;
+use crate::primitives::frozen::text_base::{PayType, CompanyName, IdentStatus};
 use crate::primitives::composite::implements::RasBicAcc;
 use crate::sql_models::operation::implements::{DocType, Operation};
 

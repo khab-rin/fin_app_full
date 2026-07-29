@@ -1,12 +1,13 @@
+
 #[macro_use]
 pub(crate) mod macros;
 
 pub(crate) mod formatters;
 
-pub mod implements;
-pub mod implements_base;
+pub mod text;
+pub mod text_base;
 
-pub(crate) mod validator_base;
-pub(crate) mod validator_rules;
+pub(crate) mod base_validators;
+pub(crate) mod validators;
 
 

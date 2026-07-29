@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-use crate::primitives::frozen::implements::{BoxUuid, DateTime, Email, Phone};
+use crate::primitives::frozen::text::{BoxUuid, DateTime, Email, Phone};
 use crate::service::mchd::implements::MchdPower;
 
 

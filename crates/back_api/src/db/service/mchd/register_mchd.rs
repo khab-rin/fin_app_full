@@ -1,5 +1,5 @@
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::BoxUuid;
+use shared_lib::primitives::frozen::text::BoxUuid;
 use shared_lib::service::crypto_service::implements::{CheckSignDocData, PersonSignCheckResult};
 use shared_lib::service::api_routes::implements::CryptoApiRoutes;
 use shared_lib::service::mchd::service::{RegisterMchdData, MchdStep, MchdInfo};

@@ -7,4 +7,4 @@ SELECT
     metadata,
     last_update AS "last_update: DateTime"
 FROM companys
-WHERE comp_inn = $1 AND kpp = $2 AND is_synced = 0
+WHERE comp_inn = $1 AND kpp = $2

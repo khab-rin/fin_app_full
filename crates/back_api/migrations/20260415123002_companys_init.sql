@@ -17,10 +17,10 @@ CREATE TABLE IF NOT EXISTS companys (
         ),
 
     CONSTRAINT valid_type
-        CHECK (comp_type in ('BANK', 'GOV', 'IP', 'COM_ENT')),
+        CHECK (comp_type IN ('BANK', 'GOV', 'IP', 'COM_ENT')),
     
     CONSTRAINT valid_status
-        CHECK (comp_status in ('ACTIVE', 'LIQUIDATING', 'LIQUIDATED', 'BANKRUPT', 'REORGANIZING'))
+        CHECK (comp_status IN ('ACTIVE', 'LIQUIDATING', 'LIQUIDATED', 'BANKRUPT', 'REORGANIZING'))
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS inn_kpp_ind ON companys(comp_inn, kpp);
@@ -33,14 +33,16 @@ BEGIN
     NEW.comp_type := UPPER(NEW.comp_type);
     NEW.comp_status := UPPER(NEW.comp_status);
 
+    -- Проверка неизменяемости при UPDATE
     IF (TG_OP = 'UPDATE') THEN
-        IF (NEW.comp_inn <> OLD.comp_inn) OR (NEW.comp_type <> OLD.comp_type) THEN
+        IF (NEW.comp_inn IS DISTINCT FROM OLD.comp_inn) OR (NEW.comp_type IS DISTINCT FROM OLD.comp_type) THEN
             RAISE EXCEPTION 'Запрещено менять ИНН или Тип организации';
         END IF;
     END IF;
 
+    -- Валидация и автоподстановка для ИП vs Юрлиц
     IF LENGTH(NEW.comp_inn) = 12 THEN
-        IF NEW.comp_type != 'IP' AND NEW.comp_type IS NOT NULL THEN
+        IF NEW.comp_type IS NOT NULL AND NEW.comp_type <> 'IP' THEN
             RAISE EXCEPTION 'Пара ИНН - ТИП ошибочна: для ИНН из 12 цифр тип должен быть IP';
         END IF;
         
@@ -57,3 +59,8 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER trg_companys_process_input
+BEFORE INSERT OR UPDATE ON companys
+FOR EACH ROW
+EXECUTE FUNCTION process_input();

@@ -1,5 +1,5 @@
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::BoxUuid;
+use shared_lib::primitives::frozen::text::BoxUuid;
 use shared_lib::service::auth_service::implements::SessionUserToken;
 use shared_lib::service::auth_service::client_state::NickData;
 

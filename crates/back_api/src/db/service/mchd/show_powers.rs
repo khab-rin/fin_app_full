@@ -6,7 +6,7 @@ use shared_lib::Status;
 use shared_lib::service::mchd::home_mchd_power::HomeMchdPower;
 use shared_lib::service::mchd::implements::PoaRootKind;
 use shared_lib::service::mchd::service::{MchdStep, MchdInfo};
-use shared_lib::primitives::frozen::implements::{BoxUuid, Date};
+use shared_lib::primitives::frozen::text::{BoxUuid, Date};
 
 
 use crate::config::BackApiState;

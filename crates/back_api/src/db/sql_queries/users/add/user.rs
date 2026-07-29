@@ -1,5 +1,5 @@
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::{BoxUuid, DateTime};
+use shared_lib::primitives::frozen::text::{BoxUuid, DateTime};
 use shared_lib::sql_models::user::implements::{User, UserSetData, UserDto};
 
 use crate::config::BackApiState;

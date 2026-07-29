@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::{CompInn, Kpp};
+use shared_lib::primitives::frozen::text::{CompInn, Kpp};
 use shared_lib::parsers::dadata::implements::*;
 
 use crate::config::BackApiState;

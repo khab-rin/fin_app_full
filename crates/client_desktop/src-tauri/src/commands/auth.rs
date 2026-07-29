@@ -2,8 +2,8 @@ use shared_lib::Status;
 use shared_lib::service::auth_service::implements::{
     AuthInfo, AuthStep, PasswordDataClientShort, RegFilesPathData, RegInitData
 };
-use shared_lib::primitives::frozen::implements_base::String1_50;
-use shared_lib::primitives::frozen::implements::BoxUuid;
+use shared_lib::primitives::frozen::text_base::String1_50;
+use shared_lib::primitives::frozen::text::BoxUuid;
 
 use crate::state::ClientState;
 use crate::service::auth_service::helper::get_device_id;

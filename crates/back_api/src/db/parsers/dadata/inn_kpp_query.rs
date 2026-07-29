@@ -1,6 +1,6 @@
 use shared_lib::Status;
 use shared_lib::sql_models::company::implements::Company;
-use shared_lib::primitives::frozen::implements::{CompInn, Kpp, CompType, Date, BoxUuid, DateTime};
+use shared_lib::primitives::frozen::text::{CompInn, Kpp, CompType, Date, BoxUuid, DateTime};
 use shared_lib::parsers::dadata::implements::*;
 
 use crate::config::BackApiState;

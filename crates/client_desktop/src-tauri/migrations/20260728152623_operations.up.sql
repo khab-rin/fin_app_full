@@ -1,10 +1,10 @@
 CREATE TABLE IF NOT EXISTS operations (
     oper_id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
     
-    user_id TEXT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
-    comp_id TEXT NOT NULL REFERENCES companys(comp_id) ON DELETE CASCADE,
-    ctrpty_id TEXT NOT NULL REFERENCES companys(comp_id) ON DELETE CASCADE,
-    contract_id TEXT REFERENCES contracts(contract_id) ON DELETE CASCADE,
+    user_id TEXT NOT NULL REFERENCES users(user_id),
+    comp_id TEXT NOT NULL REFERENCES companys(comp_id),
+    ctrpty_id TEXT NOT NULL REFERENCES companys(comp_id),
+    contract_id TEXT REFERENCES contracts(contract_id),
 
     debet TEXT NOT NULL,
     credit TEXT NOT NULL,

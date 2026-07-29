@@ -1,5 +1,5 @@
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::{BoxUuid,Email,Phone};
+use shared_lib::primitives::frozen::text::{BoxUuid,Email,Phone};
 
 
 use crate::config::BackApiState;

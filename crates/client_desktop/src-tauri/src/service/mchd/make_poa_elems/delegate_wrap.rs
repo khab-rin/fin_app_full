@@ -1,6 +1,6 @@
 use shared_lib::primitives::composite::implements::Fio;
-use shared_lib::primitives::frozen::implements::{FirstName, MidName, Snils, SurName};
-use shared_lib::primitives::frozen::implements_base::String1_25;
+use shared_lib::primitives::frozen::text::{FirstName, MidName, Snils, SurName};
+use shared_lib::primitives::frozen::text_base::String1_25;
 use shared_lib::service::mchd::service::{NewMchdData, MchdType};
 use shared_lib::service::mchd::implements::{
     RussDocumCode,

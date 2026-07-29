@@ -1,9 +1,9 @@
 use serde::{Serialize, Deserialize};
 
-use crate::primitives::frozen::implements::*;
-use crate::primitives::frozen::implements_base::{String1_1000, String3_129};
+use crate::primitives::frozen::text::*;
+use crate::primitives::frozen::text_base::{String1_1000, String3_129};
 use crate::primitives::composite::implements::RasBicAcc;
-use crate::primitives::frozen::implements_base::CompanyName;
+use crate::primitives::frozen::text_base::CompanyName;
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct DadaRespWrap {

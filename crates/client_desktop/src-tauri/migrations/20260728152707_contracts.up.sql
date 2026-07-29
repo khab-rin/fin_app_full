@@ -1,9 +1,9 @@
 CREATE TABLE IF NOT EXISTS contracts (
-    contract_id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+    contract_id TEXT PRIMARY KEY NOT NULL DEFAULT (lower(hex(randomblob(16)))),
     
-    user_id TEXT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
-    comp_id TEXT NOT NULL REFERENCES companys(comp_id) ON DELETE CASCADE,
-    ctrpty_id TEXT NOT NULL REFERENCES companys(comp_id) ON DELETE CASCADE,
+    user_id TEXT NOT NULL REFERENCES users(user_id),
+    comp_id TEXT NOT NULL REFERENCES companys(comp_id),
+    ctrpty_id TEXT NOT NULL REFERENCES companys(comp_id),
 
     contract_num TEXT NOT NULL DEFAULT 'б/н',
 
@@ -15,12 +15,12 @@ CREATE TABLE IF NOT EXISTS contracts (
 
     currency TEXT NOT NULL DEFAULT 'RUB',
 
-    total_amount REAL NOT NULL DEFAULT 0,
+    total_amount TEXT NOT NULL DEFAULT '0',
 
-    payment_deferral_days INTEGER DEFAULT 0,
+    payment_deferral_days INTEGER NOT NULL DEFAULT 0,
 
     is_active INTEGER NOT NULL DEFAULT 1,
-    description TEXT DEFAULT '',
+    description TEXT NOT NULL DEFAULT '',
     
     entr_date TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
     updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),

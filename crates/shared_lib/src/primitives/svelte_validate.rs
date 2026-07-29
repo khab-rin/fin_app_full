@@ -1,8 +1,8 @@
 use serde::{Serialize, Deserialize};
 use crate::Status;
 // Импортируем все ваши примитивы из соответствующего модуля
-use crate::primitives::frozen::implements::*;
-use crate::primitives::frozen::implements_base::*;
+use crate::primitives::frozen::text::*;
+use crate::primitives::frozen::text_base::*;
 use crate::service::mchd::implements::*;
 
 #[derive(Serialize, Deserialize, ts_rs::TS, Debug)]

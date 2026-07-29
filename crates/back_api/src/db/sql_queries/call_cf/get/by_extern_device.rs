@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::{DateTime, BoxUuid};
+use shared_lib::primitives::frozen::text::{DateTime, BoxUuid};
 use shared_lib::service::auth_service::implements::{ExternalDeviceData};
 
 use crate::config::BackApiState;

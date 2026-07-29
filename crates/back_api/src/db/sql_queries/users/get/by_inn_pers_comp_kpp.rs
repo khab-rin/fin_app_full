@@ -1,5 +1,5 @@
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::{CompInn, PersInn, Kpp, BoxUuid, DateTime};
+use shared_lib::primitives::frozen::text::{CompInn, PersInn, Kpp, BoxUuid, DateTime};
 use shared_lib::sql_models::user::implements::{UserDto, User};
 
 use crate::config::BackApiState;

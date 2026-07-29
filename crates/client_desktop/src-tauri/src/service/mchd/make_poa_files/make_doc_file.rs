@@ -1,5 +1,5 @@
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements_base::String1_255;
+use shared_lib::primitives::frozen::text_base::String1_255;
 use shared_lib::service::auth_service::client_state::ActiveSession;
 use shared_lib::service::mchd::service::{MchdInfo, MchdStep, NewMchdData};
 use shared_lib::service::mchd::poa::PoaMchd;

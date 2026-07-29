@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 
-use crate::primitives::frozen::implements::*;
-use crate::primitives::frozen::implements_base::*;
+use crate::primitives::frozen::text::*;
+use crate::primitives::frozen::text_base::*;
 use crate::service::mchd::implements::*;
 use crate::service::mchd::home_mchd_power::HomeMchdPower;
 use crate::service::mchd::poa::PoaMchd;

@@ -2,7 +2,7 @@ use rust_decimal::Decimal;
 use serde::{Serialize, Deserialize};
 
 use crate::Status;
-use crate::primitives::frozen::implements::RubF;
+use crate::primitives::frozen::text::RubF;
 use crate::primitives::tax_frozen::implements::Nds22;
 
 calculated_primitives!(

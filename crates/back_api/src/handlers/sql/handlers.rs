@@ -3,7 +3,7 @@ use std::sync::Arc;
 use axum::{extract::State, Json};
 
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::PersInn;
+use shared_lib::primitives::frozen::text::PersInn;
 use shared_lib::sql_models::person::implements::Person;
 use shared_lib::sql_models::company::implements::Company;
 use shared_lib::parsers::bank_statement::implements::InnKppMapAcc;

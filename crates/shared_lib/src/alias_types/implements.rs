@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 
 use serde_json::Value;
 
-use crate::primitives::frozen::implements::*;
+use crate::primitives::frozen::text::*;
 use crate::primitives::composite::implements::RasBicAcc;
 
 pub type InnKppAccMap = HashMap<(CompInn, Kpp), HashSet<RasBicAcc>>;

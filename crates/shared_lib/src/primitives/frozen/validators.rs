@@ -31,7 +31,7 @@ fn validate_mod11_rosstat(s: &str) -> bool {
     remainder == check_digit
 }
 
-pub fn init_pers_inn_from_str(inn: &str) -> Result<Box<str>, Status> {
+pub fn init_pers_inn_from_str(inn: &str) -> Result<String, Status> {
     let inn = inn.trim();
     
     if inn.len() != 12 || !inn.chars().all(|c| c.is_ascii_digit()) {
@@ -56,13 +56,13 @@ pub fn init_pers_inn_from_str(inn: &str) -> Result<Box<str>, Status> {
     let check_digit12 = (sum12 % 11) % 10;
 
     if digits[10] == check_digit11 && digits[11] == check_digit12 {
-        Ok(inn.to_string().into_boxed_str())
+        Ok(inn.to_string().into())
     } else {
         Err(Status::PersInnValid)
     }
 }
 
-pub fn init_comp_inn_from_str(inn: &str) -> Result<Box<str>, Status> {
+pub fn init_comp_inn_from_str(inn: &str) -> Result<String, Status> {
     if let Ok(inn) = init_pers_inn_from_str(inn) { return Ok(inn) }
 
     let inn = inn.trim();
@@ -82,37 +82,37 @@ pub fn init_comp_inn_from_str(inn: &str) -> Result<Box<str>, Status> {
     let check_digit10 = (sum10 % 11) % 10;
 
     if digits[9] == check_digit10 {
-        Ok(inn.to_string().into_boxed_str())
+        Ok(inn.to_string().into())
     } else {
         Err(Status::CompInnValid)
     }
 }
 
-pub(crate) fn init_kpp_from_str(kpp: &str) -> Result<Box<str>, Status> {
+pub(crate) fn init_kpp_from_str(kpp: &str) -> Result<String, Status> {
     let kpp = kpp.trim().to_uppercase();
     if kpp.is_empty() || kpp == "0" || kpp == "000000000" {
         return Ok("".into());
     }
     get_is_kpp_reg().is_match(&kpp)
-        .then(|| kpp.into_boxed_str())
+        .then(|| kpp.into())
         .ok_or(Status::ValidKpp)
 }
 
-pub(crate) fn init_cor_ras_acc_from_str(bank_acc: &str) -> Result<Box<str>, Status> {
+pub(crate) fn init_cor_ras_acc_from_str(bank_acc: &str) -> Result<String, Status> {
     let bank_acc = bank_acc.trim();
     get_is_corr_ras_acc_reg().is_match(bank_acc)
         .then(|| bank_acc.into())
         .ok_or(Status::ValidBankAcc)
 }
 
-pub(crate) fn init_bic_from_str(bic: &str) -> Result<Box<str>, Status> {
+pub(crate) fn init_bic_from_str(bic: &str) -> Result<String, Status> {
     let bic = bic.trim();
     get_is_bic_reg().is_match(bic)
     .then(|| bic.into())
     .ok_or(Status::ValidBic)
 }
 
-pub(crate) fn init_ogrn_from_str(ogrn: &str) -> Result<Box<str>, Status> {
+pub(crate) fn init_ogrn_from_str(ogrn: &str) -> Result<String, Status> {
     let cleaned_ogrn: String = ogrn.chars().filter(|c| c.is_ascii_digit()).collect();
     
     let n = cleaned_ogrn.len();
@@ -129,7 +129,7 @@ pub(crate) fn init_ogrn_from_str(ogrn: &str) -> Result<Box<str>, Status> {
     let expected = ((head % divider) % 10) as u8;
 
     if expected == last { 
-        Ok(cleaned_ogrn.into_boxed_str()) 
+        Ok(cleaned_ogrn.into()) 
     } else { 
         Err(Status::ValidOgrn) 
     }
@@ -205,23 +205,23 @@ pub(crate) fn str_to_date(value: &str) -> Result<NaiveDate, Status> {
     Err(Status::ValidDate)
 }
 
-pub(crate) fn init_doc_num_from_str(val: &str) -> Result<Box<str>, Status> {
+pub(crate) fn init_doc_num_from_str(val: &str) -> Result<String, Status> {
     Ok(val.into())
 }
 
-pub(crate) fn init_text_info_from_str(val: &str) -> Result<Box<str>, Status> {
+pub(crate) fn init_text_info_from_str(val: &str) -> Result<String, Status> {
     Ok(val.into())
 }
 
-pub(crate) fn init_branch_type_from_str(val: &str) -> Result<Box<str>, Status> {
+pub(crate) fn init_branch_type_from_str(val: &str) -> Result<String, Status> {
     let val = val.trim().to_uppercase();
     match val.as_str() {
-        "MAIN" | "BRANCH" => Ok(val.into_boxed_str()),
+        "MAIN" | "BRANCH" => Ok(val.into()),
         _ => Err(Status::ValidBranchType)
     }
 }
 
-pub(crate) fn init_okpo_from_str(val: &str) -> Result<Box<str>, Status> {
+pub(crate) fn init_okpo_from_str(val: &str) -> Result<String, Status> {
     let s = val.trim();
     if s.is_empty() || !s.chars().all(|c| c.is_ascii_digit()) || (s.len() != 8 && s.len() != 10) {
         return Err(Status::ValidOkpo);
@@ -232,7 +232,7 @@ pub(crate) fn init_okpo_from_str(val: &str) -> Result<Box<str>, Status> {
     }
 }
 
-pub(crate) fn init_oktmo_from_str(oktmo: &str) -> Result<Box<str>, Status> {
+pub(crate) fn init_oktmo_from_str(oktmo: &str) -> Result<String, Status> {
     let s = oktmo.trim();
     if s.is_empty() || !s.chars().all(|c| c.is_ascii_digit()) || (s.len() != 8 && s.len() != 11) {
         return Err(Status::ValidOktmo);
@@ -240,7 +240,7 @@ pub(crate) fn init_oktmo_from_str(oktmo: &str) -> Result<Box<str>, Status> {
     Ok(s.into())
 }
 
-pub(crate) fn init_okogu_from_str(okogu: &str) -> Result<Box<str>, Status> {
+pub(crate) fn init_okogu_from_str(okogu: &str) -> Result<String, Status> {
     let s = okogu.trim();
     if s.is_empty() || !s.chars().all(|c| c.is_ascii_digit()) || s.len() != 7 {
         return Err(Status::ValidOkogu);
@@ -248,7 +248,7 @@ pub(crate) fn init_okogu_from_str(okogu: &str) -> Result<Box<str>, Status> {
     Ok(s.into())
 }
 
-pub(crate) fn init_opf_code_from_str(val: &str) -> Result<Box<str>, Status> {
+pub(crate) fn init_opf_code_from_str(val: &str) -> Result<String, Status> {
     let s = val.trim();
     if s.len() == 5 
         && s.chars().all(|c| c.is_ascii_digit()) 
@@ -260,7 +260,7 @@ pub(crate) fn init_opf_code_from_str(val: &str) -> Result<Box<str>, Status> {
     }
 }
 
-pub(crate) fn init_okfs_from_str(val: &str) -> Result<Box<str>, Status> {
+pub(crate) fn init_okfs_from_str(val: &str) -> Result<String, Status> {
     let s = val.trim();
     if s.len() == 2 && s.chars().all(|c| c.is_ascii_digit()) {
         Ok(s.into())
@@ -269,14 +269,14 @@ pub(crate) fn init_okfs_from_str(val: &str) -> Result<Box<str>, Status> {
     }
 }
 
-pub(crate) fn init_okved_from_str(val: &str) -> Result<Box<str>, Status> {
+pub(crate) fn init_okved_from_str(val: &str) -> Result<String, Status> {
     let val = val.trim();
     get_is_okveg_reg().is_match(val)
         .then(|| val.into())
         .ok_or(Status::ValidOkved)
 }
 
-pub(crate) fn init_phone_from_str(val: &str) -> Result<Box<str>, Status> {
+pub(crate) fn init_phone_from_str(val: &str) -> Result<String, Status> {
     let n = val.chars().count();
     if !(1..=50).contains(&n) {
         return Err(Status::ValidPhone);
@@ -289,7 +289,7 @@ pub(crate) fn init_phone_from_str(val: &str) -> Result<Box<str>, Status> {
     if digits.is_empty() {
         digits.push('8');
     }
-    Ok(digits.into_boxed_str())
+    Ok(digits.into())
 }
 
 pub(crate) fn init_uuid_from_str(val: &str) -> Result<uuid::Uuid, Status> {
@@ -302,7 +302,7 @@ pub(crate) fn init_uuid_from_str(val: &str) -> Result<uuid::Uuid, Status> {
     }
 }
 
-pub(crate) fn init_fio(val: &str) -> Result<Box<str>, Status> {
+pub(crate) fn init_fio(val: &str) -> Result<String, Status> {
     let mut s: Vec<char> = val.trim().to_lowercase().chars().collect();
     if s.is_empty() || s.len() > 200 { return Err(Status::ValidFio) }
     if !s.iter().all(|&c| c.is_alphabetic() || c == '-') {
@@ -317,7 +317,7 @@ pub(crate) fn init_fio(val: &str) -> Result<Box<str>, Status> {
     Ok(s.iter().collect())  
 }
 
-pub(crate) fn init_region(val: &str) -> Result<Box<str>, Status> {
+pub(crate) fn init_region(val: &str) -> Result<String, Status> {
     let s = val.trim();
     if s.len() == 2 && s.chars().all(|c| c.is_ascii_digit()) {
         Ok(s.into())
@@ -326,7 +326,7 @@ pub(crate) fn init_region(val: &str) -> Result<Box<str>, Status> {
     }
 }
 
-pub(crate) fn init_snils_from_str(val: &str) -> Result<Box<str>, Status> {
+pub(crate) fn init_snils_from_str(val: &str) -> Result<String, Status> {
     let s = val.trim();
     if !s.chars().all(|c| {
         c.is_ascii_digit() || 
@@ -357,19 +357,19 @@ pub(crate) fn init_snils_from_str(val: &str) -> Result<Box<str>, Status> {
             return Err(Status::ValidSnils);
         }
     }
-    Ok(digits.into_boxed_str())
+    Ok(digits.into())
 }
 
 
-pub(crate) fn init_part_status(val: &str) -> Result<Box<str>, Status> {
+pub(crate) fn init_part_status(val: &str) -> Result<String, Status> {
     let s = val.trim();
     match s {
-        "101" | "102" | "299" | "301" | "303" | "399" => Ok(Box::from(s)),
+        "101" | "102" | "299" | "301" | "303" | "399" => Ok(s.into()),
         _ => Err(Status::ValidMchdPartStatus)
     }
 }
 
-pub(crate) fn init_flag_str(val: &str) -> Result<Box<str>, Status> {
+pub(crate) fn init_flag_str(val: &str) -> Result<String, Status> {
     let s = val.trim();
     let chars:Vec<char> = s.chars().collect();
     if chars.len() != 8 { return Err(Status::Unknown);}
@@ -379,7 +379,7 @@ pub(crate) fn init_flag_str(val: &str) -> Result<Box<str>, Status> {
     Ok(s.into())
 }
 
-pub(crate) fn init_email_from_str(val: &str) -> Result<Box<str>, Status> {
+pub(crate) fn init_email_from_str(val: &str) -> Result<String, Status> {
     let n = val.chars().count();
     if !(3..=129).contains(&n) {
         return Err(Status::ValidEmail);
@@ -397,10 +397,10 @@ pub(crate) fn init_email_from_str(val: &str) -> Result<Box<str>, Status> {
         return Err(Status::ValidEmail);
     }
 
-    Ok(val.to_lowercase().into_boxed_str())
+    Ok(val.to_lowercase().into())
 }
 
-pub(crate) fn init_password_from_str(password: &str) -> Result<Box<str>, Status> {
+pub(crate) fn init_password_from_str(password: &str) -> Result<String, Status> {
     let password = password.trim();
     let len = password.chars().count();
 

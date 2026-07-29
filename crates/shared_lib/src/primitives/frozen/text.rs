@@ -3,7 +3,7 @@ use rust_decimal::Decimal;
 use serde::{Serialize, Deserialize};
 use sqlx;
 
-use crate::primitives::frozen::validator_rules::*;
+use crate::primitives::frozen::validators::*;
 use crate::primitives::frozen::formatters::*;
 use crate::Status;
 use crate::primitives::traits::ParseFromStrMapValue;
@@ -11,21 +11,21 @@ use crate::primitives::traits::ParseFromStrMapValue;
 frozen_primitives!(
     PersInn,
     init_pers_inn_from_str,
-    Box<str>,
+    String,
     "ИНН_физлица",
     default_fmt);
 
 frozen_primitives!(
     CompInn,
     init_comp_inn_from_str,
-    Box<str>,
+    String,
     "ИНН_юлица",
     default_fmt);
 
 frozen_primitives!(
     Kpp,
     init_kpp_from_str,
-    Box<str>,
+    String,
     "КПП",
     default_fmt);
 
@@ -35,28 +35,28 @@ impl_is_zero!(Kpp);
 frozen_primitives!(
     CorAcc,
     init_cor_ras_acc_from_str,
-    Box<str>,
+    String,
     "КорСчет",
     default_fmt);
 
 frozen_primitives!(
     RasAcc,
     init_cor_ras_acc_from_str,
-    Box<str>,
+    String,
     "РасСчет",
     default_fmt);
 
 frozen_primitives!(
     Bic,
     init_bic_from_str,
-    Box<str>,
+    String,
     "БИК",
     default_fmt);
 
 frozen_primitives!(
     Ogrn,
     init_ogrn_from_str,
-    Box<str>,
+    String,
     "ОГРН",
     default_fmt);
 
@@ -77,91 +77,91 @@ frozen_primitives!(
 frozen_primitives!(
     DocNum,
     init_doc_num_from_str,
-    Box<str>,
+    String,
     "Номер_документа",
     default_fmt);
 
 frozen_primitives!(
     TextInfo,
     init_text_info_from_str,
-    Box<str>,
+    String,
     "Текстовая_информация",
     default_fmt);
 
 frozen_primitives!(
     BranchType,
     init_branch_type_from_str,
-    Box<str>,
+    String,
     "Статус_филиала",
     default_fmt);
 
 frozen_primitives!(
     Okpo,
     init_okpo_from_str,
-    Box<str>,
+    String,
     "ОКПО",
     default_fmt);
 
 frozen_primitives!(
     Oktmo,
     init_oktmo_from_str,
-    Box<str>,
+    String,
     "ОКТМО",
     default_fmt);
 
 frozen_primitives!(
     Okogu,
     init_okogu_from_str,
-    Box<str>,
+    String,
     "ОКОГУ",
     default_fmt);
 
 frozen_primitives!(
     Okfs,
     init_okfs_from_str,
-    Box<str>,
+    String,
     "ОКФС",
     default_fmt);
 
 frozen_primitives!(
     Okved,
     init_okved_from_str,
-    Box<str>,
+    String,
     "ОКВЭД",
     default_fmt);
 
 frozen_primitives!(
     Phone, 
     init_phone_from_str,
-    Box<str>,
+    String,
     "Телефон",
     default_fmt);
 
 frozen_primitives!(
     OpfCode, 
     init_opf_code_from_str,
-    Box<str>,
+    String,
     "ОКОПФ",
     default_fmt);
 
 frozen_primitives!(
     SurName, 
     init_fio,
-    Box<str>,
+    String,
     "ФамилияФЛ",
     uppercase_fmt);
 
 frozen_primitives!(
     FirstName, 
     init_fio,
-    Box<str>,
+    String,
     "ИмяФЛ",
     uppercase_fmt);
 
 frozen_primitives!(
     MidName, 
     init_fio,
-    Box<str>,
+    String,
     "ОтчествоФЛ",
     uppercase_fmt);
 
@@ -169,14 +169,14 @@ frozen_primitives!(
 frozen_primitives!(
     Region,
     init_region,
-    Box<str>,
+    String,
     "Код_региона",
     default_fmt);
 
 frozen_primitives!(
     Snils,
     init_snils_from_str,
-    Box<str>,
+    String,
     "СНИЛС",
     snils_fmt);
 
@@ -197,14 +197,14 @@ frozen_primitives!(
 frozen_primitives!(
     Email,
     init_email_from_str,
-    Box<str>,
+    String,
     "Email",
     default_fmt);
 
 frozen_primitives!(
     Password,
     init_password_from_str,
-    Box<str>,
+    String,
     "Поле_пароля",
     default_fmt);
 

@@ -1,7 +1,7 @@
 use uuid::Uuid;
 use serde::{Serialize, Deserialize};
 
-use crate::primitives::frozen::implements::{BoxUuid, CompStatus, CompType, DateTime, CompInn, Kpp};
+use crate::primitives::frozen::text::{BoxUuid, CompStatus, CompType, DateTime, CompInn, Kpp};
 use crate::parsers::dadata::implements::CtrprtyMetadata;
 
 #[derive(Serialize, Deserialize, Clone)]

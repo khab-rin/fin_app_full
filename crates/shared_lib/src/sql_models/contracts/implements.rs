@@ -1,31 +1,65 @@
-use crate::primitives::frozen::implements::{BoxUuid, Date, RubF, DateTime};
+use serde::{Serialize, Deserialize};
 
+use crate::primitives::frozen::text::{BoxUuid, Date, RubF, DateTime};
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, ts_rs::TS)]
 pub struct Contract {
-    contract_id: BoxUuid,
+    pub contract_id: BoxUuid,
     
-    user_id: BoxUuid,
-    comp_id: BoxUuid,
-    ctrpty_id: BoxUuid,
+    pub user_id: BoxUuid,
+    pub comp_id: BoxUuid,
+    pub ctrpty_id: BoxUuid,
 
-    contract_num: String,
+    pub contract_num: String,
 
-    contract_date: Date,
-    title: String,
+    pub contract_date: Date,
+    pub title: String,
 
-    start_date: Date,
-    end_date: Date,
+    pub start_date: Date,
+    pub end_date: Date,
 
-    currency: String,
+    pub currency: String,
 
-    total_amount: RubF,
+    pub total_amount: RubF,
 
-    payment_deferral_days: i32,
+    pub payment_deferral_days: i32,
 
-    is_active: i32,
-    description: String,
+    pub is_active: i32,
+    pub description: String,
     
-    entr_date: Date,
-    updated_at: DateTime,
-    is_del: i32,
-    external_id: String 
+    pub entr_date: Date,
+    pub updated_at: DateTime,
+    pub is_del: i32,
+    pub external_id: String 
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, ts_rs::TS)]
+pub struct ContractDto {
+    pub contract_id: BoxUuid,
+    
+    pub user_id: BoxUuid,
+    pub comp_id: BoxUuid,
+    pub ctrpty_id: BoxUuid,
+
+    pub contract_num: String,
+
+    pub contract_date: Date,
+    pub title: String,
+
+    pub start_date: Date,
+    pub end_date: Date,
+
+    pub currency: String,
+
+    pub total_amount: RubF,
+
+    pub payment_deferral_days: i32,
+
+    pub is_active: i32,
+    pub description: String,
+    
+    pub entr_date: Date,
+    pub updated_at: DateTime,
+    pub is_del: i32,
+    pub external_id: String 
 }

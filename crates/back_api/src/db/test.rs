@@ -1,10 +1,10 @@
-use shared_lib::primitives::frozen::implements::{CompInn, Kpp};
+use shared_lib::primitives::frozen::text::{CompInn, Kpp};
 use crate::db::parsers::dadata::inn_kpp_query::parse_company_by_inn_kpp;
 
 #[cfg(test)]
 mod tests {
     use serde::Serialize;
-    use shared_lib::primitives::frozen::implements::{Kpp, CompInn};
+    use shared_lib::primitives::frozen::text::{Kpp, CompInn};
     use std::fs::{self, File};
     use std::io::{self, Write};
     use std::time::{SystemTime, UNIX_EPOCH};

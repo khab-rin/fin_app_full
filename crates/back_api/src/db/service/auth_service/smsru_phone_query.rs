@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use shared_lib::Status;
-use shared_lib::primitives::frozen::implements::Phone;
+use shared_lib::primitives::frozen::text::Phone;
 use shared_lib::service::auth_service::implements::SmsruCallResponse;
 
 use crate::config::BackApiState;
