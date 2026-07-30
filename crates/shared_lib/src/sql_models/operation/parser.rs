@@ -4,7 +4,7 @@ use crate::Status;
 use crate::primitives::frozen::text::*;
 use crate::primitives::frozen::text_base::{PayType, CompanyName, IdentStatus};
 use crate::primitives::composite::implements::RasBicAcc;
-use crate::sql_models::operation::implements::{DocType, Operation};
+use crate::sql_models::operation::implements::DocType;
 
 make_struct!(pub BlockFields, [
     (doc_type, DocType, "окумент"),
@@ -48,6 +48,8 @@ make_struct!(pub StatementHead,[
 #[derive(Debug, Clone, Default)]
 pub struct BlockCommentData {
     pub is_tax: bool,
+    pub is_cred_return: bool,
+    pub is_cred_loan: bool,
     pub dates: Vec<Date>,
     pub doc_num: HashSet<String>,
     pub is_period: bool,
@@ -55,7 +57,6 @@ pub struct BlockCommentData {
     pub is_komis: bool,
     pub is_salary: bool,
     pub is_invoice: bool,
-    pub is_credit: bool,
     pub is_penalty: bool,
     pub nds_amount: Option<RubF>,
     pub nds_rate: u8,
@@ -66,11 +67,6 @@ pub struct BlockCommentData {
 pub struct ParsedBlock {
     pub block_fields: BlockFields,
     pub comment_data: BlockCommentData
-}
-
-pub struct StatementParseResult {
-    pub text: String,
-    pub operations: Vec<Operation>
 }
 
 

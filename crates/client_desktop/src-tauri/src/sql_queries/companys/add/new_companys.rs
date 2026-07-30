@@ -1,6 +1,6 @@
 use shared_lib::Status;
 use shared_lib::sql_models::company::implements::Company;
-use shared_lib::parsers::bank_statement::implements::InnKppMapAcc;
+use shared_lib::sql_models::operation::parser::InnKppMapAcc;
 use shared_lib::service::api_routes::implements::ApiRoutes;
 
 use crate::state::ClientState;

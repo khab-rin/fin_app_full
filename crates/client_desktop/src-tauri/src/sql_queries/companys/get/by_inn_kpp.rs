@@ -6,7 +6,8 @@ use crate::state::ClientState;
 
 pub(crate) async fn get_company_by_inn_kpp(
     state: &ClientState,
-    data: &(CompInn, Kpp)
+    comp_inn: &CompInn,
+    kpp: &Kpp
 ) -> Result<Option<Company>, Status> {
 
     let session = match state.get_session().await {
@@ -19,8 +20,8 @@ pub(crate) async fn get_company_by_inn_kpp(
         }
     };
 
-    let var1= data.0.as_ref();
-    let var2 = data.1.as_ref();
+    let var1= comp_inn.as_ref();
+    let var2 = kpp.as_ref();
 
     let company_dto_option = match sqlx::query_file_as!(
         CompanyDto,

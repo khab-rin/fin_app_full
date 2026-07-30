@@ -1,6 +1,5 @@
-
-use shared_lib::parsers::bank_statement::implements::{*};
 use shared_lib::primitives::frozen::text::{Date, DocNum, RubF, TextInfo};
+use shared_lib::sql_models::operation::parser::BlockCommentData;
 use shared_lib::static_data::primitives_re::*;
 
 
@@ -13,6 +12,26 @@ pub(crate) fn parse_comment(
 
     let mut parse_data = BlockCommentData::default();
     
+    if low.contains("возвр") && (
+        low.contains("кредит") || 
+        low.contains("заем") || 
+        low.contains("ссуд")
+    ) {
+        parse_data.is_cred_return = true;
+    }
+
+    if (
+        low.contains("выдач") || 
+        low.contains("предоставлен") || 
+        low.contains("перечислени")
+    ) && (
+        low.contains("кредит") || 
+        low.contains("заем") || 
+        low.contains("ссуд")
+    ) {
+        parse_data.is_cred_loan = true;
+    }
+
     parse_data.is_period = low.contains("за период");
 
     if !parse_data.is_period && low.contains(" с ") && low.contains(" по ") {parse_data.is_period = true}
@@ -29,10 +48,6 @@ pub(crate) fn parse_comment(
         low.contains("пени");
     
     parse_data.is_komis = low.contains("комисс");
-
-    parse_data.is_credit = low.contains("кредит") || low.contains("депоз");
-
-    if !parse_data.is_credit && !parse_data.is_penalty && low.contains("процент") {parse_data.is_credit = true}
 
     for cap in get_scan_dates_reg()
         .captures_iter(comment) {

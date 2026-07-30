@@ -444,7 +444,7 @@ impl Account {
         }
     }
 
-    pub const fn get_correspondents(self) -> &'static [Account] {
+    pub const fn get_correspondents(&self) -> &'static [Account] {
         match self {
             // Раздел I. Внеоборотные активы
             Account::PPE => &[
@@ -838,6 +838,10 @@ impl Account {
                 Account::RetainedProfit,
             ],
         }
+    }
+
+    pub fn is_correct(&self, other: Account) -> bool {
+        self.get_correspondents().contains(&other)
     }
 
     pub const fn acc_type(self) -> AccType {

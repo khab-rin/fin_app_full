@@ -3,7 +3,7 @@ use futures::stream::{self, StreamExt};
 use shared_lib::Status;
 use shared_lib::primitives::frozen::text::{BoxUuid, CompInn, Kpp, CompType, CompStatus, DateTime};
 use shared_lib::sql_models::company::implements::{Company, CompanyDto};
-use shared_lib::parsers::bank_statement::implements::InnKppMapAcc;
+use shared_lib::sql_models::operation::parser::InnKppMapAcc;
 
 use crate::config::BackApiState;
 use crate::db::sql_queries::companys::get::companys_by_inn_kpp::get_companys_by_inn_kpp;

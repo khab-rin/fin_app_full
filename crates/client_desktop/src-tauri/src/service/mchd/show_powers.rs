@@ -1,4 +1,5 @@
 use shared_lib::Status;
+use shared_lib::service::mchd::home_mchd_power::HomeMchdPower;
 use shared_lib::service::mchd::service::{MchdStep, MchdInfo};
 use shared_lib::service::api_routes::implements::ApiRoutes;
 
@@ -50,4 +51,40 @@ pub(crate) async fn show_powers(
     };
 
     Ok(mchd_step)
+}
+
+
+
+pub(crate) async fn check_access(
+    state: &ClientState,
+    power: &HomeMchdPower
+) -> Result<bool, Status> {
+
+    let step = match show_powers(state).await {
+        Ok(s) => s,
+        Err(err) => {
+            log::error!(
+                "local_err = {:?}, FUN check_access FAILED BY FUN show_powers", err
+            );
+            return Err(err);
+        }
+    };
+
+    let powers = match step {
+        MchdStep::ShowPowers { fns, btb, home, .. } => [fns, btb, home],
+        _ => {
+            log::error!(
+                "local_err = {:?}, FUN check_access FAILED BY WRONG SYSTEM LOGIC", Status::SystemLogicErr
+            );
+            return Err(Status::SystemLogicErr)
+        }
+    };
+
+    for t in powers {
+        if t.contains(power) {
+            return Ok(true);
+        }
+    }
+
+    Ok(false)
 }

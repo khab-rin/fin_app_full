@@ -4,11 +4,14 @@ use std::str::FromStr;
 use std::convert::Infallible;
 
 use crate::Status;
-use crate::primitives::frozen::text::{DocNum,BoxUuid, RubF, DateTime, Date};
+use crate::primitives::frozen::text::{BoxUuid, Date, DateTime, DocNum, RubF, TextInfo};
 use crate::sql_models::operation::account::Account;
 use crate::primitives::traits::ParseFromStrMapValue;
 use crate::sql_models::company::implements::Company;
 use crate::sql_models::contracts::implements::Contract;
+use crate::sql_models::operation::service::{
+    OperationInfo, OperationStep
+};
 
 
 #[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS)]
@@ -37,12 +40,14 @@ pub struct OperationRaw {
     pub external_id: i64,
 
     pub is_sync: Option<bool>,
+
+    pub comment: TextInfo
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS)]
 pub struct ContractOption {
-    current: Option<Contract>,
-    contracts: Vec<Contract>
+    pub current: Option<Contract>,
+    pub contracts: Vec<Contract>
 }
 
 
@@ -61,7 +66,7 @@ pub struct Operation {
     pub oper_date: Date,
 
     pub doc_type: DocType,
-    pub doc_num: String,
+    pub doc_num: DocNum,
     pub doc_date: Date,
 
     pub is_storno: bool,
@@ -70,8 +75,6 @@ pub struct Operation {
     pub entr_date: DateTime,
 
     pub external_id: String,
-
-    pub is_sync: Option<bool>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize,  ts_rs::TS)]
@@ -218,4 +221,17 @@ impl ParseFromStrMapValue for DocType {
             None => Ok(DocType::Other), 
         }
     }
+}
+
+
+#[derive(ts_rs::TS)]
+pub struct OperationTSTS {
+    operation_raw: OperationRaw,
+    operation: Operation,
+    contract_option: ContractOption,
+    doc_type: DocType,
+    account: Account,
+    oper_step: OperationStep,
+    oper_inf: OperationInfo
+
 }

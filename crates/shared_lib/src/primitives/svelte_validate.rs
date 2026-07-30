@@ -1,9 +1,13 @@
+use std::str::FromStr;
+
 use serde::{Serialize, Deserialize};
 use crate::Status;
 // Импортируем все ваши примитивы из соответствующего модуля
 use crate::primitives::frozen::text::*;
 use crate::primitives::frozen::text_base::*;
 use crate::service::mchd::implements::*;
+use crate::sql_models::operation::account::Account;
+use crate::sql_models::operation::implements::DocType;
 
 #[derive(Serialize, Deserialize, ts_rs::TS, Debug)]
 pub enum SvelteValidator {
@@ -83,6 +87,8 @@ pub enum SvelteValidator {
     RedelegatePowerLossType,
     RedelegationStatus,
     FormatVersion,
+    Account,
+    DocType
 }
 
 impl SvelteValidator {
@@ -316,6 +322,13 @@ impl SvelteValidator {
             SvelteValidator::PoaReqElemsFlag=> match value.parse::<PoaReqElemsFlag>() {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
+            SvelteValidator::Account => match serde_json::from_str::<Account>(value) {
+                Ok(_) => Ok(true), Err(_) => Ok(false),
+            },
+            SvelteValidator::DocType => match DocType::parse_str(value) {
+                DocType::Other => Ok(false),
+                _ => Ok(true)
+            }
         }
     }
 }

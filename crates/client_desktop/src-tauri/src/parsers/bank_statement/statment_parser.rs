@@ -1,33 +1,52 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use encoding_rs::WINDOWS_1251;
 
 use shared_lib::Status;
-use shared_lib::parsers::bank_statement::implements::{
+use shared_lib::sql_models::operation::parser::{
     BlockFields,
     ParsedBlock, 
     StatementHead,
-    StatementParseResult,
     InnKppMapAcc
 };
-use shared_lib::sql_models::operation::implements::Operation;
+use shared_lib::sql_models::operation::service::{
+    OperationInfo,
+    OperationStep
+};
+use shared_lib::sql_models::operation::implements::OperationRaw;
 use shared_lib::primitives::composite::implements::RasBicAcc;
+use shared_lib::service::mchd::home_mchd_power::HomeMchdPower;
+
 
 use crate::state::ClientState;
 use crate::parsers::bank_statement::helper::make_statement_block_map;
 use crate::parsers::bank_statement::comment_parser::parse_comment;
 use crate::sql_queries::companys::add::new_companys::add_companys_by_inn_cpp_acc;
+use crate::parsers::bank_statement::make_operations::make_statement_operation_raw;
+use crate::service::mchd::show_powers::check_access;
 
 
 pub(crate) async fn parse_statement(
     state: &ClientState,
     ras_bic_acc: &RasBicAcc,
     path: &String
-) -> Result<StatementParseResult, Status> {
+) -> Result<OperationStep, Status> {
 
-    let failed_result = StatementParseResult {
-        text: "Критическая ошибка, попробуйте позже".to_string(),
-        operations: vec!()
+    let failed_result = OperationStep::TryLater {
+        text: OperationInfo::ClientApiSystemError,
     };
+
+    match check_access(state, &HomeMchdPower::H210).await {
+        Ok(true) => {},
+        Ok(false) => {
+            return Ok(OperationStep::AccessDenied { text: OperationInfo::AccessDenied })
+        },
+        Err(err) => {
+            log::error!(
+                "local_err = {:?}, FUN parse_comment FAILED BY FUN check_access", err
+            );
+            return Ok(failed_result);
+        }
+    }
 
     let mut new_companys: InnKppMapAcc = HashMap::new();
 
@@ -62,7 +81,7 @@ pub(crate) async fn parse_statement(
                 "local_err = {:?}, FUN parse_statement FAILED BY data_iter.next()",
                 Status::DataCorruptionErr
             );
-            return Ok(failed_result);
+            return Ok(OperationStep::Loading { text: OperationInfo::WrongFile });
         }
     };
 
@@ -75,7 +94,7 @@ pub(crate) async fn parse_statement(
                 "local_err = {:?}, FUN parse_statement FAILED BY full_head_iter.next()",
                 Status::DataCorruptionErr
             );
-            return Ok(failed_result);
+            return Ok(OperationStep::Loading { text: OperationInfo::WrongFile });
         }
     };
 
@@ -86,7 +105,7 @@ pub(crate) async fn parse_statement(
                 "local_err = {:?}, FUN parse_statement FAILED BY full_head_iter.next()",
                 Status::DataCorruptionErr
             );
-            return Ok(failed_result);
+            return Ok(OperationStep::Loading { text: OperationInfo::WrongFile });
         }
     };
 
@@ -104,9 +123,8 @@ pub(crate) async fn parse_statement(
     };
 
     if head.head_acc != ras_bic_acc.ras_acc {
-        return Ok(StatementParseResult {
-            text: "Загружена выписка с ошибочного расчетного счета".to_string(),
-            operations: vec!()
+        return Ok(OperationStep::Loading {
+            text: OperationInfo::WrongBankAcc,
         });
     }
 
@@ -152,9 +170,9 @@ pub(crate) async fn parse_statement(
         let pay_key = (block_fields.pay_inn.clone(), block_fields.pay_kpp.clone());
         let rec_key = (block_fields.rec_inn.clone(), block_fields.rec_kpp.clone());
 
-        new_companys.entry(pay_key).or_insert(HashSet::new()).insert(pay_rass_bic_acc);
+        new_companys.entry(pay_key).or_default().insert(pay_rass_bic_acc);
 
-        new_companys.entry(rec_key).or_insert(HashSet::new()).insert(rec_rass_bic_acc);
+        new_companys.entry(rec_key).or_default().insert(rec_rass_bic_acc);
         
         parsed_blocks.push(ParsedBlock { block_fields, comment_data});
 
@@ -171,10 +189,25 @@ pub(crate) async fn parse_statement(
         }
     }
 
-    
+    let mut operations: Vec<OperationRaw> = vec!();    
 
+    for block in parsed_blocks {
+        match make_statement_operation_raw(state, &block).await {
+            Ok(o) => operations.push(o),
+            Err(err) => {
+                log::error!(
+                    "local_err = {:?}, FUN parse_statement FAILED BY FUB make_statement_operation_raw", err
+                );
+                return Ok(failed_result);
+            } 
+        }
+    }
 
+    let success_result = OperationStep::SuccessRaw  {
+        text: OperationInfo::SuccessRaw,
+        operations
+    };
 
-    Err(Status::Unknown)
+    Ok(success_result)
     
 }

@@ -26,6 +26,9 @@ use super::*;
         service::auth_service::implements::AuthTs::export_all_to(output_dir)
             .expect("Не удалось экспортировать AuthStep");
 
+        sql_models::operation::implements::OperationTSTS::export_all_to(output_dir)
+            .expect("Не удалось экспортировать OperationTSTS");
+
         service::mchd::home_mchd_power::HomeMchdPower::export_all_to(output_dir)
             .expect("Не удалось экспортировать HomeMchdPower");
         
