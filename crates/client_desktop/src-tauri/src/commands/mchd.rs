@@ -1,11 +1,10 @@
-use shared_lib::Status;
+use shared_lib::{Status, ClientState};
 use shared_lib::service::mchd::service::{MchdStep, NewMchdData, MchdInfo};
 use shared_lib::service::mchd::home_mchd_power::{HomeMchdPower, HomePowerInfo};
 
-use crate::state::ClientState;
-use crate::service::mchd::make_poa_files::make_files::make_xml_doc_files;
-use crate::service::mchd::lend_mchd::lend_mchd::lend_mchd_to_back_api_for_register;
-use crate::service::mchd::show_powers::show_powers;
+use shared_lib::client::mchd::make_poa_files::make_files::make_xml_doc_files;
+use shared_lib::client::mchd::lend_mchd::lend_mchd::lend_mchd_to_back_api_for_register;
+use shared_lib::client::mchd::show_powers::show_powers;
 
 
 #[tauri::command]

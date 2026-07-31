@@ -4,7 +4,7 @@ version="0.1.0"
 edition="2021"
 
 [dependencies]
-shared_lib = { workspace = true }
+shared_lib = { workspace = true, features = ['server'] }
 axum = { workspace = true }
 
 tracing = { workspace = true }

@@ -2,12 +2,18 @@ pub mod alias_types;
 pub mod err_models;
 pub mod parsers;
 pub mod primitives;
-pub mod service;
 pub mod static_data;
 pub mod sql_models;
+pub mod service;
+
+#[cfg(feature = "client")]
+pub mod client;
 
 
 pub use crate::err_models::implements::Status;
+
+#[cfg(feature = "client")]
+pub use crate::service::auth_service::client_state::ClientState;
 
 #[cfg(test)]
 mod ts_tests {

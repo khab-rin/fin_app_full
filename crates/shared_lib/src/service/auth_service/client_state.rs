@@ -1,8 +1,11 @@
 use std::time::Duration;
-use std::sync::OnceLock;
+use std::str::FromStr;
+use std::sync::{OnceLock, Arc};
 
 use serde::{Serialize, Deserialize};
-use reqwest::header::HeaderMap;
+use reqwest::header::{CONTENT_TYPE, ACCEPT, HeaderMap};
+use tauri::Manager;
+use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions};
 
 use crate::primitives::frozen::text::{BoxUuid, PersInn, CompInn, Kpp, Phone};
 use crate::primitives::frozen::text_base::String1_50;
@@ -10,6 +13,280 @@ use crate::sql_models::company::implements::Company;
 use crate::sql_models::person::implements::Person;
 use crate::sql_models::user::implements::User;
 use crate::service::auth_service::general::time_parser;
+use crate::Status;
+use crate::make_header;
+use crate::service::auth_service::general::*;
+use crate::service::auth_service::implements::SessionUserToken;
+
+
+
+#[derive(Debug)]
+pub struct ClientState {
+    pub config: &'static Config,
+    pub app_handle: tauri::AppHandle,
+    pub session: tokio::sync::Mutex<Option<Arc<ActiveSession>>>,
+    pub temp_info: tokio::sync::Mutex<TempInfo>
+}
+
+impl ClientState {
+    pub async fn get_session(&self) -> Result<Arc<ActiveSession>, Status> {
+        self.session.lock().await.clone().ok_or(Status::ClientSessionMissError)
+    }
+
+    pub async fn update_person(&self, new_person: Person) -> Result<(), Status> {
+        let mut session_lock = self.session.lock().await;
+        
+        if let Some(current_session) = session_lock.as_mut() {
+            let mut updated_session = (**current_session).clone();
+            updated_session.session_user.person = new_person;
+            
+            *current_session = Arc::new(updated_session);
+            Ok(())
+        } else {
+            log::error!("FAILED TO UPDATE PERSON: {}", Status::ClientSessionMissError);
+            Err(Status::ClientSessionMissError)
+        }
+    }
+}
+
+
+#[derive(Deserialize, Debug)]
+pub struct Config {
+    back_api_url: String,
+    pub network: NetWork,
+    pub sqlite_options: SqliteOptions,
+    #[serde(skip)]
+    pub clients: Clients,
+    #[serde(skip)]
+    pub headers: Headers,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct NetWork {
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub sql_fast_conn_time: Duration,
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub sql_fast_total_time: Duration,
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub sql_fast_retry_time: Duration,
+    pub sql_fast_retries: u32,
+
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub sql_long_conn_time: Duration,
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub sql_long_total_time: Duration,
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub sql_long_retry_time: Duration,
+    pub sql_long_retries: u32,
+
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub inst_conn_timeout: Duration,
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub inst_tot_timeout: Duration,
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub inst_request_interval: Duration,
+    pub inst_retries: u32,
+
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub std_conn_timeout: Duration,
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub std_tot_timeout: Duration,
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub std_request_interval: Duration,
+    pub std_retries: u32,
+
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub inst_poll_intervals: Duration,
+    #[serde(deserialize_with = "time_parser::duration_from_f64")]
+    pub std_poll_intervals: Duration,
+    }
+
+#[derive(Default, Debug)]
+pub struct Clients {
+    pub sql_fast: OnceLock<reqwest_middleware::ClientWithMiddleware>,
+    pub sql_long: OnceLock<reqwest_middleware::ClientWithMiddleware>,
+    pub instant: OnceLock<reqwest_middleware::ClientWithMiddleware>,
+    pub standard: OnceLock<reqwest_middleware::ClientWithMiddleware>
+}
+
+impl Config {
+    pub fn global() -> &'static Self {
+        static INSTANCE: OnceLock<Config> = OnceLock::new();
+        INSTANCE.get_or_init(|| {
+            dotenvy::dotenv().ok();
+            let toml_str = include_str!("../../../Config.toml");
+            let config: Config = toml::from_str(toml_str)
+                .expect("CONFIG MAPPING ERROR");
+
+            let back_api_header = make_header!([
+                CONTENT_TYPE => "application/json",
+                ACCEPT => "application/json"
+            ]);
+
+            config.headers.back_api_header.set(back_api_header).expect("STATIC_MEMORY_ERROR!!!");
+            
+            let sql_fast = make_client(
+                config.network.sql_fast_conn_time, 
+                config.network.sql_fast_total_time, 
+                config.network.sql_fast_retry_time, 
+                config.network.sql_fast_retries);
+            
+            config.clients.sql_fast.set(sql_fast).expect("STATIC_MEMORY_ERROR!!!");
+
+            let sql_long = make_client(
+                config.network.sql_long_conn_time, 
+                config.network.sql_long_total_time, 
+                config.network.sql_long_retry_time, 
+                config.network.sql_long_retries);
+            
+            config.clients.sql_long.set(sql_long).expect("STATIC_MEMORY_ERROR!!!");
+            
+
+            let inst_client = make_client(
+                config.network.inst_conn_timeout, 
+                config.network.inst_tot_timeout, 
+                config.network.inst_request_interval, 
+                config.network.inst_retries);
+            
+            config.clients.instant.set(inst_client).expect("STATIC_MEMORY_ERROR!!!");
+            
+            let std_client = make_client(
+                config.network.std_conn_timeout, 
+                config.network.std_tot_timeout, 
+                config.network.std_request_interval, 
+                config.network.std_retries);
+            
+            config.clients.standard.set(std_client).expect("STATIC_MEMORY_ERROR!!!");
+            
+    
+            config
+        })
+    }
+
+    pub fn get_sql_fast(&self) -> &'static reqwest_middleware::ClientWithMiddleware {
+        Self::global().clients.sql_fast.get().expect("STATIC_MEMORY_ERROR!!!")
+    }
+
+    pub fn get_sql_long(&self) -> &'static reqwest_middleware::ClientWithMiddleware {
+        Self::global().clients.sql_long.get().expect("STATIC_MEMORY_ERROR!!!")
+    }
+
+    pub fn get_inst_client(&self) -> &'static reqwest_middleware::ClientWithMiddleware {
+        Self::global().clients.instant.get().expect("STATIC_MEMORY_ERROR!!!")
+    }
+
+    pub fn get_std_client(&self) -> &'static reqwest_middleware::ClientWithMiddleware {
+        Self::global().clients.standard.get().expect("STATIC_MEMORY_ERROR!!!")
+    }
+
+    pub(crate) fn back_api_header(&self) -> &'static HeaderMap {
+        Self::global().headers.back_api_header.get().expect("STATIC_MEMORY_ERROR!!!")
+    }
+
+    pub(crate) fn back_api_url(&self) -> &str {
+        &Self::global().back_api_url
+    }
+}
+
+
+pub(crate) async fn init_session(
+    state: &ClientState,
+    user_data: &SessionUserToken
+) -> Result<Status, Status> {
+    dotenvy::dotenv().ok();
+
+    let pers_inn = &user_data.user.person.pers_inn;
+    let comp_inn = &user_data.user.company.comp_inn;
+    let kpp = &user_data.user.company.kpp;
+
+    let app_handle = state.app_handle.clone();
+
+    let app_path = match app_handle.path().app_data_dir() {
+        Ok(b) => b,
+        Err(err) => {
+            log::error!(
+                "FUN init_session FAILED BY tauri::AppHandle.path().app_data_dir(), tech_err = {}, local_err = {}",
+                err, Status::SystemErr
+            );
+            return Err(Status::SystemErr);
+        }
+    };
+
+    let user_path = app_path
+        .join(pers_inn.to_string())
+        .join(comp_inn.to_string())
+        .join(kpp.to_string());
+
+    match std::fs::create_dir_all(&user_path) {
+        Ok(_) => {},
+        Err(err) => {
+            log::error!(
+                "FAILED TO CREATE DIRECTORY: {}, tech_err = {}",
+                user_path.display(), err
+            );
+            return Err(Status::SystemErr);
+        }
+    }
+    
+    let db_path = user_path.join("database.db");
+
+    let path_str = db_path.to_string_lossy();
+
+    let mut db_url = format!("sqlite://{}", path_str);
+
+    if let Ok(env_db_url) = std::env::var("DATABASE_URL_TEMP") {
+        db_url = env_db_url;
+    }
+
+    let connect_options = SqliteConnectOptions::
+        from_str(&db_url)
+        .inspect_err(|err| {
+            log::error!(
+                "LOCAL_DB_URL_ERROR: {}, {}",
+                err, Status::SystemErr
+            )
+        }).map_err(|_| Status::SystemErr)?
+        .create_if_missing(true)
+        .journal_mode(SqliteJournalMode::Wal)
+        .foreign_keys(true);
+
+    let pool = match SqlitePoolOptions::new()
+        .max_connections(Config::global().sqlite_options.max_connections)
+        .acquire_timeout(Config::global().sqlite_options.duration)
+        .connect_with(connect_options)
+        .await {
+            Ok(p) => p,
+            Err(err) => {
+                log::error!(
+                    "INIT_POOL_ERROR: {}, {}",
+                    err, Status::SystemErr
+                );
+                return Err(Status::SystemErr);
+            }
+        };
+    
+    sqlx::migrate!("./migrations")
+        .run(&pool)
+        .await
+        .inspect_err(|err| {
+            log::error!(
+                "SQLX_MIGRATE_ERROR: {}, {}",
+                err, Status::SystemErr
+            )
+        }).map_err(|_| Status::SystemErr)?;
+
+    let session = Arc::new(ActiveSession {
+        session_user: user_data.user.clone(),
+        local_db: pool,
+        token: user_data.token.clone(),
+    });
+
+    let mut session_ref = state.session.lock().await;
+    *session_ref = Some(session);
+
+    Ok(Status::Success)
+
+}
 
 
 

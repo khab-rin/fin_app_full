@@ -4,37 +4,76 @@ version="0.1.0"
 edition="2021"
 
 [features]
-default = ["server"]
-server = ["dep:axum"]
+default = []
+server = [
+    "dep:tower-http",
+    "dep:tracing",
+    "dep:tracing-appender",
+    "dep:tracing-subscriber"
+]
+
+client = [
+    "dep:dotenvy",
+    "dep:keyring",
+    "dep:tauri",
+    "dep:tauri-plugin-dialog",
+    "dep:tauri-plugin-shell",
+    "dep:tauri-plugin-log",
+    "dep:tauri-plugin-fs"
+]
 
 [dependencies]
-tokio = { workspace = true, features = ["sync"] }
+axum = { workspace = true, default-features = false }
 
-serde = { workspace = true }
-serde_json = { workspace = true }
-serde_bytes = { workspace = true }
+blake3 = { workspace = true }
+
+chrono = { workspace = true }
+
+dotenvy = { workspace = true, optional = true }
+
+encoding_rs = { workspace = true }
+
+keyring = { workspace = true, optional = true }
+
+log = { workspace = true}
+
+machine-uid = { workspace = true }
 
 quick-xml = { workspace = true }
 
-chrono = { workspace = true }
-uuid = { workspace = true }
 regex = { workspace = true }
 
 reqwest = { workspace = true, features = ["json", "rustls", "query"] }
-tower-http = { workspace = true, features = ["trace"] }
 reqwest-middleware = { workspace = true, features = ["json", "query"]  }
 reqwest-retry = { workspace = true }
 
-sqlx = { workspace = true, default-features = false, features = ["macros", "chrono", "rust_decimal", "json", "uuid", "sqlite", "postgres"] }
 rust_decimal = { workspace = true, features = ["db-postgres"] }
 
-axum = { workspace = true, optional = true, default-features = false }
+serde = { workspace = true }
+serde_bytes = { workspace = true }
+serde_json = { workspace = true }
 
-tracing = { workspace = true }
-tracing-subscriber = { workspace = true }
-tracing-appender = { workspace = true }
-
-ts-rs = { workspace = true }
+sqlx = { workspace = true, default-features = false, features = ["macros", "chrono", "rust_decimal", "json", "uuid", "sqlite", "postgres"] }
 
 strum = { workspace = true }
 strum_macros = { workspace = true }
+
+tauri = { workspace = true, features = [], optional = true }
+tauri-plugin-dialog = { workspace = true, optional = true }
+tauri-plugin-shell = { workspace = true, optional = true }
+tauri-plugin-log = { workspace = true, optional = true }
+tauri-plugin-fs = { workspace = true, optional = true}
+
+tokio = { workspace = true, features = ["sync"] }
+
+toml = { workspace = true }
+
+tower-http = { workspace = true, optional = true, features = ["trace"] }
+
+tracing = { workspace = true, optional = true }
+tracing-appender = { workspace = true, optional = true }
+tracing-subscriber = { workspace = true, optional = true }
+
+ts-rs = { workspace = true }
+
+uuid = { workspace = true }

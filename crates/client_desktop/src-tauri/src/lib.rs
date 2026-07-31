@@ -1,19 +1,13 @@
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
-pub mod sql_queries;
-pub mod service;
-pub mod parsers;
-pub mod state;
 pub mod commands;
-pub mod back_api;
 
 use tauri_plugin_log::{Target, TargetKind};
 use tauri::Manager;
 
-use shared_lib::service::auth_service::client_state::TempInfo;
+use shared_lib::service::auth_service::client_state::*;
 
-use crate::state::ClientState;
 
-pub async fn run_lib() {
+pub fn run_lib() {
 
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_log::Builder::new()
@@ -61,7 +55,7 @@ pub async fn run_lib() {
         .expect("error while building tauri application");
         
         let state = ClientState {
-            config: state::Config::global(),
+            config: Config::global(),
             app_handle: app.handle().clone(),
             session: tokio::sync::Mutex::new(None),
             temp_info: tokio::sync::Mutex::new(TempInfo {

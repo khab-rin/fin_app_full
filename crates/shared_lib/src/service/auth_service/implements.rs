@@ -3,7 +3,6 @@ use serde::{Deserialize, Serialize};
 use crate::primitives::frozen::text::{BoxUuid, CompInn, Email, FirstName, Kpp, MidName, Password, PersInn, Phone, Snils, SurName};
 use crate::service::auth_service::client_state::SessionUser;
 
-
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub struct SessionUserToken {
     pub user: SessionUser,

@@ -1,7 +1,8 @@
-use shared_lib::{Status, primitives::composite::implements::RasBicAcc};
-use crate::state::ClientState;
+
+use shared_lib::{Status, ClientState};
+use shared_lib::primitives::composite::implements::RasBicAcc;
 use shared_lib::primitives::svelte_validate::SvelteValidator;
-use crate::parsers::bank_statement::statment_parser::parse_statement;
+use shared_lib::client::bank_statement::statment_parser::parse_statement;
 
 
 #[tauri::command]

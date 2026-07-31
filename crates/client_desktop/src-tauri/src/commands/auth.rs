@@ -1,18 +1,17 @@
-use shared_lib::Status;
+use shared_lib::{Status, ClientState};
 use shared_lib::service::auth_service::implements::{
     AuthInfo, AuthStep, PasswordDataClientShort, RegFilesPathData, RegInitData
 };
 use shared_lib::primitives::frozen::text_base::String1_50;
 use shared_lib::primitives::frozen::text::BoxUuid;
 
-use crate::state::ClientState;
-use crate::service::auth_service::helper::get_device_id;
-use crate::service::auth_service::restore_by_nick::restore_session_by_nick;
-use crate::service::auth_service::restore_by_password::restore_by_password;
-use crate::service::auth_service::nick_data::get_nick_names;
-use crate::service::auth_service::register_step1::register_step1;
-use crate::service::auth_service::register_step2::register_step2;
-use crate::service::auth_service::make_session_by_tell_call::make_session_by_tel_call;
+use shared_lib::client::auth_service::helper::get_device_id;
+use shared_lib::client::auth_service::restore_by_nick::restore_session_by_nick;
+use shared_lib::client::auth_service::restore_by_password::restore_by_password;
+use shared_lib::client::auth_service::nick_data::get_nick_names;
+use shared_lib::client::auth_service::register_step1::register_step1;
+use shared_lib::client::auth_service::register_step2::register_step2;
+use shared_lib::client::auth_service::make_session_by_tell_call::make_session_by_tel_call;
 
 #[tauri::command]
 pub fn cmd_get_device_id() -> Result<BoxUuid, Status> {

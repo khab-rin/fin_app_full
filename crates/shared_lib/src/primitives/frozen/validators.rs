@@ -184,8 +184,6 @@ pub(crate) fn init_date_time_from_str(val: &str) -> Result<chrono::DateTime<chro
         }
     }
 
-    tracing::error!("=== КРИТИЧЕСКАЯ ОШИБКА: Ни один формат не подошел для даты '{}' (очищенная: '{}') ===", s, clean_string);
-    
     Err(Status::ValidDateTime)
 }
 

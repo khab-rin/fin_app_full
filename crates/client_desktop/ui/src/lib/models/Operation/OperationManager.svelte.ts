@@ -83,4 +83,4 @@ class OperationManager {
 
 }
 
-export const operationStep = new OperationManager;
+export const operStep = new OperationManager;
