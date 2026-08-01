@@ -19,7 +19,7 @@ use shared_lib::service::crypto_service::implements::{
 use shared_lib::service::api_routes::implements::CryptoApiRoutes;
 use shared_lib::sql_models::user::implements::UserSetData;
 use shared_lib::service::auth_service::implements::SessionUserToken;
-use shared_lib::service::auth_service::client_state::SessionUser;
+use shared_lib::service::auth_service::general::SessionUser;
 
 
 use crate::config::BackApiState;

@@ -1,7 +1,7 @@
 [workspace]
 members = [
     "crates/back_api",
-    "crates/client_desktop/src-tauri", 
+    "crates/mobile_d/src-tauri", 
     "crates/crypto_service",
     "crates/shared_lib"]
 resolver = "2"

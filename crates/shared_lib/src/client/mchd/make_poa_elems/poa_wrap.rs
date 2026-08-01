@@ -1,7 +1,7 @@
 use crate::Status;
 use crate::primitives::frozen::text::{BoxUuid, Date};
 use crate::primitives::frozen::text_base::Digits7_7;
-use crate::service::auth_service::client_state::ActiveSession;
+use crate::service::auth_service::general::ActiveSession;
 use crate::service::mchd::service::{NewMchdData, MchdType};
 use crate::static_data::mchd_powers::document_propertys::{MCHD_KND};
 use crate::service::mchd::implements::{

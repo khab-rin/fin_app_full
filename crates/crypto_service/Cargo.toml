@@ -8,7 +8,7 @@ name = "crypto_service_bin"
 path = "src/main.rs"
 
 [dependencies]
-shared_lib = { workspace = true }
+shared_lib = { workspace = true, features = ['server'] }
 
 axum = { workspace = true }
 

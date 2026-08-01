@@ -1,7 +1,47 @@
 use std::time::Duration;
 
-use serde::Deserializer;
+
+use serde::{Serialize, Deserialize, Deserializer};
 use reqwest_middleware::ClientWithMiddleware;
+
+use crate::primitives::frozen::text::BoxUuid;
+use crate::sql_models::user::implements::User;
+use crate::sql_models::person::implements::Person;
+use crate::sql_models::company::implements::Company;
+
+
+#[derive(Serialize, Deserialize, Clone, Debug, ts_rs::TS)]
+pub struct SessionUser {
+    pub user: User,
+    pub person: Person,
+    pub company: Company
+}
+
+#[derive(Debug)]
+pub struct SessionUserDto {
+    pub user: serde_json::Value,
+    pub person: serde_json::Value,
+    pub company: serde_json::Value
+}
+
+#[derive(Debug, Clone)]
+pub struct ActiveSession {
+    pub session_user: SessionUser,
+    pub local_db: sqlx::SqlitePool,
+    pub token: BoxUuid
+}
+
+
+impl std::convert::TryFrom<SessionUserDto> for SessionUser {
+    type Error = serde_json::Error;
+    fn try_from(dto: SessionUserDto) -> Result<Self, Self::Error> {
+        Ok(Self { 
+            user: serde_json::from_value(dto.user)?,
+            person: serde_json::from_value(dto.person)?,
+            company: serde_json::from_value(dto.company)?,
+        })
+    }
+}
 
 
 pub fn make_client(

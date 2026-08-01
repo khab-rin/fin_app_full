@@ -1,6 +1,6 @@
 use crate::Status;
 use crate::primitives::frozen::text_base::String1_255;
-use crate::service::auth_service::client_state::ActiveSession;
+use crate::service::auth_service::general::ActiveSession;
 use crate::service::mchd::service::{MchdInfo, MchdStep, NewMchdData};
 use crate::service::mchd::poa::PoaMchd;
 

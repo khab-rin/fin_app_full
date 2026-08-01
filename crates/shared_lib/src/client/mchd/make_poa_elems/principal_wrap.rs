@@ -2,7 +2,7 @@ use crate::Status;
 use crate::primitives::frozen::text::{FirstName, MidName, Ogrn, Region, Snils, SurName};
 use crate::primitives::frozen::text_base::String1_255;
 use crate::service::mchd::service::{MchdType, NewMchdData};
-use crate::service::auth_service::client_state::ActiveSession;
+use crate::service::auth_service::general::ActiveSession;
 use crate::primitives::composite::implements::Fio;
 use crate::service::mchd::implements::{
     AddressChoice, 

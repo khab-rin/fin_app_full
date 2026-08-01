@@ -1,0 +1,206 @@
+
+/* NAVI BUTTONS */
+
+.navi-button-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+    padding: 1rem;
+    margin-top: 2rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.navi-button-group {
+    flex: 0 0 calc(50% - 0.5rem); 
+    max-width: 220px;
+}
+
+
+/* MEDIUM BUTTON */
+
+.medium-button-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1rem;
+    margin-top: 2rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.medium-button-group {
+    flex: 1 1 180px; 
+    max-width: 220px;
+}
+
+.medium-button {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background-color: #fef08a; 
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.medium-button:hover:not([hidden]) {
+    background-color: #fde047;
+    border-color: #9ca3af;
+    transform: translateY(-1px);
+}
+
+.medium-button:active:not([hidden]) {
+    transform: translateY(0);
+    background-color: #eab308;
+}
+
+.medium-button-span {
+    display: block;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.medium-button[hidden] {
+    visibility: hidden !important;
+    pointer-events: none;
+}
+
+
+
+/* MAIN BUTTON */
+
+.main-button-group {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.main-button {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+    min-width: 250px;
+}
+
+.main-button:hover:not(:disabled) {
+    background-color: #2563eb;
+}
+
+.main-button:disabled {
+    background-color: #d1d5db;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.main-batton-span {
+    display: block;
+    text-align: center;
+}
+
+
+
+
+/* ==========================================================================
+   WIDE BUTTON (Универсальная широкая кнопка)
+   ========================================================================== */
+
+.wide-button-section {
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 1rem;
+    width: 100%;
+    max-width: 400;
+    margin: 0 auto;
+}
+
+.wide-button-group {
+    width: 100%;
+    border-top: 1px solid #e5e7eb;
+}
+
+.wide-button {
+  /* Позиционирование и размеры */
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Элементы внутри (например, текст и стрелочка) расходятся по краям */
+  width: 100%;
+  box-sizing: border-box; /* Чтобы padding не раздувал кнопку наружу */
+  
+  /* Отступы и скругления */
+  padding: 14px 20px;
+  border-radius: 12px;
+  
+  /* Шрифты */
+  font-family: inherit; /* Наследует шрифт проекта */
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
+  text-align: left;
+  
+  /* Цвета по умолчанию (светлая нейтральная тема) */
+  color: #212529;
+  background-color: #3e8b4280;
+  border: 1px solid #dee2e6;
+  
+  /* Плавные анимации */
+  cursor: pointer;
+  user-select: none;
+  transition: 
+    background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.1s ease,
+    box-shadow 0.2s ease;
+}
+
+/* Состояние: Наведение мыши (Hover) */
+.wide-button:hover:not(:disabled) {
+  background-color: #05f539;
+  border-color: #ced4da;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* Состояние: Активное нажатие (Active) */
+.wide-button:active:not(:disabled) {
+  background-color: #f1f3f5;
+  transform: scale(0.995); /* Легкий эффект вдавливания */
+}
+
+/* Состояние: Фокус со стрелочек клавиатуры (Доступность) */
+.wide-button:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Состояние: Заблокирована (Disabled) */
+.wide-button:disabled {
+  opacity: 0.55;
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+  color: #868e96;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Внутренний спан для текста */
+.wide-button-span {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Если ник будет слишком длинным, он аккуратно обрежется троеточием */
+}

@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::primitives::frozen::text::{BoxUuid, CompInn, Email, FirstName, Kpp, MidName, Password, PersInn, Phone, Snils, SurName};
-use crate::service::auth_service::client_state::SessionUser;
+use crate::service::auth_service::general::SessionUser;
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub struct SessionUserToken {
@@ -211,24 +211,5 @@ pub struct RegInitData {
 pub struct RegFilesPathData {
     pub json_path: String,  
     pub sign_path: String, 
-}
-
-
-#[derive(Serialize, Deserialize, ts_rs::TS)]
-#[serde(rename_all = "camelCase")]
-#[ts(rename_all = "camelCase")]
-pub enum AuthTs {
-    AuthInfo(AuthInfo),
-    AuthStep(AuthStep),
-
-    ExternalDeviceData(ExternalDeviceData),
-
-    NickData(crate::service::auth_service::client_state::NickData),
-
-    RegFilesPathData(RegFilesPathData),
-    RegInitData(RegInitData),
-    PasswordDataClientShort(PasswordDataClientShort),
-    
-    
 }
 

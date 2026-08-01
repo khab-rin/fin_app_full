@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use shared_lib::Status;
 use shared_lib::primitives::frozen::text::BoxUuid;
-use shared_lib::service::auth_service::client_state::{SessionUserDto, SessionUser};
+use shared_lib::service::auth_service::general::{SessionUserDto, SessionUser};
 
 use crate::config::BackApiState;
 

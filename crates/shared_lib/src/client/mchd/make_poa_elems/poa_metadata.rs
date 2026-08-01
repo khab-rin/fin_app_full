@@ -1,4 +1,4 @@
-use crate::service::auth_service::client_state::ActiveSession;
+use crate::service::auth_service::general::ActiveSession;
 
 use crate::service::mchd::implements::{
     PoaMetadata,

@@ -1,11 +1,5 @@
 use serde::{Serialize, Deserialize};
 
-use axum::{
-    http::StatusCode,
-    response::{IntoResponse, Response},
-    Json,
-};
-
 #[derive(Serialize, Deserialize)]
 #[repr(u16)]
 #[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash, ts_rs::TS)]
@@ -149,17 +143,16 @@ map_errors! {
 }
 
 
-impl IntoResponse for Status {
-    fn into_response(self) -> Response {
+#[cfg(feature = "server")]
+impl axum::response::IntoResponse for Status {
+    fn into_response(self) -> axum::response::Response {
         let code = self as u16;
 
         let status_code = match code {
-
-            100..250 => StatusCode::BAD_REQUEST,
-
-            _ => StatusCode::INTERNAL_SERVER_ERROR,
+            100..250 => axum::http::StatusCode::BAD_REQUEST,
+            _ => axum::http::StatusCode::INTERNAL_SERVER_ERROR,
         };
-        (status_code, Json(self)).into_response()
+        (status_code, axum::Json(self)).into_response()
     }
 }
 
