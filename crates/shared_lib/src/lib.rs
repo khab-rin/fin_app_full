@@ -24,7 +24,7 @@ use super::*;
     #[test]
     fn generate_types_for_svelte() {
 
-        let output_dir = "../client_desktop/ui/src/lib/models/rustModels";
+        let output_dir = "../lite_mobile/ui/src/lib/models/rustModels";
 
         primitives::svelte_validate::SvelteValidator::export_all_to(output_dir)
             .expect("Не удалось экспортировать SvelteValidator");

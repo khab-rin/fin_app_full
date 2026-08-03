@@ -13,7 +13,10 @@ pub enum OperationStep {
         operations: Vec<OperationRaw>
     },
 
+    StatementParser { text: OperationInfo },
+
     Success {
+        text: OperationInfo,
         operations: Vec<Operation>
     },
 
@@ -41,8 +44,11 @@ pub enum OperationInfo {
     #[serde(rename = "Страница загружается, подождите пожалуйста. В случае зависания попробуйте обновить или перезагрузить приложение")]
     LoadingInfo,
 
-    #[serde(rename = "При необходимости отредактируйте проводки")]
+    #[serde(rename = "При необходимости отредактируйте или удалите проводки")]
     SuccessRaw,
+
+    #[serde(rename = "Выберите расчетный счет и загрузите банковскую выписку")]
+    StatementParser,
 
     #[serde(rename = "Указанный банковский счет и банковский счет выписки не совпадают")]
     WrongBankAcc,

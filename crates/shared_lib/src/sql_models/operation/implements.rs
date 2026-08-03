@@ -41,7 +41,10 @@ pub struct OperationRaw {
 
     pub is_sync: Option<bool>,
 
-    pub comment: TextInfo
+    pub comment: TextInfo,
+
+    pub is_duplicate: bool
+
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS)]

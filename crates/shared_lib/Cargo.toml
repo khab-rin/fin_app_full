@@ -34,6 +34,8 @@ dotenvy = { workspace = true, optional = true }
 
 encoding_rs = { workspace = true }
 
+futures = { workspace = true }
+
 keyring = { workspace = true, optional = true }
 
 log = { workspace = true}
