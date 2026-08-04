@@ -144,10 +144,12 @@ macro_rules! frozen_primitives {
             fn decode(
                 value: <sqlx::Postgres as sqlx::Database>::ValueRef<'r>,
             ) -> Result<Self, Box<dyn std::error::Error + Send + Sync>> {
-                let raw_str = <String as sqlx::Decode<'r, sqlx::Postgres>>::decode(value)?;
+                // 1. Считываем данные из БД в их РОДНОМ типе ($data_type)
+                let raw_val = <$data_type as sqlx::Decode<'r, sqlx::Postgres>>::decode(value)?;
                 
-                let validated = Self::new(&raw_str)
-                    .map_err(|e| format!("Failed to decode {}: {}", stringify!($name), e))?;
+                // 2. Валидируем родное значение через new()
+                let validated = Self::new(&raw_val.to_string())
+                    .map_err(|e| format!("Failed to decode {}: {:?}", stringify!($name), e))?;
                 
                 Ok(validated)
             }

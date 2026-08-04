@@ -50,8 +50,11 @@ pub fn run_lib() {
             commands::mchd::cmd_lend_mchd,
             commands::mchd::cmd_make_xml_doc_files,
             commands::mchd::cmd_show_powers,
-            commands::other::cmd_process_bank_statement,
+            commands::operation::cmd_load_bank_statement,
             commands::other::cmd_validate_field,
+            commands::sql_queries::cmd_add_comp_bank_acc,
+            commands::sql_queries::cmd_get_comp_bank_accs,
+            
         ]).build(tauri::generate_context!())
         .expect("error while building tauri application");
         

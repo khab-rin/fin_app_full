@@ -1,4 +1,4 @@
 SELECT
     metadata
 FROM companys
-WHERE comp_id = $1
+WHERE comp_inn = $1 AND kpp = $2

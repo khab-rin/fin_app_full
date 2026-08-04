@@ -1,9 +1,12 @@
 use crate::{Status, ClientState};
 use crate::primitives::composite::implements::RasBicAcc;
 use crate::parsers::dadata::implements::CtrprtyMetadata;
+use crate::primitives::frozen::text::{CompInn, Kpp};
 
 pub async fn get_bank_accs_by_comp_id(
     state: &ClientState,
+    comp_inn: &Option<CompInn>,
+    kpp: &Option<Kpp> 
 ) -> Result<Vec<RasBicAcc>, Status> {
 
     let session = match state.get_session().await {
@@ -16,11 +19,20 @@ pub async fn get_bank_accs_by_comp_id(
         }
     };
 
-    let comp_id = &session.session_user.company.comp_id;
+    let comp_inn = match comp_inn {
+        Some(c) => c,
+        None => &session.session_user.company.comp_inn
+    };
+
+    let kpp = match kpp {
+        Some(k) => k,
+        None => &session.session_user.company.kpp
+    };
 
     let metadata_str_option = match sqlx::query_file_scalar!(
-        "src/client/sql_queries/companys/get/bank_acc_by_comp_id.sql",
-        comp_id
+        "src/client/sql_queries/companys/get/bank_acc_by_comp_inn_kpp.sql",
+        comp_inn,
+        kpp
     ).fetch_optional(&session.local_db).await {
         Ok(o) => o,
         Err(err) => {

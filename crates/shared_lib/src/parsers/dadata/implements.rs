@@ -62,16 +62,16 @@ pub struct CtrprtyMetadata {
 
     pub address: Option<AdrWrap>,
 
-    #[serde(skip_deserializing)]
+    #[serde(default)]
     pub e_mail: Option<String3_129>,
 
-    #[serde(skip_deserializing)]
+    #[serde(default)]
     pub phone: Option<Phone>,
 
-    #[serde(skip_deserializing)]
+    #[serde(default)]
     pub bank_acc: Vec<RasBicAcc>,
 
-    #[serde(skip_deserializing)]
+    #[serde(default)]
     pub ogrn_date_date: Option<Date>
 }
 

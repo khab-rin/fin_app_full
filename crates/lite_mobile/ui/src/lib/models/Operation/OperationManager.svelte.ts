@@ -2,18 +2,21 @@ import {OperationType} from '$lib/models/Operation/OperationValues';
 import type {OperationStep} from '$lib/models/rustModels/OperationStep';
 import type { Operation } from "$lib/models/rustModels/Operation";
 
+import AccInput from '$lib/service/operation/AccInput.svelte';
 import AccessDenied from '$lib/service/operation/AccessDenied.svelte';
 import Loading from '$lib/service/operation/Loading.svelte';
+import ManualInput from '$lib/service/operation/ManualInput.svelte';
+import StatementParser from '$lib/service/operation/StatementParser.svelte';
 import SuccessRaw from '$lib/service/operation/SuccessRaw.svelte';
 import Success from '$lib/service/operation/Success.svelte';
-import StatementParser from '$lib/service/operation/StatementParser.svelte'
+
 import TryLater from '$lib/service/operation/TryLater.svelte';
 
 
 
 class OperationManager {
     step = $state<OperationStep>({
-        Loading: {text: "Выберите способ создания проводок"}
+        Loading: {text: "Выберите функционал работы с проводками"}
     });
     private steps: OperationStep[] = $state([]);
     private index = $state(0);
@@ -66,16 +69,20 @@ class OperationManager {
 
     get getPage() {
         const step = this.step;
-        if (OperationType.AccessDenied in step) {
+        if (OperationType.AccInput in step) {
+            return AccInput
+        } else if (OperationType.AccessDenied in step) {
             return AccessDenied
         } else if (OperationType.Loading in step) {
             return Loading
+        } else if (OperationType.ManualInput in step) {
+            return ManualInput
+        } else if (OperationType.StatementParser in step) {
+            return StatementParser
         } else if (OperationType.SuccessRaw in step) {
             return SuccessRaw
         } else if (OperationType.Success in step) {
             return Success
-        } else if (OperationType.StatementParser in step) {
-            return StatementParser
         } else if (OperationType.TryLater in step) {
             return TryLater
         } else {

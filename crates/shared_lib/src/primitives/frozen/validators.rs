@@ -56,7 +56,7 @@ pub fn init_pers_inn_from_str(inn: &str) -> Result<String, Status> {
     let check_digit12 = (sum12 % 11) % 10;
 
     if digits[10] == check_digit11 && digits[11] == check_digit12 {
-        Ok(inn.to_string().into())
+        Ok(inn.to_string())
     } else {
         Err(Status::PersInnValid)
     }
@@ -82,7 +82,7 @@ pub fn init_comp_inn_from_str(inn: &str) -> Result<String, Status> {
     let check_digit10 = (sum10 % 11) % 10;
 
     if digits[9] == check_digit10 {
-        Ok(inn.to_string().into())
+        Ok(inn.to_string())
     } else {
         Err(Status::CompInnValid)
     }
@@ -94,7 +94,7 @@ pub(crate) fn init_kpp_from_str(kpp: &str) -> Result<String, Status> {
         return Ok("".into());
     }
     get_is_kpp_reg().is_match(&kpp)
-        .then(|| kpp.into())
+        .then_some(kpp)
         .ok_or(Status::ValidKpp)
 }
 
@@ -129,7 +129,7 @@ pub(crate) fn init_ogrn_from_str(ogrn: &str) -> Result<String, Status> {
     let expected = ((head % divider) % 10) as u8;
 
     if expected == last { 
-        Ok(cleaned_ogrn.into()) 
+        Ok(cleaned_ogrn) 
     } else { 
         Err(Status::ValidOgrn) 
     }
@@ -214,7 +214,7 @@ pub(crate) fn init_text_info_from_str(val: &str) -> Result<String, Status> {
 pub(crate) fn init_branch_type_from_str(val: &str) -> Result<String, Status> {
     let val = val.trim().to_uppercase();
     match val.as_str() {
-        "MAIN" | "BRANCH" => Ok(val.into()),
+        "MAIN" | "BRANCH" => Ok(val),
         _ => Err(Status::ValidBranchType)
     }
 }
@@ -287,11 +287,13 @@ pub(crate) fn init_phone_from_str(val: &str) -> Result<String, Status> {
     if digits.is_empty() {
         digits.push('8');
     }
-    Ok(digits.into())
+    Ok(digits)
 }
 
-pub(crate) fn init_uuid_from_str(val: &str) -> Result<uuid::Uuid, Status> {
-    let trimmed = val.trim();
+pub(crate) fn init_boxuuid<T: ToString>(val: T) -> Result<uuid::Uuid, Status> 
+{
+    let s = val.to_string();
+    let trimmed = s.trim();
     if trimmed.is_empty() {
         Ok(uuid::Uuid::new_v4())
     } else {
@@ -355,27 +357,9 @@ pub(crate) fn init_snils_from_str(val: &str) -> Result<String, Status> {
             return Err(Status::ValidSnils);
         }
     }
-    Ok(digits.into())
+    Ok(digits)
 }
 
-
-pub(crate) fn init_part_status(val: &str) -> Result<String, Status> {
-    let s = val.trim();
-    match s {
-        "101" | "102" | "299" | "301" | "303" | "399" => Ok(s.into()),
-        _ => Err(Status::ValidMchdPartStatus)
-    }
-}
-
-pub(crate) fn init_flag_str(val: &str) -> Result<String, Status> {
-    let s = val.trim();
-    let chars:Vec<char> = s.chars().collect();
-    if chars.len() != 8 { return Err(Status::Unknown);}
-    for ch in chars {
-        if ch != '1' && ch != '0' { return Err(Status::Unknown)}
-    }
-    Ok(s.into())
-}
 
 pub(crate) fn init_email_from_str(val: &str) -> Result<String, Status> {
     let n = val.chars().count();
@@ -395,14 +379,13 @@ pub(crate) fn init_email_from_str(val: &str) -> Result<String, Status> {
         return Err(Status::ValidEmail);
     }
 
-    Ok(val.to_lowercase().into())
+    Ok(val.to_lowercase())
 }
 
 pub(crate) fn init_password_from_str(password: &str) -> Result<String, Status> {
     let password = password.trim();
     let len = password.chars().count();
 
-    // Проверяем диапазон от 8 до 20 символов включительно
     (8..=100).contains(&len)
         .then(|| password.into())
         .ok_or(Status::ValidPassword)

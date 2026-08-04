@@ -5,8 +5,7 @@ use axum::{extract::State, Json};
 use shared_lib::Status;
 use shared_lib::primitives::frozen::text::PersInn;
 use shared_lib::sql_models::person::implements::Person;
-use shared_lib::sql_models::company::implements::Company;
-use shared_lib::sql_models::operation::parser::InnKppMapAcc;
+use shared_lib::sql_models::company::implements::{Company, CompCrateData};
 
 use crate::config::BackApiState;
 use crate::db::sql_queries::persons::get::person_by_inn::get_person_by_inn;
@@ -28,10 +27,10 @@ pub(crate) async fn get_person_by_inn_handler(
 
 pub async fn sql_new_companys_handler(
     State(state): State<Arc<BackApiState>>,
-    Json(mut payload): Json<InnKppMapAcc>
+    Json(mut payload): Json<Vec<CompCrateData>>
 ) -> Result<Json<Vec<Company>>, Status> {
  
-    let res = update_companys(&state, &mut payload).await?;
+    let res = update_companys(&state, payload).await?;
 
     Ok(Json(res))
 

@@ -1,7 +1,10 @@
+use std::collections::{HashSet, HashMap};
+
 use uuid::Uuid;
 use serde::{Serialize, Deserialize};
 
 use crate::primitives::frozen::text::{BoxUuid, CompStatus, CompType, DateTime, CompInn, Kpp};
+use crate::primitives::composite::implements::RasBicAcc;
 use crate::parsers::dadata::implements::CtrprtyMetadata;
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -51,3 +54,12 @@ pub struct CompanyCurt {
     pub comp_inn: CompInn,
     pub kpp: Kpp
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct CompCrateData {
+    pub comp_inn: CompInn,
+    pub kpp: Kpp,
+    pub bank_acc: HashSet<RasBicAcc>
+}
+
+pub type InnKppMapAcc = HashMap<(CompInn, Kpp), HashSet<RasBicAcc>>;

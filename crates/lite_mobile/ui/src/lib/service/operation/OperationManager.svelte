@@ -5,7 +5,7 @@
 	import { currAuthStep } from '$lib/models/Auth/AuthStep.svelte';
 
     function closeOper() {
-        const next_step: OperationStep = {Loading: {text: "Выберите способ создания проводок"}};
+        const next_step: OperationStep = {Loading: {text: "Выберите функционал работы с проводками"}};
         operStep.add(next_step);
         pageManager.Page = null;
     }

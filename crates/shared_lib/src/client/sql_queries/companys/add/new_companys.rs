@@ -1,14 +1,13 @@
 use crate::{Status, ClientState};
-use crate::sql_models::company::implements::Company;
-use crate::sql_models::operation::parser::InnKppMapAcc;
+use crate::sql_models::company::implements::{Company, CompCrateData};
 use crate::service::api_routes::implements::ApiRoutes;
 
 use crate::client::back_api::post_query::post_query_back_api;
 
 pub async fn add_companys_by_inn_cpp_acc(
     state: &ClientState,
-    data: &InnKppMapAcc
-) -> Result<(), Status> {
+    data: &Vec<CompCrateData>
+) -> Result<Vec<Company>, Status> {
 
     let session = match state.get_session().await {
         Ok(s) => s,
@@ -99,5 +98,5 @@ pub async fn add_companys_by_inn_cpp_acc(
         }
     }
 
-    Ok(())
+    Ok(companys)
 }

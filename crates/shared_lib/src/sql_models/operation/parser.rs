@@ -69,5 +69,3 @@ pub struct ParsedBlock {
     pub comment_data: BlockCommentData
 }
 
-
-pub type InnKppMapAcc = HashMap<(CompInn, Kpp), HashSet<RasBicAcc>>;

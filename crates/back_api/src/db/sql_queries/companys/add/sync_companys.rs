@@ -2,8 +2,8 @@ use futures::stream::{self, StreamExt};
 
 use shared_lib::Status;
 use shared_lib::primitives::frozen::text::{BoxUuid, CompInn, Kpp, CompType, CompStatus, DateTime};
-use shared_lib::sql_models::company::implements::{Company, CompanyDto};
-use shared_lib::sql_models::operation::parser::InnKppMapAcc;
+use shared_lib::sql_models::company::implements::{Company, CompanyDto, InnKppMapAcc, CompCrateData};
+
 
 use crate::config::BackApiState;
 use crate::db::sql_queries::companys::get::companys_by_inn_kpp::get_companys_by_inn_kpp;
@@ -16,11 +16,17 @@ use crate::db::sql_queries::companys::helper::{
 
 pub(crate) async fn update_companys(
     state: &BackApiState, 
-    data: &mut InnKppMapAcc
+    data: Vec<CompCrateData>
 ) -> Result<Vec<Company>, Status> {
 
-    let comp_inn_data: Vec<String> = data.keys().map(|x| x.0.to_string()).collect();
-    let kpp_data: Vec<String> = data.keys().map(|x| x.1.to_string()).collect();
+    let mut inn_kpp_acc_map: InnKppMapAcc = data
+        .into_iter()
+        .map(|x| ((x.comp_inn, x.kpp), x.bank_acc))
+        .collect();
+
+
+    let comp_inn_data: Vec<String> = inn_kpp_acc_map.keys().map(|x| x.0.to_string()).collect();
+    let kpp_data: Vec<String> = inn_kpp_acc_map.keys().map(|x| x.1.to_string()).collect();
 
     let mut prev_companys = match get_companys_by_inn_kpp(
             state,
@@ -36,13 +42,13 @@ pub(crate) async fn update_companys(
         }
     };
 
-    fresh_bank_acc(data, &mut prev_companys); 
+    fresh_bank_acc(&mut inn_kpp_acc_map, &mut prev_companys); 
 
     let mut new_companys: Vec< Company> = vec!();
 
     let mut tasks_vec = vec!();
 
-    for ((comp_inn, kpp), _) in data.iter() {
+    for ((comp_inn, kpp), _) in inn_kpp_acc_map.iter() {
         let comp_inn_clone = comp_inn.clone();
         let kpp_clone = kpp.clone();
         tasks_vec.push(async move {
@@ -65,12 +71,12 @@ pub(crate) async fn update_companys(
         }
     }
 
-    fresh_bank_acc(data, &mut new_companys); 
+    fresh_bank_acc(&mut inn_kpp_acc_map, &mut new_companys); 
 
     for comp in prev_companys {
         new_companys.push(comp);
     }
-        
+       
    
     let mut comp_id: Vec<uuid::Uuid> = vec!();
     let mut comp_inn: Vec<String> = vec!();
@@ -108,7 +114,7 @@ pub(crate) async fn update_companys(
             );
         })
         .map_err(|_| Status::SqlQueryWrongLogic)?;
-
+    
     
     dto_to_company_vec(companys_dto)
 }

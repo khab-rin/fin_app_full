@@ -2,11 +2,11 @@
     import {onMount} from 'svelte';
     import {invoke} from '@tauri-apps/api/core';
     import {open as OpenFileDialog} from '@tauri-apps/plugin-dialog';
+    import {FieldValidator} from '$lib/models/Auth/FieldValidator.svelte';
 
     import type {OperationStep} from '$lib/models/rustModels/OperationStep';
     import type {RasBicAcc} from '$lib/models/rustModels/RasBicAcc';
 	import { operStep } from '$lib/models/Operation/OperationManager.svelte';
-
 
     let path = $state('');
     let selectedBankAcc = $state<RasBicAcc | null>(null);
@@ -15,14 +15,21 @@
     let isPushedAccLoad = $state(false);
     let isPushFileLoad = $state(false);
     let isPushParseStatement = $state(false);
+    let isPushAddAcc = $state(false);
 
-    let dialogRef = $state<HTMLDialogElement | null>(null);
+    let bic = new FieldValidator('Bic', "");
+    let rasAcc = new FieldValidator('RasAcc', "");
+    let bankAccReady = $derived(
+        !bic.isValid || !rasAcc.isValid
+    );
 
     let parseStatementDisabled = $derived(
         isPushParseStatement ||
         path === '' ||
         selectedBankAcc === null
     );
+
+    let dialogRef = $state<HTMLDialogElement | null>(null);
 
     function openAccModal() {
         if (dialogRef) dialogRef.showModal();
@@ -73,17 +80,35 @@
         }
     }
 
-
-    onMount(async() => {
+    async function freshAccs() {
         try {
-            bankAccounts = await invoke<RasBicAcc[]>('get_own_bank_accs', {});
+            bankAccounts = await invoke<RasBicAcc[]>('cmd_get_comp_bank_accs', {});
 
         } catch (err) {
             const next_step: OperationStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
-            console.error("get_own_bank_accs FAILED, err = ", err);
+            console.error("cmd_get_own_bank_accs FAILED, err = ", err);
             operStep.add(next_step);
         }
-    });
+    };
+
+    async function addAcc() {
+        if (isPushAddAcc) return;
+        isPushAddAcc = true;
+        try {
+            let data = {
+                bic: bic.value,
+                rasAcc: rasAcc.value
+            };
+            bankAccounts = await invoke<RasBicAcc[]>('cmd_add_comp_bank_acc', data);
+            isPushAddAcc= false;
+
+        } catch (err) {
+            const next_step: OperationStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
+            console.error("cmd_add_comp_bank_acc FAILED, err = ", err);
+            isPushAddAcc= false;
+            operStep.add(next_step);
+        }
+    };
 
     async function parseStatement() {
         if (isPushParseStatement) return;
@@ -93,13 +118,13 @@
         isPushParseStatement = true;
         
         let data = {
-            RasBicAcc: selectedBankAcc,
+            rasBicAcc: selectedBankAcc,
             path: path
         };
 
 
         try {
-            const next_step: OperationStep = await invoke<OperationStep>("cmd_load_bank_statement", {data});
+            const next_step: OperationStep = await invoke<OperationStep>("cmd_load_bank_statement", data);
             isPushParseStatement = false;
             operStep.add(next_step);
         } catch(err) {
@@ -110,6 +135,10 @@
 
         }
     }
+
+    onMount(async() => {
+        freshAccs()
+    });
 
 
 </script>
@@ -154,10 +183,11 @@
         </span>
 
         <span class="wide-button-span">
-            {selectedBankAcc || "Выбрать аккаунт на устройстве"} >
+            {selectedBankAcc || "Выбрать счет для загрузки"} >
         </span>
     </button>
 </div>
+
 
 <dialog 
     bind:this={dialogRef} 
@@ -219,5 +249,58 @@
 
         Загрузить выписку
 
+    </button>
+</div>
+
+<section class='input-section'>
+    <div class='input-group'>
+        <label class='input-group-label' for='inputBic'>
+            Введите бик Вашего банка
+        </label>
+        <input
+            type='text'
+            id='inputBic'
+            bind:value={bic.value}
+            disabled={isPushAddAcc}
+            placeholder="9 цифр"
+            class='input-field'
+            class:input-error={!bic.isValid}
+        />
+        {#if !bic._isValid}
+            <span class="input-error-span">
+                Некорректный БИК
+            </span>
+        {/if}
+    </div>
+
+    <div class='input-group'>
+        <label class='input-group-label' for='inputRasAcc'>
+            Введите номер расчетного счета
+        </label>
+        <input
+            type='text'
+            id='inputRasAcc'
+            bind:value={rasAcc.value}
+            disabled={isPushAddAcc}
+            placeholder="20 цифр"
+            class='input-field'
+            class:input-error={!rasAcc.isValid}
+        />
+        {#if !rasAcc.isValid}
+            <span class="input-error-span">
+                Некорректный БИК
+            </span>
+        {/if}
+    </div>
+</section>
+
+<div class = 'main-button-group'>
+    <button
+        type='button'
+        class='main-button'
+        disabled={isPushAddAcc || bankAccReady}
+        onclick ={addAcc}
+    >
+        Добавить расчетный счет
     </button>
 </div>

@@ -6,8 +6,7 @@ use crate::{Status, ClientState};
 use crate::sql_models::operation::parser::{
     BlockFields,
     ParsedBlock, 
-    StatementHead,
-    InnKppMapAcc
+    StatementHead
 };
 use crate::sql_models::operation::service::{
     OperationInfo,
@@ -16,7 +15,7 @@ use crate::sql_models::operation::service::{
 use crate::sql_models::operation::implements::OperationRaw;
 use crate::primitives::composite::implements::RasBicAcc;
 use crate::service::mchd::home_mchd_power::HomeMchdPower;
-
+use crate::sql_models::company::implements::{InnKppMapAcc, CompCrateData};
 
 use crate::client::operation::helper::make_statement_block_map;
 use crate::client::operation::statement_parser::comment::parse_comment;
@@ -179,8 +178,14 @@ pub async fn parse_statement(
 
     }
 
+    let mut data: Vec<CompCrateData> = vec!();
 
-    match add_companys_by_inn_cpp_acc(state, &new_companys).await {
+    for ((comp_inn, kpp), bank_acc) in new_companys {
+        data.push(CompCrateData{comp_inn, kpp, bank_acc});
+    }
+
+
+    match add_companys_by_inn_cpp_acc(state, &data).await {
         Ok(_) => {},
         Err(err) => {
             log::error!(

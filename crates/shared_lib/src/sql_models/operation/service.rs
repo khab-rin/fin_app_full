@@ -4,16 +4,20 @@ use crate::sql_models::operation::implements::{OperationRaw, Operation};
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub enum OperationStep {
+    AccInput { text: OperationInfo },
+
     AccessDenied { text: OperationInfo },
 
     Loading { text: OperationInfo },
+
+    ManualInput{ text: OperationInfo },
+
+    StatementParser { text: OperationInfo },
 
     SuccessRaw {
         text: OperationInfo,
         operations: Vec<OperationRaw>
     },
-
-    StatementParser { text: OperationInfo },
 
     Success {
         text: OperationInfo,
@@ -26,23 +30,26 @@ pub enum OperationStep {
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub enum OperationInfo {
+    #[serde(rename = "Введите БИК банка и номер расчетного счета")]
+    AccInput,
+
     #[serde(rename = "У вас недостаточно прав для доступа к этому разделу")]
     AccessDenied,
 
     #[serde(rename = "Ошибка в работе серверной части приложения, попробуйте авторизоваться позже, либо сделайте запрос в техподдержку")]
     BackApiError,
-    
-    #[serde(rename = "Выберите банковский счет и загрузите файл выписки по данному выбранному счету")]
-    BankParser,
 
     #[serde(rename = "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение")]
     ClientApiSystemError,
 
-    #[serde(rename = "Выберите способ создания проводок")]
+    #[serde(rename = "Выберите функционал работы с проводками")]
     InitInfo,
 
     #[serde(rename = "Страница загружается, подождите пожалуйста. В случае зависания попробуйте обновить или перезагрузить приложение")]
     LoadingInfo,
+
+    #[serde(rename = "Введите данные для проводок вручную")]
+    ManualInput,
 
     #[serde(rename = "При необходимости отредактируйте или удалите проводки")]
     SuccessRaw,
