@@ -19,12 +19,6 @@ where
         route.get_path().trim_start_matches('/')
     );
 
-    log::info!("back_api_url = {:?}", back_api_url);
-
-    match serde_json::to_string(data) {
-        Ok(json) => log::info!("SERIALIZED DATA SUCCESSFULLY: {}", json),
-        Err(e) => log::error!("SERDE SERIALIZATION FAILED! Error: {:?}", e),
-    }
 
     let response = match client
         .post(&back_api_url)

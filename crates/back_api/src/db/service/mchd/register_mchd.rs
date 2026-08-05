@@ -89,6 +89,8 @@ pub(crate) async fn register_mchd(
         }
     };
 
+    tracing::info!(crypto_text = %check_result.text);
+
     if !check_result.is_signed {
         return Ok(MchdStep::WrongData { text: MchdInfo::WrongSignFile})
     }

@@ -24,6 +24,26 @@ pub(crate) async fn show_powers(
 
     let failed_result = MchdStep::TryLater { text: MchdInfo::BackApiError };
 
+    let mut storage = match get_mchd_storage() {
+        Ok(s) => s,
+        Err(err) => {
+            tracing::error!(
+                local_err = ?err,
+                "FUN show_powers FAILED BY FUN get_mchd_storage"
+            );
+            return Ok(failed_result);
+        }
+    };
+
+    if storage.managers.contains(user_id) {
+        let result = MchdStep::ShowPowers { 
+            fns: HomeMchdPower::get_all_tax_powers().into_iter().collect(), 
+            btb: HomeMchdPower::get_all_btb_powers().into_iter().collect(), 
+            home: HomeMchdPower::get_all_home_powers().into_iter().collect(), 
+            text: MchdInfo::Nothing };
+        return Ok(result);
+    }
+
     let mut fns:HashSet<HomeMchdPower> =  HashSet::new();
     let mut btb:HashSet<HomeMchdPower> =  HashSet::new();
     let mut home_powers:HashSet<HomeMchdPower> =  HashSet::new();
@@ -47,17 +67,6 @@ pub(crate) async fn show_powers(
             home: HashSet::new(), 
             text: MchdInfo::ShowPowers 
         })
-    };
-
-    let mut storage = match get_mchd_storage() {
-        Ok(s) => s,
-        Err(err) => {
-            tracing::error!(
-                local_err = ?err,
-                "FUN show_powers FAILED BY FUN get_mchd_storage"
-            );
-            return Ok(failed_result);
-        }
     };
 
     let mut del_guids: Vec<BoxUuid> = vec!();

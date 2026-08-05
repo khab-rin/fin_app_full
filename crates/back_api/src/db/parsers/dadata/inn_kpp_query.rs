@@ -10,6 +10,7 @@ pub(crate) async fn parse_company_by_inn_kpp(
     comp_inn: &CompInn,
     kpp: &Kpp
 ) -> Result<Company, Status> {
+
     let client = state.config.get_inst_client();
 
     let header = state.config.get_dadata_header();
@@ -60,7 +61,7 @@ pub(crate) async fn parse_company_by_inn_kpp(
         None => {
             tracing::error!(
                 local_err = ?Status::DadataResponseError,
-                "FUN parse_company_by_inn_kpp FAILED BY DADATA RESPONSE"
+                "FUN parse_company_by_inn_kpp FAILED BY DADATA RESPONSE, suggestions IS NOT LIST"
             );
             return Err(Status::DadataResponseError);
         }
@@ -71,7 +72,7 @@ pub(crate) async fn parse_company_by_inn_kpp(
         None => {
             tracing::error!(
                 local_err = ?Status::DadataResponseError,
-                "FUN parse_company_by_inn_kpp FAILED BY DADATA RESPONSE"
+                "FUN parse_company_by_inn_kpp FAILED BY DADATA RESPONSE, suggestions IS EMPTY"
             );
             return Err(Status::DadataResponseError);
         }

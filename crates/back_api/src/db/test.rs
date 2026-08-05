@@ -1,5 +1,5 @@
 use shared_lib::primitives::frozen::text::{CompInn, Kpp};
-use crate::db::parsers::dadata::inn_kpp_query::parse_company_by_inn_kpp;
+
 
 #[cfg(test)]
 mod tests {

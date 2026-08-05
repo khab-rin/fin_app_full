@@ -24,6 +24,8 @@ client = [
 ]
 
 [dependencies]
+anyhow = { workspace = true }
+
 axum = { workspace = true, default-features = false, optional = true }
 
 blake3 = { workspace = true }
@@ -80,3 +82,4 @@ tracing-subscriber = { workspace = true, optional = true }
 ts-rs = { workspace = true }
 
 uuid = { workspace = true, features = ["v5"] }
+

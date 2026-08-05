@@ -1,5 +1,11 @@
+use regex::Regex;
+use std::sync::OnceLock;
+
 use shared_lib::Status;
+use shared_lib::err_models::api_status::ApiStatus;
+use shared_lib::primitives::frozen::text::{CompInn, Kpp, Snils, PersInn};
 use shared_lib::sql_models::person::implements::Person;
+use shared_lib::service::crypto_service::implements::CryptoSignFields;
 
 pub(crate) fn person_checker(
     text: &str,
@@ -51,4 +57,25 @@ pub(crate) fn person_checker(
                 && is_inn_match;
     
     Ok(is_valid)
+}
+
+
+pub(crate) fn parse_crypto_fields(text: &str) -> Result<CryptoSignFields, Status> {
+    
+    static RE: OnceLock<Regex> = OnceLock::new();
+    let comp_inn_reg = RE.get_or_init(|| {
+        Regex::new(r"(?i)ИНН\s*ЮЛ\s*=\s*(\d{10})").unwrap()
+    });
+
+    let comp_inn_str_option = comp_inn_reg
+        .captures(text)
+        .and_then(|cap| cap.get(1))
+        .map(|x| x.as_str());
+
+    let comp_inn = match comp_inn_str_option {
+        Some(s) => Some(CompInn::new(s)?),
+        None => None
+    };
+
+    Err(Status::Unknown)
 }

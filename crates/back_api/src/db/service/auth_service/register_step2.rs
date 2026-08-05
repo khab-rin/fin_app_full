@@ -242,6 +242,8 @@ pub(crate) async fn register_step2(
         }
     };
 
+    tracing::info!(check_result = %check_result.text);
+
     if !check_result.is_signed {
         return Ok(AuthStep::RegisterStep1 {text: AuthInfo::WrongSignFile})
     }

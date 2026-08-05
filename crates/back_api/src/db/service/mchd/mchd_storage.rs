@@ -1,11 +1,11 @@
+use std::collections::HashSet;
 use std::path::PathBuf;
 
 use chrono::Local;
 use shared_lib::Status;
 
-use shared_lib::service::mchd::implements::RootPoa;
 use shared_lib::service::mchd::poa::PoaMchd;
-use shared_lib::service::mchd::service::MchdStorage;
+use shared_lib::service::mchd::service::{MchdStorage};
 use shared_lib::service::mchd::implements::PoaRootKind;
 use shared_lib::primitives::frozen::text::{BoxUuid, Date};
 
@@ -71,7 +71,9 @@ pub(crate) fn get_mchd_storage() -> Result<MchdStorage, Status> {
     let file_path = path.join("storage.json");
 
     if !file_path.exists() {
-        return Ok(MchdStorage { storage: std::collections::HashMap::new() });
+        return Ok(MchdStorage { 
+            storage: std::collections::HashMap::new(), 
+            managers: HashSet::new()});
     }
 
     let json_content = match std::fs::read_to_string(&file_path) {
@@ -187,7 +189,8 @@ pub(crate) fn add_new_mchd(
     let guide = BoxUuid::unchecked(guide_uuid);
 
     let mut new_storage = MchdStorage {
-        storage: std::collections::HashMap::new()
+        storage: std::collections::HashMap::new(),
+        managers: storage.managers
     };
 
     new_storage.storage.insert(guide, new_mchd);
@@ -212,4 +215,12 @@ pub(crate) fn add_new_mchd(
 
 
     Ok(new_storage)
+}
+
+
+pub(crate) fn add_new_manager(
+    user_id: &BoxUuid,
+    storage: &mut MchdStorage
+) {
+    storage.managers.insert(user_id.clone());
 }

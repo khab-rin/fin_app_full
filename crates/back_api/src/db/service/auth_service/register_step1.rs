@@ -85,44 +85,6 @@ pub(crate) async fn register_step1(
         }
     };
 
-    // let salt = SaltString::generate(&mut OsRng);
-    // let arg2 = Argon2::default();
-
-    // let server_passord_hash = match arg2.hash_password(password.as_bytes(), &salt) {
-    //     Ok(h) => h.to_string(),
-    //     Err(err) => {
-    //         tracing::error!(
-    //             tech_err = ?err,
-    //             "FUN init_user FAILED BY FUN arg2.hash_password"
-    //         );
-    //         return Ok(failed_result);
-    //     }
-    // };
-
-    // let user_set_data = UserSetData {
-    //     pers_id: person.pers_id.clone(),
-    //     comp_id: company.comp_id.clone(),
-
-    //     phone: phone.clone(),
-    //     password_hash: server_passord_hash,
-    //     email: email.clone(),
-
-    //     guids: std::collections::HashSet::new()
-    // };
-
-
-    // let user = match add_user(state, &user_set_data).await {
-    //     Ok(u) => {u},
-    //     Err(err) => {
-    //         tracing::error!(
-    //             local_err = ?err,
-    //             "FUN init_user FAILED BY FUN add_user"
-    //         );
-    //         return Ok(failed_result);
-    //     }
-    // };
-
-    // let user_id = user.user_id;
 
     make_init_files(state, data).await
 

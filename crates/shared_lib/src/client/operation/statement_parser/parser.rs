@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use encoding_rs::WINDOWS_1251;
 use futures::stream::{self, StreamExt};
 
+use crate::primitives::frozen::text::Kpp;
 use crate::{Status, ClientState};
 use crate::sql_models::operation::parser::{
     BlockFields,
@@ -131,7 +132,7 @@ pub async fn parse_statement(
     for block_str in data_iter {
         let block_map = make_statement_block_map(block_str);
 
-        let block_fields = match BlockFields::from_map(&block_map) {
+        let mut block_fields = match BlockFields::from_map(&block_map) {
             Ok(f) => f,
             Err(err) => {
                 log::error!(
@@ -140,6 +141,14 @@ pub async fn parse_statement(
                 return Ok(failed_result);
             }
         };
+
+        if block_fields.pay_inn.len() == 12 {
+            block_fields.pay_kpp = Kpp::unchecked("0".to_string());
+        }
+
+        if block_fields.rec_inn.len() == 12 {
+            block_fields.rec_kpp = Kpp::unchecked("0".to_string());
+        }
 
         let comment_data = parse_comment(&block_fields.doc_comment);
 

@@ -146,6 +146,8 @@ pub async fn verify_signature_handler(
         }
     }
 
+    tracing::info!(info = %result_text);
+
     Ok(Json(PersonSignCheckResult { 
         is_signed: true, 
         text: result_text 

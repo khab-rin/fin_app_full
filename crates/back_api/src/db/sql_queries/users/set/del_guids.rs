@@ -32,8 +32,6 @@ pub(crate) async fn del_guids_by_user_id(
         None => return Ok(())
     };
 
-    tracing::info!(prev_guids = ?prev_guids);
-
     let mut new_guids_set: HashSet<BoxUuid> =HashSet::new();
 
     for g in prev_guids {
@@ -82,8 +80,6 @@ pub(crate) async fn del_guids_by_user_id(
             }
         }
     };
-
-    tracing::info!(row = ?row);
 
     if row.is_none() {
         tracing::warn!(user_id = ?user_id, "UPDATE executed, but user_id not found!");

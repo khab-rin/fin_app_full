@@ -9,43 +9,52 @@ resolver = "2"
 [workspace.dependencies]
 shared_lib = { path = "crates/shared_lib" }
 
+anyhow = "1.0"
+
+argon2 = "0.5"
+
 axum = { version = "0.7", default-features = false, features = ["tokio", "json", "http1"] }
 
+blake3 = "1.8.5"
+
+directories = "6.0.0"
+
+encoding_rs = "0.8.35"
+
+chrono = { version = "0.4.41", features = ["serde", "std"] }
+
+dotenvy = "0.15.7"
+
+futures = "0.3"
+
+keyring = { version = "3.6.3", features = ["sync-secret-service", "crypto-rust"] }
+
+log = "0.4"
+
+machine-uid = "0.5.4"
+
+password-hash = "0.5"
+
+quick-xml = { version = "0.39.4", features = ["serialize"] }
+
+regex = "1.12.3"
+
 reqwest = { version = "=0.13", features = ["json", "rustls", "query", "cookies", "form"] }
-tower-http = { version = "0.5", features = ["trace"] }
 reqwest-middleware = { version = "0.5", features = ["json", "query"] }
 reqwest-retry = { version = "0.9" }
 
-tokio = { version = "1", features = ["full"] }
-futures = "0.3"
+rand = "0.10.1"
 
-sqlx = { version = "0.8", default-features = false, features = ["macros", "runtime-tokio-rustls", "uuid", "chrono", "json", "migrate"] }
+rust_decimal = { version = "1.40.0", features = ["serde-float"] }
 
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_bytes = "0.11.19"
 
-quick-xml = { version = "0.39.4", features = ["serialize"] }
+sqlx = { version = "0.8", default-features = false, features = ["macros", "runtime-tokio-rustls", "uuid", "chrono", "json", "migrate"] }
 
-chrono = { version = "0.4.41", features = ["serde", "std"] }
-uuid = { version = "1.21.0", features = ["v4", "serde"] }
-rust_decimal = { version = "1.40.0", features = ["serde-float"] }
-toml = "0.8.23"
-toml_edit = "0.22.27"
-dotenvy = "0.15.7"
-regex = "1.12.3"
-
-tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-tracing-appender = "0.2"
-log = "0.4"
-
-argon2 = "0.5"
-password-hash = "0.5"
-rand = "0.10.1"
-blake3 = "1.8.5"
-encoding_rs = "0.8.35"
-
+strum = { version = "0.28", features = ["derive"] }
+strum_macros = "0.28.0"
 
 tauri = { version = "2.10.3", features = [] }
 tauri-plugin-dialog = "2"
@@ -53,11 +62,17 @@ tauri-plugin-shell = "2"
 tauri-plugin-fs = "2"
 tauri-plugin-log = "2"
 
+tokio = { version = "1", features = ["full"] }
+
+toml = "0.8.23"
+toml_edit = "0.22.27"
+
+tower-http = { version = "0.5", features = ["trace"] }
+
+tracing = "0.1"
+tracing-appender = "0.2"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
 ts-rs = { version = "10.1", features = ["serde-compat", "no-serde-warnings"] }
 
-directories = "6.0.0"
-keyring = { version = "3.6.3", features = ["sync-secret-service", "crypto-rust"] }
-machine-uid = "0.5.4"
-
-strum = { version = "0.28", features = ["derive"] }
-strum_macros = "0.28.0"
+uuid = { version = "1.21.0", features = ["v4", "serde"] }
