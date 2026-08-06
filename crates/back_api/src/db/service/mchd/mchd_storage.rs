@@ -2,12 +2,13 @@ use std::collections::HashSet;
 use std::path::PathBuf;
 
 use chrono::Local;
-use shared_lib::Status;
+use shared_lib::{Status, IntoApiStatus};
 
 use shared_lib::service::mchd::poa::PoaMchd;
 use shared_lib::service::mchd::service::{MchdStorage};
 use shared_lib::service::mchd::implements::PoaRootKind;
 use shared_lib::primitives::frozen::text::{BoxUuid, Date};
+
 
 
 
@@ -55,7 +56,7 @@ pub(crate) fn get_mchd_data_path() -> Result<PathBuf, Status> {
 
 
 
-pub(crate) fn get_mchd_storage() -> Result<MchdStorage, Status> {
+pub(crate) async fn get_mchd_storage() -> Result<MchdStorage, Status> {
 
     let path = match get_mchd_data_path() {
         Ok(p) => p,
@@ -105,7 +106,7 @@ pub(crate) fn get_mchd_storage() -> Result<MchdStorage, Status> {
 }
 
 
-pub(crate) fn write_mchd_storage_to_file(
+pub(crate) async fn write_mchd_storage_to_file(
     storage: MchdStorage
 ) -> Result<(), Status> {
     let path = match get_mchd_data_path() {
@@ -157,7 +158,7 @@ pub(crate) fn write_mchd_storage_to_file(
 }
 
 
-pub(crate) fn add_new_mchd(
+pub(crate) fn insert_poa(
     new_mchd: PoaMchd,
     storage: MchdStorage
 ) -> Result<MchdStorage, Status> {
@@ -218,9 +219,39 @@ pub(crate) fn add_new_mchd(
 }
 
 
-pub(crate) fn add_new_manager(
+pub(crate) async fn add_new_manager(
     user_id: &BoxUuid,
-    storage: &mut MchdStorage
-) {
+) -> Result<(), Status> {
+    let mut storage = get_mchd_storage()
+        .await
+        .map_err(|err| err.process_err(err))?;
+    
     storage.managers.insert(user_id.clone());
+
+    write_mchd_storage_to_file(storage)
+        .await
+        .map_err(|err| err.process_err(err))?;
+
+    Ok(())
 }
+
+pub(crate) async fn add_new_poa(
+    poa: PoaMchd
+) -> Result<(), Status> {
+
+    let storage = get_mchd_storage()
+        .await
+        .map_err(|err| err.process_err(err))?;
+
+    let storage = insert_poa(poa, storage)
+        .map_err(|err| err.process_err(err))?;
+
+    write_mchd_storage_to_file(storage).await
+        .map_err(|err| err.process_err(err))?;
+
+    
+    Ok(())
+}
+
+
+

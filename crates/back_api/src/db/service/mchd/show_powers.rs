@@ -1,7 +1,7 @@
 
 use std::collections::HashSet;
 
-use shared_lib::Status;
+use shared_lib::{Status, IntoApiStatus};
 
 use shared_lib::service::mchd::home_mchd_power::HomeMchdPower;
 use shared_lib::service::mchd::implements::PoaRootKind;
@@ -24,16 +24,10 @@ pub(crate) async fn show_powers(
 
     let failed_result = MchdStep::TryLater { text: MchdInfo::BackApiError };
 
-    let mut storage = match get_mchd_storage() {
-        Ok(s) => s,
-        Err(err) => {
-            tracing::error!(
-                local_err = ?err,
-                "FUN show_powers FAILED BY FUN get_mchd_storage"
-            );
-            return Ok(failed_result);
-        }
-    };
+    let mut storage = get_mchd_storage()
+        .await
+        .map_err(|err| err.process_err(err))?;
+
 
     if storage.managers.contains(user_id) {
         let result = MchdStep::ShowPowers { 
@@ -47,17 +41,10 @@ pub(crate) async fn show_powers(
     let mut fns:HashSet<HomeMchdPower> =  HashSet::new();
     let mut btb:HashSet<HomeMchdPower> =  HashSet::new();
     let mut home_powers:HashSet<HomeMchdPower> =  HashSet::new();
-    
-    let guids_option = match get_guids_by_user_id(state, user_id).await {
-        Ok(o) => o,
-        Err(err) => {
-            tracing::error!(
-                local_err = ?err,
-                "FUN show_powers FAILED BY FUN get_guids_by_user_id"
-            );
-            return Ok(failed_result);
-        }
-    };
+
+    let guids_option = get_guids_by_user_id(state, user_id).await
+        .map_err(|err| err.process_err(err))?;
+
 
     let guids = match guids_option {
         Some(g) => g,
@@ -127,27 +114,16 @@ pub(crate) async fn show_powers(
             let _ = storage.storage.remove(g);
         }
 
-        match write_mchd_storage_to_file(storage) {
-            Ok(_) => {}
-            Err(err) => {
-                tracing::error!(
-                    local_err = ?err,
-                    "FUN show_powers FAILED BY FUN write_mchd_storage_to_file"
-                );
-                return Ok(failed_result);
-            }
+        if let Err(err) = write_mchd_storage_to_file(storage).await {
+            err.process_err(err);
+            return Ok(failed_result);
         }
 
-        match del_guids_by_user_id(state, user_id, &del_guids).await {
-            Ok(_) => {},
-            Err(err) => {
-                tracing::error!(
-                    local_err = ?err,
-                    "FUN show_powers FAILED BY FUN del_guids_by_user_id"
-                );
-                return Ok(failed_result);
-            }
+        if let Err(err) = del_guids_by_user_id(state, user_id, &del_guids).await {
+            err.process_err(err);
+            return Ok(failed_result);
         }
+
     }
     
     Ok(MchdStep::ShowPowers { 

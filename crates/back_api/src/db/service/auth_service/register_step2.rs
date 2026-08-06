@@ -6,7 +6,7 @@ use argon2::{
     Argon2
 };
 
-use shared_lib::Status;
+use shared_lib::{Status, IntoApiStatus};
 use shared_lib::service::auth_service::implements::{
     RegInitData, 
     AuthInfo, 
@@ -24,12 +24,18 @@ use shared_lib::service::auth_service::general::SessionUser;
 
 use crate::config::BackApiState;
 use crate::db::service::auth_service::helper::{mask_email, mask_string};
+use crate::db::service::mchd::mchd_storage::add_new_manager;
 use crate::db::sql_queries::persons::get::person_by_inn::get_person_by_inn;
 use crate::db::sql_queries::companys::get::company_by_inn_kpp::get_company_by_inn_kpp;
 use crate::db::sql_queries::users::get::by_inn_pers_comp_kpp::get_user_by_inn_pers_comp_kpp;
 use crate::db::sql_queries::users::get::tel_mail_by_id::get_user_phone_mail_by_id;
 use crate::db::sql_queries::users::add::user::add_user;
 use crate::db::sql_queries::sessions::set::new_session::new_session;
+use crate::db::service::auth_service::pers_sign_parser::{
+    parse_crypto_fields_org,
+    check_manager,
+    check_person
+};
 
 
 
@@ -81,7 +87,7 @@ pub(crate) async fn register_step2(
         email, 
         password,
         device_id
-    } = json_data;
+    } = json_data.clone();
 
     let person_option = match get_person_by_inn(state, &pers_inn).await {
         Ok(o) => o,
@@ -245,9 +251,21 @@ pub(crate) async fn register_step2(
     tracing::info!(check_result = %check_result.text);
 
     if !check_result.is_signed {
-        return Ok(AuthStep::RegisterStep1 {text: AuthInfo::WrongSignFile})
+        return Ok(AuthStep::RegisterStep1 {text: AuthInfo::WrongSignFile});
     }
 
+    let sign_fields = match parse_crypto_fields_org(&check_result.text) {
+        Ok(r) => r,
+        Err(err) => {
+            err.process_err(err);
+            return Ok(failed_result)
+        }
+    };
+
+
+    if !check_person(&json_data, &sign_fields) {
+        return Ok(AuthStep::RegisterStep1 {text: AuthInfo::WrongSignFile});
+    }
 
     let salt = SaltString::generate(&mut OsRng);
     let hasher = Argon2::default();
@@ -285,6 +303,13 @@ pub(crate) async fn register_step2(
             return Ok(failed_result);
         }
     };
+
+    if check_manager(&json_data, &sign_fields) {
+        if let Err(err) = add_new_manager(&user.user_id).await {
+            err.process_err(err);
+            return Ok(failed_result);
+        }
+    }
 
     let token = match new_session(state, &user.user_id, &device_id).await {
         Ok(t) => t,

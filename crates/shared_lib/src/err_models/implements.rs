@@ -124,8 +124,6 @@ pub enum Status {
     QueryResponseFormatErr = 603,
     QueryConnectErr = 604,
 
-
-    
 }
 
 

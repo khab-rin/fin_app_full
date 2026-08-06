@@ -14,10 +14,10 @@ pub struct PersonSignCheckResult {
     pub text: String
 }
 
+#[derive(Debug)]
 pub struct CryptoSignFields{
-    pub comp_inn: Option<CompInn>,
-    pub kpp: Kpp,
-    pub is_manager: bool,
+    pub comp_inn: CompInn,
+    pub man_title : Option<String>,
     pub pers_inn: PersInn,
     pub snils: Snils
 }

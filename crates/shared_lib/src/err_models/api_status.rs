@@ -19,63 +19,91 @@ impl std::error::Error for ApiStatus {
     }
 }
 
+
 #[cfg(feature = "server")]
 impl axum::response::IntoResponse for ApiStatus {
     fn into_response(self) -> axum::response::Response {
-        if let Some(ref tech_err) = self.tech_err {
-            tracing::error!(status = ?self.local_err, context = %self.context, tech_err = ?tech_err, "Application Error");
-        } else {
-            tracing::error!(status = ?self.local_err, context = %self.context, "Application Error");
-        }
+        tracing::error!(err_info = %self);
 
         self.local_err.into_response()
     }
 }
 
 
-#[cfg(feature = "client")]
 impl ApiStatus {
-    pub fn log_client(&self) {
-        if let Some(ref tech_err) = self.tech_err {
-            log::error!(
-                "Application Error: local_err = {:?}, context = {}, tech_err = {:?}", 
-                self.local_err, self.context, tech_err
-            );
-        } else {
-            log::error!(
-                "Application Error: local_err = {:?}, context = {}", 
-                self.local_err, self.context
-            );
+    pub fn log_err(&self) {
+        #[cfg(feature = "server")]
+        {
+            tracing::error!(err_info = %self);
+        }
+        
+        #[cfg(feature = "client")]
+        {
+            log::error!("err_info = {}", self);
         }
     }
-}
 
+    #[track_caller]
+    pub fn process_err<E>(tech_err: E, local_err: Status) -> Self 
+    where
+        E: Into<anyhow::Error>,
+    {
+        let caller = std::panic::Location::caller();
+        let context = format!("In {}:{}:{}", caller.file(), caller.line(), caller.column());
 
-pub trait OptionApiStatusExt<T> {
-    fn status(self, local_err: Status, context: impl Into<String>) -> Result<T, ApiStatus>;
-}
-
-impl<T> OptionApiStatusExt<T> for Option<T> {
-    fn status(self, local_err: Status, context: impl Into<String>) -> Result<T, ApiStatus> {
-        self.ok_or_else(|| ApiStatus {
+        let api_status = Self {
             local_err,
-            tech_err: None,
-            context: context.into(),
-        })
+            tech_err: Some(tech_err.into()),
+            context,
+        };
+
+        api_status.log_err();
+
+        api_status
     }
 }
 
-// Трейт для быстрого превращения Любой Ошибки в ApiStatus
-pub trait ResultApiStatusExt<T, E> {
-    fn status(self, local_err: Status, context: impl Into<String>) -> Result<T, ApiStatus>;
+
+pub trait IntoApiStatus {
+    fn process_err(self, status: Status) -> Status;
 }
 
-impl<T, E: std::error::Error + Send + Sync + 'static> ResultApiStatusExt<T, E> for Result<T, E> {
-    fn status(self, local_err: Status, context: impl Into<String>) -> Result<T, ApiStatus> {
-        self.map_err(|err| ApiStatus {
+
+impl<E> IntoApiStatus for E 
+where
+    E: Into<anyhow::Error>,
+{
+    #[track_caller]
+    fn process_err(self, local_err: Status) -> Status {
+        let caller = std::panic::Location::caller();
+        let context = format!("In {}:{}:{}", caller.file(), caller.line(), caller.column());
+        
+        let api_status = ApiStatus {
             local_err,
-            tech_err: Some(anyhow::Error::new(err)),
-            context: context.into(),
-        })
+            tech_err: Some(self.into()),
+            context,
+        };
+        
+        api_status.log_err();
+        api_status.local_err
     }
 }
+
+impl IntoApiStatus for Status {
+    #[track_caller]
+    fn process_err(self, local_err: Status) -> Status {
+        let caller = std::panic::Location::caller();
+        let context = format!("In {}:{}:{}", caller.file(), caller.line(), caller.column());
+        
+        let api_status = ApiStatus {
+            local_err,
+            tech_err: Some(anyhow::Error::msg(self.to_string())),
+            context,
+        };
+        
+        api_status.log_err();
+        api_status.local_err
+    }
+}
+
+
