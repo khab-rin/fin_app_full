@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use shared_lib::Status;
+use shared_lib::{ProcessError, Status};
 use shared_lib::primitives::frozen::text::{CompInn, Kpp};
 use shared_lib::parsers::dadata::implements::*;
 
@@ -26,59 +26,29 @@ pub async fn dadata_reqwest_func(
         .json(&serde_json::json!({"query": inn}))
         .send()
         .await
-        .inspect_err(|err| {
-            tracing::error!(
-                tech_error = ?err,
-                status_err = ?Status::QueryPostRequestErr,
-                inn = %inn, 
-                kpp = %kpp);
-        })
-        .map_err(|_| Status::QueryPostRequestErr)?;
+        .map_err(|err| err.process_err(Status::QueryPostRequestErr, ""))?;
+        
 
     let status = response.status();
 
     if !status.is_success() {
         let error_body = response.text().await.unwrap_or_else(|_| "Не удалось прочитать тело ответа".to_string());
-        
-        tracing::error!(
-            status_code = %status,
-            body = %error_body,
-            "DaData вернула ошибку вместо данных компании!"
-        );
-        return Err(Status::QueryPostRequestErr);
+        return Err(Status::QueryPostRequestErr.process_err(Status::QueryPostRequestErr, &error_body));
     }
 
     let resp_wrap:DadaRespWrap = response
         .json()
         .await
-        .inspect_err(|err| {
-            tracing::error!(
-                tech_error = ?err,
-                status_err = ?Status::MappingError,
-                inn = %inn, 
-                kpp = %kpp);
-        })
-        .map_err(|_| Status::MappingError)?;
+        .map_err(|err| err.process_err(Status::MappingError, ""))?;
+
 
     let mut iterator = resp_wrap.suggestions.into_iter();
 
     let mut main_metadata = iterator
         .next()
-        .ok_or(Status::QueryResponseFormatErr)
-        .inspect_err(|err| {
-            tracing::error!(
-                status_err = ?err,
-                inn = %inn, 
-                kpp = %kpp);
-        })?
+        .ok_or_else(|| Status::Tech.process_err(Status::QueryResponseFormatErr, ""))?
         .data
-        .ok_or(Status::QueryResponseFormatErr)
-        .inspect_err(|err| {
-            tracing::error!(
-                status_err = ?err,
-                inn = %inn, 
-                kpp = %kpp);
-        })?;
+        .ok_or_else(||Status::Tech.process_err(Status::QueryResponseFormatErr, ""))?;
 
     if main_metadata.kpp.is_none() {
         main_metadata.kpp = Some(Kpp::new("0")?);

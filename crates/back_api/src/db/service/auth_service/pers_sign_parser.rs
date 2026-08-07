@@ -1,8 +1,7 @@
 use regex::Regex;
 use std::sync::OnceLock;
 
-use shared_lib::Status;
-use shared_lib::err_models::api_status::IntoApiStatus;
+use shared_lib::{Status, ProcessError};
 use shared_lib::primitives::frozen::text::{CompInn, Snils, PersInn};
 use shared_lib::service::crypto_service::implements::CryptoSignFields;
 use shared_lib::service::auth_service::implements::RegInitData;
@@ -11,7 +10,8 @@ pub(crate) fn parse_crypto_fields_org(text: &str) -> Result<CryptoSignFields, St
     
     static RE_COMP_INN: OnceLock<Regex> = OnceLock::new();
     let comp_inn_reg = RE_COMP_INN.get_or_init(|| {
-        Regex::new(r"(?:ИНН ЮЛ=|,|(?:\s))(?P<inn>\d{10})(?:,|\s|$)").unwrap()
+        Regex::new(r"(?:ИНН ЮЛ=|,|(?:\s))(?P<inn>\d{10})(?:,|\s|$)")
+            .map_err(|err| err.process_err(Status::SystemErr, "")).unwrap()
     });
 
     let comp_inn_str_option = comp_inn_reg
@@ -21,7 +21,7 @@ pub(crate) fn parse_crypto_fields_org(text: &str) -> Result<CryptoSignFields, St
 
     let comp_inn_option = match comp_inn_str_option {
         Some(s) => Some({
-            CompInn::new(s).map_err(|err| err.process_err(err))?
+            CompInn::new(s).map_err(|err| err.process_err(err, ""))?
         }),
         None => None
     };
@@ -29,7 +29,7 @@ pub(crate) fn parse_crypto_fields_org(text: &str) -> Result<CryptoSignFields, St
     static RE_MAN_TITLE: OnceLock<Regex> = OnceLock::new();
     let man_title_reg = RE_MAN_TITLE.get_or_init(|| {
         Regex::new(r"(?i)(?:T=|,?\s*)(ЛИКВИДАТОР|ДИРЕКТОР|ГЕНЕРАЛЬНЫЙ ДИРЕКТОР)(?:,|\s|$)")
-            .map_err(|err| err.process_err(Status::SystemErr)).unwrap()  
+            .map_err(|err| err.process_err(Status::SystemErr, "")).unwrap()  
     });
     let man_title = man_title_reg
         .captures(text)
@@ -39,21 +39,22 @@ pub(crate) fn parse_crypto_fields_org(text: &str) -> Result<CryptoSignFields, St
     static RE_PERS_INN: OnceLock<Regex> = OnceLock::new();
     let pers_inn_reg = RE_PERS_INN.get_or_init(|| {
         Regex::new(r"(?:ИНН=|,|(?:\s))(?P<inn>\d{12})(?:,|\s|$)")
-            .map_err(|err| err.process_err(Status::SystemErr)).unwrap()
+            .map_err(|err| err.process_err(Status::SystemErr, "")).unwrap()
     });
     
     let pers_inn_str = pers_inn_reg
         .captures(text)
         .and_then(|cap| cap.get(1))
         .map(|x| x.as_str())
-        .ok_or_else(|| Status::Unknown.process_err(Status::Unknown))?;
+        .ok_or_else(|| Status::Tech.process_err(Status::UserWrongData, ""))?;
 
-    let pers_inn = PersInn::new(pers_inn_str).map_err(|err| err.process_err(err))?;
+    let pers_inn = PersInn::new(pers_inn_str)
+        .map_err(|err| err.process_err(err, ""))?;
 
     static RE_SNILS: OnceLock<Regex> = OnceLock::new();
     let snils_reg = RE_SNILS.get_or_init(|| {
         Regex::new(r"(?:СНИЛС=|,|(?:\s))(?P<snils>\d{11})(?:,|\s|$)")
-            .map_err(|err| err.process_err(Status::SystemErr)).unwrap()
+            .map_err(|err| err.process_err(Status::SystemErr, "")).unwrap()
     });
 
     let snils_str = snils_reg
@@ -61,9 +62,9 @@ pub(crate) fn parse_crypto_fields_org(text: &str) -> Result<CryptoSignFields, St
         .and_then(|cap| cap.get(1))
         .map(|x| x.as_str())
         // Если тега СНИЛС вообще нет в логе — логируем и выходим
-        .ok_or_else(|| Status::Unknown.process_err(Status::Unknown))?;
+        .ok_or_else(|| Status::Tech.process_err(Status::UserWrongData, ""))?;
 
-    let snils = Snils::new(snils_str).map_err(|err| err.process_err(err))?;
+    let snils = Snils::new(snils_str).map_err(|err| err.process_err(err, ""))?;
 
     let comp_inn = match comp_inn_option {
         Some(i) => i,

@@ -11,7 +11,7 @@ pub mod client;
 
 
 pub use crate::err_models::implements::Status;
-pub use crate::err_models::api_status::IntoApiStatus;
+pub use crate::err_models::api_status::ProcessError;
 
 #[cfg(feature = "client")]
 pub use crate::service::auth_service::client_state::ClientState;

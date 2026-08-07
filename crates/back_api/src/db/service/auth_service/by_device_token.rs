@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use shared_lib::Status;
+use shared_lib::{Status, ProcessError};
 use shared_lib::service::auth_service::implements::{
     TokenDeviceData, 
     SessionUserToken, 
@@ -20,11 +20,7 @@ pub(crate) async fn restore_session_by_token(
     let session_user_option = match get_user_by_device_token(state, payload).await {
         Ok(o) => o,
         Err(err) => {
-            tracing::error!(
-                err = ?err,
-                failed_data = ?payload,
-                "FUN get_user FAILED BY FUN get_user_by_device_token"
-            );
+            err.process_err(err, "");
             return Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
         }
     };
@@ -32,15 +28,9 @@ pub(crate) async fn restore_session_by_token(
     let session_user = match session_user_option {
         Some(s_u) => s_u,
         None => {
-            match delete_warn_token_device(state, payload).await {
-                Ok(_) => {},
-                Err(err) => {
-                    tracing::warn!(
-                        error = ?err,
-                        "DELETING_TOKENS_ERROR_DDURING_AUTH!!!"
-                    )
-                }
-            };
+            if let Err(err) = delete_warn_token_device(state, payload).await {
+                err.process_err(err, "");
+            }
             return Ok(AuthStep::TokenDevicePairMiss { 
                 text: AuthInfo::IllegalAccess 
             });

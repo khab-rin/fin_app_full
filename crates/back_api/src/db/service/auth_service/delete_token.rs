@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use shared_lib::Status;
+use shared_lib::{ProcessError, Status};
 use shared_lib::service::auth_service::implements::{TokenDeviceData, WarnEmailData};
 
 use crate::config::BackApiState;
@@ -12,7 +12,8 @@ pub(crate) async  fn delete_warn_token_device(
     payload: &TokenDeviceData
 ) -> Result<Status, Status> {
 
-    let warn_vec: Vec<WarnEmailData> = delete_session_by_token(state, payload).await?;
+    let warn_vec: Vec<WarnEmailData> = delete_session_by_token(state, payload).await
+        .map_err(|err| err.process_err(err, ""))?;
 
     for warn_data in warn_vec {
         let state_clone = state.clone();

@@ -44,22 +44,22 @@ async fn main() {
         .with_writer(std::io::stdout)
         .pretty()
         .with_ansi(true)
-        .with_file(true)
-        .with_line_number(true)
-        .with_target(true);
+        .with_file(false)
+        .with_line_number(false)
+        .with_target(false);
 
     // 3. Делаем черно белый форматтер для записи в файл (райтер, чб, имя файла, строки, модуля)
     let file_formatter = fmt::layer()
         .with_writer(non_blocking)
         .pretty()
         .with_ansi(false)
-        .with_file(true)
-        .with_line_number(true)
-        .with_target(true);
+        .with_file(false)
+        .with_line_number(false)
+        .with_target(false);
 
     // 4. Задаем фильтры для консоли и записи в файл с помощью строки
     let log_filter = EnvFilter::try_from_default_env()
-        .unwrap_or_else(|_| "back_api=debug,tower_http=warn,axum=warn,sqlx=warn".into());
+        .unwrap_or_else(|_| "back_api=info,shared_lib=info,tower_http=warn,axum=warn,sqlx=warn".into());
 
     // 5. Регистрируем все вместе
     tracing_subscriber::registry()

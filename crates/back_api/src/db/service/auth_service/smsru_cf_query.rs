@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use shared_lib::Status;
+use shared_lib::{ProcessError, Status};
 use shared_lib::service::auth_service::implements::{SmsruGetResResponse, SmsRuResponseTextCode};
 
 use crate::config::BackApiState;
@@ -20,56 +20,26 @@ pub(crate) async fn smsru_get_cf(
 
     let client = state.config.get_std_client();
 
-    let response = match client
+    let response = client
         .get(&state.config.smsru.get_stat_url)
         .query(&query_params)
         .send()
-        .await {
-            Ok(r) => r,
-            Err(err) => {
-                tracing::error!(
-                    tech_err = ?err,
-                    local_err = ?&Status::QueryGetRequestErr,
-                    "FUN smsru_get_cf FAILED BY SMSRU GET QUERY"
-                );
-                return Err(Status::QueryGetRequestErr);
-            }
-        };
+        .await
+        .map_err(|err| err.process_err(Status::QueryGetRequestErr, ""))?; 
 
 
             
-    let text_body = match response.text().await {
-        Ok(t) => t,
-        Err(err) => {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::QueryBodyReadErr,
-                "FUN smsru_get_cf FAILED BY READ SMSRU RESPONSE"
-            );
-            return Err(Status::QueryBodyReadErr);
-        }
-    };
+    let text_body = response.text().await
+        .map_err(|err| err.process_err(Status::QueryBodyReadErr, ""))?;
 
-    let smsru_response: SmsruGetResResponse = match serde_json::from_str(&text_body) {
-        Ok(parsed) => parsed,
-        Err(err) => {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::MappingError,
-                "FUN smsru_get_cf FAILED BY MAPPING SMSRU RESPONSE BODY"
-            );
-            return Err(Status::MappingError);
-        }
-    };
+
+    let smsru_response: SmsruGetResResponse = serde_json::from_str(&text_body)
+        .map_err(|err| err.process_err(Status::MappingError, ""))?;
+
 
     if smsru_response.status_code != 100 {
-        tracing::error!(
-            local_err = ?Status::BackSmsRuBalance,
-            "FUN smsru_get_cf FAILED BY SMSRU RESPONSE CODE"
-            );
-        return Err(Status::BackSmsRuBalance)
+        return Err(Status::Tech.process_err(Status::BackSmsRuBalance, ""));
     }
-
 
 
     if let Some(status) = smsru_response.check_status {
@@ -80,7 +50,7 @@ pub(crate) async fn smsru_get_cf(
             _ => Ok(SmsRuResponseTextCode::UnknownCode)
         }
     } else {
-        Err(Status::BackApiError)
+        Err(Status::Tech.process_err(Status::BackApiError, ""))
     }
 
 

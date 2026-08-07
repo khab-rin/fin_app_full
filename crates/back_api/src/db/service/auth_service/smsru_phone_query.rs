@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use shared_lib::Status;
+use shared_lib::{Status, ProcessError};
 use shared_lib::primitives::frozen::text::Phone;
 use shared_lib::service::auth_service::implements::SmsruCallResponse;
 
@@ -27,47 +27,25 @@ pub(crate) async fn smsru_get_phone(
         .query(&query_params)
         .send()
         .await
-        .inspect_err(|err| {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::QueryGetRequestErr,
-                "FUN smsru_get_phone FAILED BY GET TEL QUERY"
-            )
-        }).map_err(|_| Status::QueryGetRequestErr)?;
+        .map_err(|err| err.process_err(Status::QueryGetRequestErr, ""))?;
+
 
     let data: SmsruCallResponse = response
         .json()
         .await
-        .inspect_err(|err| {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::MappingError,
-                "FUN smsru_get_phone FAILED BY MAPPING SmsruCallResponse"
+        .map_err(|err| err.process_err(Status::MappingError, ""))?;
 
-            )
-        }).map_err(|_| Status::MappingError)?;
 
     if data.status == "OK" && data.status_code == 100 {
         
         let check_id = data
             .check_id
-            .ok_or(Status::QueryResponseFormatErr)
-            .inspect_err(|err| {
-                tracing::warn!(
-                    loacl_err = ?err,
-                    "FUN smsru_get_phone FAILED BY MISSING check_id IN RESPONSE"
-                )
-            })?;
+            .ok_or_else(|| Status::Tech.process_err(Status::QueryResponseFormatErr, ""))?;
+
         
         let call_phone:Phone = data
             .call_phone
-            .ok_or(Status::QueryResponseFormatErr)
-            .inspect_err(|err| {
-                tracing::warn!(
-                    local_err = ?err,
-                    "FUN smsru_get_phone FAILED BY MISSING check_id IN RESPONSE"
-                )
-            })?;
+            .ok_or_else(|| Status::Tech.process_err(Status::QueryResponseFormatErr, ""))?;
         
         Ok((check_id, call_phone))
 

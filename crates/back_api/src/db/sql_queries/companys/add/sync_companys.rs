@@ -1,6 +1,6 @@
 use futures::stream::{self, StreamExt};
 
-use shared_lib::Status;
+use shared_lib::{ProcessError, Status};
 use shared_lib::primitives::frozen::text::{BoxUuid, CompInn, Kpp, CompType, CompStatus, DateTime};
 use shared_lib::sql_models::company::implements::{Company, CompanyDto, InnKppMapAcc, CompCrateData};
 
@@ -28,19 +28,12 @@ pub(crate) async fn update_companys(
     let comp_inn_data: Vec<String> = inn_kpp_acc_map.keys().map(|x| x.0.to_string()).collect();
     let kpp_data: Vec<String> = inn_kpp_acc_map.keys().map(|x| x.1.to_string()).collect();
 
-    let mut prev_companys = match get_companys_by_inn_kpp(
+    let mut prev_companys = get_companys_by_inn_kpp(
             state,
             &comp_inn_data,
-            &kpp_data).await {
-        Ok(c) => c,
-        Err(err) => {
-            tracing::error!(
-                err = ?err,
-                "FUN sync_server_companys FAILED BY get_companys_by_inn_kpp FUN"
-            );
-            return Err(err);
-        }
-    };
+            &kpp_data)
+        .await
+        .map_err(|err| err.process_err(err, ""))?; 
 
     fresh_bank_acc(&mut inn_kpp_acc_map, &mut prev_companys); 
 
@@ -60,13 +53,11 @@ pub(crate) async fn update_companys(
 
     while let Some(res) = dadata_stream.next().await {
         match res {
-            Ok(c) => {new_companys.push(c)},
+            Ok(c) => {
+                new_companys.push(c)
+            },
             Err(err) => {
-                tracing::error!(
-                    err = ?err,
-                    "FUN sync_server_companys FAILED BY FUN parse_company_by_inn_kpp"
-                );
-                return Err(err);
+                return Err(err.process_err(err, ""));
             } 
         }
     }
@@ -95,8 +86,7 @@ pub(crate) async fn update_companys(
     }
 
 
-    let companys_dto = sqlx::
-        query_file_as!(
+    let companys_dto = sqlx::query_file_as!(
             CompanyDto,
             "src/db/sql_queries/companys/add/sync_companys.sql",
             &comp_id[..],
@@ -107,15 +97,8 @@ pub(crate) async fn update_companys(
             &metadata[..]
         ).fetch_all(&state.pool_long)
         .await
-        .inspect_err(|err| {
-            tracing::error!(
-                tech_err = ?err,
-                stat_err = ?Status::SqlQueryWrongLogic
-            );
-        })
-        .map_err(|_| Status::SqlQueryWrongLogic)?;
-    
-    
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+
     dto_to_company_vec(companys_dto)
 }
 

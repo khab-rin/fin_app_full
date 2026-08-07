@@ -1,6 +1,4 @@
-use std::sync::Arc;
-
-use shared_lib::Status;
+use shared_lib::{Status, ProcessError};
 use shared_lib::primitives::frozen::text::{CompInn, Kpp, BoxUuid, CompStatus, CompType, DateTime};
 use shared_lib::sql_models::company::implements::{Company, CompanyDto};
 
@@ -13,41 +11,25 @@ pub(crate) async fn get_company_by_inn_kpp(
 
 ) -> Result<Option<Company>, Status> {
 
-    let dto_option = match sqlx::query_file_as!(
+    let dto_option = sqlx::query_file_as!(
         CompanyDto,
         "src/db/sql_queries/companys/get/company_by_inn_kpp.sql",
         inn.as_ref(),
         kpp.as_ref()
     ).fetch_optional(&state.pool_fast)
-    .await {
-        Ok(opt_d) => opt_d,
-        Err(err) => {
-            tracing::error!(
-                err = ?err,
-                local_err = ?Status::SqlQueryWrongLogic,
-                failed_data = ?(inn, kpp),
-                "FUN get_companys_by_inn_kpp FAILED BY SQL QUERY GET COMPANY"
-            );
-            return Err(Status::SqlQueryWrongLogic);
-        }
-    };
+    .await
+    .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?; 
 
     let dto = match dto_option {
         Some(d) => d,
         None => return Ok(None)
     };
 
-    match dto.try_into() {
-        Ok(company) => Ok(Some(company)),
-        Err(err) => {
-            tracing::error!(
-                tech_er = ?err,
-                local_err = ?Status::MappingError,
-                failed_data = ?(inn, kpp),
-                "FUN get_companys_by_inn_kpp FAILED BY MAPPING COMPANY"
-            );
-            Err(Status::MappingError)
-        }
-    }
+    let company = dto
+        .try_into()
+        .map_err(|err: serde_json::Error| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+
+    Ok(Some(company))
+
 
 }

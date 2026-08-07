@@ -1,7 +1,7 @@
 
 use std::collections::HashSet;
 
-use shared_lib::{Status, IntoApiStatus};
+use shared_lib::{Status, ProcessError};
 
 use shared_lib::service::mchd::home_mchd_power::HomeMchdPower;
 use shared_lib::service::mchd::implements::PoaRootKind;
@@ -24,10 +24,13 @@ pub(crate) async fn show_powers(
 
     let failed_result = MchdStep::TryLater { text: MchdInfo::BackApiError };
 
-    let mut storage = get_mchd_storage()
-        .await
-        .map_err(|err| err.process_err(err))?;
-
+    let mut storage = match get_mchd_storage().await {
+        Ok(s) => s,
+        Err(err) => {
+            err.process_err(err, "");
+            return Ok(failed_result);
+        }
+    };
 
     if storage.managers.contains(user_id) {
         let result = MchdStep::ShowPowers { 
@@ -42,8 +45,13 @@ pub(crate) async fn show_powers(
     let mut btb:HashSet<HomeMchdPower> =  HashSet::new();
     let mut home_powers:HashSet<HomeMchdPower> =  HashSet::new();
 
-    let guids_option = get_guids_by_user_id(state, user_id).await
-        .map_err(|err| err.process_err(err))?;
+    let guids_option = match get_guids_by_user_id(state, user_id).await {
+        Ok(o) => o,
+        Err(err) => {
+            err.process_err(err, "");
+            return Ok(failed_result);
+        }
+    };
 
 
     let guids = match guids_option {
@@ -115,12 +123,12 @@ pub(crate) async fn show_powers(
         }
 
         if let Err(err) = write_mchd_storage_to_file(storage).await {
-            err.process_err(err);
+            err.process_err(err, "");
             return Ok(failed_result);
         }
 
         if let Err(err) = del_guids_by_user_id(state, user_id, &del_guids).await {
-            err.process_err(err);
+            err.process_err(err, "");
             return Ok(failed_result);
         }
 

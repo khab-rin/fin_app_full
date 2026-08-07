@@ -1,4 +1,4 @@
-use shared_lib::{Status, IntoApiStatus};
+use shared_lib::{Status, ProcessError};
 use shared_lib::primitives::frozen::text::BoxUuid;
 use shared_lib::service::crypto_service::implements::{CheckSignDocData, PersonSignCheckResult};
 use shared_lib::service::api_routes::implements::CryptoApiRoutes;
@@ -38,36 +38,19 @@ pub(crate) async fn register_mchd(
         .post(&crypto_url)
         .json(&check_data)
         .send()
-        .await
-    {
-        Ok(r) => r,
-        Err(err) => {
-            tracing::error!(
-                target: "back_api::crypto_client",
-                url = %crypto_url,
-                err = ?err,
-                is_timeout = err.is_timeout(),
-                is_connect = err.is_connect(),
-                local_err = ?Status::QueryGetRequestErr,
-                "FUN register_step2 FAILED BY NETWORK/CONNECT TO CRYPTO SERVICE"
-            );
-            return Ok(failed_result);
-        }
-    };
+        .await {
+            Ok(r) => r,
+            Err(err) => {
+                err.process_err(Status::QueryGetRequestErr, "");
+                return Ok(failed_result);
+            }
+        };
 
     if !response.status().is_success() {
         let status_code = response.status();
-        
         let error_body = response.text().await.unwrap_or_else(|_| "Failed to read body".to_string());
-
-        tracing::error!(
-            target: "back_api::crypto_client",
-            url = %crypto_url,
-            http_status = %status_code,
-            response_body = %error_body,
-            local_err = ?Status::QueryGetRequestErr,
-            "FUN register_step2 FAILED: CRYPTO SERVICE RETURNED ERROR STATUS"
-        );
+        let ext_inf = format!("url = {:?}, http_status = {:?}, err_body = {:?}", crypto_url, status_code, error_body);
+        Status::Tech.process_err(Status::QueryGetRequestErr, &ext_inf);
         return Ok(failed_result);
     }
 
@@ -76,16 +59,10 @@ pub(crate) async fn register_mchd(
             .await {
         Ok(r) => r,
         Err(err) => {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::MappingError,
-                "FUN register_step2 FAILED BY MAPPING CryptoVerifyPersonResponse"
-            );
+            err.process_err(Status::MappingError, "");
             return Ok(failed_result);
         }
     };
-
-    tracing::info!(crypto_text = %check_result.text);
 
     if !check_result.is_signed {
         return Ok(MchdStep::WrongData { text: MchdInfo::WrongSignFile})
@@ -94,11 +71,7 @@ pub(crate) async fn register_mchd(
     let xml_content = match String::from_utf8(xml_file.clone()) {
         Ok(c) => c,
         Err(err) => {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::FileReadError,
-                "FUN register_mchd FAILED BY String::from_utf8(xml_file.clone())"
-            );
+            err.process_err(Status::FileReadError, "");
             return Ok(failed_result);
         }
     };
@@ -106,11 +79,7 @@ pub(crate) async fn register_mchd(
     let poa: PoaMchd = match quick_xml::de::from_str(&xml_content) {
         Ok(p) => p,
         Err(err) => {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::MappingError,
-                "FUN register_mchd FAILED BY quick_xml::de::from_str(&xml_content)"
-            );
+            err.process_err(Status::MappingError, "");
             return Ok(failed_result);
         }
     };
@@ -120,21 +89,14 @@ pub(crate) async fn register_mchd(
     let guide_str: String = if identificator.len() > 36 {
         identificator[identificator.len() - 36..].iter().collect()
     } else {
-        tracing::error!(
-            local_err = ?Status::SystemLogicErr,
-            "FUN register_mchd FAILED BY if identificator.len() > 36"
-        );
+        Status::Tech.process_err(Status::SystemLogicErr, "");
         return Ok(failed_result);
     };
 
     let guide_uuid = match uuid::Uuid::parse_str(&guide_str) {
         Ok(g) => g,
         Err(err) => {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::SystemLogicErr,
-                "FUN register_mchd FAILED BY uuid::Uuid::parse_str(&guide_str)"
-            );
+            err.process_err(Status::SystemLogicErr, "");
             return Ok(failed_result);
         }
     };
@@ -144,18 +106,16 @@ pub(crate) async fn register_mchd(
     match set_guid_by_user_id(state, user_id, &guide).await {
         Ok(_) => {},
         Err(err) => {
-            tracing::error!(
-                local_err = ?err,
-                "FUN register_mchd FAILED BY WRONG SQL QUERY"
-            );
+            err.process_err(err, "");
             return Ok(failed_result);
         }
     }
 
-    add_new_poa(poa)
-        .await
-        .map_err(|err| err.process_err(err))?;
-    
+    if let Err(err) = add_new_poa(poa).await {
+        err.process_err(err, "");
+        return Ok(failed_result);
+    }
+   
     
     Ok(MchdStep::SuccessRegisterMchd { guide, text: MchdInfo::SuccessRegisterMchd })
 }

@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use shared_lib::Status;
+use shared_lib::{Status, ProcessError};
 use shared_lib::primitives::frozen::text::{Email, CompInn, PersInn, Kpp};
 use shared_lib::service::auth_service::implements::{TokenDeviceData, WarnEmailData};
 
@@ -19,13 +19,8 @@ pub(crate) async fn delete_session_by_token(
             token.as_ref(),
         ).fetch_all(&state.pool_fast)
         .await
-        .inspect_err(|err| {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::SqlQueryWrongLogic
-            )
-        })
-        .map_err(|_| Status::SqlQueryWrongLogic)?;
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?; 
+
     
     Ok(row)
 }

@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use shared_lib::Status;
+use shared_lib::{Status, ProcessError};
 use shared_lib::sql_models::company::implements::{Company, CompanyDto};
 use shared_lib::primitives::frozen::text::{BoxUuid, CompInn, Kpp, CompStatus, CompType, DateTime};
 
@@ -19,12 +19,7 @@ pub(crate) async fn get_companys_by_id(
             id_data
         ).fetch_all(&state.pool_fast)
         .await
-        .inspect(|err| {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::SqlQueryWrongLogic
-            )
-        }).map_err(|_| Status::SqlQueryWrongLogic)?;
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
 
     dto_to_company_vec(companys_dto)
 }

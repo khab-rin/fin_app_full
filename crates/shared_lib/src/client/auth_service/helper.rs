@@ -1,4 +1,4 @@
-use crate::Status;
+use crate::{ProcessError, Status};
 use crate::primitives::frozen::text::BoxUuid;
 use crate::service::auth_service::implements::SessionUserToken;
 use crate::service::auth_service::client_state::NickData;
@@ -10,16 +10,8 @@ use crate::client::auth_service::key_ring::write_keyring_token;
 
 pub fn get_device_id() -> Result<BoxUuid, Status> {
 
-    let id_string = match machine_uid::get() {
-        Ok(i) => i,
-        Err(err) => {
-            log::error!(
-                "FUN get_device_id FAILED BY machine_uid::get(), tech_err = {:?}, local_err = {:?}",
-                err, Status::SystemErr
-            );
-            return Err(Status::SystemErr);
-        }
-    };
+    let id_string = machine_uid::get()
+        .map_err(|err| err.process_err(Status::SystemErr, ""))?; 
 
     let id_uuid_str = uuid::Uuid::new_v5(
         &uuid::Uuid::NAMESPACE_DNS,
@@ -58,21 +50,12 @@ pub fn write_new_user_info_to_device(
         kpp: kpp.clone()
     };
 
-    match add_nick_data(state, &nick_data) {
-        Ok(_) => {},
-        Err(err) => {
-            log::error!("FUN register_step2 FAILED BY FUN add_nick_data, err = {}", err);
-            return Err(err);
-        }
-    }
+    add_nick_data(state, &nick_data)
+        .map_err(|err| err.process_err(err, ""))?;
 
-    match write_keyring_token(state, &key_, &token) {
-        Ok(_) => {},
-        Err(err) => {
-            log::error!("FUN register_step2 FAILED BY FUN write_keyring_data, err = {}", err);
-            return Err(err);
-        }
-    };
+    write_keyring_token(state, &key_, &token)
+        .map_err(|err| err.process_err(err, ""))?;
+
 
     Ok(())
 }

@@ -1,7 +1,7 @@
 
 use std::collections::HashSet;
 
-use shared_lib::Status;
+use shared_lib::{Status, ProcessError};
 use shared_lib::primitives::composite::implements::RasBicAcc;
 use shared_lib::sql_models::company::implements::{Company, CompanyDto, InnKppMapAcc};
 
@@ -13,16 +13,11 @@ pub(crate) fn dto_to_company_vec(
     let mut res:Vec<Company> = vec!();
 
     for dto in dtos {
-        match dto.clone().try_into() {
-            Ok(company) => res.push(company),
-            Err(err) => {
-                tracing::error!(
-                    tech_err = ?err, local_err = ?Status::MappingError,
-                    "FUN dto_to_company_vec FAILED BY MAPPING Company",
-                );
-                return Err(Status::MappingError)
-            }
-        }
+        let company = dto
+            .clone()
+            .try_into()
+            .map_err(|err: serde_json::Error| err.process_err(Status::MappingError, ""))?;
+        res.push(company)
     }
 
     Ok(res)

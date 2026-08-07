@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use shared_lib::Status;
+use shared_lib::{ProcessError, Status};
 use shared_lib::service::auth_service::implements::WarnEmailData;
 
 use crate::config::BackApiState;
@@ -44,12 +44,8 @@ pub(crate) async fn send_warn_mail(
         .json(&payload)
         .send()
         .await
-        .inspect_err(|err| {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::QueryPostRequestErr
-            )
-        }).map_err(|_| Status::QueryPostRequestErr)?;
+        .map_err(|err| err.process_err(Status::QueryPostRequestErr, ""))?;
+   
 
     if !response.status().is_success() {
         let err = response.text().await.unwrap_or_default();

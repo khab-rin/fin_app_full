@@ -1,7 +1,7 @@
 use std::io::{Read};
 use tauri::Manager;
 
-use crate::{Status, ClientState};
+use crate::{Status, ClientState, ProcessError};
 use crate::service::auth_service::client_state::NickData;
 
 
@@ -10,25 +10,11 @@ pub fn add_nick_data(
     nick_data: &NickData
 ) -> Result<NickData, Status> {
     
-    let file_path = match get_nick_data_path(state) {
-        Ok(f) => f,
-        Err(err) => {
-            log::error!(
-                "FUN delete_nick_name FAILED BY FUN get_nick_data_path, local_err = {}", err
-            );
-            return Err(Status::SystemErr);
-        }
-    };
+    let file_path = get_nick_data_path(state)
+        .map_err(|err| err.process_err(err, ""))?; 
 
-    let nick_datas = match get_nick_datas_from_file_path(&file_path) {
-        Ok(n) => n,
-        Err(err) => {
-            log::error!(
-                "FUN add_nickname FAILED BY FUN get_nick_data, local_err = {}", err
-            );
-            return Err(err);
-        }
-    };
+    let nick_datas = get_nick_datas_from_file_path(&file_path)
+        .map_err(|err| err.process_err(err, ""))?;
 
     let mut new_nick_datas: std::collections::HashSet<NickData> = std::collections::HashSet::new();
 
@@ -46,15 +32,11 @@ pub fn add_nick_data(
     new_nick_datas.insert(nick_data.clone());
 
 
-    match save_nick_datas(&file_path, &new_nick_datas) {
-        Ok(_) => Ok(nick_data.clone()),
-        Err(err) => {
-            log::error!(
-                "FUN add_nickname FAILED BY FUN save_nick_data, local_err = {}", err
-            );
-            Err(err)
-        }
+    if let Err(err) =  save_nick_datas(&file_path, &new_nick_datas) {
+        return Err(err.process_err(err, ""));
     }
+
+    Ok(nick_data.clone())
 
 }
 
@@ -63,25 +45,12 @@ pub fn get_nick_names(
     state: &ClientState,
 ) -> Result<Vec<String>, Status> {
 
-    let file_path = match get_nick_data_path(state) {
-        Ok(f) => f,
-        Err(err) => {
-            log::error!(
-                "FUN delete_nick_name FAILED BY FUN get_nick_data_path, local_err = {}", err
-            );
-            return Err(Status::SystemErr);
-        }
-    };
+    let file_path = get_nick_data_path(state)
+        .map_err(|err| err.process_err(err, ""))?;
 
-    let nick_datas = match get_nick_datas_from_file_path(&file_path) {
-        Ok(n) => n,
-        Err(err) => {
-            log::error!(
-                "FUN get_nick_data FAILED BY FUN get_nick_data_from_file_path, err = {}", err
-            );
-            return Err(err);
-        }
-    };
+
+    let nick_datas = get_nick_datas_from_file_path(&file_path)
+        .map_err(|err| err.process_err(err, ""))?;
 
     let res: Vec<String> = nick_datas.into_iter().map(|x| x.nick).collect();
 
@@ -94,25 +63,11 @@ pub fn get_nick_data_by_nick(
     nick: &str
 ) -> Result<Option<NickData>, Status> {
 
-    let file_path = match get_nick_data_path(state) {
-        Ok(f) => f,
-        Err(err) => {
-            log::error!(
-                "FUN delete_nick_name FAILED BY FUN get_nick_data_path, local_err = {}", err
-            );
-            return Err(Status::SystemErr);
-        }
-    };
+    let file_path = get_nick_data_path(state)
+        .map_err(|err| err.process_err(err, ""))?;
 
-    let nick_datas = match get_nick_datas_from_file_path(&file_path) {
-        Ok(n) => n,
-        Err(err) => {
-            log::error!(
-                "FUN get_nick_data FAILED BY FUN get_nick_data_from_file_path, err = {}", err
-            );
-            return Err(err);
-        }
-    };
+    let nick_datas = get_nick_datas_from_file_path(&file_path)
+        .map_err(|err| err.process_err(err, ""))?;
 
     for nick_data in nick_datas {
         if nick_data.nick == nick {
@@ -131,27 +86,14 @@ pub fn get_nick_data_path(
 ) -> Result<std::path::PathBuf, Status> {
     let app_handle = state.app_handle.clone();
 
-    let app_path = match app_handle.path().app_data_dir() {
-        Ok(p) => p,
-        Err(err) => {
-            log::error!(
-                "FUN get_nick_data_path FAILED BY app_handle.path().app_data_dir(), tech_err = {}, local_err = {}",
-                err, Status::SystemErr
-            );
-            return Err(Status::SystemErr);
-        }
-    };
+    let app_path = app_handle
+        .path()
+        .app_data_dir()
+        .map_err(|err| err.process_err(Status::SystemErr, ""))?;
 
-    match std::fs::create_dir_all(&app_path) {
-        Ok(_) => {},
-        Err(err) => {
-            log::error!(
-                "FUN get_nick_data_path FAILED TO CREATE DIRECTORY: {}, tech_err = {}, local_err = {}",
-                app_path.display(), err, Status::SystemErr
-            );
-            return Err(Status::SystemErr);
-        }
-    }
+    std::fs::create_dir_all(&app_path)
+        .map_err(|err| err.process_err(Status::SystemErr, ""))?;
+
 
     let file_path = app_path.join("nick_names.json");
 

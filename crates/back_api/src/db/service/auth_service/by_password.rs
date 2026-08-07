@@ -5,7 +5,7 @@ use argon2::{
     Argon2
 };
 
-use shared_lib::Status;
+use shared_lib::{ProcessError, Status};
 use shared_lib::service::auth_service::implements::{
     PasswordDataBackApi, 
     AuthStep
@@ -27,17 +27,13 @@ pub(crate) async fn restore_session_by_passord(
     data: &PasswordDataClient
 ) -> Result<AuthStep, Status> {
 
-    let failed_data = data;
+    let failed_result = Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
 
     let auth_check_password_option = match get_restore_password_data(state, data).await {
         Ok(opt) => opt,
-        Err(err) => {
-            tracing::error!(
-                err = ?err,
-                failed_data = ?failed_data,
-                "FUN restore_session_by_passord FAILED BY get_restore_password_data FUN"
-            );
-            return Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
+        Err(err) => { 
+            err.process_err(err, "");
+            return failed_result; 
         }
     };
 
@@ -57,26 +53,18 @@ pub(crate) async fn restore_session_by_passord(
     let server_parsed_hash = match PasswordHash::new(&password_hash) {
         Ok(hash) => hash,
         Err(err) => {
-            tracing::error!(
-                tech_err = ?err,
-                user = %user_id,
-                "WRONG PASSWORD DATA IN SQL Users"
-            );
-            return Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
+            err.process_err(Status::SystemErr, "");
+            return failed_result;
         }
     };
 
     match Argon2::default().verify_password(data.password.as_bytes(), &server_parsed_hash) {
         Ok(_) => {}
         Err(err) => {
-            tracing::warn!(
-                tech_err = ?err,
-                user_id = %user_id,
-                "USER_SENDED_WRONG_PASSWORD!!!"
-            );
+            err.process_err(Status::SystemErr, "");
             return Ok(AuthStep::Password {text: AuthInfo::WrongPassword});
-            }  
-        };
+        }  
+    }
     
     if let Some(t) = token {
         let token_device_data = TokenDeviceData {
@@ -89,11 +77,7 @@ pub(crate) async fn restore_session_by_passord(
     let (external_id, call_phone) = match smsru_get_phone(state, &phone).await {
         Ok(res) => res,
         Err(err) => {
-            tracing::error!(
-                err = ?err,
-                user_id = %user_id,
-                "FUN restore_session_by_passord FAILED ON GETTING CALL BACK PHONE BY FUN smsru_get_phone"
-            );
+            err.process_err(err, "");
             return Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
         }
     };
@@ -103,18 +87,11 @@ pub(crate) async fn restore_session_by_passord(
             Ok(AuthStep::CallIn { phone: call_phone, external_id, text: AuthInfo::CallIn })
         }
         Ok(false) => {
-            tracing::error!(
-                user_id = %user_id,
-                "WRONG LOGIC IN FUN new_cf AND SQL QUERYS" 
-            );
+            Status::Tech.process_err(Status::SystemLogicErr, "");
             Ok(AuthStep::TryLater {text: AuthInfo::BackApiError})
         }
         Err(err) => {
-            tracing::error!(
-                user_id = %user_id,
-                err = ?err,
-                "WRONG LOGIC IN FUN new_cf AND SQL QUERYS" 
-            );
+            err.process_err(Status::SystemLogicErr, "");
             Ok(AuthStep::TryLater {text: AuthInfo::BackApiError})
         } 
     }

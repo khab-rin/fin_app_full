@@ -7,6 +7,7 @@ pub enum Status {
     #[default]
     Success = 0,
     Unknown = 1,
+    Tech = 2,
 
     // ==========================================
     // 100-я группа: Ошибки валидации входных данных
@@ -103,6 +104,7 @@ pub enum Status {
     SystemLogicErr = 402,
     ClientSessionMissError = 403,
     ResponseMappingError = 404,
+    UserWrongData = 405,
 
     // ==========================================
     // 500-я группа: Ошибки интеграции с внешними API и сервисами

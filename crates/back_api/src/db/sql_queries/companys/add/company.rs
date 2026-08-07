@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use shared_lib::Status;
+use shared_lib::{Status, ProcessError};
 use shared_lib::sql_models::company::implements::{Company, CompanyDto};
 use shared_lib::primitives::frozen::text::{BoxUuid, CompInn, Kpp, CompStatus, CompType, DateTime};
 
@@ -13,19 +13,12 @@ pub(crate) async fn add_company(
     new_company: &Company
 ) -> Result<Company, Status> {
 
-    let exist_company_option = match get_company_by_inn_kpp(
-            state, 
-            &new_company.comp_inn, 
-            &new_company.kpp).await {
-        Ok(o) => o,
-        Err(err) => {
-            tracing::error!(
-                local_err = ?err,
-                "FUN add_company FAILED BY FUN get_company_by_inn_kpp"
-            );
-            return Err(err);
-        }
-    };
+    let exist_company_option = get_company_by_inn_kpp(
+        state, 
+        &new_company.comp_inn, 
+        &new_company.kpp)
+        .await
+        .map_err(|err| err.process_err(err, ""))?; 
 
     let company = match exist_company_option {
         Some(mut c) => {
@@ -39,8 +32,7 @@ pub(crate) async fn add_company(
     };
 
 
-    let company_dto = match sqlx::
-        query_file_as!(
+    let company_dto = sqlx::query_file_as!(
             CompanyDto,
             "src/db/sql_queries/companys/add/company.sql",
             company.comp_inn.as_ref(),
@@ -48,28 +40,14 @@ pub(crate) async fn add_company(
             company.comp_type.as_str(),
             company.comp_status.as_str(),
             serde_json::to_value(&company.metadata).unwrap_or_default()
-        ).fetch_one(&state.pool_fast).await {
-            Ok(dto) => dto,
-            Err(err) => {
-                tracing::error!(
-                    tech_err = ?err,
-                    local_err = ?Status::SqlQueryWrongLogic,
-                    "FUN add_company FAILED BY WRONG QUERY LOGIC"
-                );
-                return Err(Status::SqlQueryWrongLogic);
-            }
-        };
+        ).fetch_one(&state.pool_fast)
+        .await
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+    
+    let company: Company = company_dto
+        .try_into()
+        .map_err(|err: serde_json::Error| err.process_err(Status::MappingError, ""))?;
 
-    match company_dto.try_into() {
-        Ok(company) => Ok(company),
-        Err(err) => {
-            tracing::error!(
-                err = ?err,
-                "FUN add_company GET NONE BY SQL QUERY GET company BY company"
-            );
-            Err(Status::SqlQueryWrongLogic)
-        }
-    }
-
+    Ok(company)
 
 }

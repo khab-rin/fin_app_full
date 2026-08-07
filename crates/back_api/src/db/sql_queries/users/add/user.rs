@@ -1,4 +1,4 @@
-use shared_lib::Status;
+use shared_lib::{Status, ProcessError};
 use shared_lib::primitives::frozen::text::{BoxUuid, DateTime};
 use shared_lib::sql_models::user::implements::{User, UserSetData, UserDto};
 
@@ -21,27 +21,15 @@ pub(crate) async fn add_user(
 
     let guids_vec: Vec<uuid::Uuid> = guids.iter().map(|x| *x.as_ref()).collect();
 
-    let exist_user_dto_option = match get_user_by_pers_comp_id(state, pers_id, comp_id).await {
-        Ok(o) => o,
-        Err(err) => {
-            tracing::error!(
-                local_err = ?err,
-                "FUN add_user FAILED BY FUN get_user_by_inn_pers_comp_kpp"
-            );
-            return Err(err);
-        }
-    };
+    let exist_user_dto_option = get_user_by_pers_comp_id(state, pers_id, comp_id)
+        .await
+        .map_err(|err| err.process_err(err, ""))?;  
 
     if exist_user_dto_option.is_some() {
-        tracing::error!(
-            local_err = ?Status::SystemLogicErr,
-            "FUN add_user FAILED BY TRYING INSERT DUPLICATE USER"
-        );
-        return Err(Status::SystemLogicErr);
+        return Err(Status::Tech.process_err(Status::SystemLogicErr, ""));
     };
 
-    let user_dto = match sqlx::
-        query_file_as!(
+    let user_dto = sqlx::query_file_as!(
             UserDto,
             "src/db/sql_queries/users/add/user.sql",
             pers_id.as_ref(),
@@ -50,31 +38,13 @@ pub(crate) async fn add_user(
             password_hash,
             email.as_ref(),
             &guids_vec,
-        ).fetch_one(&state.pool_fast).await {
-            Ok(u) => u,
-            Err(err) => {
-                tracing::error!(
-                    tech_err = ?err,
-                    local_err = ?Status::SqlQueryWrongLogic,
-                    failed_data = ?set_data,
-                    "FUN add_user FAILED BY SQL QUERY"
-                );
-                return Err(Status::SqlQueryWrongLogic)
-            }
-        };
+        ).fetch_one(&state.pool_fast)
+        .await
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;  
 
-    match user_dto.try_into() {
-        Ok(u) => Ok(u),
-        Err(err) => {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::MappingError,
-                failed_data = ?set_data,
-                "FUN set_user FAILED BY MAPPING User FROM UserDto"
-            );
-            Err(Status::MappingError)
-        }
-    }
+    user_dto
+        .try_into()
+        .map_err(|err: serde_json::Error| err.process_err(Status::MappingError, ""))  
 
 
 }

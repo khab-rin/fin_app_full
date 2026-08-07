@@ -1,4 +1,4 @@
-use shared_lib::Status;
+use shared_lib::{ProcessError, Status};
 use shared_lib::service::auth_service::implements::{AuthInfo, AuthStep, RegInitData};
 
 use crate::config::BackApiState;
@@ -94,11 +94,7 @@ pub(crate) async fn make_init_files(
     let json_file = match serde_json::to_vec(&data) {
         Ok(j) => j,
         Err(err) => {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::SerializationError,
-                "FUN make_init_files FAILED BY serde_json::to_value"
-            );
+            err.process_err(Status::SerializationError, "ext_info");
             return Ok(failed_result);
         }
     };

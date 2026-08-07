@@ -1,3 +1,5 @@
+use std::os::unix::process;
+
 use argon2::{
     password_hash::{
         rand_core::OsRng,
@@ -6,7 +8,7 @@ use argon2::{
     Argon2
 };
 
-use shared_lib::{Status, IntoApiStatus};
+use shared_lib::{Status, ProcessError};
 use shared_lib::service::auth_service::implements::{
     RegInitData, 
     AuthInfo, 
@@ -38,7 +40,6 @@ use crate::db::service::auth_service::pers_sign_parser::{
 };
 
 
-
 pub(crate) async fn register_step2(
     state: &BackApiState,
     data: &CheckSignDocData
@@ -54,11 +55,7 @@ pub(crate) async fn register_step2(
     let json_content = match String::from_utf8(init_file.clone()) {
         Ok(c) => c,
         Err(err) => {
-            tracing::error!(
-                teck_err = ?err,
-                local_err = ?Status::FileReadError,
-                "FUN register_step2 FAILED BY String::from_utf8(json_file.clone())"
-            );
+            err.process_err(Status::FileReadError, "");
             return Ok(failed_result);
         }
     };
@@ -66,11 +63,7 @@ pub(crate) async fn register_step2(
     let json_data: RegInitData = match serde_json::from_str(&json_content) {
         Ok(d) => d,
         Err(err) => {
-            tracing::error!(
-                teck_err = ?err,
-                local_err = ?Status::MappingError,
-                "FUN register_step2 FAILED BY serde_json::from_str(&json_content)"
-            );
+            err.process_err(Status::MappingError, "");
             return Ok(failed_result);
         }
     };
@@ -92,10 +85,7 @@ pub(crate) async fn register_step2(
     let person_option = match get_person_by_inn(state, &pers_inn).await {
         Ok(o) => o,
         Err(err) => {
-            tracing::error!(
-                local_err = ?err,
-                "FUN register_step2 FAILED BY FUN get_person_by_inn"
-            );
+            err.process_err(err, "");
             return Ok(failed_result);
         }
     };
@@ -103,10 +93,7 @@ pub(crate) async fn register_step2(
     let person = match person_option {
         Some(p) => p,
         None => {
-            tracing::error!(
-                local_err = ?&Status::SystemLogicErr,
-                "FUN register_step2 FAILED BY WRONG SYSTEM LOGIC, PERSON JUST MUST BE IN DATA"
-            );
+            Status::Tech.process_err(Status::SystemLogicErr, "");
             return Ok(failed_result);
         }
     };
@@ -114,10 +101,7 @@ pub(crate) async fn register_step2(
     let company_option = match get_company_by_inn_kpp(state, &comp_inn, &kpp).await {
         Ok(o) => o,
         Err(err) => {
-            tracing::error!(
-                local_err = ?err,
-                "FUN register_step2 FAILED BY FUN get_company_by_inn_kpp"
-            );
+            err.process_err(err, "");
             return Ok(failed_result);
         }
     };
@@ -125,10 +109,7 @@ pub(crate) async fn register_step2(
     let company = match company_option {
         Some(c) => c,
         None => {
-            tracing::error!(
-                local_err = ?Status::SystemLogicErr,
-                "FUN register_step2 FAILED BY WRONG SYSTEM LOGIC, COMPANY JUST MUST BE IN DATA"
-            );
+            Status::Tech.process_err(Status::SystemLogicErr, "");
             return Ok(failed_result);
         }
     };
@@ -141,10 +122,7 @@ pub(crate) async fn register_step2(
             &kpp).await {
         Ok(o) => o,
         Err(err) => {
-            tracing::error!(
-                local_err = ?err,
-                "FUN init_user FAILED BY FUN get_user_by_inn_pers_comp_kpp"
-            );
+            err.process_err(err, "");
             return Ok(failed_result);
         }
     };
@@ -153,10 +131,7 @@ pub(crate) async fn register_step2(
         let tel_email_option = match get_user_phone_mail_by_id(state, &u.user_id).await {
             Ok(o) => o,
             Err(err) => {
-                tracing::error!(
-                    local_err = ?err,
-                    "FUN init_user FAILED BY FUN get_user_phone_mail_by_id"
-                );
+                err.process_err(err, "");
                 return Ok(failed_result);
             }
         };
@@ -205,32 +180,17 @@ pub(crate) async fn register_step2(
     {
         Ok(r) => r,
         Err(err) => {
-            tracing::error!(
-                target: "back_api::crypto_client",
-                url = %crypto_url,
-                err = ?err,
-                is_timeout = err.is_timeout(),
-                is_connect = err.is_connect(),
-                local_err = ?Status::QueryGetRequestErr,
-                "FUN register_step2 FAILED BY NETWORK/CONNECT TO CRYPTO SERVICE"
-            );
+            let ext_inf = format!("url = {:?}, is_timeout = {:?}, is_connect = {:?}", crypto_url, err.is_timeout(), err.is_connect());
+            err.process_err(Status::QueryGetRequestErr, &ext_inf);
             return Ok(failed_result);
         }
     };
 
     if !response.status().is_success() {
         let status_code = response.status();
-        
         let error_body = response.text().await.unwrap_or_else(|_| "Failed to read body".to_string());
-
-        tracing::error!(
-            target: "back_api::crypto_client",
-            url = %crypto_url,
-            http_status = %status_code,
-            response_body = %error_body,
-            local_err = ?Status::QueryGetRequestErr,
-            "FUN register_step2 FAILED: CRYPTO SERVICE RETURNED ERROR STATUS"
-        );
+        let ext_inf = format!("url = {:?}, http_status = {:?}, response_body = {:?}", crypto_url, status_code, error_body);
+        Status::Tech.process_err(Status::QueryGetRequestErr, &ext_inf);
         return Ok(failed_result);
     }
 
@@ -239,16 +199,10 @@ pub(crate) async fn register_step2(
             .await {
         Ok(r) => r,
         Err(err) => {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::MappingError,
-                "FUN register_step2 FAILED BY MAPPING CryptoVerifyPersonResponse"
-            );
+            err.process_err(Status::MappingError, "");
             return Ok(failed_result);
         }
     };
-
-    tracing::info!(check_result = %check_result.text);
 
     if !check_result.is_signed {
         return Ok(AuthStep::RegisterStep1 {text: AuthInfo::WrongSignFile});
@@ -257,7 +211,7 @@ pub(crate) async fn register_step2(
     let sign_fields = match parse_crypto_fields_org(&check_result.text) {
         Ok(r) => r,
         Err(err) => {
-            err.process_err(err);
+            err.process_err(err, "");
             return Ok(failed_result)
         }
     };
@@ -273,11 +227,7 @@ pub(crate) async fn register_step2(
     let argon2_hash = match hasher.hash_password(password.as_ref().as_bytes(), &salt) {
         Ok(h) => h.to_string(),
         Err(err) => {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::SystemErr,
-                "FUN register_step2 FAILED BY FUN arg2.hash_password"
-            );
+            err.process_err(Status::SystemErr, "");
             return Ok(failed_result);
         }
     };
@@ -296,17 +246,14 @@ pub(crate) async fn register_step2(
     let user = match add_user(state, &user_set_data).await {
         Ok(u) => u,
         Err(err) => {
-            tracing::error!(
-                local_err = ?err,
-                "FUN register_step2 FAILED BY FUN  add_user"
-            );
+            err.process_err(err, "");
             return Ok(failed_result);
         }
     };
 
     if check_manager(&json_data, &sign_fields) {
         if let Err(err) = add_new_manager(&user.user_id).await {
-            err.process_err(err);
+            err.process_err(err, "");
             return Ok(failed_result);
         }
     }
@@ -314,10 +261,7 @@ pub(crate) async fn register_step2(
     let token = match new_session(state, &user.user_id, &device_id).await {
         Ok(t) => t,
         Err(err) => {
-            tracing::error!(
-                local_err = ?err,
-                "FUN register_step2 FAILED BY FUN new_session"
-            );
+            err.process_err(err, "");
             return Ok(failed_result);
         }
     };

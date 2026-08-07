@@ -1,4 +1,4 @@
-use shared_lib::Status;
+use shared_lib::{ProcessError, Status};
 use shared_lib::primitives::frozen::text::{BoxUuid, DateTime};
 use shared_lib::primitives::composite::implements::Fio;
 use shared_lib::sql_models::person::implements::{Person, PersonMetadata};
@@ -55,10 +55,7 @@ pub(crate) async fn register_step1(
     let _ = match add_person(state, &new_person).await {
         Ok(p) => p,
         Err(err) => {
-            tracing::error!(
-                local_err = ?err,
-                "FUN init_user FAILED BY FUN add_person"
-            );
+            err.process_err(err, "");
             return Ok(failed_result);
         }
     };
@@ -66,10 +63,7 @@ pub(crate) async fn register_step1(
     let new_company = match parse_company_by_inn_kpp(state, comp_inn, kpp).await {
         Ok(c) => c,
         Err(err) => {
-            tracing::error!(
-                local_err = ?err,
-                "FUN init_user FAILED BY FUN parse_company_by_inn_kpp"
-            );
+            err.process_err(err, "");
             return Ok(failed_result)
         }
     };
@@ -77,10 +71,7 @@ pub(crate) async fn register_step1(
     let _ = match add_company(state, &new_company).await {
         Ok(c) => c,
         Err(err) => {
-            tracing::error!(
-                local_err = ?err,
-                "FUN init_user FAILED BY FUN add_company"
-            );
+            err.process_err(err, "");
             return Ok(failed_result)
         }
     };

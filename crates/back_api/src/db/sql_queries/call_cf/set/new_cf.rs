@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use shared_lib::Status;
+use shared_lib::{Status, ProcessError};
 use shared_lib::primitives::frozen::text::BoxUuid;
 
 use crate::config::BackApiState;
@@ -14,21 +14,15 @@ pub(crate) async fn new_cf(
 
     tracing::debug!(external_id = ?external_id);
 
-    let insert_res = sqlx::
-        query_file!(
+    let insert_res = sqlx::query_file!(
             "src/db/sql_queries/call_cf/set/new_cf.sql",
             user_id.as_ref(),
             device_id.as_ref(),
             external_id
         ).fetch_optional(&state.pool_fast)
         .await
-        .inspect_err(|err| {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::SqlQueryWrongLogic
-            )
-        })
-        .map_err(|_| Status::SqlQueryWrongLogic)?;
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+
 
     Ok(insert_res.is_some())
 }

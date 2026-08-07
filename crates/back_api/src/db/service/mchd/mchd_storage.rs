@@ -2,7 +2,7 @@ use std::collections::HashSet;
 use std::path::PathBuf;
 
 use chrono::Local;
-use shared_lib::{Status, IntoApiStatus};
+use shared_lib::{Status, ProcessError};
 
 use shared_lib::service::mchd::poa::PoaMchd;
 use shared_lib::service::mchd::service::{MchdStorage};
@@ -43,11 +43,7 @@ pub(crate) fn get_mchd_data_path() -> Result<PathBuf, Status> {
                 Ok(home.join(format!(".{}", crate_name)).join("mchd"))
             }
             None => {
-                tracing::error!(
-                    local_err = ?Status::DirCreateError,
-                    "FUN get_mchd_data_path FAILED: Не удалось определить домашнюю директорию пользователя"
-                );
-                Err(Status::DirCreateError)
+                return Err(Status::Tech.process_err(Status::DirCreateError, ""));
             }
         }
     }
@@ -58,16 +54,8 @@ pub(crate) fn get_mchd_data_path() -> Result<PathBuf, Status> {
 
 pub(crate) async fn get_mchd_storage() -> Result<MchdStorage, Status> {
 
-    let path = match get_mchd_data_path() {
-        Ok(p) => p,
-        Err(err) => {
-            tracing::error!(
-                local_err = ?err,
-                "FUN get_mchd_data BY FUN get_mchd_data_path"
-            );
-            return Err(err);
-        }
-    };
+    let path = get_mchd_data_path()
+        .map_err(|err| err.process_err(err, ""))?;
 
     let file_path = path.join("storage.json");
 
@@ -77,31 +65,12 @@ pub(crate) async fn get_mchd_storage() -> Result<MchdStorage, Status> {
             managers: HashSet::new()});
     }
 
-    let json_content = match std::fs::read_to_string(&file_path) {
-        Ok(c) => c,
-        Err(err) => {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::FileReadError,
-                "FUN get_mchd_data BY FUN std::fs::read_to_string"
-            );
-            return Err(Status::FileReadError);
-        }
-    };
+    let json_content = std::fs::read_to_string(&file_path)
+        .map_err(|err| err.process_err(Status::FileReadError, ""))?;
 
 
-    match serde_json::from_str(&json_content) {
-        Ok(s) => Ok(s),
-        Err(err) => {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::MappingError,
-                "FUN get_mchd_data BY FUN std::fs::read_to_string"
-            );
-            Err(Status::MappingError)
-        }
-    }
-
+    serde_json::from_str(&json_content)
+        .map_err(|err| err.process_err(Status::MappingError, ""))?
 
 }
 
@@ -109,49 +78,21 @@ pub(crate) async fn get_mchd_storage() -> Result<MchdStorage, Status> {
 pub(crate) async fn write_mchd_storage_to_file(
     storage: MchdStorage
 ) -> Result<(), Status> {
-    let path = match get_mchd_data_path() {
-        Ok(p) => p,
-        Err(err) => {
-            tracing::error!(
-                local_err = ?err,
-                "FUN write_mchd_storage_to_file BY FUN get_mchd_data_path"
-            );
-            return Err(err);
-        }
-    };
+    let path = get_mchd_data_path()
+        .map_err(|err| err.process_err(err, ""))?;
+ 
 
     if let Err(err) = std::fs::create_dir_all(&path) {
-        tracing::error!(
-            tech_err = ?err,
-            local_err = ?&Status::DirCreateError,
-            path = ?path,
-            "FUN write_mchd_storage_to_file FAILED: Не удалось создать директорию"
-        );
-        return Err(Status::DirCreateError);
+        return Err(err.process_err(Status::DirCreateError, ""));
     }
 
     let file_path = path.join("storage.json");
 
-    let json_content = match serde_json::to_string_pretty(&storage) {
-        Ok(c) => c,
-        Err(err) => {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::MappingError,
-                "FUN write_mchd_storage_to_file FAILED: Ошибка сериализации MchdStorage в JSON"
-            );
-            return Err(Status::MappingError);
-        }
-    };
-
+    let json_content = serde_json::to_string_pretty(&storage)
+        .map_err(|err| err.process_err(Status::MappingError, ""))?;
+    
     if let Err(err) = std::fs::write(&file_path, &json_content) {
-        tracing::error!(
-            tech_err = ?err,
-            local_err = ?Status::FileReadError,
-            path = ?file_path,
-            "FUN write_mchd_storage_to_file FAILED: Не удалось записать файл на диск"
-        );
-        return Err(Status::FileWriteError);
+        return Err(err.process_err(Status::FileWriteError, ""));
     }
 
     Ok(())
@@ -168,24 +109,12 @@ pub(crate) fn insert_poa(
     let guide_str: String = if identificator.len() > 36 {
         identificator[identificator.len() - 36..].iter().collect()
     } else {
-        tracing::error!(
-            local_err = ?Status::DataCorruptionErr,
-            "FUN register_mchd FAILED BY if identificator.len() > 36"
-        );
-        return Err(Status::DataCorruptionErr);
+        return Err(Status::Tech.process_err(Status::DataCorruptionErr, ""));
     };
 
-    let guide_uuid = match uuid::Uuid::parse_str(&guide_str) {
-        Ok(g) => g,
-        Err(err) => {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::SystemLogicErr,
-                "FUN register_mchd FAILED BY uuid::Uuid::parse_str(&guide_str)"
-            );
-            return Err(Status::SystemLogicErr);
-        }
-    };
+    let guide_uuid = uuid::Uuid::parse_str(&guide_str)
+        .map_err(|err| err.process_err(Status::SystemLogicErr, ""))?;
+
 
     let guide = BoxUuid::unchecked(guide_uuid);
 
@@ -203,7 +132,7 @@ pub(crate) fn insert_poa(
         let poa_end_date = match &poa.poa.poa_doc {
             PoaRootKind::RootPoa(boxed_root) => boxed_root.poa_metadata.life_date.clone(),
             _ => { 
-                return Err(Status::Unknown); 
+                return Err(Status::Tech.process_err(Status::SystemLogicErr, "")); 
             }
         };
 
@@ -224,13 +153,13 @@ pub(crate) async fn add_new_manager(
 ) -> Result<(), Status> {
     let mut storage = get_mchd_storage()
         .await
-        .map_err(|err| err.process_err(err))?;
+        .map_err(|err| err.process_err(err, ""))?;
     
     storage.managers.insert(user_id.clone());
 
     write_mchd_storage_to_file(storage)
         .await
-        .map_err(|err| err.process_err(err))?;
+        .map_err(|err| err.process_err(err,""))?;
 
     Ok(())
 }
@@ -241,13 +170,13 @@ pub(crate) async fn add_new_poa(
 
     let storage = get_mchd_storage()
         .await
-        .map_err(|err| err.process_err(err))?;
+        .map_err(|err| err.process_err(err, ""))?;
 
     let storage = insert_poa(poa, storage)
-        .map_err(|err| err.process_err(err))?;
+        .map_err(|err| err.process_err(err, ""))?;
 
     write_mchd_storage_to_file(storage).await
-        .map_err(|err| err.process_err(err))?;
+        .map_err(|err| err.process_err(err, ""))?;
 
     
     Ok(())

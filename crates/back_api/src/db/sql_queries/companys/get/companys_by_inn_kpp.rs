@@ -1,4 +1,4 @@
-use shared_lib::Status;
+use shared_lib::{Status, ProcessError};
 use shared_lib::sql_models::company::implements::{Company, CompanyDto};
 use shared_lib::primitives::frozen::text::{BoxUuid, CompInn, Kpp, CompType, CompStatus, DateTime};
 
@@ -11,22 +11,14 @@ pub(crate) async fn get_companys_by_inn_kpp(
     kpp_data: &[String]
 ) -> Result<Vec<Company>, Status> {
 
-    let companys_dto = match sqlx::
-        query_file_as!(
+    let companys_dto = sqlx::query_file_as!(
             CompanyDto,
             "src/db/sql_queries/companys/get/companys_by_inn_kpp.sql",
             &comp_inn_data[..],
             &kpp_data[..]
-        ).fetch_all(&state.pool_long).await {
-            Ok(d) => d,
-            Err(err) => {
-                tracing::error!(
-                    tech_err = ?err,
-                    local_err = ?Status::SqlQueryWrongLogic,
-                );
-                return Err(Status::SqlQueryWrongLogic);
-            }
-        };
+        ).fetch_all(&state.pool_long).await
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+
 
     dto_to_company_vec(companys_dto)
 

@@ -1,4 +1,4 @@
-use shared_lib::Status;
+use shared_lib::{Status, ProcessError};
 use shared_lib::primitives::frozen::text::{BoxUuid, PersInn, DateTime};
 use shared_lib::sql_models::person::implements::{Person, PersonDto};
 
@@ -10,16 +10,9 @@ pub(crate) async fn add_person(
     person: &Person
 ) -> Result<Person, Status> {
 
-    let exist_person_option = match get_person_by_inn(state, &person.pers_inn).await {
-        Ok(o) => o,
-        Err(err) => {
-            tracing::error!(
-                local_err = ?err,
-                "FUN add_person FAILED BY FUN get_person_by_inn"
-            );
-            return Err(err);
-        }
-    };
+    let exist_person_option = get_person_by_inn(state, &person.pers_inn)
+        .await
+        .map_err(|err| err.process_err(err, ""))?;
 
     let person = match exist_person_option {
         Some(mut exist_person) => {
@@ -29,38 +22,22 @@ pub(crate) async fn add_person(
         None => {person.clone()}
     };
 
-
-
-    let person_dto = match sqlx::
-        query_file_as!(
+    let person_dto = sqlx::query_file_as!(
             PersonDto,
             "src/db/sql_queries/persons/add/by_person.sql",
             person.pers_id.as_ref(),
             person.pers_inn.as_ref(),
             serde_json::to_value(&person.metadata).unwrap_or_default()
         ).fetch_one(&state.pool_fast)
-        .await {
-            Ok(r) => r,
-            Err(err) => {
-                tracing::error!(
-                    tech_err = ?err,
-                    local_err = ?Status::SqlQueryWrongLogic,
-                    "FUN add_person FAILED BY WRONG QUERY LOGIC"
-                );
-                return Err(Status::SqlQueryWrongLogic);
-            }
-        };
+        .await
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
 
 
-    match person_dto.try_into() {
-        Ok(p) => Ok(p),
-        Err(err) => {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::MappingError,
-                "FUN add_person FAILED BY MAPPING Person"
-            );
-            Err(Status::MappingError)
-        }
-    }
+    let person = person_dto
+        .try_into()
+        .map_err(|err: serde_json::Error| err.process_err(Status::MappingError, ""))?;
+
+        
+    Ok(person)
+    
 }

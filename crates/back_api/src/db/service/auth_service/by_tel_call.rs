@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use shared_lib::Status;
+use shared_lib::{ProcessError, Status};
 use shared_lib::service::auth_service::implements::{ 
     AuthStep, ExternalDeviceData, SessionUserToken, SmsRuResponseTextCode, AuthInfo
 };
@@ -17,24 +17,19 @@ pub(crate) async fn make_session_by_tel_call(
     data: &ExternalDeviceData
 ) -> Result<AuthStep, Status> {
 
-
-
+    let failed_result = Ok(AuthStep::TryLater { text: AuthInfo::BackApiError });
     let ExternalDeviceData {external_id, device_id} = data;
 
     let expire_option = match get_user_time_by_device_external(state, data).await {
         Ok(o) => o,
         Err(err) => {
-            tracing::error!(
-                local_err = ?err,
-                "FUN make_session_by_tel_call FAILED BY FUN get_user_time_by_device_external"
-            );
-            return Ok(AuthStep::TryLater { text: AuthInfo::BackApiError });
+            err.process_err(err, "");
+            return failed_result;
         }
     };
 
-    tracing::debug!(call_cf_line = ?expire_option, "Checking CallCf Query");
 
-    let (user_id, expires_t) = match expire_option {
+    let (user_id, _) = match expire_option {
         Some((a, b)) => (a, b),
         None => return Ok(AuthStep::RegisterStep1 { text: AuthInfo::MissUserNeedRegistration })
     };
@@ -43,12 +38,8 @@ pub(crate) async fn make_session_by_tel_call(
     let phone_cf = match smsru_get_cf(state, external_id).await {
         Ok(cf) => cf,
         Err(err) => {
-            tracing::error!(
-                user_id = %user_id,
-                err = ?err,
-                "FUN restore_user_by_tel_call FAILED IN CALL FUN smsru_get_cf"
-            );
-            return Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
+            err.process_err(err, "");
+            return failed_result;
         }
     };
 
@@ -62,18 +53,14 @@ pub(crate) async fn make_session_by_tel_call(
             return Ok(res)
         },
         SmsRuResponseTextCode::UnknownCode => {
-            return Ok(AuthStep::TryLater { text: AuthInfo::BackApiError })
+            return failed_result
         }
     }
 
     let token = match new_session(state, &user_id, device_id).await {
         Ok(t) => t,
         Err(err) => {
-            tracing::error!(
-                user_id = %user_id,
-                err = ?err,
-                "FUN restore_user_by_tel_call FAILED BY FUN new_session"
-            );
+            err.process_err(err, "");
             return Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
         }
     };
@@ -81,12 +68,8 @@ pub(crate) async fn make_session_by_tel_call(
     let session_user = match get_user_by_user_id(state, &user_id).await {
         Ok(u) => u,
         Err(err) => {
-            tracing::error!(
-                user_id = %user_id,
-                err = ?err,
-                "FUN restore_user_by_tel_call FAILED BY FUN get_user_by_user_id"
-            );
-            return Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
+            err.process_err(err, "");
+            return failed_result;
         }
     };
 
