@@ -1,5 +1,5 @@
 use shared_lib::sql_models::operation::service::OperationInfo::SuccessRaw;
-use shared_lib::{Status, ClientState};
+use shared_lib::{ClientState, ProcessError, Status};
 use shared_lib::sql_models::operation::implements::OperationRaw;
 use shared_lib::primitives::composite::implements::RasBicAcc;
 use shared_lib::sql_models::operation::service::{OperationStep, OperationInfo};
@@ -14,16 +14,6 @@ pub async fn make_bank_statement_operations(
 
     let failed_result = OperationStep::TryLater { text: OperationInfo::ClientApiSystemError };
 
-    let session = match state.get_session().await {
-        Ok(s) => s,
-        Err(err) => {
-            log::error!(
-                "local_err = {:?}, FUN make_bank_statement_operations FAILED BY MISS SESSION", err
-            );
-            return Ok(failed_result);
-        }
-    };
-
     let all_operations = match parse_statement(
             state, 
             ras_bic_acc, 
@@ -31,9 +21,7 @@ pub async fn make_bank_statement_operations(
         Ok(OperationStep::SuccessRaw { operations, ..}) => operations,
         Ok(res) => return Ok(res),
         Err(err) => {
-            log::error!(
-                "local_err = {:?}, FUB make_bank_statement_operations FAILED BY FUN parse_statement", err
-            );
+            err.process_err(err, "");
             return Ok(failed_result);
         }
     };
