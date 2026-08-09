@@ -82,20 +82,28 @@ pub(crate) fn parse_crypto_fields_org(text: &str) -> Result<CryptoSignFields, St
 }
 
 
-pub fn check_person(
+pub fn check_auth_person(
     init_data: &RegInitData,
     fields: &CryptoSignFields
 ) -> bool {
 
-    init_data.pers_inn == fields.pers_inn && init_data.snils == fields.snils
+    init_data.comp_inn == fields.comp_inn
 
 }
 
-pub fn check_manager(
+pub fn check_auth_manager(
     init_data: &RegInitData,
     fields: &CryptoSignFields
 ) -> bool {
 
-    fields.man_title.is_some() && init_data.comp_inn == fields.comp_inn
+    tracing::info!("check_manager runing");
+
+    tracing::info!(init_data = ?init_data, fields = ?fields);
+
+    if init_data.comp_inn.len() == 10 {
+        fields.man_title.is_some() && init_data.pers_inn == fields.pers_inn
+    } else {
+        fields.pers_inn == init_data.pers_inn && fields.snils == init_data.snils
+    }
 
 }

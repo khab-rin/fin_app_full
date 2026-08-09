@@ -11,6 +11,8 @@ pub(crate) async fn parse_company_by_inn_kpp(
     kpp: &Kpp
 ) -> Result<Company, Status> {
 
+    let ext_info = format!("inn = {:?}, kpp = {:?}", comp_inn, kpp);
+
     let client = state.config.get_inst_client();
 
     let header = state.config.get_dadata_header();
@@ -22,55 +24,56 @@ pub(crate) async fn parse_company_by_inn_kpp(
         .json(&serde_json::json!({"query": comp_inn, "kpp": kpp}))
         .send()
         .await
-        .map_err(|err| err.process_err(Status::QueryPostRequestErr, ""))?;
+        .map_err(|err| err.process_err(Status::QueryPostRequestErr, &ext_info))?;
   
 
     let status = response.status();
 
     if !status.is_success() {
         let error_body = response.text().await.unwrap_or_else(|_| "Не удалось прочитать тело ответа".to_string());
-        return Err(Status::QueryPostRequestErr.process_err(Status::QueryPostRequestErr, &error_body));
+        return Err(Status::Tech.process_err(Status::QueryPostRequestErr, &error_body));
     }
 
+    let info = format!("response = {:?}, ext_info = {}", response, ext_info);
 
     let resp_wrap:DadaRespWrap = response
         .json()
         .await
-        .map_err(|err| err.process_err(Status::MappingError, ""))?;
+        .map_err(|err| err.process_err(Status::MappingError, &info))?;
 
 
     let metadata_option = match resp_wrap.suggestions.first() {
         Some(m) => m.data.clone(),
         None => {
-            return Err(Status::DadataResponseError.process_err(Status::DadataResponseError, ""));
+            return Err(Status::Tech.process_err(Status::DadataResponseError, &info));
         }
     };
 
     let mut metadata = match metadata_option {
         Some(m) => m,
         None => {
-            return Err(Status::DadataResponseError.process_err(Status::DadataResponseError, ""));
+            return Err(Status::DadataResponseError.process_err(Status::DadataResponseError, &ext_info));
         }
     };
 
     let okved = match &metadata.okved {
         Some(o) => o,
         None => {
-            return Err(Status::MappingError.process_err(Status::MappingError, ""));
+            return Err(Status::MappingError.process_err(Status::MappingError, &ext_info));
         }
     };
 
     let opf_data = match &metadata.opf {
         Some(o_d) => o_d,
         None => {
-            return Err(Status::MappingError.process_err(Status::MappingError, ""));
+            return Err(Status::MappingError.process_err(Status::MappingError, &ext_info));
         }
     };
 
     let opf_code = match &opf_data.opf_code {
         Some(code) => code,
         None => {
-            return Err(Status::MappingError.process_err(Status::MappingError, ""));
+            return Err(Status::MappingError.process_err(Status::MappingError, &ext_info));
         }
     };
 

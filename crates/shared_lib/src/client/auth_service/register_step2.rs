@@ -5,7 +5,7 @@ use crate::service::auth_service::implements::{
 };
 use crate::service::crypto_service::implements::CheckSignDocData;
 use crate::service::api_routes::implements::ApiRoutes;
-use crate::{Status, ClientState};
+use crate::{Status, ClientState, ProcessError};
 use crate::service::auth_service::client_state::init_session;
 use crate::client::back_api::post_query::post_query_back_api;
 use crate::client::auth_service::helper::write_new_user_info_to_device;
@@ -23,10 +23,7 @@ pub async fn register_step2(
     let init_file = match std::fs::read(json_path) {
         Ok(f) => f,
         Err(err) => {
-            log::error!(
-                "FUN register_step2 FAILED BY std::fs::read(json_path), tech_err = {:?}, local_err = {:?}",
-                err, Status::FileReadError
-            );
+            err.process_err(Status::FileReadError, "");
             return Ok(failed_result);
         }
     };
@@ -34,10 +31,7 @@ pub async fn register_step2(
     let sign_file = match std::fs::read(sign_path) {
         Ok(f) => f,
         Err(err) => {
-            log::error!(
-                "FUN register_step2 FAILED BY std::fs::read(sign_path), tech_err = {:?}, local_err = {:?}",
-                err, Status::FileReadError
-            );
+            err.process_err(Status::FileReadError, "");
             return Ok(failed_result);
         }
     };
@@ -55,9 +49,7 @@ pub async fn register_step2(
     ).await {
         Ok(r) => r,
         Err(err) => {
-            log::error!(
-                "FUN register_step2 FAILED BY POST QUERY TO BACK API, local_err = {:?}", err
-            );
+            err.process_err(err, "");
             return Ok(failed_result);
         }
     };
@@ -65,10 +57,7 @@ pub async fn register_step2(
     let auth_step: AuthStep = match response.json().await {
         Ok(s) => s,
         Err(err) => {
-            log::error!(
-                "FUN register_step2 FAILED BY MAPPING RESPONSE, err = {:?}, local_err = {:?}",
-                err, Status::MappingError
-            );
+            err.process_err(Status::MappingError, "");
             return Ok(failed_result);
         }
     };
@@ -81,10 +70,7 @@ pub async fn register_step2(
     match write_new_user_info_to_device(state, &session_token) {
         Ok(_) => {},
         Err(err) => {
-            log::error!(
-                "FUN register_step2 FAILED BY MAPPING RESPONSE, err = {:?}, local_err = {:?}",
-                err, Status::MappingError
-            );
+            err.process_err(Status::MappingError, "");
             return Ok(failed_result);
         }
     }
@@ -92,7 +78,7 @@ pub async fn register_step2(
     match init_session(state, session_token.as_ref()).await {
         Ok(_) => Ok(AuthStep::SuccessShort {  }),
         Err(err) => {
-            log::error!("FUN register_user FAILED BY init_session, err = {}",err);
+            err.process_err(err, "");
             Ok(failed_result)
         }
     }

@@ -1,4 +1,5 @@
-use crate::{Status, ClientState};
+use crate::Status::FileReadError;
+use crate::{Status, ClientState, ProcessError};
 use crate::service::mchd::service::{MchdInfo, MchdStep, RegisterMchdData};
 use crate::service::api_routes::implements::ApiRoutes;
 
@@ -11,37 +12,29 @@ pub async fn lend_mchd_to_back_api_for_register(
     sig_file_path: &String
 ) -> Result<MchdStep, Status> {
 
-    let failed_result = MchdStep::TryLater { text: MchdInfo::ClientServiceError };
+    let failed_result = Ok(MchdStep::TryLater { text: MchdInfo::ClientServiceError });
 
     let session = match state.get_session().await {
         Ok(s) => s,
         Err(err) => {
-            log::error!(
-                "FUN lend_mchd_to_back_api_for_register FAILED BY MISS Session, err = {}", err
-            );
-            return Ok(failed_result);
+            err.process_err(err, "");
+            return failed_result;
         }
     };
 
     let xml_file = match std::fs::read(xml_file_path) {
         Ok(d) => d,
         Err(err) => {
-            log::error!(
-                "FUN lend_mchd_to_back_api_for_register FAILED BY FILE READ, tech_err = {}, local_err = {}",
-                err, Status::FileReadError
-            );
-            return Ok(failed_result);
+            err.process_err(Status::FileReadError, "");
+            return failed_result;
         }
     };
 
     let sig_file = match std::fs::read(sig_file_path) {
         Ok(d) => d,
         Err(err) => {
-            log::error!(
-                "FUN lend_mchd_to_back_api_for_register FAILED BY FILE READ, tech_err = {}, local_err = {}",
-                err, Status::FileReadError
-            );
-            return Ok(failed_result);
+            err.process_err(Status::FileReadError, "");
+            return failed_result;
         }
     };
 
@@ -60,21 +53,16 @@ pub async fn lend_mchd_to_back_api_for_register(
             &data).await {
         Ok(r) => r, 
         Err(err) => {
-            log::error!(
-                "FUN lend_mchd_to_back_api_for_register FAILED BY POST QUERY TO BACK API, local_err = {:?}", err
-            );
-            return Ok(MchdStep::TryLater {text: MchdInfo::ClientApiQueryError});
+            err.process_err(err, "");
+            return failed_result;
         }
     };
 
     let mchd_step = match response.json().await {
         Ok(d) => d,
         Err(err) => {
-            log::error!(
-                "FUN lend_mchd_to_back_api_for_register FAILED BY MAPPING MchdStep, tech_err = {:?}, local_err = {:?}",
-                err, Status::MappingError
-            );
-            return Ok(failed_result);
+            err.process_err(Status::MappingError, "");
+            return failed_result;
         }
     };
 

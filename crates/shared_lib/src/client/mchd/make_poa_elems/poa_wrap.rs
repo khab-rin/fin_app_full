@@ -1,4 +1,4 @@
-use crate::Status;
+use crate::{Status, ProcessError};
 use crate::primitives::frozen::text::{BoxUuid, Date};
 use crate::primitives::frozen::text_base::Digits7_7;
 use crate::service::auth_service::general::ActiveSession;
@@ -44,15 +44,8 @@ pub fn make_root_poa(
 
     let poa_metadata = make_poametadata(session, data, mchd_num, today);
 
-    let principal_wrap = match make_principal_wrap(session, data) {
-        Ok(p) => p,
-        Err(err) => {
-            log::error!(
-                "FUN make_root_poa FAILED BY FUN make_principal_info, err = {}", err
-            );
-            return Err(err);
-        }
-    };
+    let principal_wrap = make_principal_wrap(session, data)
+        .map_err(|err| err.process_err(err, ""))?; 
 
     let delegate_powers = make_delegate_powers(data);
 

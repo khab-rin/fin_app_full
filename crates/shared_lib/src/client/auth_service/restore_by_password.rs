@@ -1,4 +1,4 @@
-use crate::{Status, ClientState};
+use crate::{Status, ClientState, ProcessError};
 use crate::service::api_routes::implements::ApiRoutes;
 use crate::service::auth_service::implements::{
     PasswordDataClient,
@@ -19,15 +19,13 @@ pub async fn restore_by_password(
     data: &PasswordDataClientShort
 ) -> Result<AuthStep, Status> {
 
-    let failed_result = AuthStep::TryLater { text: AuthInfo::ClientApiSystemError };
+    let failed_result = Ok(AuthStep::TryLater { text: AuthInfo::ClientApiSystemError });
 
     let device_id = match get_device_id() {
         Ok(d) => d,
         Err(err) => {
-            log::error!(
-                "FUN restore_by_password FAILED BY FUN get_device_id, err = {:?}", err
-            );
-            return Ok(failed_result);
+            err.process_err(err, "");
+            return failed_result;
         }
     };
 
@@ -48,8 +46,8 @@ pub async fn restore_by_password(
             &password_data).await {
         Ok(r) => r,
         Err(err) => {
-            log::error!("FUN restore_by_password FAILED BY FUN post_query_back_api, err = {}", err);
-            return Ok(failed_result);
+            err.process_err(err, "");
+            return failed_result;
         }
     };
 
@@ -57,11 +55,8 @@ pub async fn restore_by_password(
     let auth_step:AuthStep = match response.json().await {
         Ok(s) => s,
         Err(err) => {
-            log::error!(
-                "FUN restore_by_password FAILED BY POST QUERY TO BACK API, err = {:?}, local_err = {:?}",
-                err, Status::MappingError
-            );
-            return Ok(failed_result);
+            err.process_err(Status::MappingError, "");
+            return failed_result;
         }
     };
 
@@ -73,19 +68,16 @@ pub async fn restore_by_password(
     match write_new_user_info_to_device(state, &session_token) {
         Ok(_) => {},
         Err(err) => {
-            log::error!(
-                "FUN register_step2 FAILED BY MAPPING RESPONSE, err = {:?}, local_err = {:?}",
-                err, Status::MappingError
-            );
-            return Ok(failed_result);
+            err.process_err(Status::MappingError, "");
+            return failed_result;
         }
     }
 
     match init_session(state, session_token.as_ref()).await {
         Ok(_) => Ok(AuthStep::SuccessShort {  }),
         Err(err) => {
-            log::error!("FUN register_user FAILED BY init_session, err = {}",err);
-            Ok(failed_result)
+            err.process_err(err, "");
+            failed_result
         }
     }
 

@@ -1,7 +1,6 @@
-use crate::{Status, ClientState};
+use crate::{Status, ClientState, ProcessError};
 use crate::primitives::frozen::text::{PersInn, BoxUuid, DateTime};
 use crate::sql_models::person::implements::{PersonDto, Person};
-
 
 
 pub async fn get_person_by_inn(
@@ -9,32 +8,18 @@ pub async fn get_person_by_inn(
     inn: &PersInn
 ) -> Result<Option<Person>, Status> {
 
-    let session = match state.get_session().await {
-        Ok(s) => s,
-        Err(err) => {
-            log::error!(
-                "MISS SESSION IN FUN get_person_by_inn, err = {}", err
-            );
-            return Err(err);
-        }
-    };
+    let session = state.get_session().await
+        .map_err(|err| err.process_err(err, ""))?; 
 
     let inn_str = inn.to_string();
 
-    let person_dto_option = match sqlx::query_file_as!(
-        PersonDto,
-        "src/client/sql_queries/persons/get/by_inn.sql",
-        inn_str
-    ).fetch_optional(&session.local_db).await {
-        Ok(o) => o,
-        Err(err) => {
-            log::error!(
-                "MISS SESSION IN FUN get_person_by_inn, tech_err = {}, locla_err = {}",
-                err, Status::SqlQueryWrongLogic
-            );
-            return Err(Status::SqlQueryWrongLogic);
-        }
-    };
+    let person_dto_option = sqlx::query_file_as!(
+            PersonDto,
+            "src/client/sql_queries/persons/get/by_inn.sql",
+            inn_str
+        ).fetch_optional(&session.local_db)
+        .await
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
 
     let person_dto = match person_dto_option {
         Some(dto) => dto,
@@ -44,14 +29,8 @@ pub async fn get_person_by_inn(
     match person_dto.try_into() {
         Ok(p) => Ok(Some(p)),
         Err(err) => {
-            log::error!(
-                "FUN get_person_by_inn FAILED BY MAPPING DTO, tech_err = {}, local_err = {}",
-                err, Status::MappingError
-            );
-            Err(Status::MappingError)
+            Err(err.process_err(Status::MappingError, ""))
         }
     }
-
-    
 
 }

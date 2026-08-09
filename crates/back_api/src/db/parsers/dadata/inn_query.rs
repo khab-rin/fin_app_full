@@ -65,22 +65,6 @@ pub async fn dadata_reqwest_func(
         }
     }
 
-    
-    if let Some(a) = main_metadata
-            .address
-            .as_mut()
-            .and_then(|a| a.address_data.as_mut()) {
-        if a.lev_9_1_type.is_some() {
-            let prev_t9 = a.lev_9_type.take().unwrap_or_default();
-            let prev_n9 = a.lev_9_name.take().unwrap_or_default();
-            let prev_t91 = a.lev_9_1_type.take().unwrap_or_default();
-            let prev_n91 = a.lev_9_1_name.take().unwrap_or_default();
-            let mut full_t = format!("{} {}", prev_t9, prev_t91);
-            a.lev_9_type = Some(full_t.trim().to_owned().into_boxed_str());
-            full_t = format!("{} {}", prev_n9, prev_n91);
-            a.lev_9_name = Some(full_t.trim().to_owned().into_boxed_str());
-        }
-    };
 
     Ok(main_metadata)
 }

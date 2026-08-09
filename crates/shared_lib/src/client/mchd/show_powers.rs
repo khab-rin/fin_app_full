@@ -1,4 +1,4 @@
-use crate::{Status, ClientState};
+use crate::{Status, ClientState, ProcessError};
 use crate::service::mchd::home_mchd_power::HomeMchdPower;
 use crate::service::mchd::service::{MchdStep, MchdInfo};
 use crate::service::api_routes::implements::ApiRoutes;
@@ -9,16 +9,14 @@ pub async fn show_powers(
     state: &ClientState,
 ) -> Result<MchdStep, Status> {
 
-    let failed_result = MchdStep::TryLater { text: MchdInfo::ClientServiceError };
+    let failed_result = Ok(MchdStep::TryLater { text: MchdInfo::ClientServiceError });
 
 
     let session = match state.get_session().await {
         Ok(s) => s,
         Err(err) => {
-            log::error!(
-                "FUN lend_mchd_to_back_api_for_register FAILED BY MISS Session, err = {}", err
-            );
-            return Ok(failed_result);
+            err.process_err(err, "");
+            return failed_result;
         }
     };
 
@@ -31,21 +29,16 @@ pub async fn show_powers(
             &user_id).await {
         Ok(r) => r,
         Err(err) => {
-            log::error!(
-                "FUN show_powers FAILED BY POST QUERY TO BACK API, local_err = {:?}", err
-            );
-            return Ok(MchdStep::TryLater {text: MchdInfo::ClientApiQueryError});
+            err.process_err(err, "");
+            return failed_result;
         }
     };
 
     let mchd_step: MchdStep = match response.json().await {
         Ok(s) => s,
         Err(err) => {
-            log::error!(
-                "FUN show_powers FAILED BY MAPPING MchdStep, tech_err = {:?}, local_err = {:?}",
-                err, Status::MappingError
-            );
-            return Ok(failed_result);
+            err.process_err(Status::MappingError, "");
+            return failed_result;
         }
     };
 
@@ -59,23 +52,14 @@ pub async fn check_access(
     power: &HomeMchdPower
 ) -> Result<bool, Status> {
 
-    let step = match show_powers(state).await {
-        Ok(s) => s,
-        Err(err) => {
-            log::error!(
-                "local_err = {:?}, FUN check_access FAILED BY FUN show_powers", err
-            );
-            return Err(err);
-        }
-    };
+    let step = show_powers(state)
+        .await
+        .map_err(|err| err.process_err(err, ""))?;
 
     let powers = match step {
         MchdStep::ShowPowers { fns, btb, home, .. } => [fns, btb, home],
         _ => {
-            log::error!(
-                "local_err = {:?}, FUN check_access FAILED BY WRONG SYSTEM LOGIC", Status::SystemLogicErr
-            );
-            return Err(Status::SystemLogicErr)
+            return Err(Status::Tech.process_err(Status::SystemLogicErr, ""));
         }
     };
 

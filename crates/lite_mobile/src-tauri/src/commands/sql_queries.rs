@@ -1,5 +1,5 @@
 
-use shared_lib::{Status, ClientState};
+use shared_lib::{ClientState, ProcessError, Status};
 use shared_lib::primitives::composite::implements::RasBicAcc;
 use shared_lib::primitives::frozen::text::{RasAcc, Bic, CompInn, Kpp};
 
@@ -21,10 +21,7 @@ pub async fn cmd_add_comp_bank_acc(
         let acc = match RasBicAcc::new(b, r) {
             Ok(r) => r,
             Err(err) => {
-                log::error!(
-                    "local_err = {:?}, FUN cmd_input_own_ras_bic_acc FAILED BY MAPPING RasBicAcc", err
-                );
-                return Err(err);
+                return Err(err.process_err(err, ""));
             }
         };
         Some(acc)

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{ClientState, Status};
+use crate::{ClientState, ProcessError, Status};
 use crate::primitives::composite::implements::RasBicAcc;
 use crate::primitives::frozen::text::{CompInn, Kpp};
 use crate::client::sql_queries::companys::add::new_company::add_company_by_inn_cpp_acc;
@@ -28,15 +28,13 @@ pub async fn add_bank_acc_by_inn_kpp(
     ras_bic_acc: &Option<RasBicAcc>
 ) -> Result<Vec<RasBicAcc>, Status> {
 
-    let company = match add_company_by_inn_cpp_acc(state, comp_inn, kpp, ras_bic_acc).await {
-        Ok(c) => c,
-        Err(err) => {
-            log::error!(
-                "local_err = {:?}, FUN add_bank_acc_by_inn_kpp FAILED BY FUN add_company_by_inn_cpp_acc", err
-            );
-            return Err(err);
-        }
-    };
+    let company = add_company_by_inn_cpp_acc(
+            state, 
+            comp_inn, 
+            kpp, 
+            ras_bic_acc)
+        .await
+        .map_err(|err| err.process_err(err, ""))?; 
 
     Ok(company.metadata.bank_acc)
 }

@@ -1,4 +1,4 @@
-use crate::Status;
+use crate::{Status, ProcessError};
 use crate::primitives::frozen::text::{FirstName, MidName, Ogrn, Region, Snils, SurName};
 use crate::primitives::frozen::text_base::String1_255;
 use crate::service::mchd::service::{MchdType, NewMchdData};
@@ -32,15 +32,8 @@ pub fn make_principal_wrap(
         _ => PrincipalIdentity::IndividualEntrepreneur
     };
 
-    let principal = match make_principal(session, data) {
-        Ok(p) => p,
-        Err(err) => {
-            log::error!(
-                "FUN make_principal FAILED BY FUN make_principal, err = {:?}", err
-            );
-            return Err(err);
-        }
-    };
+    let principal = make_principal (session, data)
+        .map_err(|err| err.process_err(err, ""))?; 
 
     let principal_info = PrincipalWrap { 
         principal_identity, 
@@ -57,25 +50,11 @@ pub fn make_principal(
     data: &NewMchdData
 ) -> Result<Principal, Status> {
 
-    let russian_org = match make_russ_org_principal(session, data) {
-        Ok(o) => o,
-        Err(err) => {
-            log::error!(
-                "FUN make_principal FAILED BY FUN make_russ_org_principal, err = {:?}", err
-            );
-            return Err(err);
-        }
-    };
+    let russian_org = make_russ_org_principal(session, data)
+        .map_err(|err| err.process_err(err, ""))?; 
 
-    let ip = match make_ip_principal(session, data) {
-        Ok(i) => i,
-        Err(err) => {
-            log::error!(
-                "FUN make_principal FAILED BY FUN make_ip_principal, err = {:?}", err
-            );
-            return Err(err);
-        }
-    };
+    let ip = make_ip_principal(session, data)
+        .map_err(|err| err.process_err(err, ""))?;
 
     let principal = Principal {
         russian_org,
@@ -96,15 +75,8 @@ pub fn make_russ_org_principal(
         return Ok(None)
     }
     
-    let russ_organization = match make_russ_organization(session) {
-        Ok(o) => o,
-        Err(err) => {
-            log::error!(
-                "FUN make_principal FAILED BY FUN make_russ_org_principal, err = {:?}", err
-            );
-            return Err(err);
-        }
-    };
+    let russ_organization = make_russ_organization(session)
+        .map_err(|err| err.process_err(err, ""))?;
     
     let root_manager = make_rootmanager(data);
 
@@ -128,22 +100,14 @@ pub fn make_russ_organization(
     let comp_name_data = match session.session_user.company.metadata.comp_name.clone() {
         Some(d) => d,
         None => {
-            log::error!(
-                "FUN make_russ_organization FAILED BY MISS session.session_user.company.metadata.comp_name, err = {}",
-                Status::RequiredFieldsMiss
-            );
-            return Err(Status::RequiredFieldsMiss);
+            return Err(Status::Tech.process_err(Status::RequiredFieldsMiss, ""));
         }
     };
 
     let comp_name = match comp_name_data.full_egrul_name {
         Some(n) => n,
         None => {
-            log::error!(
-                "FUN make_russionorgenization FAILED BY MISS session.session_user.company.metadata.comp_name.full_egrul_name, err = {}",
-                Status::RequiredFieldsMiss
-            );
-            return Err(Status::RequiredFieldsMiss);
+            return Err(Status::Tech.process_err(Status::RequiredFieldsMiss, ""));
         }
     };
 
@@ -258,10 +222,7 @@ pub fn make_ip_principal(
     let ogrnip = match session.session_user.company.metadata.ogrn.clone() {
         Some(o) => Ogrn::unchecked(o.beat_string()),
         None => {
-            log::error!(
-                "FUN make_ip_principal FAILED BY MISS session.session_user.company.metadata.ogrn, err = {:?}", Status::RequiredFieldsMiss
-            );
-            return Err(Status::RequiredFieldsMiss);
+            return Err(Status::Tech.process_err(Status::RequiredFieldsMiss, ""));
         }
     };
 

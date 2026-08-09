@@ -106,47 +106,26 @@ pub fn get_nick_datas_from_file_path(
     file_path: &std::path::PathBuf
 ) -> Result<std::collections::HashSet<NickData>, Status> {
 
-    let mut file = match std::fs::OpenOptions::new()
-            .read(true)
-            .write(true)
-            .create(true)
-            .truncate(false)
-            .open(file_path) {
-        Ok(f) => f,
-        Err(err) => {
-            log::error!(
-            "FUN get_nick_data_from_file_path FAILED BY FILE OPEN, tech_err = {}, local_err = {}",
-            err, Status::FileReadError
-        );
-        return Err(Status::SystemErr);
-        }
-    };
+    let mut file = std::fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .truncate(false)
+        .open(file_path)
+        .map_err(|err| err.process_err(Status::SystemErr, ""))?;
 
     let mut content = String::new();
 
-    match file.read_to_string(& mut content) {
-        Ok(_) => {}
-        Err(err) => {
-            log::error!(
-                "FUN get_nick_data_from_file_path FAILED BY FILE READ, tech_err = {}, local_err = {}",
-                err, Status::FileReadError
-            );
-        }
-    }
+    file
+        .read_to_string(& mut content)
+        .map_err(|err| err.process_err(Status::FileReadError, ""))?;
+
 
     let nick_datas: std::collections::HashSet<NickData> = match content.is_empty() {
         true => std::collections::HashSet::new(),
         false => {
-            match serde_json::from_str(&content) {
-                Ok(n) => n,
-                Err(err) => {
-                    log::error!(
-                        "FUN get_nick_data_from_file_path FAILED BY MAPPING NickData, tech_err = {}, local_err = {}",
-                        err, Status::MappingError
-                    );
-                    return Err(Status::MappingError);
-                }
-            }
+            serde_json::from_str(&content)
+                .map_err(|err| err.process_err(Status::MappingError, ""))? 
         }
     };
 
@@ -159,42 +138,20 @@ pub fn save_nick_datas(
     nick_datas: &std::collections::HashSet<NickData>,
 ) -> Result<(), Status> {
 
-    let content = match serde_json::to_string_pretty(nick_datas) {
-        Ok(c) => c,
-        Err(err) => {
-            log::error!(
-                "FUN save_nick_data FAILED BY SERDE SERIALIZATION, tech_err = {}, local_err = {}",
-                err, Status::SerializationError
-            );
-            return Err(Status::SerializationError);
-        }
-    };
+    let content = serde_json::to_string_pretty(nick_datas)
+        .map_err(|err| err.process_err(Status::SerializationError, ""))?; 
 
-    let mut file = match std::fs::OpenOptions::new()
-            .write(true)
-            .create(true)
-            .truncate(true)
-            .read(false)
-            .open(file_path) {
-        Ok(f) => f,
-        Err(err) => {
-            log::error!(
-            "FUN get_nick_data FAILED BY FILE OPEN, tech_err = {}, local_err = {}",
-            err, Status::FileReadError
-        );
-        return Err(Status::SystemErr);
-        }
-    };
 
-    match std::io::Write::write_all(&mut file, content.as_bytes()) {
-        Ok(_) => Ok(()),
-        Err(err) => {
-            log::error!(
-                "FUN save_nick_data FAILED BY std::io::Write::write_all, tech_err = {}, local_err = {}",
-                err, Status::FileWriteError
-            );
-            Err(Status::SystemErr)
-        }
-    }
+    let mut file = std::fs::OpenOptions::new()
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .read(false)
+        .open(file_path)
+        .map_err(|err| err.process_err(Status::FileReadError, ""))?;
+  
+
+    std::io::Write::write_all(&mut file, content.as_bytes())
+        .map_err(|err| err.process_err(Status::FileWriteError, "")) 
 
 }

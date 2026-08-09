@@ -3,7 +3,7 @@ use encoding_rs::WINDOWS_1251;
 use futures::stream::{self, StreamExt};
 
 use crate::primitives::frozen::text::Kpp;
-use crate::{Status, ClientState};
+use crate::{ClientState, ProcessError, Status};
 use crate::sql_models::operation::parser::{
     BlockFields,
     ParsedBlock, 
@@ -32,9 +32,9 @@ pub async fn parse_statement(
     path: &str
 ) -> Result<OperationStep, Status> {
 
-    let failed_result = OperationStep::TryLater {
+    let failed_result = Ok(OperationStep::TryLater {
         text: OperationInfo::ClientApiSystemError,
-    };
+    });
 
     match check_access(state, &HomeMchdPower::H210).await {
         Ok(true) => {},
@@ -42,10 +42,8 @@ pub async fn parse_statement(
             return Ok(OperationStep::AccessDenied { text: OperationInfo::AccessDenied })
         },
         Err(err) => {
-            log::error!(
-                "local_err = {:?}, FUN parse_comment FAILED BY FUN check_access", err
-            );
-            return Ok(failed_result);
+            err.process_err(err, "");
+            return failed_result;
         }
     }
 
@@ -56,11 +54,8 @@ pub async fn parse_statement(
     let bytes = match tokio::fs::read(path).await {
         Ok(b) => b,
         Err(err) => {
-            log::error!(
-                "tech_err = {:?}, local_err = {:?}, FUN parse_statement FAILED BY std::fs::read(path)",
-                err, Status::FileReadError
-            );
-            return Ok(failed_result);
+            err.process_err(Status::FileReadError, "");
+            return failed_result;
         }
     };
 
@@ -78,10 +73,7 @@ pub async fn parse_statement(
     let full_head = match data_iter.next() {
         Some(a) => a.to_string(),
         None =>  {
-            log::error!(
-                "local_err = {:?}, FUN parse_statement FAILED BY data_iter.next()",
-                Status::DataCorruptionErr
-            );
+            Status::Tech.process_err(Status::DataCorruptionErr, "");
             return Ok(OperationStep::Loading { text: OperationInfo::WrongFile });
         }
     };
@@ -91,10 +83,7 @@ pub async fn parse_statement(
     match full_head_iter.next() {
         Some(_) => {},
         None =>  {
-            log::error!(
-                "local_err = {:?}, FUN parse_statement FAILED BY full_head_iter.next()",
-                Status::DataCorruptionErr
-            );
+            Status::Tech.process_err(Status::DataCorruptionErr, "");
             return Ok(OperationStep::Loading { text: OperationInfo::WrongFile });
         }
     };
@@ -102,10 +91,7 @@ pub async fn parse_statement(
     let head_str  = match full_head_iter.next() {
         Some(a) => a.trim(),
         None =>  {
-            log::error!(
-                "local_err = {:?}, FUN parse_statement FAILED BY full_head_iter.next()",
-                Status::DataCorruptionErr
-            );
+            Status::Tech.process_err(Status::DataCorruptionErr, "");
             return Ok(OperationStep::Loading { text: OperationInfo::WrongFile });
         }
     };
@@ -115,11 +101,8 @@ pub async fn parse_statement(
     let head = match StatementHead::from_map(&head_map) {
         Ok(h) => h,
         Err(err) => {
-            log::error!(
-                "local_err = {}, FUN bank_parser FAILED BY MAPPING StatementHead",
-                err
-            );
-            return Ok(failed_result);
+            err.process_err(err, "");
+            return failed_result;
         }
     };
 
@@ -135,10 +118,8 @@ pub async fn parse_statement(
         let mut block_fields = match BlockFields::from_map(&block_map) {
             Ok(f) => f,
             Err(err) => {
-                log::error!(
-                    "local_err = {:?}, FUN parse_statement FAILED BY MAPPING BLOCK", err
-                );
-                return Ok(failed_result);
+                err.process_err(err, block_str);
+                return failed_result;
             }
         };
 
@@ -157,10 +138,8 @@ pub async fn parse_statement(
                 &block_fields.pay_acc) {
             Ok(a) => a,
             Err(err) => {
-                log::error!(
-                    "local_err = {:?}, FUN parse_statement FAILED BY RasBicAcc::new", err
-                );
-                return Ok(failed_result);
+                err.process_err(err, &format!("bic = {:?}, acc = {:?}", block_fields.pay_bic, &block_fields.pay_acc));
+                return failed_result;
             }
         };
 
@@ -169,10 +148,8 @@ pub async fn parse_statement(
                 &block_fields.rec_acc) {
             Ok(a) => a,
             Err(err) => {
-                log::error!(
-                    "local_err = {:?}, FUN parse_statement FAILED BY RasBicAcc::new", err
-                );
-                return Ok(failed_result);
+                err.process_err(err, "");
+                return failed_result;
             }
         };
 
@@ -197,10 +174,8 @@ pub async fn parse_statement(
     match add_companys_by_inn_cpp_acc(state, &data).await {
         Ok(_) => {},
         Err(err) => {
-            log::error!(
-                "local_err = {:?}, FUN parse_statement FAILED BY FUN add_companys_by_inn_cpp_acc", err
-            );
-            return Ok(failed_result);
+            err.process_err(err, "");
+            return failed_result;
         }
     }
 
@@ -219,10 +194,8 @@ pub async fn parse_statement(
         match res {
             Ok(o) => operations.push(o),
             Err(err) => {
-                log::error!(
-                    "local_err = {:?}, FUN parse_statement FAILED BY FUB make_statement_operation_raw", err
-                );
-                return Ok(failed_result);
+                err.process_err(err, "");
+                return failed_result;
             } 
         }
     }
@@ -230,11 +203,8 @@ pub async fn parse_statement(
     let exist_ext_ids = match get_ext_ids_by_ext_id(state, &operations).await {
         Ok(ids) => ids,
         Err(err) => {
-            log::error!(
-                "local_err = {:?}, FUN parse_statement FAILED BY FUN get_ext_ids_by_ext_id",
-                err
-            );
-            return Ok(failed_result);
+            err.process_err(err, "");
+            return failed_result;
         }
     };
 

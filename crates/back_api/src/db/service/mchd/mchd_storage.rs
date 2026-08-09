@@ -43,7 +43,7 @@ pub(crate) fn get_mchd_data_path() -> Result<PathBuf, Status> {
                 Ok(home.join(format!(".{}", crate_name)).join("mchd"))
             }
             None => {
-                return Err(Status::Tech.process_err(Status::DirCreateError, ""));
+                Err(Status::Tech.process_err(Status::DirCreateError, ""))
             }
         }
     }
@@ -69,8 +69,9 @@ pub(crate) async fn get_mchd_storage() -> Result<MchdStorage, Status> {
         .map_err(|err| err.process_err(Status::FileReadError, ""))?;
 
 
+
     serde_json::from_str(&json_content)
-        .map_err(|err| err.process_err(Status::MappingError, ""))?
+        .map_err(|err| err.process_err(Status::MappingError, ""))
 
 }
 

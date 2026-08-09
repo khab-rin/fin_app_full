@@ -1,4 +1,4 @@
-use crate::{Status, ClientState};
+use crate::{Status, ClientState, ProcessError};
 use crate::primitives::frozen::text::{Date, DateTime, RubF, BoxUuid};
 use crate::sql_models::contracts::implements::Contract;
 
@@ -8,32 +8,19 @@ pub async fn get_contracts_by_comp_ctrpty_ids(
     ctrpty_id: &BoxUuid
 ) -> Result<Vec<Contract>, Status> {
 
-    let session = match state.get_session().await {
-        Ok(s) => s,
-        Err(err) => {
-            log::error!(
-                "local_err = {:?}, FUN get_contracts_by_comp_ctrpty_ids FAILED BY MISS SASSION", err
-            );
-            return Err(err);
-        }
-    };
+    let session = state.get_session().await
+        .map_err(|err| err.process_err(err, ""))?; 
 
     let var1 = comp_id.as_ref();
     let var2 = ctrpty_id.as_ref();
 
-    match sqlx::query_file_as!(
-        Contract,
-        "src/client/sql_queries/contracts/get/contracts_by_ids.sql",
-        var1,
-        var2
-    ).fetch_all(&session.local_db).await {
-        Ok(r) => Ok(r),
-        Err(err) => {
-            log::error!(
-                "tech_err = {:?}, local_err = {:?}, FUN get_contracts_by_comp_ctrpty_ids FAILED BY MISS SASSION", 
-                err, Status::SqlQueryWrongLogic
-            );
-            Err(Status::SqlQueryWrongLogic)
-        } 
-    }
+    sqlx::query_file_as!(
+            Contract,
+            "src/client/sql_queries/contracts/get/contracts_by_ids.sql",
+            var1,
+            var2
+        ).fetch_all(&session.local_db)
+        .await
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))
+
 }

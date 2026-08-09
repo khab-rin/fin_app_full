@@ -1,4 +1,4 @@
-use crate::{Status,ClientState};
+use crate::{ClientState, ProcessError, Status};
 use crate::service::mchd::service::{MchdStep, NewMchdData, MchdInfo};
 
 use crate::client::mchd::helper::check_mchd_user;
@@ -12,15 +12,13 @@ pub async fn make_xml_doc_files(
     data: &NewMchdData
 ) -> Result<MchdStep, Status> {
 
-    let failed_result = MchdStep::TryLater { text:MchdInfo::ClientServiceError };
+    let failed_result = Ok(MchdStep::TryLater { text:MchdInfo::ClientServiceError });
 
     let session = match state.get_session().await {
         Ok(s) => s,
         Err(err) => {
-            log::error!(
-                "FUN make_new_tax_mchd FAILED BY MISS Session, err = {}", err
-            );
-            return Ok(failed_result);
+            err.process_err(err, "");
+            return failed_result;
         }
     };
 
@@ -30,20 +28,16 @@ pub async fn make_xml_doc_files(
         match state.update_person(person.clone()).await {
             Ok(_) => {},
             Err(err) => {
-                log::error!(
-                    "FUN make_new_tax_mchd FAILED BY state.update_person, err = {}", err
-                );
-                return Ok(failed_result);
+                err.process_err(err, "");
+                return failed_result;
             }
         }
 
         match insert_person_no_sync(state, &person).await {
             Ok(_) => {},
             Err(err) => {
-                log::error!(
-                    "FUN make_new_tax_mchd FAILED BY insert_person_no_sync, err = {}", err
-                );
-                return Ok(failed_result);
+                err.process_err(err, "");
+                return failed_result;
             }
         }
     } else {
@@ -53,10 +47,8 @@ pub async fn make_xml_doc_files(
     let poa_mchd = match make_poa(&session, data) {
         Ok(p) => p,
         Err(err) => {
-            log::error!(
-                "FUN make_new_tax_mchd FAILED BY FUN make_tax_poa, err = {}", err
-            );
-            return Ok(failed_result);
+            err.process_err(err, "");
+            return failed_result;
         }
     };
 

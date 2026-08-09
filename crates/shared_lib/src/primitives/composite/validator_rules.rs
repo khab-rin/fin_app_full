@@ -1,7 +1,7 @@
 use crate::primitives::frozen::text::{Bic, RasAcc, CorAcc};
 
 fn validate_checksum(bic_part: &str, acc: &str) -> bool {
-    if acc.starts_with("03100") || acc.starts_with("03200") {
+    if acc.starts_with("03") {
         return true;
     }
     let weights = [

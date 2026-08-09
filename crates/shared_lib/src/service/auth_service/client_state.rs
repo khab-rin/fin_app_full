@@ -10,7 +10,7 @@ use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions};
 use crate::primitives::frozen::text::{PersInn, CompInn, Kpp};
 use crate::sql_models::person::implements::Person;
 use crate::service::auth_service::general::time_parser;
-use crate::Status;
+use crate::{Status, ProcessError};
 use crate::make_header;
 use crate::service::auth_service::general::*;
 use crate::service::auth_service::implements::SessionUserToken;
@@ -39,8 +39,8 @@ impl ClientState {
             *current_session = Arc::new(updated_session);
             Ok(())
         } else {
-            log::error!("FAILED TO UPDATE PERSON: {}", Status::ClientSessionMissError);
-            Err(Status::ClientSessionMissError)
+            Err(Status::Tech.process_err(Status::ClientSessionMissError, ""))
+
         }
     }
 }
@@ -197,32 +197,18 @@ pub(crate) async fn init_session(
 
     let app_handle = state.app_handle.clone();
 
-    let app_path = match app_handle.path().app_data_dir() {
-        Ok(b) => b,
-        Err(err) => {
-            log::error!(
-                "FUN init_session FAILED BY tauri::AppHandle.path().app_data_dir(), tech_err = {}, local_err = {}",
-                err, Status::SystemErr
-            );
-            return Err(Status::SystemErr);
-        }
-    };
+    let app_path = app_handle
+        .path()
+        .app_data_dir()
+        .map_err(|err| err.process_err(Status::SystemErr, ""))?;
 
     let user_path = app_path
         .join(pers_inn.to_string())
         .join(comp_inn.to_string())
         .join(kpp.to_string());
 
-    match std::fs::create_dir_all(&user_path) {
-        Ok(_) => {},
-        Err(err) => {
-            log::error!(
-                "FAILED TO CREATE DIRECTORY: {}, tech_err = {}",
-                user_path.display(), err
-            );
-            return Err(Status::SystemErr);
-        }
-    }
+    std::fs::create_dir_all(&user_path)
+        .map_err(|err| err.process_err(Status::SystemErr, ""))?; 
     
     let db_path = user_path.join("database.db");
 
@@ -234,42 +220,23 @@ pub(crate) async fn init_session(
         db_url = env_db_url;
     }
 
-    let connect_options = SqliteConnectOptions::
-        from_str(&db_url)
-        .inspect_err(|err| {
-            log::error!(
-                "LOCAL_DB_URL_ERROR: {}, {}",
-                err, Status::SystemErr
-            )
-        }).map_err(|_| Status::SystemErr)?
+    let connect_options = SqliteConnectOptions::from_str(&db_url)
+        .map_err(|err| err.process_err(Status::SystemErr, ""))?
         .create_if_missing(true)
         .journal_mode(SqliteJournalMode::Wal)
         .foreign_keys(true);
 
-    let pool = match SqlitePoolOptions::new()
+    let pool = SqlitePoolOptions::new()
         .max_connections(Config::global().sqlite_options.max_connections)
         .acquire_timeout(Config::global().sqlite_options.duration)
         .connect_with(connect_options)
-        .await {
-            Ok(p) => p,
-            Err(err) => {
-                log::error!(
-                    "INIT_POOL_ERROR: {}, {}",
-                    err, Status::SystemErr
-                );
-                return Err(Status::SystemErr);
-            }
-        };
+        .await
+        .map_err(|err| err.process_err(Status::SystemErr, ""))?;
     
     sqlx::migrate!("./migrations")
         .run(&pool)
         .await
-        .inspect_err(|err| {
-            log::error!(
-                "SQLX_MIGRATE_ERROR: {}, {}",
-                err, Status::SystemErr
-            )
-        }).map_err(|_| Status::SystemErr)?;
+        .map_err(|err| err.process_err(Status::SystemErr, ""))?;
 
     let session = Arc::new(ActiveSession {
         session_user: user_data.user.clone(),

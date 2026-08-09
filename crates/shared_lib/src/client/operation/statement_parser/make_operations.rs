@@ -1,4 +1,4 @@
-use crate::{Status, ClientState};
+use crate::{ClientState, ProcessError, Status};
 
 use crate::primitives::frozen::text::{BoxUuid, Date};
 use crate::sql_models::operation::parser::ParsedBlock;
@@ -15,16 +15,10 @@ pub async fn make_statement_operation_raw(
     parsed_block: &ParsedBlock
 ) -> Result<OperationRaw, Status> {
 
-    let session = match state.get_session().await {
-        Ok(s) => s,
-        Err(err) => {
-            log::error!(
-                "local_err = {:?}, FUN make_statement_operation_raw FAILED BY MISS SESSION",
-                err
-            );
-            return Err(err);
-        }
-    };
+    let session = state
+        .get_session()
+        .await
+        .map_err(|err| err.process_err(err, ""))?;
 
     if parsed_block.block_fields.pay_inn == session.session_user.company.comp_inn &&
         parsed_block.block_fields.pay_kpp == session.session_user.company.kpp {
@@ -44,16 +38,10 @@ pub async fn make_statement_pay_operation_raw(
     parsed_block: &ParsedBlock
 ) -> Result<OperationRaw, Status> {
 
-    let session = match state.get_session().await {
-        Ok(s) => s,
-        Err(err) => {
-            log::error!(
-                "local_err = {:?}, FUN make_statement_pay_operation_raw FAILED BY MISS SESSION",
-                err
-            );
-            return Err(err);
-        }
-    };
+    let session = state
+        .get_session()
+        .await
+        .map_err(|err| err.process_err(err, ""))?;
 
     let ParsedBlock { block_fields, comment_data } = parsed_block;
 
@@ -64,40 +52,27 @@ pub async fn make_statement_pay_operation_raw(
     let comp_id = session.session_user.company.comp_id.clone();
 
 
-    let ctrpty_option = match get_company_by_inn_kpp(
+    let ctrpty_option = get_company_by_inn_kpp(
             state,
             &block_fields.rec_inn,
-            &block_fields.rec_kpp).await {
-        Ok(o) => o,
-        Err(err) => {
-            log::error!(
-                "local_err = {:?}, FUN make_statement_pay_operation_raw FAILED BY FUN get_companys_by_inn_kpp", err
-            );
-            return Err(err);
-        }
-    };
+            &block_fields.rec_kpp)
+        .await
+        .map_err(|err| err.process_err(err, ""))?;
+
 
     let ctrpty = match ctrpty_option {
         Some(c) => c,
         None => {
-            log::error!(
-                "local_err = {:?}, FUN make_statement_pay_operation_raw FAILED BY WRONG SYSTEM LOGIC",
-                Status::SystemLogicErr
-            );
-            return Err(Status::SystemLogicErr);
-
+            return Err(Status::Tech.process_err(Status::SystemLogicErr, ""));
         }
     };
 
-    let contracts = match get_contracts_by_comp_ctrpty_ids(state, &comp_id, &ctrpty.comp_id).await {
-        Ok(c) => c,
-        Err(err) => {
-            log::error!(
-            "local_err = {:?}, FUN make_statement_pay_operation_raw FAILED BY FUN get_contracts_by_comp_ctrpty_ids", err
-            );
-            return Err(err);
-        }
-    };
+    let contracts = get_contracts_by_comp_ctrpty_ids(
+            state, 
+            &comp_id, 
+            &ctrpty.comp_id)
+        .await
+        .map_err(|err| err.process_err(err, ""))?;
 
     let mut contrac_option = ContractOption {
         current: None,
@@ -201,16 +176,10 @@ pub async fn make_statement_rec_operation_raw(
     parsed_block: &ParsedBlock
 ) -> Result<OperationRaw, Status> {
 
-    let session = match state.get_session().await {
-        Ok(s) => s,
-        Err(err) => {
-            log::error!(
-                "local_err = {:?}, FUN make_statement_pay_operation_raw FAILED BY MISS SESSION",
-                err
-            );
-            return Err(err);
-        }
-    };
+    let session = state
+        .get_session()
+        .await
+        .map_err(|err| err.process_err(err, ""))?; 
 
     let ParsedBlock { block_fields, comment_data } = parsed_block;
 
@@ -221,40 +190,27 @@ pub async fn make_statement_rec_operation_raw(
     let comp_id = session.session_user.company.comp_id.clone();
 
 
-    let ctrpty_option = match get_company_by_inn_kpp(
+    let ctrpty_option = get_company_by_inn_kpp(
             state,
             &block_fields.pay_inn,
-            &block_fields.pay_kpp).await {
-        Ok(o) => o,
-        Err(err) => {
-            log::error!(
-                "local_err = {:?}, FUN make_statement_pay_operation_raw FAILED BY FUN get_companys_by_inn_kpp", err
-            );
-            return Err(err);
-        }
-    };
+            &block_fields.pay_kpp)
+        .await
+        .map_err(|err| err.process_err(err, ""))?; 
 
     let ctrpty = match ctrpty_option {
         Some(c) => c,
         None => {
-            log::error!(
-                "local_err = {:?}, FUN make_statement_pay_operation_raw FAILED BY WRONG SYSTEM LOGIC",
-                Status::SystemLogicErr
-            );
-            return Err(Status::SystemLogicErr);
+            return Err(Status::Tech.process_err(Status::SystemLogicErr, ""));
 
         }
     };
 
-    let contracts = match get_contracts_by_comp_ctrpty_ids(state, &comp_id, &ctrpty.comp_id).await {
-        Ok(c) => c,
-        Err(err) => {
-            log::error!(
-            "local_err = {:?}, FUN make_statement_pay_operation_raw FAILED BY FUN get_contracts_by_comp_ctrpty_ids", err
-            );
-            return Err(err);
-        }
-    };
+    let contracts = get_contracts_by_comp_ctrpty_ids(
+            state, 
+            &comp_id, 
+            &ctrpty.comp_id)
+        .await
+        .map_err(|err| err.process_err(err, ""))?;
 
     let mut contrac_option = ContractOption {
         current: None,

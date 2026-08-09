@@ -4,7 +4,7 @@ use tokio::io::AsyncWriteExt;
 
 use crate::AppState;
 
-use shared_lib::Status;
+use shared_lib::{Status, ProcessError};
 use shared_lib::service::crypto_service::implements::{
     CheckSignDocData,
     PersonSignCheckResult
@@ -28,44 +28,23 @@ pub async fn verify_signature_handler(
     // 1. Записываем файл данных
     let mut init_file = tokio::fs::File::create(&init_path)
         .await
-        .inspect_err(|err| {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::FileCreateError,
-                "FUN verify_signature_handler FAILED BY CREATING init FILE"
-            );
-        }).map_err(|_| Status::FileCreateError)?;
+        .map_err(|err| err.process_err(Status::FileCreateError, ""))?;
 
     init_file.write_all(&payload.init_file)
         .await
-        .inspect_err(|err| {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::FileWriteError,
-                "FUN verify_signature_handler FAILED BY WRITING init FILE"
-            );
-        }).map_err(|_| Status::FileWriteError)?;
+        .map_err(|err| err.process_err(Status::FileWriteError, ""))?;
+
 
     // 2. Записываем файл подписи
     let mut sig_file = tokio::fs::File::create(&sig_path)
         .await
-        .inspect_err(|err| {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::FileCreateError,
-                "FUN verify_signature_handler FAILED BY CREATING SIG FILE"
-            );
-        }).map_err(|_| Status::FileCreateError)?;
+        .map_err(|err| err.process_err(Status::FileCreateError, ""))?;
+
 
     sig_file.write_all(&payload.sign_file)
         .await
-        .inspect_err(|err| {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::FileWriteError,
-                "FUN verify_signature_handler FAILED BY WRITING SIG FILE"
-            );
-        }).map_err(|_| Status::FileWriteError)?;
+        .map_err(|err| err.process_err(Status::FileWriteError, ""))?;
+
 
     // 3. Шаг 1: Проверяем подпись через cryptcp (с фиксированной рабочей директорией)
     let cryptcp_output = tokio::process::Command::new(&state.cryptcp_path)
@@ -80,13 +59,8 @@ pub async fn verify_signature_handler(
         .arg(&init_filename)  // Относительное имя
         .output()
         .await
-        .inspect_err(|err| {
-            tracing::error!(
-                tech_err = ?err,
-                local_err = ?Status::CryptoServerError,
-                "FUN verify_signature_handler FAILED: COULD NOT EXECUTE CRYPTCP"
-            );
-        }).map_err(|_| Status::CryptoServerError)?;
+        .map_err(|err| err.process_err(Status::CryptoServerError, ""))?;
+
 
     // 4. Проверяем статус работы cryptcp
     if !cryptcp_output.status.success() {
@@ -118,13 +92,14 @@ pub async fn verify_signature_handler(
     // 5. Шаг 2: Вызываем certmgr для извлечения понятных полей Subject (ИНН, СНИЛС, ОГРН и т.д.)
     let certmgr_path = state.cryptcp_path.replace("cryptcp", "certmgr"); // или возьми из state.certmgr_path
     
-    let certmgr_output = tokio::process::Command::new(&certmgr_path)
+    let cert_out = tokio::process::Command::new(&certmgr_path)
         .current_dir(&temp_dir)
         .arg("-list")
         .arg("-file")
         .arg(&sig_filename)
         .output()
-        .await;
+        .await
+        .map_err(|err| err.process_err(Status::CryptoServerError, ""))?;
 
     // Удаляем временные файлы сразу после выполнения всех команд
     let _ = tokio::fs::remove_file(&init_path).await;
@@ -133,18 +108,16 @@ pub async fn verify_signature_handler(
     // Формируем итоговый результат
     let mut result_text = String::from_utf8_lossy(&cryptcp_output.stdout).into_owned();
 
-    if let Ok(cert_out) = certmgr_output {
-        if cert_out.status.success() {
-            let cert_str = String::from_utf8_lossy(&cert_out.stdout);
-            
-            // Вытаскиваем только строку Subject для удобства
-            if let Some(subject_line) = cert_str.lines().find(|line| line.starts_with("Subject")) {
-                result_text = format!("{}\n\n{}", result_text, subject_line);
-            } else {
-                result_text = format!("{}\n\n{}", result_text, cert_str);
-            }
+    if cert_out.status.success() {
+        let cert_str = String::from_utf8_lossy(&cert_out.stdout);
+        
+        if let Some(subject_line) = cert_str.lines().find(|line| line.starts_with("Subject")) {
+            result_text = format!("{}\n\n{}", result_text, subject_line);
+        } else {
+            result_text = format!("{}\n\n{}", result_text, cert_str);
         }
     }
+    
 
     tracing::info!(info = %result_text);
 

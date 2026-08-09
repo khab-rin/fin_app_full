@@ -1,4 +1,4 @@
-use crate::Status;
+use crate::{ProcessError, Status};
 use crate::primitives::frozen::text_base::String1_255;
 use crate::service::auth_service::general::ActiveSession;
 use crate::service::mchd::service::{MchdInfo, MchdStep, NewMchdData};
@@ -9,7 +9,7 @@ pub fn add_doc_to_xml_file(
     poa_mchd: &PoaMchd,
     data: &NewMchdData
 ) -> Result<MchdStep, Status> {
-    let failed_res = MchdStep::TryLater { text: MchdInfo::ClientServiceError };
+    let failed_res = Ok(MchdStep::TryLater { text: MchdInfo::ClientServiceError });
 
     let doc_name_str = format!("{}.doc", poa_mchd.flie_identificator.as_ref());
     let xml_name_str = format!("{}.xml", poa_mchd.flie_identificator.as_ref());
@@ -19,11 +19,8 @@ pub fn add_doc_to_xml_file(
     let xml_string = match quick_xml::se::to_string(&poa_mchd) {
         Ok(xml) => xml,
         Err(err) => {
-            log::error!(
-                "FUN make_mchd_step_tax_success FAILED BY MchdStep MAPPING, tech_err = {}, local_err = {}",
-                err, Status::MappingError
-            );
-            return Ok(failed_res);
+            err.process_err(Status::MappingError, "");
+            return failed_res;
         }
     };
 
@@ -57,29 +54,21 @@ pub fn add_doc_to_xml_file(
     let comp_name_data = match session.session_user.company.metadata.comp_name.clone() {
         Some(d) => d,
         None => {
-            log::error!(
-                "FUN make_mchd_step_tax_success FAILED BY MISS session.session_user.company.metadata.comp_name, err = {}",
-                Status::RequiredFieldsMiss
-            );
-            return Err(Status::RequiredFieldsMiss);
+            return Err(Status::Tech.process_err(Status::RequiredFieldsMiss, ""));
         }
     };
 
     let comp_name = match comp_name_data.full_egrul_name {
         Some(n) => n,
         None => {
-            log::error!(
-                "FUN make_mchd_step_tax_success FAILED BY MISS session.session_user.company.metadata.comp_name.full_egrul_name, err = {}",
-                Status::RequiredFieldsMiss
-            );
-            return Err(Status::RequiredFieldsMiss);
+            Status::Tech.process_err(Status::RequiredFieldsMiss, "");
+            return failed_res;
         }
     };
 
     let comp_inn = session.session_user.company.comp_inn.as_ref();
     let kpp = session.session_user.company.kpp.as_ref();
 
-    // Рендеринг списка полномочий (Powers) в HTML-строку
     let mut powers_html = String::new();
 
     for power in powers.iter() {
@@ -93,7 +82,6 @@ pub fn add_doc_to_xml_file(
         powers_html = "<li>Полномочия не указаны</li>".to_string();
     }
 
-    // --- 3. Генерация HTML/DOC шаблона ---
     let html_text = format!(
         r#"<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
         <head>

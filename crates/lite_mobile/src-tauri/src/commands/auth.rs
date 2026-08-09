@@ -1,4 +1,4 @@
-use shared_lib::{Status, ClientState};
+use shared_lib::{Status, ClientState, ProcessError};
 use shared_lib::service::auth_service::implements::{
     AuthInfo, AuthStep, PasswordDataClientShort, RegFilesPathData, RegInitData
 };
@@ -58,10 +58,7 @@ pub async  fn cmd_is_state_active_init(
         match session.local_db.acquire().await {
             Ok(_) => Ok(AuthStep::SuccessShort { }),
             Err(err) => {
-                log::error!(
-                    "tech_err = {}, local_err = {}",
-                    err, Status::SystemErr
-                );
+                err.process_err(Status::SystemErr, "");
                 Ok(AuthStep::Loading { text: AuthInfo::LoadingInfo})
             }
         }

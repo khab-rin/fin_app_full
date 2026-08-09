@@ -1,4 +1,4 @@
-use crate::{Status, ClientState};
+use crate::{Status, ClientState, ProcessError};
 use crate::primitives::frozen::text::Password;
 
 use crate::service::auth_service::implements::{RegInitData, AuthStep, AuthInfo};
@@ -24,30 +24,19 @@ pub
 
     data_copy.password = Password::unchecked(blake_password);
 
-    let response = match post_query_back_api(
+    let response = post_query_back_api(
             state, 
             state.config.get_std_client(),
             ApiRoutes::AuthRegisterStep1,
-            &data_copy).await {
-        Ok(r) => r, 
-        Err(err) => {
-            log::error!(
-                "FUN register_step1 FAILED BY POST QUERY TO BACK API, local_err = {:?}", err
-            );
-            return Ok(failed_result);
-        }
-    };
+            &data_copy)
+        .await
+        .map_err(|err| err.process_err(err, ""))?;
+    
 
-    let auth_step: AuthStep = match response.json().await {
-        Ok(s) => s,
-        Err(err) => {
-            log::error!(
-                "FUN register_step1 FAILED BY MAPPING RESPONSE, err = {:?}, local_err = {:?}",
-                err, Status::MappingError
-            );
-            return Ok(failed_result);
-        }
-    };
+    let auth_step: AuthStep = response.json()
+        .await
+        .map_err(|err| err.process_err(Status::MappingError, ""))?;
+
 
     Ok(auth_step)
 

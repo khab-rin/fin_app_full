@@ -1,5 +1,3 @@
-use std::os::unix::process;
-
 use argon2::{
     password_hash::{
         rand_core::OsRng,
@@ -35,8 +33,8 @@ use crate::db::sql_queries::users::add::user::add_user;
 use crate::db::sql_queries::sessions::set::new_session::new_session;
 use crate::db::service::auth_service::pers_sign_parser::{
     parse_crypto_fields_org,
-    check_manager,
-    check_person
+    check_auth_manager,
+    check_auth_person
 };
 
 
@@ -93,7 +91,7 @@ pub(crate) async fn register_step2(
     let person = match person_option {
         Some(p) => p,
         None => {
-            Status::Tech.process_err(Status::SystemLogicErr, "");
+            Status::Tech.process_err(Status::SystemLogicErr, "USER MUST BE IN SYSTEM ALREADY");
             return Ok(failed_result);
         }
     };
@@ -152,10 +150,7 @@ pub(crate) async fn register_step2(
                 });
             }
             None => {
-                tracing::error!(
-                    local_err = ?&Status::SystemLogicErr,
-                    "FUN init_user FAILED BY SYSTEM LOGIC ERROR --> USER EXIST, TEL EMAIL MISS"
-                );
+                Status::Tech.process_err(Status::SystemLogicErr, "");
                 return Ok(failed_result);
             }
         }
@@ -217,7 +212,7 @@ pub(crate) async fn register_step2(
     };
 
 
-    if !check_person(&json_data, &sign_fields) {
+    if !check_auth_person(&json_data, &sign_fields) {
         return Ok(AuthStep::RegisterStep1 {text: AuthInfo::WrongSignFile});
     }
 
@@ -251,7 +246,7 @@ pub(crate) async fn register_step2(
         }
     };
 
-    if check_manager(&json_data, &sign_fields) {
+    if check_auth_manager(&json_data, &sign_fields) {
         if let Err(err) = add_new_manager(&user.user_id).await {
             err.process_err(err, "");
             return Ok(failed_result);
