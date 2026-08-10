@@ -6,7 +6,7 @@ use sqlx;
 use crate::primitives::frozen::validators::*;
 use crate::primitives::frozen::formatters::*;
 use crate::Status;
-use crate::primitives::traits::ParseFromStrMapValue;
+use crate::sql_models::operation::macros::ParseFromStrMapValue;
 
 frozen_primitives!(
     PersInn,

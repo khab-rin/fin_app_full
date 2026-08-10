@@ -4,9 +4,9 @@ use std::str::FromStr;
 use std::convert::Infallible;
 
 use crate::Status;
+use crate::sql_models::operation::macros::ParseFromStrMapValue;
 use crate::primitives::frozen::text::{BoxUuid, Date, DateTime, DocNum, RubF, TextInfo};
 use crate::sql_models::operation::account::Account;
-use crate::primitives::traits::ParseFromStrMapValue;
 use crate::sql_models::company::implements::Company;
 use crate::sql_models::contracts::implements::Contract;
 use crate::sql_models::operation::service::{
@@ -20,7 +20,7 @@ pub struct OperationRaw {
     pub user_id: BoxUuid,
 
     pub comp_id: BoxUuid,
-    pub ctrpty: Company,
+    pub ctrpty: Option<Company>,
     pub contract: ContractOption,
 
     pub debet: Account,
@@ -37,7 +37,7 @@ pub struct OperationRaw {
 
     pub entr_date: Date,
 
-    pub external_id: i64,
+    pub external_id: Option<i64>,
 
     pub is_sync: Option<bool>,
 

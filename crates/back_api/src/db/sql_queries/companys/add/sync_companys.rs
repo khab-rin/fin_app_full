@@ -83,6 +83,7 @@ pub(crate) async fn update_companys(
         comp_type.push(comp.comp_type.as_str().to_string());
         comp_status.push(comp.comp_status.as_str().to_string());
         metadata.push(serde_json::to_value(&comp.metadata).unwrap_or_default());
+        std::println!("inn = {:?}, kpp = {:?}", comp.comp_inn, comp.kpp);
     }
 
 

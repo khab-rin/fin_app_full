@@ -123,12 +123,20 @@ pub async fn parse_statement(
             }
         };
 
-        if block_fields.pay_inn.len() == 12 {
-            block_fields.pay_kpp = Kpp::unchecked("0".to_string());
+        if let Some(comp_inn) = block_fields.pay_inn.clone() {
+            if comp_inn.len() == 12 {
+                block_fields.pay_kpp = Kpp::unchecked("".to_string());
+            }
+        } else {
+            block_fields.pay_kpp = Kpp::unchecked("".to_string());
         }
-
-        if block_fields.rec_inn.len() == 12 {
-            block_fields.rec_kpp = Kpp::unchecked("0".to_string());
+        
+        if let Some(comp_inn) = block_fields.rec_inn.clone() {
+            if comp_inn.len() == 12 {
+                block_fields.rec_kpp = Kpp::unchecked("".to_string());
+            }
+        } else {
+            block_fields.rec_kpp = Kpp::unchecked("".to_string());
         }
 
         let comment_data = parse_comment(&block_fields.doc_comment);
@@ -153,12 +161,17 @@ pub async fn parse_statement(
             }
         };
 
-        let pay_key = (block_fields.pay_inn.clone(), block_fields.pay_kpp.clone());
-        let rec_key = (block_fields.rec_inn.clone(), block_fields.rec_kpp.clone());
 
-        new_companys.entry(pay_key).or_default().insert(pay_rass_bic_acc);
 
-        new_companys.entry(rec_key).or_default().insert(rec_rass_bic_acc);
+        if let Some(comp_inn) = block_fields.pay_inn.clone() {
+            let pay_key = (comp_inn, block_fields.pay_kpp.clone());
+            new_companys.entry(pay_key).or_default().insert(pay_rass_bic_acc);
+        }
+
+        if let Some(comp_inn) = block_fields.rec_inn.clone() {
+            let rec_key = (comp_inn, block_fields.rec_kpp.clone());
+            new_companys.entry(rec_key).or_default().insert(rec_rass_bic_acc);
+        }
         
         parsed_blocks.push(ParsedBlock { block_fields, comment_data});
 
@@ -167,8 +180,11 @@ pub async fn parse_statement(
     let mut data: Vec<CompCrateData> = vec!();
 
     for ((comp_inn, kpp), bank_acc) in new_companys {
+        std::println!("inn = {}, kpp = {}", comp_inn, kpp);
+
         data.push(CompCrateData{comp_inn, kpp, bank_acc});
     }
+
 
 
     match add_companys_by_inn_cpp_acc(state, &data).await {
@@ -209,8 +225,11 @@ pub async fn parse_statement(
     };
 
     for operation in operations.iter_mut() {
-        if exist_ext_ids.contains(&operation.external_id) {
-            operation.is_duplicate  = true;
+        if let Some(e) = operation.external_id {
+            if exist_ext_ids.contains(&e) {
+                operation.is_duplicate  = true;
+            }
+   
         }
     }
 

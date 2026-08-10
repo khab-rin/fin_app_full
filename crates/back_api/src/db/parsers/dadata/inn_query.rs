@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use shared_lib::{ProcessError, Status};
 use shared_lib::primitives::frozen::text::{CompInn, Kpp};
 use shared_lib::parsers::dadata::implements::*;
@@ -7,13 +5,14 @@ use shared_lib::parsers::dadata::implements::*;
 use crate::config::BackApiState;
 
 pub async fn dadata_reqwest_func(
-    state: &Arc<BackApiState>, 
-    inn: &CompInn, 
+    state: &BackApiState, 
+    comp_inn: &CompInn, 
     kpp: &Kpp
 ) -> Result<CtrprtyMetadata, Status> {
 
     tracing::debug!("dadata_reqwest_func started");
 
+    let ext_info = format!("inn = {:?}, kpp = {:?}", comp_inn, kpp);
     
     let client = state.config.get_inst_client();
 
@@ -23,7 +22,7 @@ pub async fn dadata_reqwest_func(
     let response = client
         .post(url)
         .headers(header.clone())
-        .json(&serde_json::json!({"query": inn}))
+        .json(&serde_json::json!({"query": comp_inn}))
         .send()
         .await
         .map_err(|err| err.process_err(Status::QueryPostRequestErr, ""))?;
@@ -33,22 +32,33 @@ pub async fn dadata_reqwest_func(
 
     if !status.is_success() {
         let error_body = response.text().await.unwrap_or_else(|_| "Не удалось прочитать тело ответа".to_string());
-        return Err(Status::QueryPostRequestErr.process_err(Status::QueryPostRequestErr, &error_body));
+        return Err(Status::Tech.process_err(Status::QueryPostRequestErr, &error_body));
     }
 
-    let resp_wrap:DadaRespWrap = response
-        .json()
+    let raw_body = response
+        .text()
         .await
-        .map_err(|err| err.process_err(Status::MappingError, ""))?;
+        .map_err(|err| err.process_err(Status::MappingError, &ext_info))?;
+
+
+    let resp_wrap: DadaRespWrap = serde_json::from_str(&raw_body)
+        .map_err(|err| {
+            let info = format!("SerdeError: {}; {}", err, ext_info);
+            err.process_err(Status::MappingError, &info)
+        })?;
 
 
     let mut iterator = resp_wrap.suggestions.into_iter();
 
     let mut main_metadata = iterator
         .next()
-        .ok_or_else(|| Status::Tech.process_err(Status::QueryResponseFormatErr, ""))?
+        .ok_or_else(|| Status::Tech.process_err(Status::QueryResponseFormatErr, &ext_info))?
         .data
-        .ok_or_else(||Status::Tech.process_err(Status::QueryResponseFormatErr, ""))?;
+        .ok_or_else(||Status::Tech.process_err(Status::QueryResponseFormatErr, &ext_info))?;
+
+    if kpp.len() == 0 {
+        return Ok(main_metadata);
+    }
 
     if main_metadata.kpp.is_none() {
         main_metadata.kpp = Some(Kpp::new("0")?);

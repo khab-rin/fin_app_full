@@ -4,9 +4,14 @@ use crate::sql_models::company::implements::{Company, CompanyDto};
 
 pub async fn get_company_by_inn_kpp(
     state: &ClientState,
-    comp_inn: &CompInn,
+    comp_inn: &Option<CompInn>,
     kpp: &Kpp
 ) -> Result<Option<Company>, Status> {
+
+    let comp_inn = match comp_inn {
+        Some(i) => i,
+        None => return Ok(None)
+    };
 
     let session = state.get_session().await
         .map_err(|err| err.process_err(err, ""))?; 

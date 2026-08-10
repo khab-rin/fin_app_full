@@ -1,9 +1,9 @@
 use shared_lib::{Status, ProcessError};
 use shared_lib::sql_models::company::implements::Company;
 use shared_lib::primitives::frozen::text::{CompInn, Kpp, CompType, Date, BoxUuid, DateTime};
-use shared_lib::parsers::dadata::implements::*;
 
 use crate::config::BackApiState;
+use crate::db::parsers::dadata::inn_query::dadata_reqwest_func;
 
 pub(crate) async fn parse_company_by_inn_kpp(
     state: &BackApiState,
@@ -11,49 +11,19 @@ pub(crate) async fn parse_company_by_inn_kpp(
     kpp: &Kpp
 ) -> Result<Company, Status> {
 
+    let mut metadata = dadata_reqwest_func(
+            state, 
+            comp_inn, 
+            kpp)
+        .await
+        .map_err(|err| err.process_err(err, ""))?;
+
     let ext_info = format!("inn = {:?}, kpp = {:?}", comp_inn, kpp);
-
-    let client = state.config.get_inst_client();
-
-    let header = state.config.get_dadata_header();
-    let url = &state.config.dadata.dadata_comp_url;
-
-    let response = client
-        .post(url)
-        .headers(header.clone())
-        .json(&serde_json::json!({"query": comp_inn, "kpp": kpp}))
-        .send()
-        .await
-        .map_err(|err| err.process_err(Status::QueryPostRequestErr, &ext_info))?;
-  
-
-    let status = response.status();
-
-    if !status.is_success() {
-        let error_body = response.text().await.unwrap_or_else(|_| "Не удалось прочитать тело ответа".to_string());
-        return Err(Status::Tech.process_err(Status::QueryPostRequestErr, &error_body));
-    }
-
-    let info = format!("response = {:?}, ext_info = {}", response, ext_info);
-
-    let resp_wrap:DadaRespWrap = response
-        .json()
-        .await
-        .map_err(|err| err.process_err(Status::MappingError, &info))?;
-
-
-    let metadata_option = match resp_wrap.suggestions.first() {
-        Some(m) => m.data.clone(),
-        None => {
-            return Err(Status::Tech.process_err(Status::DadataResponseError, &info));
-        }
-    };
-
-    let mut metadata = match metadata_option {
-        Some(m) => m,
-        None => {
-            return Err(Status::DadataResponseError.process_err(Status::DadataResponseError, &ext_info));
-        }
+    
+    let kpp = if let Some(kpp_m) = metadata.kpp.as_ref() {
+        kpp_m.clone()
+    } else {
+        kpp.clone()
     };
 
     let okved = match &metadata.okved {
@@ -114,7 +84,7 @@ pub(crate) async fn parse_company_by_inn_kpp(
     Ok(Company {
         comp_id,
         comp_inn: comp_inn.clone(),
-        kpp: kpp.clone(),
+        kpp,
         comp_type,  
         comp_status:comp_state.clone(),
         metadata,

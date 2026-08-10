@@ -2,7 +2,7 @@
 use serde::{Serialize, Deserialize};
 use crate::Status;
 use crate::primitives::frozen::formatters::*;
-use crate::primitives::traits::ParseFromStrMapValue;
+use crate::sql_models::operation::macros::ParseFromStrMapValue;
 use crate::primitives::frozen::base_validators::*;
 
 

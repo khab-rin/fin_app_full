@@ -1,3 +1,5 @@
+use chrono::format::parse;
+
 use crate::{ClientState, ProcessError, Status};
 
 use crate::primitives::frozen::text::{BoxUuid, Date};
@@ -20,15 +22,27 @@ pub async fn make_statement_operation_raw(
         .await
         .map_err(|err| err.process_err(err, ""))?;
 
-    if parsed_block.block_fields.pay_inn == session.session_user.company.comp_inn &&
-        parsed_block.block_fields.pay_kpp == session.session_user.company.kpp {
-            make_statement_pay_operation_raw(state, parsed_block).await
-        } else if parsed_block.block_fields.rec_inn == session.session_user.company.comp_inn &&
-            parsed_block.block_fields.rec_kpp == session.session_user.company.kpp {
-            make_statement_rec_operation_raw(state, parsed_block).await
-        } else {
-            make_statement_home_operation_raw(state, parsed_block).await
+    if let Some(ctrpty_inn) = parsed_block.block_fields.pay_inn.as_ref() {
+        if ctrpty_inn != session.session_user.company.comp_inn ||
+            parsed_block.block_fields.pay_kpp != session.session_user.company.kpp {
+                return make_statement_rec_operation_raw(state, parsed_block)
+                    .await
+                    .map_err(|err| err.process_err(err, "ext_info"));
         }
+    }
+
+    if let Some(ctrpty_inn) = parsed_block.block_fields.rec_inn.as_ref() {
+        if ctrpty_inn != session.session_user.company.comp_inn ||
+            parsed_block.block_fields.rec_kpp != session.session_user.company.kpp {
+                return make_statement_pay_operation_raw(state, parsed_block)
+                    .await
+                    .map_err(|err| err.process_err(err, ""));
+            }
+    }
+
+    make_statement_home_operation_raw(state, parsed_block)
+        .await
+        .map_err(|err| err.process_err(err, "ext_info"))
 
 }
 
@@ -58,21 +72,18 @@ pub async fn make_statement_pay_operation_raw(
             &block_fields.rec_kpp)
         .await
         .map_err(|err| err.process_err(err, ""))?;
-
-
-    let ctrpty = match ctrpty_option {
-        Some(c) => c,
-        None => {
-            return Err(Status::Tech.process_err(Status::SystemLogicErr, ""));
-        }
+    
+    let contracts = if let Some(ctrpty) = ctrpty_option.as_ref() {
+        get_contracts_by_comp_ctrpty_ids (
+            state,
+            &comp_id,
+            &ctrpty.comp_id
+        ).await
+        .map_err(|err| err.process_err(err, ""))?
+    } else {
+        vec!()
     };
 
-    let contracts = get_contracts_by_comp_ctrpty_ids(
-            state, 
-            &comp_id, 
-            &ctrpty.comp_id)
-        .await
-        .map_err(|err| err.process_err(err, ""))?;
 
     let mut contrac_option = ContractOption {
         current: None,
@@ -118,29 +129,34 @@ pub async fn make_statement_pay_operation_raw(
 
     let mut hasher = blake3::Hasher::new();
 
-    hasher.update(doc_num.as_bytes());
-    hasher.update(b"|");
-    hasher.update(doc_date.to_string().as_bytes());
-    hasher.update(b"|");
-    hasher.update(amount.to_string().as_bytes());
-    hasher.update(b"|");
-    hasher.update(ctrpty.comp_id.as_ref().as_bytes());
+    let external_id = if let Some(ctrpty) = ctrpty_option.as_ref() {
+        hasher.update(doc_num.as_bytes());
+        hasher.update(b"|");
+        hasher.update(doc_date.to_string().as_bytes());
+        hasher.update(b"|");
+        hasher.update(amount.to_string().as_bytes());
+        hasher.update(b"|");
+        hasher.update(ctrpty.comp_id.as_ref().as_bytes());
 
-    let hash = hasher.finalize();
+        let hash = hasher.finalize();
 
-    let bytes: [u8; 8] = hash.as_bytes()[..8].try_into().unwrap();
-    
-    let external_id: i64 = i64::from_le_bytes(bytes);
+        let bytes: [u8; 8] = hash.as_bytes()[..8].try_into().unwrap();
+        
+        let id: i64 = i64::from_le_bytes(bytes);
+        Some(id)
+    } else {
+        None
+    };
+
 
     let is_sync = Some(false);
-
 
     let res = OperationRaw {
         oper_id,
         user_id,
 
         comp_id,
-        ctrpty,
+        ctrpty: ctrpty_option,
         contract: contrac_option,
 
         debet,
@@ -197,20 +213,16 @@ pub async fn make_statement_rec_operation_raw(
         .await
         .map_err(|err| err.process_err(err, ""))?; 
 
-    let ctrpty = match ctrpty_option {
-        Some(c) => c,
-        None => {
-            return Err(Status::Tech.process_err(Status::SystemLogicErr, ""));
-
-        }
+    let contracts = if let Some(ctrpty) = ctrpty_option.as_ref() {
+        get_contracts_by_comp_ctrpty_ids (
+            state,
+            &comp_id,
+            &ctrpty.comp_id
+        ).await
+        .map_err(|err| err.process_err(err, ""))?
+    } else {
+        vec!()
     };
-
-    let contracts = get_contracts_by_comp_ctrpty_ids(
-            state, 
-            &comp_id, 
-            &ctrpty.comp_id)
-        .await
-        .map_err(|err| err.process_err(err, ""))?;
 
     let mut contrac_option = ContractOption {
         current: None,
@@ -258,21 +270,24 @@ pub async fn make_statement_rec_operation_raw(
 
     let mut hasher = blake3::Hasher::new();
 
-    hasher.update(doc_num.as_bytes());
-    hasher.update(b"|");
-    hasher.update(doc_date.to_string().as_bytes());
-    hasher.update(b"|");
-    hasher.update(amount.to_string().as_bytes());
-    hasher.update(b"|");
-    hasher.update(ctrpty.comp_id.as_ref().as_bytes());
+    let external_id = if let Some(ctrpty) = ctrpty_option.as_ref() {
+        hasher.update(doc_num.as_bytes());
+        hasher.update(b"|");
+        hasher.update(doc_date.to_string().as_bytes());
+        hasher.update(b"|");
+        hasher.update(amount.to_string().as_bytes());
+        hasher.update(b"|");
+        hasher.update(ctrpty.comp_id.as_ref().as_bytes());
 
-    let hash = hasher.finalize();
+        let hash = hasher.finalize();
 
-    let bytes: [u8; 8] = hash.as_bytes()[..8].try_into().unwrap();
-    
-    let external_id: i64 = i64::from_le_bytes(bytes);
-
-
+        let bytes: [u8; 8] = hash.as_bytes()[..8].try_into().unwrap();
+        
+        let id: i64 = i64::from_le_bytes(bytes);
+        Some(id)
+    } else {
+        None
+    };
 
     let is_sync = Some(false);
 
@@ -282,7 +297,7 @@ pub async fn make_statement_rec_operation_raw(
         user_id,
 
         comp_id,
-        ctrpty,
+        ctrpty: ctrpty_option,
         contract: contrac_option,
 
         debet,

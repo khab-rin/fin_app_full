@@ -1,9 +1,8 @@
-use std::collections::{HashSet, HashMap};
+use std::collections::HashSet;
 
 use crate::Status;
 use crate::primitives::frozen::text::*;
 use crate::primitives::frozen::text_base::{PayType, CompanyName, IdentStatus};
-use crate::primitives::composite::implements::RasBicAcc;
 use crate::sql_models::operation::implements::DocType;
 
 make_struct!(pub BlockFields, [
@@ -15,7 +14,7 @@ make_struct!(pub BlockFields, [
     (pay_acc, RasAcc, "ПлательщикСчет"),
     (pay_date, Option<Date>, "ДатаСписано"),
     (pay_name, CompanyName, "Плательщик"),
-    (pay_inn, CompInn, "ПлательщикИНН"),
+    (pay_inn, Option<CompInn>, "ПлательщикИНН"),
     (pay_kpp, Kpp, "ПлательщикКПП"),
     (pay_ras_acc, RasAcc, "ПлательщикРасчСчет"),
     (pay_bic, Bic, "ПлательщикБИК"),
@@ -24,7 +23,7 @@ make_struct!(pub BlockFields, [
     (rec_acc, RasAcc, "ПолучательСчет"),
     (rec_date, Option<Date>, "ДатаПоступило"),
     (rec_name, CompanyName, "Получатель"),
-    (rec_inn, CompInn, "ПолучательИНН"),
+    (rec_inn, Option<CompInn>, "ПолучательИНН"),
     (rec_kpp, Kpp, "ПолучательКПП"),
     (rec_ras_acc, RasAcc, "ПолучательРасчСчет"),
     (rec_bic, Bic, "ПолучательБИК"),

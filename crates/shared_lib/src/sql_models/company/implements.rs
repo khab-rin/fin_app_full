@@ -55,7 +55,7 @@ pub struct CompanyCurt {
     pub kpp: Kpp
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct CompCrateData {
     pub comp_inn: CompInn,
     pub kpp: Kpp,

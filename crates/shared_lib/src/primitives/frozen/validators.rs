@@ -34,7 +34,7 @@ fn validate_mod11_rosstat(s: &str) -> bool {
 pub fn init_pers_inn_from_str(inn: &str) -> Result<String, Status> {
     let inn = inn.trim();
     
-    if inn.len() != 12 || !inn.chars().all(|c| c.is_ascii_digit()) {
+    if inn.len() != 12 || !inn.chars().all(|c| c.is_ascii_digit()) || !inn.chars().any(|c| c != '0') {
         return Err(Status::PersInnValid);
     }
     
@@ -67,7 +67,7 @@ pub fn init_comp_inn_from_str(inn: &str) -> Result<String, Status> {
 
     let inn = inn.trim();
 
-    if inn.len() != 10 || !inn.chars().all(|c| c.is_ascii_digit()) {
+    if inn.len() != 10 || !inn.chars().all(|c| c.is_ascii_digit()) || !inn.chars().any(|c| c != '0') {
         return Err(Status::CompInnValid);
     }
 
@@ -248,9 +248,14 @@ pub(crate) fn init_okogu_from_str(okogu: &str) -> Result<String, Status> {
 
 pub(crate) fn init_opf_code_from_str(val: &str) -> Result<String, Status> {
     let s = val.trim();
-    if s.len() == 5 
+    
+
+    let is_valid_len = s.len() == 2 || s.len() == 5;
+
+    if is_valid_len 
         && s.chars().all(|c| c.is_ascii_digit()) 
-        && s.starts_with(|c: char| ('1'..='7').contains(&c)) 
+  
+        && s.starts_with(|c: char| ('1'..='9').contains(&c)) 
     {
         Ok(s.into())
     } else {
