@@ -56,7 +56,7 @@ pub async fn dadata_reqwest_func(
         .data
         .ok_or_else(||Status::Tech.process_err(Status::QueryResponseFormatErr, &ext_info))?;
 
-    if kpp.len() == 0 {
+    if kpp.is_empty() {
         return Ok(main_metadata);
     }
 

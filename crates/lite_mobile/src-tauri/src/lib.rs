@@ -28,6 +28,7 @@ pub fn run_lib() {
             ])
             .level(log::LevelFilter::Info)
             .level_for("rustls_platform_verifier", log::LevelFilter::Warn)
+            .level_for("shared_lib::client::operation::statement_parser::make_operations", log::LevelFilter::Off)
             .build())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())

@@ -9,14 +9,19 @@ pub(crate) async fn parse_company_by_inn_kpp(
     state: &BackApiState,
     comp_inn: &CompInn,
     kpp: &Kpp
-) -> Result<Company, Status> {
+) -> Result<Option<Company>, Status> {
 
-    let mut metadata = dadata_reqwest_func(
+    let mut metadata = match dadata_reqwest_func(
             state, 
             comp_inn, 
             kpp)
-        .await
-        .map_err(|err| err.process_err(err, ""))?;
+        .await {
+            Ok(m) => m,
+            Err(err) => {
+                err.process_err(err, "");
+                return Ok(None);
+            }
+        };
 
     let ext_info = format!("inn = {:?}, kpp = {:?}", comp_inn, kpp);
     
@@ -29,21 +34,24 @@ pub(crate) async fn parse_company_by_inn_kpp(
     let okved = match &metadata.okved {
         Some(o) => o,
         None => {
-            return Err(Status::MappingError.process_err(Status::MappingError, &ext_info));
+            Status::Tech.process_err(Status::MappingError, &ext_info);
+            return Ok(None);
         }
     };
 
     let opf_data = match &metadata.opf {
         Some(o_d) => o_d,
         None => {
-            return Err(Status::MappingError.process_err(Status::MappingError, &ext_info));
+            Status::Tech.process_err(Status::MappingError, &ext_info);
+            return Ok(None);
         }
     };
 
     let opf_code = match &opf_data.opf_code {
         Some(code) => code,
         None => {
-            return Err(Status::MappingError.process_err(Status::MappingError, &ext_info));
+            Status::Tech.process_err(Status::MappingError, &ext_info);
+            return Ok(None);
         }
     };
 
@@ -60,28 +68,36 @@ pub(crate) async fn parse_company_by_inn_kpp(
     let is_active_data = match &metadata.is_active {
         Some(d) => d,
         None => {
-            return Err(Status::MappingError.process_err(Status::MappingError, ""));
+            Status::Tech.process_err(Status::MappingError, &ext_info);
+            return Ok(None);
         }
     };
 
     let comp_state = match &is_active_data.status {
         Some(s) => s,
         None => {
-            return Err(Status::MappingError.process_err(Status::MappingError, ""));
+            Status::Tech.process_err(Status::MappingError, &ext_info);
+            return Ok(None);
         }
     };
 
     if let Some(ms) = metadata.ogrn_date_dadata {
         if let Some(dt) = chrono::DateTime::from_timestamp_millis(ms) {
             let date_str = dt.naive_utc().date().to_string();
-            metadata.ogrn_date_date = Some(Date::new(date_str.as_str())?);
+            metadata.ogrn_date_date = match Date::new(date_str.as_str()) {
+                Ok(d) => Some(d),
+                Err(err) => {
+                    err.process_err(Status::MappingError, &ext_info);
+                    return Ok(None);
+                }
+            }
         }
     }
 
     let comp_id = BoxUuid::unchecked(uuid::Uuid::new_v4());
 
 
-    Ok(Company {
+    Ok(Some(Company {
         comp_id,
         comp_inn: comp_inn.clone(),
         kpp,
@@ -89,6 +105,6 @@ pub(crate) async fn parse_company_by_inn_kpp(
         comp_status:comp_state.clone(),
         metadata,
         last_update: DateTime::unchecked(chrono::Utc::now())
-    })
+    }))
 
 }

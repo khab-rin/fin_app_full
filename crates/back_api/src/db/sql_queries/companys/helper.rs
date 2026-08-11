@@ -3,6 +3,7 @@ use std::collections::HashSet;
 
 use shared_lib::{Status, ProcessError};
 use shared_lib::primitives::composite::implements::RasBicAcc;
+use shared_lib::primitives::frozen::text::CompType;
 use shared_lib::sql_models::company::implements::{Company, CompanyDto, InnKppMapAcc};
 
 
@@ -28,6 +29,7 @@ pub(crate) fn fresh_bank_acc(
     seen_companys: &mut [Company]
 ) {
     for company in seen_companys.iter_mut() {
+        if company.comp_type == CompType::Bank {continue;}
         let pair = (company.comp_inn.clone(), company.kpp.clone());
         if let Some(new_acc) = data.remove(&pair) {
             let mut prev_acc = company

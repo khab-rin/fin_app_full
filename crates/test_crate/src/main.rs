@@ -15,7 +15,6 @@ fn main() {
             let json_mchd = serde_json
                 ::to_string_pretty(&mchd)
                 .unwrap();
-            std::println!("{json_mchd}");
         }
         Err(err) => {std::println!("{err:?}");}
     }

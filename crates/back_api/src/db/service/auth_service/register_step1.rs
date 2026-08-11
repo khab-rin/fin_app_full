@@ -61,7 +61,11 @@ pub(crate) async fn register_step1(
     };
 
     let new_company = match parse_company_by_inn_kpp(state, comp_inn, kpp).await {
-        Ok(c) => c,
+        Ok(Some(c)) => c,
+        Ok(None) => {
+            Status::Tech.process_err(Status::SystemLogicErr, "");
+            return Ok(failed_result);
+        }
         Err(err) => {
             err.process_err(err, "");
             return Ok(failed_result)
@@ -75,7 +79,6 @@ pub(crate) async fn register_step1(
             return Ok(failed_result)
         }
     };
-
 
     make_init_files(state, data).await
 

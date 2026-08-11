@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use encoding_rs::WINDOWS_1251;
 use futures::stream::{self, StreamExt};
 
@@ -141,36 +141,17 @@ pub async fn parse_statement(
 
         let comment_data = parse_comment(&block_fields.doc_comment);
 
-        let pay_rass_bic_acc = match RasBicAcc::new(
-                &block_fields.pay_bic,
-                &block_fields.pay_acc) {
-            Ok(a) => a,
-            Err(err) => {
-                err.process_err(err, &format!("bic = {:?}, acc = {:?}", block_fields.pay_bic, &block_fields.pay_acc));
-                return failed_result;
-            }
-        };
-
-        let rec_rass_bic_acc = match RasBicAcc::new(
-                &block_fields.rec_bic,
-                &block_fields.rec_acc) {
-            Ok(a) => a,
-            Err(err) => {
-                err.process_err(err, "");
-                return failed_result;
-            }
-        };
-
 
 
         if let Some(comp_inn) = block_fields.pay_inn.clone() {
             let pay_key = (comp_inn, block_fields.pay_kpp.clone());
-            new_companys.entry(pay_key).or_default().insert(pay_rass_bic_acc);
+            new_companys.insert(pay_key, HashSet::new());
+    
         }
 
         if let Some(comp_inn) = block_fields.rec_inn.clone() {
             let rec_key = (comp_inn, block_fields.rec_kpp.clone());
-            new_companys.entry(rec_key).or_default().insert(rec_rass_bic_acc);
+            new_companys.insert(rec_key, HashSet::new());
         }
         
         parsed_blocks.push(ParsedBlock { block_fields, comment_data});
@@ -180,8 +161,6 @@ pub async fn parse_statement(
     let mut data: Vec<CompCrateData> = vec!();
 
     for ((comp_inn, kpp), bank_acc) in new_companys {
-        std::println!("inn = {}, kpp = {}", comp_inn, kpp);
-
         data.push(CompCrateData{comp_inn, kpp, bank_acc});
     }
 

@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use futures::stream::{self, StreamExt};
 
 use shared_lib::{ProcessError, Status};
@@ -28,16 +30,17 @@ pub(crate) async fn update_companys(
     let comp_inn_data: Vec<String> = inn_kpp_acc_map.keys().map(|x| x.0.to_string()).collect();
     let kpp_data: Vec<String> = inn_kpp_acc_map.keys().map(|x| x.1.to_string()).collect();
 
-    let mut prev_companys = get_companys_by_inn_kpp(
+    let mut prev_companys: Vec<Company> = get_companys_by_inn_kpp(
             state,
             &comp_inn_data,
             &kpp_data)
         .await
         .map_err(|err| err.process_err(err, ""))?; 
 
+
     fresh_bank_acc(&mut inn_kpp_acc_map, &mut prev_companys); 
 
-    let mut new_companys: Vec< Company> = vec!();
+    let mut new_companys: Vec<Company> = vec!();
 
     let mut tasks_vec = vec!();
 
@@ -53,9 +56,10 @@ pub(crate) async fn update_companys(
 
     while let Some(res) = dadata_stream.next().await {
         match res {
-            Ok(c) => {
-                new_companys.push(c)
+            Ok(Some(c)) => {
+                new_companys.push(c);
             },
+            Ok(None) => {},
             Err(err) => {
                 return Err(err.process_err(err, ""));
             } 
@@ -64,10 +68,22 @@ pub(crate) async fn update_companys(
 
     fresh_bank_acc(&mut inn_kpp_acc_map, &mut new_companys); 
 
+    let mut all_companys: HashMap<(CompInn, Kpp), Company> = HashMap::new();
+
     for comp in prev_companys {
-        new_companys.push(comp);
+        let key = (comp.comp_inn.clone(), comp.kpp.clone());
+        all_companys.insert(key, comp);
     }
-       
+
+    for comp in new_companys {
+        let key = (comp.comp_inn.clone(), comp.kpp.clone());
+        if let Some(mut seen_comp) = all_companys.remove(&key) {
+            seen_comp.merge_acc(comp);
+            all_companys.insert(key, seen_comp);
+        } else {
+            all_companys.insert(key, comp);
+        }
+    };
    
     let mut comp_id: Vec<uuid::Uuid> = vec!();
     let mut comp_inn: Vec<String> = vec!();
@@ -76,14 +92,14 @@ pub(crate) async fn update_companys(
     let mut comp_status: Vec<String> = vec!();
     let mut metadata: Vec<serde_json::Value> = vec!();
 
-    for comp in new_companys {
+    for comp in all_companys.values() {
         comp_id.push(*comp.comp_id.as_ref());
         comp_inn.push(comp.comp_inn.to_string());
         kpp.push(comp.kpp.to_string());
         comp_type.push(comp.comp_type.as_str().to_string());
         comp_status.push(comp.comp_status.as_str().to_string());
         metadata.push(serde_json::to_value(&comp.metadata).unwrap_or_default());
-        std::println!("inn = {:?}, kpp = {:?}", comp.comp_inn, comp.kpp);
+        
     }
 
 
@@ -99,6 +115,7 @@ pub(crate) async fn update_companys(
         ).fetch_all(&state.pool_long)
         .await
         .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+
 
     dto_to_company_vec(companys_dto)
 }
