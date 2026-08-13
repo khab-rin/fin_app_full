@@ -1,14 +1,18 @@
 import { FieldValidator } from "../Auth/FieldValidator.svelte";
 import type { OperationRaw } from "../rustModels/OperationRaw";
 
-class OperationSvelte {
+export class OperationSvelte {
     data = $state({
         OperId: new FieldValidator("BoxUuid", ""),
         UserId: new FieldValidator("BoxUuid", ""),
 
         CompId: new FieldValidator("BoxUuid", ""),
         CtrptyId: new FieldValidator("BoxUuid", ""),
+        CtrptyName: new FieldValidator("CompanyName", ""),
+
         ContractId: new FieldValidator("BoxUuid", ""),
+        ContractNum: new FieldValidator("DocNum", ""),
+        ContractDate: new FieldValidator("Date", ""),
 
         Debet: new FieldValidator("Account", ""),
         Credit: new FieldValidator("Account", ""),
@@ -24,7 +28,7 @@ class OperationSvelte {
 
         EntrDate: new FieldValidator("Date", ""),
 
-        ExternalId: 0n
+        ExternalId: ""
     })
 
     constructor(raw?: OperationRaw) {
@@ -33,14 +37,11 @@ class OperationSvelte {
             this.data.UserId.value = raw.user_id;
 
             this.data.CompId.value = raw.comp_id;
-            this.data.CtrptyId.value = raw.ctrpty.comp_id;
+            this.data.CtrptyName.value = raw.ctrpty?.metadata?.comp_name?.short_egrul_name ?? "";
 
-            if (raw) {
-                const activeContract = raw.contract.current ?? raw.contract.contracts[0];
-                if (activeContract) {
-                    this.data.ContractId.value = activeContract.contract_id;
-                }
-            }
+            this.data.ContractNum.value = raw.contract.current?.contract_num ?? "";
+            this.data.ContractDate.value = raw.contract.current?.contract_date ?? "";
+            
             
             this.data.Debet.value = raw.debet;
             this.data.Credit.value = raw.credit;
@@ -56,7 +57,7 @@ class OperationSvelte {
 
             this.data.EntrDate.value = raw.entr_date;
 
-            this.data.ExternalId = raw.external_id
+            this.data.ExternalId = raw.external_id?.toString() ?? ""
         }
     }
 }

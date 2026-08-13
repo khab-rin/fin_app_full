@@ -40,8 +40,6 @@ pub async fn cmd_lend_mchd(
     sig_file_path: String
 ) -> Result<MchdStep, Status> {
 
-    log::info!("cmd_lend_mchd running!!!");
-
     lend_mchd_to_back_api_for_register(&state, &xml_file_path, &sig_file_path).await
 
 }
@@ -52,8 +50,6 @@ pub async fn cmd_make_xml_doc_files(
     data: NewMchdData
 ) -> Result<MchdStep, Status> {
 
-    log::info!("cmd_register_tax_mchd running!!!");
-
     make_xml_doc_files(&state, &data).await
 
 }
@@ -62,8 +58,6 @@ pub async fn cmd_make_xml_doc_files(
 pub async fn cmd_show_powers(
     state: tauri::State<'_, ClientState>,
 ) -> Result<MchdStep, Status> {
-
-    log::info!("cmd_show_powers running!!!");
     
     show_powers(&state).await
 

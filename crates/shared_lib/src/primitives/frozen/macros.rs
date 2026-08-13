@@ -86,11 +86,24 @@ macro_rules! frozen_primitives {
             }
         }
 
+        
+
         impl sqlx::Type<sqlx::Sqlite> for $name {
             fn type_info() -> <sqlx::Sqlite as sqlx::Database>::TypeInfo {
                 <String as sqlx::Type<sqlx::Sqlite>>::type_info()
             }
         }
+        
+        
+        impl sqlx::Type<sqlx::Postgres> for $name 
+        where 
+            $data_type: sqlx::Type<sqlx::Postgres> 
+        {
+            fn type_info() -> sqlx::postgres::PgTypeInfo {
+                <$data_type as sqlx::Type<sqlx::Postgres>>::type_info()
+            }
+        }
+
 
         impl<'q> sqlx::Encode<'q, sqlx::Sqlite> for $name {
             fn encode_by_ref(
@@ -100,6 +113,18 @@ macro_rules! frozen_primitives {
                 let s = ($formatter)(&self.data);
                 
                 <String as sqlx::Encode<'q, sqlx::Sqlite>>::encode(s, buf)
+            }
+        }
+
+        impl<'q> sqlx::Encode<'q, sqlx::Postgres> for $name 
+        where 
+            $data_type: sqlx::Encode<'q, sqlx::Postgres>
+        {
+            fn encode_by_ref(
+                &self,
+                buf: &mut <sqlx::Postgres as sqlx::Database>::ArgumentBuffer<'q>,
+            ) -> Result<sqlx::encode::IsNull, Box<dyn std::error::Error + Send + Sync>> {
+                <$data_type as sqlx::Encode<'q, sqlx::Postgres>>::encode_by_ref(&self.data, buf)
             }
         }
 
@@ -117,37 +142,13 @@ macro_rules! frozen_primitives {
             }
         }
 
-        
-        
-        impl sqlx::Type<sqlx::Postgres> for $name 
-        where 
-            $data_type: sqlx::Type<sqlx::Postgres> 
-        {
-            fn type_info() -> sqlx::postgres::PgTypeInfo {
-                <$data_type as sqlx::Type<sqlx::Postgres>>::type_info()
-            }
-        }
-
-        impl<'q> sqlx::Encode<'q, sqlx::Postgres> for $name 
-        where 
-            $data_type: sqlx::Encode<'q, sqlx::Postgres>
-        {
-            fn encode_by_ref(
-                &self,
-                buf: &mut <sqlx::Postgres as sqlx::Database>::ArgumentBuffer<'q>,
-            ) -> Result<sqlx::encode::IsNull, Box<dyn std::error::Error + Send + Sync>> {
-                <$data_type as sqlx::Encode<'q, sqlx::Postgres>>::encode_by_ref(&self.data, buf)
-            }
-        }
-
         impl<'r> sqlx::Decode<'r, sqlx::Postgres> for $name {
             fn decode(
                 value: <sqlx::Postgres as sqlx::Database>::ValueRef<'r>,
             ) -> Result<Self, Box<dyn std::error::Error + Send + Sync>> {
-                // 1. Считываем данные из БД в их РОДНОМ типе ($data_type)
+               
                 let raw_val = <$data_type as sqlx::Decode<'r, sqlx::Postgres>>::decode(value)?;
                 
-                // 2. Валидируем родное значение через new()
                 let validated = Self::new(&raw_val.to_string())
                     .map_err(|e| format!("Failed to decode {}: {:?}", stringify!($name), e))?;
                 

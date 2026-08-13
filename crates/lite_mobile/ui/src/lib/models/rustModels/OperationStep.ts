@@ -3,4 +3,4 @@ import type { Operation } from "./Operation";
 import type { OperationInfo } from "./OperationInfo";
 import type { OperationRaw } from "./OperationRaw";
 
-export type OperationStep = { "AccessDenied": { text: OperationInfo, } } | { "Loading": { text: OperationInfo, } } | { "ManualInput": { text: OperationInfo, } } | { "SuccessRaw": { text: OperationInfo, operations: Array<OperationRaw>, } } | { "StatementParser": { text: OperationInfo, } } | { "Success": { text: OperationInfo, operations: Array<Operation>, } } | { "TryLater": { text: OperationInfo, } };
+export type OperationStep = { "AccInput": { text: OperationInfo, } } | { "AccessDenied": { text: OperationInfo, } } | { "Loading": { text: OperationInfo, } } | { "ManualInput": { text: OperationInfo, } } | { "StatementParser": { text: OperationInfo, } } | { "SuccessRaw": { text: OperationInfo, operations: Array<OperationRaw>, } } | { "Success": { text: OperationInfo, operations: Array<Operation>, } } | { "TryLater": { text: OperationInfo, } };

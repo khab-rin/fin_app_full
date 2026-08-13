@@ -3,6 +3,9 @@ use serde::{Serialize, Deserialize};
 use crate::primitives::frozen::text::{BoxUuid, Date, CompInn, PersInn, Kpp, Ogrn, Phone, Region, RubF, Snils};
 use crate::primitives::frozen::text_base::*;
 use crate::primitives::composite::implements::Fio;
+use crate::service::mchd::poa::PoaMchd;
+use crate::service::mchd::service::{MchdStep, MchdType};
+use crate::service::mchd::home_mchd_power::HomePowerInfo;
 
 // АдрТип
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
@@ -956,3 +959,13 @@ make_mchd_enum!(PoaReqElemsFlag, {
     BTBEsiaNotarialTax => "01110000"
 });
 
+
+#[derive(ts_rs::TS)]
+pub struct MchdTSRS {
+    mchd_step: MchdStep,
+    poa_mchd: PoaMchd,
+    mchd_type: MchdType,
+    home_power_info: HomePowerInfo,
+
+
+}

@@ -11,10 +11,10 @@ pub async fn get_ext_ids_by_ext_id(
     let session = state.get_session().await
         .map_err(|err| err.process_err(err, ""))?; 
 
+
     let all_ext_ids: HashSet<i64> = operations
         .iter()
-        .map(|x| x.external_id) 
-        .flatten()
+        .filter_map(|x| x.external_id)
         .collect();
 
     let json_ids = serde_json::to_string(&all_ext_ids)

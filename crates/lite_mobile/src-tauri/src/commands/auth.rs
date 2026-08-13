@@ -50,8 +50,6 @@ pub async  fn cmd_is_state_active_init(
     state: tauri::State<'_, ClientState>
 ) -> Result<AuthStep, Status> {
 
-    log::info!("cmd_is_state_active_init running!!!!");
-
     let session_ref = state.session.lock().await;
     
     if let Some(ref session) = *session_ref {
@@ -112,8 +110,6 @@ pub async fn cmd_session_by_nick(
     state: tauri::State<'_, ClientState>,
     nick: String
 ) -> Result<AuthStep, Status> {
-
-    log::info!("cmd_session_by_nick running!!!!");
 
     match restore_session_by_nick(&state, &nick).await {
         Ok(res) => Ok(res),

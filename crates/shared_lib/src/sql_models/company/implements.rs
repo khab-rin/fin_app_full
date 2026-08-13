@@ -35,13 +35,23 @@ pub struct Company {
 impl std::convert::TryFrom<CompanyDto> for Company {
     type Error = serde_json::Error;
     fn try_from(dto: CompanyDto) -> Result<Self, Self::Error> {
+
+        let metadata: CtrprtyMetadata = match dto.metadata {
+            serde_json::Value::String(raw_json_str) => {
+                serde_json::from_str(&raw_json_str)?
+            }
+            any_other_value => {
+                serde_json::from_value(any_other_value)?
+            }
+        };
+
         Ok(Company { 
             comp_id: dto.comp_id,
             comp_inn: dto.comp_inn,
             kpp: dto.kpp,
             comp_type: dto.comp_type,
             comp_status: dto.comp_status,
-            metadata: serde_json::from_value(dto.metadata)?,
+            metadata,
             last_update: dto.last_update
          })
     }

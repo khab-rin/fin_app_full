@@ -24,23 +24,24 @@ pub fn get_scan_dates_reg() -> & 'static Regex {
     })
 }
 
-pub fn get_scan_doc_nums_reg() -> & 'static Regex {
+pub fn get_scan_doc_nums_reg() -> &'static Regex {
     SCAN_DOC_NUMS_REG.get_or_init(|| {
-        Regex::new(r"(?i)(?:договор[а-я]{0,3}|дог\.?|счет|сч\.?|инвойс|№)\s*(?:№|от|н[./]р)?\s*([a-zа-я0-9\-/№]{2,18})")
+        // Добавлен корень сделк[а-яё]* в список отслеживаемых слов
+        Regex::new(r"(?i)(?:догов[а-яё]*|контр[а-яё]*|счет[а-яё]*|счёт[а-яё]*|инвойс[а-яё]*|сделк[а-яё]*)\s+(?:(?:№\s*([a-zа-яё0-9\-/№]+))|(?:[а-яёa-z0-9]+\s+(?:№\s*)?([a-zа-яё0-9\-/№]+)))")
             .expect("WRONG_SCAN_DOC_NUMS_REGEX!!!")
     })
 }
 
 pub fn get_scan_nds_rate_reg() -> & 'static Regex {
     SCAN_NDS_RATE_REG.get_or_init(|| {
-        Regex::new(r"(?i)ндс\s*(?:\d{1,2}\s*%\s*[,.]?\s*)([\d\s]+[.,]\d{2})")
+        Regex::new(r"(?i)ндс\s*.*?\D(18|20|22)\s*%")
             .expect("WRONG_SCAN_NDS_RATE_REGEX!!!")  
     })
 }
 
 pub fn get_scan_nds_amount_reg() -> & 'static Regex {
     SCAN_NDS_AMOUNT_REG.get_or_init(|| {
-        Regex::new(r"(?i)ндс(?:.*?\d{1,2}\s*%)?.*?([\d\s]+[.,]\d{2})")
+        Regex::new(r"(?i)ндс(?:[^от]*?\d{1,2}\s*%)?\s*(?:сумма|в\s*т\.?ч\.?|составляет)?\s*[:\-]?\s*([\d\s]+[.,]\d{2})")
             .expect("WRONG_SCAN_NDS_AMOUNT_REGEX!!!")  
     })
 }

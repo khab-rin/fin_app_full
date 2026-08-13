@@ -33,19 +33,10 @@ use super::*;
         sql_models::operation::implements::OperationTSTS::export_all_to(output_dir)
             .expect("Не удалось экспортировать OperationTSTS");
 
-        service::mchd::home_mchd_power::HomeMchdPower::export_all_to(output_dir)
-            .expect("Не удалось экспортировать HomeMchdPower");
-        
-        service::mchd::home_mchd_power::HomePowerInfo::export_all_to(output_dir)
-            .expect("Не удалось экспортировать MchdPowerInfo");
+        service::auth_service::implements::AuthTSRS::export_all_to(output_dir)
+         .expect("Не удалось экспортировать AuthTSRS");
 
-        service::mchd::poa::PoaMchd::export_all_to(output_dir)
-            .expect("Не удалось экспортировать PoaMchd");
-
-        service::mchd::service::MchdStep::export_all_to(output_dir)
-            .expect("Не удалось экспортировать MchdStep");
-
-        service::mchd::service::MchdType::export_all_to(output_dir)
-            .expect("Не удалось экспортировать MchdType");
+        service::mchd::implements::MchdTSRS::export_all_to(output_dir)
+            .expect("Не удалось экспортировать MchdTSRS");
     }
 }

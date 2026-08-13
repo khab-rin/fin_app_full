@@ -216,7 +216,7 @@ pub(crate) async fn init_session(
 
     let mut db_url = format!("sqlite://{}", path_str);
 
-    if let Ok(env_db_url) = std::env::var("DATABASE_URL_TEMP") {
+    if let Ok(env_db_url) = std::env::var("DATABASE_URL") {
         db_url = env_db_url;
     }
 

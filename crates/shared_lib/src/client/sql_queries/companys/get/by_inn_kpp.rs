@@ -16,6 +16,16 @@ pub async fn get_company_by_inn_kpp(
     let session = state.get_session().await
         .map_err(|err| err.process_err(err, ""))?; 
 
+    let connect_options = session.local_db.connect_options();
+
+    // 2. Берем базовое имя файла (оно может быть относительным, например "crates/shared_lib/data_base.db")
+    let raw_path = connect_options.get_filename();
+
+    // 3. Превращаем его в полный абсолютный путь
+    // Если файл существует, canonicalize вернет PathBuf с полным путем
+    let full_path = std::fs::canonicalize(raw_path)
+        .unwrap_or_else(|_| std::path::PathBuf::from(raw_path));
+
     let var1= comp_inn.as_ref();
     let var2 = kpp.as_ref();
 

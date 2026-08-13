@@ -15,8 +15,6 @@ pub async fn cmd_add_comp_bank_acc(
     ras_acc: Option<RasAcc>
 ) -> Result<Vec<RasBicAcc>, Status> {
 
-    log::info!("cmd_add_comp_bank_acc running");
-
     let ras_bic_acc = if let (Some(b), Some(r)) = (bic, ras_acc) {
         let acc = match RasBicAcc::new(b, r) {
             Ok(r) => r,

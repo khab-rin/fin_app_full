@@ -213,3 +213,12 @@ pub struct RegFilesPathData {
     pub sign_path: String, 
 }
 
+
+#[derive(ts_rs::TS)]
+pub struct AuthTSRS {
+    auth_step: AuthStep,
+    passw_data: PasswordDataClientShort,
+    reg_init_data: RegInitData,
+    reg_files_data: RegFilesPathData,
+    
+}

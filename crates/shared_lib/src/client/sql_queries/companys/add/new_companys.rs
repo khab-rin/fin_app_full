@@ -27,7 +27,7 @@ pub async fn add_companys_by_inn_cpp_acc(
         .map_err(|err| err.process_err(Status::SqLitePoolErr, ""))?;
 
     for company in companys.iter() {
-        let comp_id = company.comp_id.as_ref();
+        let comp_id = company.comp_id.clone();
         let comp_inn = company.comp_inn.as_ref();
         let kpp = company.kpp.as_ref();
         let comp_type = company.comp_type.as_str();

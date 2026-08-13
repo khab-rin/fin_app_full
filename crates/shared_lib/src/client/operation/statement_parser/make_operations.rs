@@ -1,5 +1,6 @@
 use chrono::format::parse;
 
+use crate::sql_models::session;
 use crate::{ClientState, ProcessError, Status};
 
 use crate::primitives::frozen::text::{BoxUuid, Date};
@@ -29,6 +30,10 @@ pub async fn make_statement_operation_raw(
                     .await
                     .map_err(|err| err.process_err(err, "ext_info"));
         }
+    } else {
+        return make_statement_rec_operation_raw(state, parsed_block)
+            .await
+            .map_err(|err| err.process_err(err, "ext_info"));
     }
 
     if let Some(ctrpty_inn) = parsed_block.block_fields.rec_inn.as_ref() {
@@ -38,11 +43,17 @@ pub async fn make_statement_operation_raw(
                     .await
                     .map_err(|err| err.process_err(err, ""));
             }
+    } else {
+        return make_statement_pay_operation_raw(state, parsed_block)
+            .await
+            .map_err(|err| err.process_err(err, ""));
     }
 
     make_statement_home_operation_raw(state, parsed_block)
         .await
-        .map_err(|err| err.process_err(err, "ext_info"))
+        .map_err(|err| err.process_err(err, &format!("ext_info = {:?}", parsed_block)))
+
+
 
 }
 
@@ -64,7 +75,6 @@ pub async fn make_statement_pay_operation_raw(
     let user_id = session.session_user.user.user_id.clone();
 
     let comp_id = session.session_user.company.comp_id.clone();
-
 
     let ctrpty_option = get_company_by_inn_kpp(
             state,
@@ -205,7 +215,6 @@ pub async fn make_statement_rec_operation_raw(
 
     let comp_id = session.session_user.company.comp_id.clone();
 
-
     let ctrpty_option = get_company_by_inn_kpp(
             state,
             &block_fields.pay_inn,
@@ -333,8 +342,99 @@ pub async fn make_statement_home_operation_raw(
     parsed_block: &ParsedBlock
 ) -> Result<OperationRaw, Status> {
 
-    
+    let session = state.get_session().await
+        .map_err(|err| err.process_err(err, ""))?;
 
+    let oper_id= BoxUuid::unchecked(uuid::Uuid::new_v4());
 
-    Err(Status::Unknown)
+    let user_id = session.session_user.user.user_id.clone();
+
+    let comp_id = session.session_user.company.comp_id.clone();
+
+    let ctrpty_option = Some(session.session_user.company.clone());
+
+    let contract = ContractOption {
+        current: None,
+        contracts: vec!()
+    };
+
+    let (debet, credit) = if parsed_block.comment_data.is_cred_loan {
+        (Account::SpecBankAcc, Account::BankAcc)
+    } else if parsed_block.comment_data.is_cred_return {
+        (Account::BankAcc, Account::SpecBankAcc)
+    } else {
+        (Account::BankAcc, Account::SpecBankAcc)
+    };
+
+    let amount = parsed_block.block_fields.statement_amount.clone();
+
+    let oper_date = parsed_block.block_fields.pay_date.clone();
+
+    let doc_type =parsed_block.block_fields.doc_type;
+
+    let doc_num = parsed_block.block_fields.doc_num.clone();
+
+    let doc_date = parsed_block.block_fields.doc_date.clone();
+
+    let is_storno = false;
+
+    let is_del = false;
+
+    let entr_date = Date::unchecked(chrono::Utc::now().naive_utc());
+
+    let mut hasher = blake3::Hasher::new();
+
+    let external_id = if let Some(ctrpty) = ctrpty_option.as_ref() {
+        hasher.update(doc_num.as_bytes());
+        hasher.update(b"|");
+        hasher.update(doc_date.to_string().as_bytes());
+        hasher.update(b"|");
+        hasher.update(amount.to_string().as_bytes());
+        hasher.update(b"|");
+        hasher.update(ctrpty.comp_id.as_ref().as_bytes());
+
+        let hash = hasher.finalize();
+
+        let bytes: [u8; 8] = hash.as_bytes()[..8].try_into().unwrap();
+        
+        let id: i64 = i64::from_le_bytes(bytes);
+        Some(id)
+    } else {
+        None
+    };
+
+    let is_sync = Some(false);
+
+    let res = OperationRaw {
+        oper_id,
+        user_id,
+
+        comp_id,
+        ctrpty: ctrpty_option,
+        contract,
+
+        debet,
+        credit,
+        amount,
+        oper_date,
+
+        doc_type,
+        doc_num,
+        doc_date,
+
+        is_storno,
+        is_del,
+
+        entr_date,
+
+        external_id,
+
+        is_sync,
+
+        comment: parsed_block.block_fields.doc_comment.clone(),
+
+        is_duplicate : false
+    };
+
+    Ok(res)
 }
