@@ -9,14 +9,24 @@
     import type {OperationRaw} from '$lib/models/rustModels/OperationRaw';
     import type {Operation} from '$lib/models/rustModels/Operation';
     import type {OperationStep} from '$lib/models/rustModels/OperationStep';
+    import {StateProcessor} from '$lib/models/Operation/StatementProcessor.svelte';
 
-    let allRaw = $state<OperationRaw>[];
 
 
+    let processor = $derived(new StateProcessor([]));
+    let curIndex = $state(0);
+
+    function nextOper() {
+        processor.next()
+    }
+
+    function prevOper() {
+        processor.prev()
+    }
     
-    async onMount(await() => {
+    onMount (async() => {
         if (OperationType.SuccessRaw in operStep.step) {
-            const data = operStep.step.operations;
+            processor = new StateProcessor(operStep.step.SuccessRaw.operations);
         } else {
             const next_step: OperationStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
             console.error("System Logic Error, wrong current step");
@@ -24,8 +34,21 @@
         }
     });
 
-
-
 </script>
+
+<section class='input-section'>
+    <div class="input-group">
+        <input 
+            class="input-field"
+            type="text" 
+            bind:value={processor.opersSvelte[processor.curInd].data.ctrptyName.value} 
+            disabled={true}
+            placeholder="строка до 50 знаков"
+            class:input-error={processor.opersSvelte[processor.curInd].data.ctrptyName.isValid}
+        />
+    </div>
+
+
+</section>
 
 

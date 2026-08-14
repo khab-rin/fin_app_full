@@ -18,9 +18,10 @@ use crate::sql_models::operation::service::{
 pub struct OperationRaw {
     pub oper_id: BoxUuid,
     pub user_id: BoxUuid,
-
     pub comp_id: BoxUuid,
+
     pub ctrpty: Option<Company>,
+
     pub contract: ContractOption,
 
     pub debet: Account,
@@ -224,6 +225,13 @@ impl ParseFromStrMapValue for DocType {
             None => Ok(DocType::Other), 
         }
     }
+}
+
+#[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
+pub struct OperationDocument {
+    pub doc_type: DocType,
+    pub doc_num: DocNum,
+    pub doc_data: Date
 }
 
 
