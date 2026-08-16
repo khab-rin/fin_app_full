@@ -13,7 +13,7 @@ pub async fn add_company_by_inn_cpp_acc(
     comp_inn: &Option<CompInn>,
     kpp: &Option<Kpp>,
     ras_bic_acc: &Option<RasBicAcc>
-) -> Result<Company, Status> {
+) -> Result<Option<Company>, Status> {
 
     let session = state.get_session().await
         .map_err(|err| err.process_err(err, ""))?; 
@@ -41,9 +41,6 @@ pub async fn add_company_by_inn_cpp_acc(
 
     let company_option = companys.into_iter().next();
 
-    match company_option {
-        Some(c) => Ok(c),
-        None => Err(Status::Tech.process_err(Status::SystemLogicErr, ""))
-    }
+    Ok(company_option) 
 
 }

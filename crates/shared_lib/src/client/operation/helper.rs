@@ -28,7 +28,7 @@ pub async fn add_bank_acc_by_inn_kpp(
     ras_bic_acc: &Option<RasBicAcc>
 ) -> Result<Vec<RasBicAcc>, Status> {
 
-    let company = add_company_by_inn_cpp_acc(
+    let company_option = add_company_by_inn_cpp_acc(
             state, 
             comp_inn, 
             kpp, 
@@ -36,5 +36,8 @@ pub async fn add_bank_acc_by_inn_kpp(
         .await
         .map_err(|err| err.process_err(err, ""))?; 
 
-    Ok(company.metadata.bank_acc)
+    match company_option {
+        Some(c) => Ok(c.metadata.bank_acc),
+        None => Ok(vec!())
+    }
 }

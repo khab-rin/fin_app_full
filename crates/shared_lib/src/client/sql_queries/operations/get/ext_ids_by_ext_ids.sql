@@ -1,6 +1,6 @@
 SELECT
-    external_id AS "external_id!: i64"
+    oper_id AS "external_id!: BoxUuid"
 FROM operations
-WHERE external_id IN (
+WHERE oper_id IN (
     SELECT CAST(VALUE AS INTEGER) FROM json_each(?1)
 )

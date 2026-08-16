@@ -1,12 +1,9 @@
-use chrono::format::parse;
-
-use crate::sql_models::session;
 use crate::{ClientState, ProcessError, Status};
 
-use crate::primitives::frozen::text::{BoxUuid, Date};
+use crate::primitives::frozen::text::Date;
 use crate::sql_models::operation::parser::ParsedBlock;
 use crate::sql_models::operation::implements::{
-    ContractOption, OperationRaw
+    ContractOption, OperationRaw, make_oper_id
 };
 use crate::sql_models::operation::account::Account;
 
@@ -70,18 +67,20 @@ pub async fn make_statement_pay_operation_raw(
 
     let ParsedBlock { block_fields, comment_data } = parsed_block;
 
-    let oper_id = BoxUuid::unchecked(uuid::Uuid::new_v4());
-
     let user_id = session.session_user.user.user_id.clone();
 
     let comp_id = session.session_user.company.comp_id.clone();
 
-    let ctrpty_option = get_company_by_inn_kpp(
-            state,
-            &block_fields.rec_inn,
-            &block_fields.rec_kpp)
-        .await
-        .map_err(|err| err.process_err(err, ""))?;
+    let ctrpty_option = if let Some(c_inn) = block_fields.rec_inn.clone() {
+        get_company_by_inn_kpp(
+                state, 
+                &c_inn, 
+                &block_fields.pay_kpp)
+            .await
+            .map_err(|err| err.process_err(err, ""))?
+    } else {
+        None
+    };
     
     let contracts = if let Some(ctrpty) = ctrpty_option.as_ref() {
         get_contracts_by_comp_ctrpty_ids (
@@ -137,27 +136,7 @@ pub async fn make_statement_pay_operation_raw(
 
     let entr_date = Date::unchecked(chrono::Utc::now().naive_utc());
 
-    let mut hasher = blake3::Hasher::new();
-
-    let external_id = if let Some(ctrpty) = ctrpty_option.as_ref() {
-        hasher.update(doc_num.as_bytes());
-        hasher.update(b"|");
-        hasher.update(doc_date.to_string().as_bytes());
-        hasher.update(b"|");
-        hasher.update(amount.to_string().as_bytes());
-        hasher.update(b"|");
-        hasher.update(ctrpty.comp_id.as_ref().as_bytes());
-
-        let hash = hasher.finalize();
-
-        let bytes: [u8; 8] = hash.as_bytes()[..8].try_into().unwrap();
-        
-        let id: i64 = i64::from_le_bytes(bytes);
-        Some(id)
-    } else {
-        None
-    };
-
+    let oper_id = make_oper_id(&doc_num, &doc_date, &amount, &ctrpty_option);
 
     let is_sync = Some(false);
 
@@ -183,8 +162,6 @@ pub async fn make_statement_pay_operation_raw(
 
         entr_date,
 
-        external_id,
-
         is_sync,
 
         comment: block_fields.doc_comment.clone(),
@@ -209,18 +186,20 @@ pub async fn make_statement_rec_operation_raw(
 
     let ParsedBlock { block_fields, comment_data } = parsed_block;
 
-    let oper_id = BoxUuid::unchecked(uuid::Uuid::new_v4());
-
     let user_id = session.session_user.user.user_id.clone();
 
     let comp_id = session.session_user.company.comp_id.clone();
 
-    let ctrpty_option = get_company_by_inn_kpp(
-            state,
-            &block_fields.pay_inn,
-            &block_fields.pay_kpp)
-        .await
-        .map_err(|err| err.process_err(err, ""))?; 
+    let ctrpty_option = if let Some(c_inn) = block_fields.pay_inn.clone() {
+        get_company_by_inn_kpp(
+                state, 
+                &c_inn, 
+                &block_fields.pay_kpp)
+            .await
+            .map_err(|err| err.process_err(err, ""))?
+    } else {
+        None
+    };
 
     let contracts = if let Some(ctrpty) = ctrpty_option.as_ref() {
         get_contracts_by_comp_ctrpty_ids (
@@ -277,26 +256,7 @@ pub async fn make_statement_rec_operation_raw(
 
     let entr_date = Date::unchecked(chrono::Utc::now().naive_utc());
 
-    let mut hasher = blake3::Hasher::new();
-
-    let external_id = if let Some(ctrpty) = ctrpty_option.as_ref() {
-        hasher.update(doc_num.as_bytes());
-        hasher.update(b"|");
-        hasher.update(doc_date.to_string().as_bytes());
-        hasher.update(b"|");
-        hasher.update(amount.to_string().as_bytes());
-        hasher.update(b"|");
-        hasher.update(ctrpty.comp_id.as_ref().as_bytes());
-
-        let hash = hasher.finalize();
-
-        let bytes: [u8; 8] = hash.as_bytes()[..8].try_into().unwrap();
-        
-        let id: i64 = i64::from_le_bytes(bytes);
-        Some(id)
-    } else {
-        None
-    };
+    let oper_id = make_oper_id(&doc_num, &doc_date, &amount, &ctrpty_option);
 
     let is_sync = Some(false);
 
@@ -323,8 +283,6 @@ pub async fn make_statement_rec_operation_raw(
 
         entr_date,
 
-        external_id,
-
         is_sync,
 
         comment: block_fields.doc_comment.clone(),
@@ -345,8 +303,6 @@ pub async fn make_statement_home_operation_raw(
     let session = state.get_session().await
         .map_err(|err| err.process_err(err, ""))?;
 
-    let oper_id= BoxUuid::unchecked(uuid::Uuid::new_v4());
-
     let user_id = session.session_user.user.user_id.clone();
 
     let comp_id = session.session_user.company.comp_id.clone();
@@ -360,8 +316,6 @@ pub async fn make_statement_home_operation_raw(
 
     let (debet, credit) = if parsed_block.comment_data.is_cred_loan {
         (Account::SpecBankAcc, Account::BankAcc)
-    } else if parsed_block.comment_data.is_cred_return {
-        (Account::BankAcc, Account::SpecBankAcc)
     } else {
         (Account::BankAcc, Account::SpecBankAcc)
     };
@@ -382,26 +336,7 @@ pub async fn make_statement_home_operation_raw(
 
     let entr_date = Date::unchecked(chrono::Utc::now().naive_utc());
 
-    let mut hasher = blake3::Hasher::new();
-
-    let external_id = if let Some(ctrpty) = ctrpty_option.as_ref() {
-        hasher.update(doc_num.as_bytes());
-        hasher.update(b"|");
-        hasher.update(doc_date.to_string().as_bytes());
-        hasher.update(b"|");
-        hasher.update(amount.to_string().as_bytes());
-        hasher.update(b"|");
-        hasher.update(ctrpty.comp_id.as_ref().as_bytes());
-
-        let hash = hasher.finalize();
-
-        let bytes: [u8; 8] = hash.as_bytes()[..8].try_into().unwrap();
-        
-        let id: i64 = i64::from_le_bytes(bytes);
-        Some(id)
-    } else {
-        None
-    };
+    let oper_id = make_oper_id(&doc_num, &doc_date, &amount, &ctrpty_option);
 
     let is_sync = Some(false);
 
@@ -426,8 +361,6 @@ pub async fn make_statement_home_operation_raw(
         is_del,
 
         entr_date,
-
-        external_id,
 
         is_sync,
 

@@ -1,20 +1,21 @@
 use std::collections::HashSet;
 
+use crate::primitives::frozen::text::BoxUuid;
 use crate::{ClientState, Status, ProcessError};
 use crate::sql_models::operation::implements::OperationRaw;
 
 pub async fn get_ext_ids_by_ext_id(
     state: &ClientState,
     operations: &[OperationRaw]
-) -> Result<HashSet<i64>, Status> {
+) -> Result<HashSet<BoxUuid>, Status> {
 
     let session = state.get_session().await
         .map_err(|err| err.process_err(err, ""))?; 
 
 
-    let all_ext_ids: HashSet<i64> = operations
+    let all_ext_ids: HashSet<BoxUuid> = operations
         .iter()
-        .filter_map(|x| x.external_id)
+        .map(|x| x.oper_id.clone())
         .collect();
 
     let json_ids = serde_json::to_string(&all_ext_ids)
@@ -22,7 +23,7 @@ pub async fn get_ext_ids_by_ext_id(
 
     let json_ids_str = &json_ids;
 
-    let exist_ext_ids: HashSet<i64> = sqlx::query_file_scalar!(
+    let exist_ids: HashSet<BoxUuid> = sqlx::query_file_scalar!(
             "src/client/sql_queries/operations/get/ext_ids_by_ext_ids.sql",
             json_ids_str
         ).fetch_all(&session.local_db)
@@ -32,5 +33,5 @@ pub async fn get_ext_ids_by_ext_id(
         .collect(); 
 
 
-    Ok(exist_ext_ids)
+    Ok(exist_ids)
 }

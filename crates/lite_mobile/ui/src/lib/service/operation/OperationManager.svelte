@@ -28,8 +28,8 @@
     <p>Загрузка или ошибка...</p>
 {/if}
 
-<section class="navi-button-section">
-    <div class="navi-button-group">
+<section class="medium-button-section">
+    <div class="medium-button-group">
         <button
             class="medium-button"
             type="button"
@@ -38,7 +38,7 @@
         </button>
     </div>
 
-    <div class="navi-button-group">
+    <div class="medium-button-group">
         <button
             class="medium-button"
             type="button"

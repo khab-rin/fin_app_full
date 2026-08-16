@@ -14,11 +14,11 @@ pub fn get_device_id() -> Result<BoxUuid, Status> {
         .map_err(|err| err.process_err(Status::SystemErr, ""))?; 
 
     let id_uuid_str = uuid::Uuid::new_v5(
-        &uuid::Uuid::NAMESPACE_DNS,
+        &uuid::Uuid::NAMESPACE_OID,
         id_string.as_bytes()
-    ).to_string();
+    );
 
-    BoxUuid::new(&id_uuid_str)
+    Ok(BoxUuid::unchecked(id_uuid_str))
 }
 
 pub fn write_new_user_info_to_device(

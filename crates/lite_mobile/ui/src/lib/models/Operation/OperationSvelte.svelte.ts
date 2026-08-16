@@ -31,8 +31,6 @@ export class OperationSvelte {
 
         entrDate: new FieldValidator("Date", ""),
 
-        externalId: "",
-
         isConfirmed: false
     })
 
@@ -86,8 +84,6 @@ export class OperationSvelte {
 
             this.data.entrDate.value = raw.entr_date;
 
-            this.data.externalId = raw.external_id?.toString() ?? "";
-
             this.data.isConfirmed = false;
         }
     }
@@ -113,7 +109,6 @@ export class OperationSvelte {
             is_storno: this.data.isStorno, 
             is_del: this.data.isDel, 
             entr_date: this.data.entrDate.value, 
-            external_id: this.data.externalId 
         };
     }
 

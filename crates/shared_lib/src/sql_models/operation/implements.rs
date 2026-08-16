@@ -38,14 +38,11 @@ pub struct OperationRaw {
 
     pub entr_date: Date,
 
-    pub external_id: Option<i64>,
-
     pub is_sync: Option<bool>,
 
     pub comment: TextInfo,
 
     pub is_duplicate: bool
-
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS)]
@@ -77,8 +74,6 @@ pub struct Operation {
     pub is_del: bool,
 
     pub entr_date: DateTime,
-
-    pub external_id: String,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize,  ts_rs::TS)]
@@ -125,43 +120,36 @@ impl DocType {
         let clean_str = s.trim().to_lowercase();
 
         match clean_str.as_str() {
-            // --- Банковские ---
             "bank_order" | "bankorder" | "банковский ордер" | "мемориальный ордер" => Self::BankOrder,
             "payment_order" | "paymentorder" | "платежное поручение" | "платежка" | "пп" => Self::PaymentOrder,
             "payment_claim" | "платежное требование" => Self::PaymentClaim,
             "collection_order" | "инкассовое поручение" => Self::CollectionOrder,
             "bank_statement" | "банковская выписка" | "выписка банка" | "выписка" => Self::BankStatement,
 
-            // --- Кассовые ---
             "cash_receipt" | "приходный кассовый ордер" | "пко" => Self::CashReceipt,
             "cash_voucher" | "расходный кассовый ордер" | "рко" => Self::CashVoucher,
             "cash_check" | "кассовый чек" | "чек" | "бсо" => Self::CashCheck,
 
-            // --- Товарные ---
             "torg12" | "waybill_torg12" | "товарная накладная" | "торг-12" | "торг 12" | "накладная" => Self::WaybillTorg12,
             "upd" | "универсальный передаточный документ" | "упд" => Self::Upd,
             "transport_waybill" | "транспортная накладная" | "тн" | "ттн" => Self::TransportWaybill,
             "acceptance_act" | "акт приема-передачи" | "акт приема передачи" => Self::AcceptanceAct,
 
-            // --- Услуги ---
             "service_act" | "акт оказанных услуг" | "акт выполненных работ" | "акт" => Self::ServiceAct,
 
-            // --- Расчетные и Налоговые ---
             "vat_invoice" | "счет-фактура" | "счет фактура" | "сф" => Self::VatInvoice,
             "payment_invoice" | "invoice" | "счет на оплату" | "счет" => Self::PaymentInvoice,
             "reconciliation_act" | "акт сверки" | "акт сверки взаиморасчетов" => Self::ReconciliationAct,
 
-            // --- Внутренние ---
+
             "accounting_note" | "бухгалтерская справка" | "справка" => Self::AccountingNote,
             "write_off_act" | "акт списания" | "списание" => Self::WriteOffAct,
             "correction_act" | "корректировочный акт" | "ксф" | "корректировочная счет-фактура" => Self::CorrectionAct,
 
-            // --- Fallback ---
             _ => Self::Other,
         }
     }
 
-    /// Человекочитаемое наименование на русском языке (для UI и печатных форм)
     pub fn as_str(&self) -> &'static str {
         match self {
             Self::BankOrder => "Банковский ордер",
@@ -194,7 +182,6 @@ impl DocType {
     }
 }
 
-// 1. Реализация стандартного FromStr через parse_str
 impl FromStr for DocType {
     type Err = Infallible;
 
@@ -203,14 +190,12 @@ impl FromStr for DocType {
     }
 }
 
-// 2. Реализация From<&str> для удобной конвертации через DocType::from("...")
 impl From<&str> for DocType {
     fn from(s: &str) -> Self {
         Self::parse_str(s)
     }
 }
 
-// 3. Форматирование через Display (выводит красиво на русском)
 impl fmt::Display for DocType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.as_str())
@@ -221,7 +206,6 @@ impl ParseFromStrMapValue for DocType {
     fn parse_from_str_map_value(value: Option<&&str>) -> Result<Self, Status> {
         match value {
             Some(s) => Ok(DocType::parse_str(s)),
-            // Если ключа в мапе вообще не было — отдаем дефолтный Other (или возвращаем ошибку Status, если поле обязательное)
             None => Ok(DocType::Other), 
         }
     }
@@ -234,6 +218,16 @@ pub struct OperationDocument {
     pub doc_data: Date
 }
 
+pub fn make_oper_id(doc_num: &DocNum, doc_date: &Date, amount: &RubF, ctrpty: &Option<Company>) -> BoxUuid {
+    let text_id = if let Some(comp) = ctrpty {
+        format!("{}-{}-{}-{}", doc_num.as_ref(), doc_date.as_ref(), amount.as_ref(), comp.comp_id.as_ref())
+    } else {
+        format!("{}-{}-{}", doc_num.as_ref(), doc_date.as_ref(), amount.as_ref())
+    };
+
+    BoxUuid::unchecked(uuid::Uuid::new_v5(&uuid::Uuid::NAMESPACE_OID, text_id.as_bytes()))
+}
+
 
 #[derive(ts_rs::TS)]
 pub struct OperationTSTS {
@@ -244,5 +238,4 @@ pub struct OperationTSTS {
     account: Account,
     oper_step: OperationStep,
     oper_inf: OperationInfo
-
 }

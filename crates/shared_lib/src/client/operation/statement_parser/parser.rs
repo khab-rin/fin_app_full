@@ -195,7 +195,7 @@ pub async fn parse_statement(
         }
     }
 
-    let exist_ext_ids = match get_ext_ids_by_ext_id(state, &operations).await {
+    let exist_ids = match get_ext_ids_by_ext_id(state, &operations).await {
         Ok(ids) => ids,
         Err(err) => {
             err.process_err(err, "");
@@ -204,15 +204,15 @@ pub async fn parse_statement(
     };
 
     for operation in operations.iter_mut() {
-        if let Some(e) = operation.external_id {
-            if exist_ext_ids.contains(&e) {
-                operation.is_duplicate  = true;
-            }
+        if exist_ids.contains(&operation.oper_id) {
+            operation.is_duplicate  = true;
    
         }
     }
+    
 
     let success_result = OperationStep::SuccessRaw  {
+        
         text: OperationInfo::SuccessRaw,
         operations
     };

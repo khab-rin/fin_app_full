@@ -11,7 +11,7 @@ pub(crate) async fn parse_company_by_inn_kpp(
     kpp: &Kpp
 ) -> Result<Option<Company>, Status> {
 
-    let mut metadata = match dadata_reqwest_func(
+    let metadata_option = match dadata_reqwest_func(
             state, 
             comp_inn, 
             kpp)
@@ -22,6 +22,11 @@ pub(crate) async fn parse_company_by_inn_kpp(
                 return Ok(None);
             }
         };
+    
+    let mut metadata = match metadata_option {
+        Some(m) => m,
+        None => return Ok(None)
+    };
 
     let ext_info = format!("inn = {:?}, kpp = {:?}", comp_inn, kpp);
     

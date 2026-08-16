@@ -11,8 +11,7 @@ pub fn parse_comment(
     let low = comment.to_lowercase();
 
     let mut parse_data = BlockCommentData::default();
-
-    log::info!("{}", low);
+    
     
     if low.contains("возвр") && (
         low.contains("кредит") || 
@@ -117,10 +116,6 @@ pub fn parse_comment(
                 }
             }
     }
-
-    
-    
-    log::info!("{:?}", parse_data);
     
     parse_data
 }

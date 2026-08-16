@@ -9,4 +9,4 @@ import type { DocType } from "./DocType";
 import type { RubF } from "./RubF";
 import type { TextInfo } from "./TextInfo";
 
-export type OperationRaw = { oper_id: BoxUuid, user_id: BoxUuid, comp_id: BoxUuid, ctrpty: Company | null, contract: ContractOption, debet: Account, credit: Account, amount: RubF, oper_date: Date | null, doc_type: DocType, doc_num: DocNum, doc_date: Date, is_storno: boolean, is_del: boolean, entr_date: Date, external_id: bigint | null, is_sync: boolean | null, comment: TextInfo, is_duplicate: boolean, };
+export type OperationRaw = { oper_id: BoxUuid, user_id: BoxUuid, comp_id: BoxUuid, ctrpty: Company | null, contract: ContractOption, debet: Account, credit: Account, amount: RubF, oper_date: Date | null, doc_type: DocType, doc_num: DocNum, doc_date: Date, is_storno: boolean, is_del: boolean, entr_date: Date, is_sync: boolean | null, comment: TextInfo, is_duplicate: boolean, };

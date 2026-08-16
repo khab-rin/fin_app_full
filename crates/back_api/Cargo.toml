@@ -42,6 +42,7 @@ regex = { workspace = true }
 base64 = "0.22.1"
 directories = { workspace = true }
 home = "0.5.12"
+tauri-plugin-log.workspace = true
 
 
 

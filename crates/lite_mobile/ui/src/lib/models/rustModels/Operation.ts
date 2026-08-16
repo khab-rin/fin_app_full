@@ -7,4 +7,4 @@ import type { DocNum } from "./DocNum";
 import type { DocType } from "./DocType";
 import type { RubF } from "./RubF";
 
-export type Operation = { oper_id: BoxUuid, user_id: BoxUuid, comp_id: BoxUuid, ctrpty_id: BoxUuid, contract_id: BoxUuid | null, debet: Account, credit: Account, amount: RubF, oper_date: Date, doc_type: DocType, doc_num: DocNum, doc_date: Date, is_storno: boolean, is_del: boolean, entr_date: DateTime, external_id: string, };
+export type Operation = { oper_id: BoxUuid, user_id: BoxUuid, comp_id: BoxUuid, ctrpty_id: BoxUuid, contract_id: BoxUuid | null, debet: Account, credit: Account, amount: RubF, oper_date: Date, doc_type: DocType, doc_num: DocNum, doc_date: Date, is_storno: boolean, is_del: boolean, entr_date: DateTime, };

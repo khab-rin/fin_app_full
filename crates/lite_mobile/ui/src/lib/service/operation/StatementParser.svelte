@@ -7,6 +7,7 @@
     import type {OperationStep} from '$lib/models/rustModels/OperationStep';
     import type {RasBicAcc} from '$lib/models/rustModels/RasBicAcc';
 	import { operStep } from '$lib/models/Operation/OperationManager.svelte';
+	import { OperationType } from '$lib/models/Operation/OperationValues';
 
     let path = $state('');
     let selectedBankAcc = $state<RasBicAcc | null>(null);
@@ -125,6 +126,7 @@
 
         try {
             const next_step: OperationStep = await invoke<OperationStep>("cmd_load_bank_statement", data);
+            
             isPushParseStatement = false;
             operStep.add(next_step);
         } catch(err) {

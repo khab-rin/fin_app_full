@@ -8,7 +8,7 @@ pub async fn dadata_reqwest_func(
     state: &BackApiState, 
     comp_inn: &CompInn, 
     kpp: &Kpp
-) -> Result<CtrprtyMetadata, Status> {
+) -> Result<Option<CtrprtyMetadata>, Status> {
 
     tracing::debug!("dadata_reqwest_func started");
 
@@ -50,14 +50,15 @@ pub async fn dadata_reqwest_func(
 
     let mut iterator = resp_wrap.suggestions.into_iter();
 
-    let mut main_metadata = iterator
-        .next()
-        .ok_or_else(|| Status::Tech.process_err(Status::QueryResponseFormatErr, &ext_info))?
-        .data
-        .ok_or_else(||Status::Tech.process_err(Status::QueryResponseFormatErr, &ext_info))?;
+    let mut  main_metadata = match iterator.next() {
+        Some(elem) => elem.data
+            .ok_or_else(|| 
+                Status::Tech.process_err(Status::QueryResponseFormatErr, ""))?,
+        None => return Ok(None)
+    };
 
     if kpp.is_empty() {
-        return Ok(main_metadata);
+        return Ok(Some(main_metadata));
     }
 
     if main_metadata.kpp.is_none() {
@@ -76,5 +77,5 @@ pub async fn dadata_reqwest_func(
     }
 
 
-    Ok(main_metadata)
+    Ok(Some(main_metadata))
 }
