@@ -54,7 +54,7 @@ pub fn run_lib() {
             commands::other::cmd_validate_field,
             commands::sql_queries::cmd_add_comp_bank_acc,
             commands::sql_queries::cmd_get_comp_bank_accs,
-            // commands::sql_queries::cmd_get_comp_by_inn_kpp
+            commands::sql_queries::cmd_get_comp_by_inn_kpp
             
         ]).build(tauri::generate_context!())
         .expect("error while building tauri application");

@@ -19,28 +19,76 @@
     
 
     let processor = $state(new StateProcessor([]));
-    let curIndex = $state(0);
+
+
 
     let kpp = new FieldValidator("Kpp", "");
     let compInn  = new FieldValidator("CompInn", "");
-    let openRefreshCtrpty = $state(false);
-    let refreshCtrpyDisable = $derived(!kpp.isValid || !compInn.isValid);
+    let openCtrpty = $state(false);
+    let refreshCtrptyPushed = $state(false);
 
-    function openCloseRefreshCtrpty() {
-        openRefreshCtrpty = !openRefreshCtrpty;
+    function switchCtrpty() {
+        openCtrpty = !openCtrpty;
     }
-
+    
     async function refreshCtrpty() {
-        if (refreshCtrpyDisable) {return;}
+        if (refreshCtrptyPushed) {return;}
         try {
+            refreshCtrptyPushed = true;
             let data = {compInn: compInn.value, kpp: kpp.value};
-            const newCompany = await invoke<Company>("cmd_get_comp_by_inn_kpp", data);
+            const newCompany: Company | null = await invoke<Company>("cmd_get_comp_by_inn_kpp", data);
+            processor.opersSvelte[processor.curInd].refreshCtrpty(newCompany);
+            refreshCtrptyPushed = false;
+            
         } catch (err) {
             const next_step: OperationStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
             console.error("cmd_get_comp_by_inn_kpp FAILED, err = ",  err);
+            refreshCtrptyPushed = false;
             operStep.add(next_step);
         }
     }
+
+
+    let isContrOpened = $state(false);
+    let isNewContractOpened = $state(false);
+    let isMakeContrPushed = $state(false);
+    
+
+    let contractNum = new FieldValidator("DocNum", "");
+    let contractDate = new FieldValidator("Date", "");
+    let contractTitle= new FieldValidator("String", "");
+    let contractStDate = new FieldValidator("Date", "");
+    let contractEndDate = new FieldValidator("Date", "");
+    let contractCurrency = new FieldValidator("Currency", "");
+    let contractTotAmnt = new FieldValidator("RubF", "");
+    let contractDefDays = new FieldValidator("U32", "");
+    let contractDescr = new FieldValidator("String", "");
+
+    let isContrValid = $state(
+        contractNum.isValid ||
+        contractDate.isValid ||
+        contractTitle.isValid ||
+        contractStDate.isValid ||
+        contractEndDate.isValid ||
+        contractCurrency.isValid ||
+        contractTotAmnt.isValid ||
+        contractDefDays.isValid ||
+        contractDescr.isValid);
+
+    function switchContract() {
+        isContrOpened = !isContrOpened;
+    }
+
+    function switchNewContract() {
+        isNewContractOpened = !isNewContractOpened;
+    }
+
+
+    
+
+
+
+
 
 
     function nextOper() {
@@ -68,68 +116,53 @@
     <section class='input-section'>
 
         <div class="input-group">
+            {#if openCtrpty}
+                <span class='input-field-span'>
+                    Инн организации
+                </span>
+                <input 
+                    class="input-field"
+                    type="text" 
+                    bind:value={compInn.value} 
+                    placeholder="строка до 50 знаков"
+                    class:input-error={!compInn.isValid}
+                />
+
+                <span class='input-field-span'>
+                    Кпп организации
+                </span>
+                <input 
+                    class="input-field"
+                    type="text" 
+                    bind:value={kpp.value} 
+                    placeholder="строка до 50 знаков"
+                    class:input-error={!kpp.isValid}
+                />
+
+                <button
+                    type='button'
+                    class='medium-button'
+                    disabled={!compInn.isValid || !kpp.isValid || refreshCtrptyPushed}
+                    onclick={refreshCtrpty}
+                >
+                    сменить контрагента
+                </button>
+            {/if}
             
             <span class='input-field-span'>
                 Название организации
             </span>
 
-            {#if openRefreshCtrpty}
-                <div class="input-group">
-                    <span class='input-field-span'>
-                        Инн организации
-                    </span>
-                    <input 
-                        class="input-field"
-                        type="text" 
-                        bind:value={compInn.value} 
-                        disabled={true}
-                        placeholder="строка до 50 знаков"
-                        class:input-error={!compInn.isValid}
-                    />
-                </div>
+            <strong>{processor.opersSvelte[processor.curInd].data.ctrptyName.value}</strong>
 
-                <div class="input-group">
-                    <span class='input-field-span'>
-                        Кпп организации
-                    </span>
-                    <input 
-                        class="input-field"
-                        type="text" 
-                        bind:value={kpp.value} 
-                        disabled={true}
-                        placeholder="строка до 50 знаков"
-                        class:input-error={!kpp.isValid}
-                    />
-                </div>
-
-                <div class='medium-button-section'>
-                    <div class='medium-button-group'>
-
-                    </div>
-
-
-                </div>
-            {/if}
-
-            
-            <input 
-                class="input-field"
-                type="text" 
-                bind:value={processor.opersSvelte[processor.curInd].data.ctrptyName.value} 
-                disabled={true}
-                placeholder="строка до 50 знаков"
-                class:input-error={!processor.opersSvelte[processor.curInd].data.ctrptyName.isValid}
-            />
-            <button class='medium-button'
+            <button 
+                class='medium-button'
                 type='button'
-                id='statementPathButton'
-                onclick={openCloseRefreshCtrpty}
+                onclick={switchCtrpty}
                 >
-                Сменить организацию
+                Редактировать
             </button>
         </div>
-
-
 
 
         <div class='input-group'>
@@ -147,6 +180,9 @@
         </div>
 
         <div class="input-group">
+            <span class='input-field-span'>
+                Счет Кредит
+            </span>
             <input 
                 class="input-field"
                 type="text" 
@@ -157,8 +193,143 @@
             />
         </div>
 
+        <div class='input-group'>
+            <span class='input-group-span'>
+                Информация о договоре
+            </span>
+            <strong>{processor.opersSvelte[processor.curInd].contractStr}</strong>
+
+            <button
+                type='button'
+                class='medium-button'
+                onclick={switchContract}
+                >
+                    Договор
+            </button>
+
+            <section class='navi-button-section'>
+                <button
+                    type='button'
+                    class='medium-button'
+                    onclick={switchContract}
+                >
+                    выбрать договор
+                </button>
+
+                <button
+                    type='button'
+                    class='medium-button'
+                    onclick={switchNewContract}
+                >
+                    добавить договор
+                </button>
+            </section>
+
+
+            {#if isNewContractOpened}
+                <section class="input-section">
+                    <span class='input-field-span'>Номер договора</span>
+                    <input 
+                        class="input-field"
+                        type="text" 
+                        bind:value={contractNum.value} 
+                        disabled={true}
+                        placeholder="строка до 50 знаков"
+                        class:input-error={!contractNum.isValid}
+                    />
+
+                    <span class='input-field-span'>Дата договора</span>
+                    <input 
+                        class="input-field"
+                        type="text" 
+                        bind:value={contractDate.value} 
+                        disabled={true}
+                        placeholder="строка до 50 знаков"
+                        class:input-error={!contractNum.isValid}
+                    />
+
+                    <span class='input-field-span'>Название договора</span>
+                    <input 
+                        class="input-field"
+                        type="text" 
+                        bind:value={contractTitle.value} 
+                        disabled={true}
+                        placeholder="строка до 50 знаков"
+                        class:input-error={!contractNum.isValid}
+                    />
+
+                    <span class='input-field-span'>Дата начала</span>
+                    <input 
+                        class="input-field"
+                        type="text" 
+                        bind:value={contractStDate.value} 
+                        disabled={true}
+                        placeholder="строка до 50 знаков"
+                        class:input-error={!contractNum.isValid}
+                    />
+
+                    <span class='input-field-span'>Дата завершения</span>
+                    <input 
+                        class="input-field"
+                        type="text" 
+                        bind:value={contractEndDate.value} 
+                        disabled={true}
+                        placeholder="строка до 50 знаков"
+                        class:input-error={!contractNum.isValid}
+                    />
+
+                    <span class='input-field-span'>Валюта договора</span>
+                    <input 
+                        class="input-field"
+                        type="text" 
+                        bind:value={contractCurrency.value} 
+                        disabled={true}
+                        placeholder="строка до 50 знаков"
+                        class:input-error={!contractNum.isValid}
+                    />
+
+                    <span class='input-field-span'>Сумма договора</span>
+                    <input 
+                        class="input-field"
+                        type="text" 
+                        bind:value={contractTotAmnt.value} 
+                        disabled={true}
+                        placeholder="строка до 50 знаков"
+                        class:input-error={!contractNum.isValid}
+                    />
+
+                    <span class='input-field-span'>Рассрочка в днях</span>
+                    <input 
+                        class="input-field"
+                        type="text" 
+                        bind:value={contractDefDays.value} 
+                        disabled={true}
+                        placeholder="строка до 50 знаков"
+                        class:input-error={!contractNum.isValid}
+                    />
+
+                    <span class='input-field-span'>Описание</span>
+                    <input 
+                        class="input-field"
+                        type="text" 
+                        bind:value={contractDescr.value} 
+                        disabled={true}
+                        placeholder="строка до 50 знаков"
+                        class:input-error={!contractNum.isValid}
+                    />
+
+
+                </section>
+            {/if}
+
+            
+
+
+        </div>
+
+
+
 
     </section>
-{/if} -->
- -->
+{/if}
 

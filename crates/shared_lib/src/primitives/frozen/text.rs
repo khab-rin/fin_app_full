@@ -227,3 +227,11 @@ make_enum_frozen! {
         Bank, "BANK", {}
     }
 }
+
+make_enum_frozen! {
+    Currency, {
+        RUB, "РУБ", {"RUB", "rub", "руб"},
+        EUR, "ЕВРО", {"EUR", "eur", "евро"},
+        USD, "ДОЛЛ", {"USD", "usd", "долл"}
+    }
+}

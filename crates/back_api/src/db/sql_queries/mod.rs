@@ -1,4 +1,5 @@
 pub(crate) mod companys;
+pub(crate) mod contracts;
 pub(crate) mod persons;
 pub(crate) mod users;
 pub(crate) mod sessions;

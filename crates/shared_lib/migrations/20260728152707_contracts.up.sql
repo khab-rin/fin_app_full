@@ -6,7 +6,6 @@ CREATE TABLE IF NOT EXISTS contracts (
     ctrpty_id TEXT NOT NULL REFERENCES companys(comp_id),
 
     contract_num TEXT NOT NULL DEFAULT 'б/н',
-
     contract_date TEXT NOT NULL,
     title TEXT NOT NULL DEFAULT '',
 
@@ -23,9 +22,8 @@ CREATE TABLE IF NOT EXISTS contracts (
     description TEXT NOT NULL DEFAULT '',
     
     entr_date TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
-    updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+
     is_del INTEGER NOT NULL DEFAULT 0,
-    external_id TEXT NOT NULL DEFAULT '' 
 );
 
 CREATE INDEX IF NOT EXISTS idx_contracts_comp_id ON contracts(comp_id);

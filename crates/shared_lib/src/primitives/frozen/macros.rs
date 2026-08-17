@@ -188,7 +188,7 @@ macro_rules! impl_as_str {
 #[macro_export]
 macro_rules! make_enum_frozen {
     ($name:ident, { $($l_name:ident, $r_name:expr, { $($alias:expr),* $(,)? }),* $(,)? }) => {
-        #[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, Eq, sqlx::Type, ts_rs::TS)]
+        #[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, Eq, Hash, sqlx::Type, ts_rs::TS)]
         #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
         #[sqlx(type_name = "text", rename_all = "SCREAMING_SNAKE_CASE")]
         pub enum $name {

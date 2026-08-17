@@ -1,1 +1,1 @@
-pub mod contracts_by_ids;
+pub mod contract_by_ids;

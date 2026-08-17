@@ -16,13 +16,13 @@ CREATE TABLE IF NOT EXISTS contracts (
     currency VARCHAR(3) NOT NULL DEFAULT 'RUB',
     total_amount NUMERIC(15, 2) NOT NULL DEFAULT 0,
 
-    payment_deferral_days INT DEFAULT 0,
+    payment_deferral_days INT NOT NULL DEFAULT 0,
 
     is_active BOOLEAN NOT NULL DEFAULT true,
     description TEXT DEFAULT '',
     
     entr_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    is_del BOOLEAN NOT NULL DEFAULT false,
-    external_id VARCHAR(64) NOT NULL DEFAULT '' 
+
+    is_del BOOLEAN NOT NULL DEFAULT false
+
 );

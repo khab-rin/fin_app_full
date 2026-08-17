@@ -50,7 +50,7 @@ pub struct BlockCommentData {
     pub is_cred_return: bool,
     pub is_cred_loan: bool,
     pub dates: Vec<Date>,
-    pub doc_num: HashSet<String>,
+    pub doc_num: HashSet<DocNum>,
     pub is_period: bool,
     pub is_contract: bool,
     pub is_komis: bool,

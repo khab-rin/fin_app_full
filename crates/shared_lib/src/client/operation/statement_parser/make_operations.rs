@@ -8,7 +8,7 @@ use crate::sql_models::operation::implements::{
 use crate::sql_models::operation::account::Account;
 
 use crate::client::sql_queries::companys::get::by_inn_kpp::get_company_by_inn_kpp;
-use crate::client::sql_queries::contracts::get::contracts_by_ids::get_contracts_by_comp_ctrpty_ids;
+use crate::client::sql_queries::contracts::get::contract_by_ids::get_contracts_by_comp_ctrpty_ids;
 
 pub async fn make_statement_operation_raw(
     state: &ClientState,
@@ -101,7 +101,7 @@ pub async fn make_statement_pay_operation_raw(
 
     'outer: for num in comment_data.doc_num.iter() {
         for contract in contrac_option.contracts.iter() {
-            if num == &contract.contract_num {
+            if num == contract.contract_num {
                 contrac_option.current = Some(contract.clone());
                 break 'outer;
             }
@@ -219,7 +219,7 @@ pub async fn make_statement_rec_operation_raw(
 
     'outer: for num in comment_data.doc_num.iter() {
         for contract in contrac_option.contracts.iter() {
-            if num == &contract.contract_num {
+            if num == contract.contract_num {
                 contrac_option.current = Some(contract.clone());
                 break 'outer;
             }

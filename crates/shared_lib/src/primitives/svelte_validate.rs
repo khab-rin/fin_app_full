@@ -88,7 +88,11 @@ pub enum SvelteValidator {
     RedelegationStatus,
     FormatVersion,
     Account,
-    DocType
+    DocType,
+    String,
+    Currency,
+    I32,
+    U32
 }
 
 impl SvelteValidator {
@@ -328,7 +332,17 @@ impl SvelteValidator {
             SvelteValidator::DocType => match DocType::parse_str(value) {
                 DocType::Other => Ok(false),
                 _ => Ok(true)
-            }
+            },
+            SvelteValidator::String => Ok(true),
+            SvelteValidator::Currency => match value.parse::<Currency>() {
+                Ok(_) => Ok(true), Err(_) => Ok(false),
+            },
+            SvelteValidator::I32 => match value.parse::<i32>() {
+                Ok(_) => Ok(true), Err(_) => Ok(false),
+            },
+            SvelteValidator::U32 => match value.parse::<u32>() {
+                Ok(_) => Ok(true), Err(_) => Ok(false),
+            },
         }
     }
 }

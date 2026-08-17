@@ -46,15 +46,26 @@
     font-weight: 500;
 }
 
-.medium-button:hover:not([hidden]) {
+.medium-button:hover:not(:disabled) {
     background-color: #fde047;
     border-color: #9ca3af;
     transform: translateY(-1px);
 }
 
-.medium-button:active:not([hidden]) {
+/* ИЗМЕНЕНО: теперь анимация клика не работает, если кнопка disabled */
+.medium-button:active:not(:disabled) {
     transform: translateY(0);
     background-color: #eab308;
+}
+
+
+.medium-button:disabled {
+    background-color: #f3f4f6;
+    color: #9ca3af;
+    border-color: #e5e7eb;
+    cursor: not-allowed;
+    transform: none !important;
+    pointer-events: none;
 }
 
 .medium-button-span {

@@ -2,6 +2,7 @@
 import type { BoxUuid } from "./BoxUuid";
 import type { Date } from "./Date";
 import type { DateTime } from "./DateTime";
+import type { DocNum } from "./DocNum";
 import type { RubF } from "./RubF";
 
-export type Contract = { contract_id: BoxUuid, user_id: BoxUuid, comp_id: BoxUuid, ctrpty_id: BoxUuid, contract_num: string, contract_date: Date, title: string, start_date: Date, end_date: Date, currency: string, total_amount: RubF, payment_deferral_days: number, is_active: number, description: string, entr_date: Date, updated_at: DateTime, is_del: number, external_id: string, };
+export type Contract = { contract_id: BoxUuid, user_id: BoxUuid, comp_id: BoxUuid, ctrpty_id: BoxUuid, contract_num: DocNum, contract_date: Date, title: string, start_date: Date, end_date: Date, currency: string, total_amount: RubF, payment_deferral_days: number, is_active: number, description: string, entr_date: Date, updated_at: DateTime, is_del: number, external_id: string, };

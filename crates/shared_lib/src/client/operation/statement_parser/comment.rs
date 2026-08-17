@@ -1,4 +1,4 @@
-use crate::primitives::frozen::text::{Date, RubF, TextInfo};
+use crate::primitives::frozen::text::{Date, RubF, TextInfo, DocNum};
 use crate::sql_models::operation::parser::BlockCommentData;
 use crate::static_data::primitives_re::*;
 
@@ -93,7 +93,7 @@ pub fn parse_comment(
                 continue;
             }
 
-            parse_data.doc_num.insert(cleaned_num);
+            parse_data.doc_num.insert(DocNum::unchecked(&cleaned_num));
         }
     }
 

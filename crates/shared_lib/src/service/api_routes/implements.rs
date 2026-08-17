@@ -7,6 +7,7 @@ pub enum ApiRoutes {
     MchdLend,
     MchdShowPowers,
     SqlComppanysAddByInnKpp,
+    SqlContractAddNew,
     SqlPersonGetByInn
 }
 
@@ -22,6 +23,7 @@ impl ApiRoutes {
             Self::MchdLend => "/api/mchd/lend_mchd_for_register",
             Self::MchdShowPowers => "/api/mchd/lend_show_powers",
             Self::SqlComppanysAddByInnKpp => "/api/companys/add_by_inn_kpp",
+            Self::SqlContractAddNew => "/api/contracts/add_new",
             Self::SqlPersonGetByInn => "/api/sql/person_get_by_inn"
         }
     }

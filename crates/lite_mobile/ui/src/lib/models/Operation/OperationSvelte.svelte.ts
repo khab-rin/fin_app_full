@@ -3,6 +3,7 @@ import type { OperationRaw } from "../rustModels/OperationRaw";
 import type { Operation } from "../rustModels/Operation";
 import type { Account } from "../rustModels/Account";
 import type { DocType } from "../rustModels/DocType";
+import type {Company} from '$lib/models/rustModels/Company';
 
 export class OperationSvelte {
     data = $state({
@@ -57,35 +58,54 @@ export class OperationSvelte {
         this.data.isConfirmed
     );
 
+    private fromRustRaw(raw: OperationRaw) {
+        this.data.operId.value = raw.oper_id;
+        this.data.userId.value = raw.user_id;
+        this.data.compId.value = raw.comp_id;
+
+        this.data.ctrptyId.value = raw.ctrpty?.comp_id ?? "";
+        this.data.ctrptyName.value = raw.ctrpty?.metadata?.comp_name?.short_egrul_name ?? "";
+
+        this.data.contractId.value = raw.contract.current?.contract_id ?? "";
+        this.data.contractNum.value = raw.contract.current?.contract_num ?? "";
+        this.data.contractDate.value = raw.contract.current?.contract_date ?? "";
+
+        this.data.debet.value = raw.debet;
+        this.data.credit.value = raw.credit;
+        this.data.amount.value = raw.amount;
+        this.data.operDate.value = raw.oper_date ?? "";
+
+        this.data.docType.value = raw.doc_type;
+        this.data.docNum.value = raw.doc_num;
+        this.data.docDate.value = raw.doc_date;
+
+        this.data.isStorno = raw.is_storno;
+        this.data.isDel = raw.is_del;
+
+        this.data.entrDate.value = raw.entr_date;
+
+        this.data.isConfirmed = false;
+    }
+
     constructor(raw?: OperationRaw) {
         if (raw) {
-            this.data.operId.value = raw.oper_id;
-            this.data.userId.value = raw.user_id;
-            this.data.compId.value = raw.comp_id;
-
-            this.data.ctrptyId.value = raw.ctrpty?.comp_id ?? "";
-            this.data.ctrptyName.value = raw.ctrpty?.metadata?.comp_name?.short_egrul_name ?? "";
-
-            this.data.contractNum.value = raw.contract.current?.contract_num ?? "";
-            this.data.contractDate.value = raw.contract.current?.contract_date ?? "";
-            
-            
-            this.data.debet.value = raw.debet;
-            this.data.credit.value = raw.credit;
-            this.data.amount.value = raw.amount;
-            this.data.operDate.value = raw.oper_date ?? "";
-
-            this.data.docType.value = raw.doc_type;
-            this.data.docNum.value = raw.doc_num;
-            this.data.docDate.value = raw.doc_date;
-
-            this.data.isStorno = raw.is_storno;
-            this.data.isDel = raw.is_del;
-
-            this.data.entrDate.value = raw.entr_date;
-
-            this.data.isConfirmed = false;
+            this.fromRustRaw(raw);
         }
+    }
+
+    refreshCtrpty(ctrpty?: Company) {
+        if (ctrpty) {
+            this.data.ctrptyId.value = ctrpty.comp_id;
+            this.data.ctrptyName.value = ctrpty.metadata.comp_name?.short_egrul_name ?? "";
+        }
+    }
+
+    get contractStr(): string {
+        const num = this.data.contractNum.value;
+        const date = this.data.contractDate.value;
+        const id = this.data.contractId.value;
+        if (!num || !date || !id) {return "без договора"}
+        return `Договор № ${num} от ${date}`;
     }
 
     makeRust(): Operation | null {

@@ -3,9 +3,9 @@ SELECT
     
     user_id AS "user_id: BoxUuid",
     comp_id AS "comp_id: BoxUuid",
-    ctrpty_id AS"ctrpty_id: BoxUuid",
+    ctrpty_id AS "ctrpty_id: BoxUuid",
 
-    contract_num AS"contract_num: String",
+    contract_num AS "contract_num: DocNum",
 
     contract_date AS "contract_date: Date",
     title AS "title: String",
@@ -13,18 +13,17 @@ SELECT
     start_date AS "start_date: Date",
     end_date AS "end_date: Date",
 
-    currency AS "currency: String",
+    currency AS "currency: Currency",
 
     total_amount AS "total_amount: RubF",
 
-    payment_deferral_days AS "payment_deferral_days: i32",
+    payment_deferral_days AS "payment_deferral_days: u32",
 
     is_active AS "is_active: i32",
     description AS "description: String",
     
     entr_date AS "entr_date: Date",
-    updated_at AS "updated_at: DateTime",
-    is_del AS "is_del: i32",
-    external_id AS "external_id: String"
+
+    is_del AS "is_del: i32"
 FROM contracts
-WHERE comp_id = $1 AND ctrpty_id = $2
+WHERE contract_id = $1
