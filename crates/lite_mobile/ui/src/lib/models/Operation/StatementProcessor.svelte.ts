@@ -2,6 +2,7 @@ import { operStep } from "./OperationManager.svelte";
 
 import type { Operation } from "../rustModels/Operation";
 import type { OperationRaw } from "../rustModels/OperationRaw";
+import type { Contract } from '$lib/models/rustModels/Contract';
 import { OperationSvelte } from "./OperationSvelte.svelte";
 
 export class StateProcessor {
@@ -31,5 +32,11 @@ export class StateProcessor {
 
     prev() {
         this.curInd = (this.curInd - 1) % this.maxInd;
+    }
+
+    getContractInfo(contract: Contract) {
+        const num = contract.contract_num;
+        const d = contract.contract_date;
+        return `Договор № ${num} от ${d}`;
     }
 }

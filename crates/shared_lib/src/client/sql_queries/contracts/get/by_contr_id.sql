@@ -10,20 +10,20 @@ SELECT
     contract_date AS "contract_date: Date",
     title AS "title: String",
 
-    start_date AS "start_date: Date",
+    st_date AS "st_date: Date",
     end_date AS "end_date: Date",
 
     currency AS "currency: Currency",
 
     total_amount AS "total_amount: RubF",
 
-    payment_deferral_days AS "payment_deferral_days: u32",
+    payment_deferral_days AS "payment_deferral_days: Integ",
 
-    is_active AS "is_active: i32",
-    description AS "description: String",
+    is_active AS "is_active: Integ",
+    descrip AS "descrip: String",
     
     entr_date AS "entr_date: Date",
 
-    is_del AS "is_del: i32"
+    is_del AS "is_del: Integ"
 FROM contracts
 WHERE contract_id = $1

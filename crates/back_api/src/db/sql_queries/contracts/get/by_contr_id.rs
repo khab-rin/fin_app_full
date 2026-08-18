@@ -1,13 +1,13 @@
 use shared_lib::sql_models::contracts::implements::Contract;
 use shared_lib::{Status, ProcessError};
-use shared_lib::primitives::frozen::text::{BoxUuid, DocNum, Date, Currency, RubF};
+use shared_lib::primitives::frozen::text::{Integ, BoxUuid, DocNum, Date, Currency, RubF};
 
 use crate::config::BackApiState;
 
 
 pub(crate) async fn get_contract_by_contract_id(
     state: &BackApiState,
-    contract_id: BoxUuid
+    contract_id: &BoxUuid
 ) -> Result<Option<Contract>, Status> {
 
     let contract_option = sqlx::query_file_as!(

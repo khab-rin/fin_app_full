@@ -37,13 +37,13 @@ pub(crate) async fn smsru_get_cf(
         .map_err(|err| err.process_err(Status::MappingError, ""))?;
 
 
-    if smsru_response.status_code != 100 {
+    if *smsru_response.status_code.as_ref() != 100 {
         return Err(Status::Tech.process_err(Status::BackSmsRuBalance, ""));
     }
 
 
     if let Some(status) = smsru_response.check_status {
-        match status {
+        match status.as_ref() {
             400 => Ok(SmsRuResponseTextCode::Polling),
             401 => Ok(SmsRuResponseTextCode::SuccessConfirmed),
             402 => Ok(SmsRuResponseTextCode::TimeOut),

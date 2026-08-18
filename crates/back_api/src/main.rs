@@ -26,7 +26,10 @@ use crate::handlers::service::mchd::handler::{
     show_powers_handler
 };
 
-use crate::handlers::sql::handlers::get_person_by_inn_handler;
+use crate::handlers::sql::handlers::{
+    get_person_by_inn_handler,
+    sql_add_new_contract_handler
+};
 
 
 #[tokio::main]
@@ -44,18 +47,18 @@ async fn main() {
         .with_writer(std::io::stdout)
         .pretty()
         .with_ansi(true)
-        .with_file(true)
-        .with_line_number(true)
-        .with_target(true);
+        .with_file(false)
+        .with_line_number(false)
+        .with_target(false);
 
     // 3. Делаем черно белый форматтер для записи в файл (райтер, чб, имя файла, строки, модуля)
     let file_formatter = fmt::layer()
         .with_writer(non_blocking)
         .pretty()
         .with_ansi(false)
-        .with_file(true)
-        .with_line_number(true)
-        .with_target(true);
+        .with_file(false)
+        .with_line_number(false)
+        .with_target(false);
 
     // 4. Задаем фильтры для консоли и записи в файл с помощью строки
     let log_filter = EnvFilter::try_from_default_env()
@@ -114,6 +117,9 @@ async fn main() {
         ).route(
             ApiRoutes::MchdShowPowers.get_path(),
             post(show_powers_handler)
+        ).route(
+            ApiRoutes::SqlContractAddNew.get_path(), 
+            post(sql_add_new_contract_handler)
         ).route(
             ApiRoutes::SqlComppanysAddByInnKpp.get_path(),
             post(sql_new_companys_handler)

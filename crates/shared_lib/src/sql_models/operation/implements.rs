@@ -8,7 +8,7 @@ use crate::sql_models::operation::macros::ParseFromStrMapValue;
 use crate::primitives::frozen::text::{BoxUuid, Date, DateTime, DocNum, RubF, TextInfo};
 use crate::sql_models::operation::account::Account;
 use crate::sql_models::company::implements::Company;
-use crate::sql_models::contracts::implements::Contract;
+use crate::sql_models::contracts::implements::{Contract, NewContrData};
 use crate::sql_models::operation::service::{
     OperationInfo, OperationStep
 };
@@ -237,5 +237,6 @@ pub struct OperationTSTS {
     doc_type: DocType,
     account: Account,
     oper_step: OperationStep,
-    oper_inf: OperationInfo
+    oper_inf: OperationInfo,
+    new_contract_data: NewContrData
 }

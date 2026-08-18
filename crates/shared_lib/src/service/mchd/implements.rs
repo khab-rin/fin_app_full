@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-use crate::primitives::frozen::text::{BoxUuid, Date, CompInn, PersInn, Kpp, Ogrn, Phone, Region, RubF, Snils};
+use crate::primitives::frozen::text::{Integ,BoxUuid, Date, CompInn, PersInn, Kpp, Ogrn, Phone, Region, RubF, Snils};
 use crate::primitives::frozen::text_base::*;
 use crate::primitives::composite::implements::Fio;
 use crate::service::mchd::poa::PoaMchd;
@@ -601,7 +601,7 @@ pub struct OriginalPoa {
 #[derive(Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Clone, ts_rs::TS)]
 pub struct PoaLimitations {
     #[serde(rename = "@ИдОгр")]
-    pub number: i32,
+    pub number: Integ,
 
     #[serde(rename = "@КодОгр")]
     pub code: String1_255,

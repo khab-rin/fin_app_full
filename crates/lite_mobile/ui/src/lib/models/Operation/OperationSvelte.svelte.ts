@@ -4,6 +4,7 @@ import type { Operation } from "../rustModels/Operation";
 import type { Account } from "../rustModels/Account";
 import type { DocType } from "../rustModels/DocType";
 import type {Company} from '$lib/models/rustModels/Company';
+import type { Contract } from "../rustModels/Contract";
 
 export class OperationSvelte {
     data = $state({
@@ -14,6 +15,7 @@ export class OperationSvelte {
         ctrptyId: new FieldValidator("BoxUuid", ""),
         ctrptyName: new FieldValidator("CompanyName", ""),
 
+        allPossContracts: [] as Contract[],
         contractId: new FieldValidator("BoxUuid", ""),
         contractNum: new FieldValidator("DocNum", ""),
         contractDate: new FieldValidator("Date", ""),
@@ -66,6 +68,7 @@ export class OperationSvelte {
         this.data.ctrptyId.value = raw.ctrpty?.comp_id ?? "";
         this.data.ctrptyName.value = raw.ctrpty?.metadata?.comp_name?.short_egrul_name ?? "";
 
+        this.data.allPossContracts = raw.contract.contracts;
         this.data.contractId.value = raw.contract.current?.contract_id ?? "";
         this.data.contractNum.value = raw.contract.current?.contract_num ?? "";
         this.data.contractDate.value = raw.contract.current?.contract_date ?? "";
@@ -100,13 +103,24 @@ export class OperationSvelte {
         }
     }
 
+    refreshContracts(contracts: Contract[]) {
+        this.data.allPossContracts = contracts;
+    }
+
+    refreshContract(contract: Contract) {
+        this.data.contractId.value = contract.contract_id;
+        this.data.contractDate.value = contract.contract_date;
+        this.data.contractNum.value = contract.contract_num;
+    }
+
     get contractStr(): string {
         const num = this.data.contractNum.value;
-        const date = this.data.contractDate.value;
+        const d = this.data.contractDate.value;
         const id = this.data.contractId.value;
-        if (!num || !date || !id) {return "без договора"}
-        return `Договор № ${num} от ${date}`;
+        if (!num || !d || !id) {return "без договора"}
+        return `Договор № ${num} от ${d}`;
     }
+    
 
     makeRust(): Operation | null {
         if (!this.isValid) {

@@ -91,7 +91,7 @@ pub enum SvelteValidator {
     DocType,
     String,
     Currency,
-    I32,
+    Integ,
     U32
 }
 
@@ -337,7 +337,7 @@ impl SvelteValidator {
             SvelteValidator::Currency => match value.parse::<Currency>() {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::I32 => match value.parse::<i32>() {
+            SvelteValidator::Integ => match value.parse::<i32>() {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
             SvelteValidator::U32 => match value.parse::<u32>() {

@@ -1,4 +1,5 @@
 
+use shared_lib::client::sql_queries::contracts::get::contract_by_ids::get_contracts_by_comp_ctrpty_ids;
 use shared_lib::sql_models::company::implements::Company;
 use shared_lib::sql_models::contracts::implements::{Contract, NewContrData};
 use shared_lib::{ClientState, ProcessError, Status};
@@ -76,8 +77,12 @@ pub async fn cmd_get_comp_by_inn_kpp(
 pub async fn cmd_add_new_contract(
     state: tauri::State<'_, ClientState>,
     data: NewContrData
-) -> Result<Contract, Status> {
+) -> Result<Vec<Contract>, Status> {
+    let ctrpty_id = data.ctrpty_id.clone();
 
     make_new_contract(&state, data).await
+        .map_err(|err| err.process_err(err, ""))?;
+
+    get_contracts_by_comp_ctrpty_ids(&state, &ctrpty_id).await
 
 }

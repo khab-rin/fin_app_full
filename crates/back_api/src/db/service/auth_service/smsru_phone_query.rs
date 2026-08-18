@@ -36,7 +36,7 @@ pub(crate) async fn smsru_get_phone(
         .map_err(|err| err.process_err(Status::MappingError, ""))?;
 
 
-    if data.status == "OK" && data.status_code == 100 {
+    if data.status == "OK" && *data.status_code.as_ref() == 100 {
         
         let check_id = data
             .check_id

@@ -16,6 +16,11 @@
     import type {Operation} from '$lib/models/rustModels/Operation';
     import type {OperationStep} from '$lib/models/rustModels/OperationStep';
     import type {Company} from '$lib/models/rustModels/Company';
+
+    import type {NewContrData} from '$lib/models/rustModels/NewContrData';
+	import type { Currency } from '$lib/models/rustModels/Currency';
+	import type { Contract } from '$lib/models/rustModels/Contract';
+
     
 
     let processor = $state(new StateProcessor([]));
@@ -51,44 +56,80 @@
 
     let isContrOpened = $state(false);
     let isNewContractOpened = $state(false);
+    let isSwitchContractOpened = $state(false);
+
     let isMakeContrPushed = $state(false);
-    
 
-    let contractNum = new FieldValidator("DocNum", "");
-    let contractDate = new FieldValidator("Date", "");
-    let contractTitle= new FieldValidator("String", "");
-    let contractStDate = new FieldValidator("Date", "");
-    let contractEndDate = new FieldValidator("Date", "");
-    let contractCurrency = new FieldValidator("Currency", "");
-    let contractTotAmnt = new FieldValidator("RubF", "");
-    let contractDefDays = new FieldValidator("U32", "");
-    let contractDescr = new FieldValidator("String", "");
+    let contractNum = new FieldValidator("DocNum", "125");
+    let contractDate = new FieldValidator("Date", "18.08.2026");
+    let contractTitle= new FieldValidator("String", "договор");
+    let contractStDate = new FieldValidator("Date", "18.08.2025");
+    let contractEndDate = new FieldValidator("Date", "31.12.2030");
+    let contractCurrency = new FieldValidator("Currency", "руб");
+    let contractTotAmnt = new FieldValidator("RubF", "1000000");
+    let contractDefDays = new FieldValidator("Integ", "15");
+    let contractDescr = new FieldValidator("String", "Охуенный договор");
 
-    let isContrValid = $state(
-        contractNum.isValid ||
-        contractDate.isValid ||
-        contractTitle.isValid ||
-        contractStDate.isValid ||
-        contractEndDate.isValid ||
-        contractCurrency.isValid ||
-        contractTotAmnt.isValid ||
-        contractDefDays.isValid ||
-        contractDescr.isValid);
+    let isContrValid = $derived(
+        !contractNum.isValid ||
+        !contractDate.isValid ||
+        !contractTitle.isValid ||
+        !contractStDate.isValid ||
+        !contractEndDate.isValid ||
+        !contractCurrency.isValid ||
+        !contractTotAmnt.isValid ||
+        !contractDefDays.isValid ||
+        !contractDescr.isValid);
 
-    function switchContract() {
+    function openContract() {
         isContrOpened = !isContrOpened;
+        isNewContractOpened = false;
     }
 
-    function switchNewContract() {
+    function openNewContract() {
+        isSwitchContractOpened = false;
         isNewContractOpened = !isNewContractOpened;
+
     }
 
+    function openSwitchContract() {
+        isNewContractOpened = false;
+        isSwitchContractOpened = !isSwitchContractOpened;
+        
+    }
 
-    
+    async function addNewContract() {
+        if (isMakeContrPushed) {return;}
 
+        isMakeContrPushed = true;
+        const data: NewContrData = {
+            ctrpty_id: processor.opersSvelte[processor.curInd].data.ctrptyId.value,
+            contract_num: contractNum.value,
+            contract_date: contractDate.value,
+            contract_title: contractTitle.value,
+            contract_st_date: contractStDate.value,
+            contract_end_date: contractEndDate.value,
+            contract_currency: contractCurrency.value as Currency,
+            contract_tot_amnt: contractTotAmnt.value,
+            contract_def_days: contractDefDays.value,
+            contract_descr: contractDescr.value
+        }
 
+        try {
+            const freshContracts: Contract[] = await invoke<Contract[]> (
+                "cmd_add_new_contract", {data: data}
+            )
 
+            processor.opersSvelte[processor.curInd].refreshContracts(freshContracts);
+            isMakeContrPushed = false;
 
+        } catch(err) {
+            const next_step: OperationStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
+            console.error("cmd_add_new_contract FAILED, err = ",  err);
+            isMakeContrPushed = false;
+            operStep.add(next_step);
+        }
+    }
 
 
     function nextOper() {
@@ -124,7 +165,7 @@
                     class="input-field"
                     type="text" 
                     bind:value={compInn.value} 
-                    placeholder="строка до 50 знаков"
+                    placeholder="10 | 12 цифр"
                     class:input-error={!compInn.isValid}
                 />
 
@@ -135,7 +176,7 @@
                     class="input-field"
                     type="text" 
                     bind:value={kpp.value} 
-                    placeholder="строка до 50 знаков"
+                    placeholder="0 или 9 цифр"
                     class:input-error={!kpp.isValid}
                 />
 
@@ -174,7 +215,7 @@
                 type="text" 
                 bind:value={processor.opersSvelte[processor.curInd].data.debet.value} 
                 disabled={true}
-                placeholder="строка до 50 знаков"
+                placeholder="Номер счеба"
                 class:input-error={!processor.opersSvelte[processor.curInd].data.debet.isValid}
             />
         </div>
@@ -188,7 +229,7 @@
                 type="text" 
                 bind:value={processor.opersSvelte[processor.curInd].data.credit.value} 
                 disabled={true}
-                placeholder="строка до 50 знаков"
+                placeholder="Номер счета"
                 class:input-error={!processor.opersSvelte[processor.curInd].data.credit.isValid}
             />
         </div>
@@ -202,125 +243,147 @@
             <button
                 type='button'
                 class='medium-button'
-                onclick={switchContract}
+                onclick={openContract}
                 >
                     Договор
             </button>
 
-            <section class='navi-button-section'>
-                <button
-                    type='button'
-                    class='medium-button'
-                    onclick={switchContract}
-                >
-                    выбрать договор
-                </button>
+            {#if isContrOpened}
+                <section class='navi-button-section'>
+                    <button
+                        type='button'
+                        class='medium-button'
+                        onclick={openSwitchContract}
+                    >
+                        выбрать договор
+                    </button>
 
-                <button
-                    type='button'
-                    class='medium-button'
-                    onclick={switchNewContract}
-                >
-                    добавить договор
-                </button>
-            </section>
-
-
-            {#if isNewContractOpened}
-                <section class="input-section">
-                    <span class='input-field-span'>Номер договора</span>
-                    <input 
-                        class="input-field"
-                        type="text" 
-                        bind:value={contractNum.value} 
-                        disabled={true}
-                        placeholder="строка до 50 знаков"
-                        class:input-error={!contractNum.isValid}
-                    />
-
-                    <span class='input-field-span'>Дата договора</span>
-                    <input 
-                        class="input-field"
-                        type="text" 
-                        bind:value={contractDate.value} 
-                        disabled={true}
-                        placeholder="строка до 50 знаков"
-                        class:input-error={!contractNum.isValid}
-                    />
-
-                    <span class='input-field-span'>Название договора</span>
-                    <input 
-                        class="input-field"
-                        type="text" 
-                        bind:value={contractTitle.value} 
-                        disabled={true}
-                        placeholder="строка до 50 знаков"
-                        class:input-error={!contractNum.isValid}
-                    />
-
-                    <span class='input-field-span'>Дата начала</span>
-                    <input 
-                        class="input-field"
-                        type="text" 
-                        bind:value={contractStDate.value} 
-                        disabled={true}
-                        placeholder="строка до 50 знаков"
-                        class:input-error={!contractNum.isValid}
-                    />
-
-                    <span class='input-field-span'>Дата завершения</span>
-                    <input 
-                        class="input-field"
-                        type="text" 
-                        bind:value={contractEndDate.value} 
-                        disabled={true}
-                        placeholder="строка до 50 знаков"
-                        class:input-error={!contractNum.isValid}
-                    />
-
-                    <span class='input-field-span'>Валюта договора</span>
-                    <input 
-                        class="input-field"
-                        type="text" 
-                        bind:value={contractCurrency.value} 
-                        disabled={true}
-                        placeholder="строка до 50 знаков"
-                        class:input-error={!contractNum.isValid}
-                    />
-
-                    <span class='input-field-span'>Сумма договора</span>
-                    <input 
-                        class="input-field"
-                        type="text" 
-                        bind:value={contractTotAmnt.value} 
-                        disabled={true}
-                        placeholder="строка до 50 знаков"
-                        class:input-error={!contractNum.isValid}
-                    />
-
-                    <span class='input-field-span'>Рассрочка в днях</span>
-                    <input 
-                        class="input-field"
-                        type="text" 
-                        bind:value={contractDefDays.value} 
-                        disabled={true}
-                        placeholder="строка до 50 знаков"
-                        class:input-error={!contractNum.isValid}
-                    />
-
-                    <span class='input-field-span'>Описание</span>
-                    <input 
-                        class="input-field"
-                        type="text" 
-                        bind:value={contractDescr.value} 
-                        disabled={true}
-                        placeholder="строка до 50 знаков"
-                        class:input-error={!contractNum.isValid}
-                    />
-
-
+                    <button
+                        type='button'
+                        class='medium-button'
+                        onclick={openNewContract}
+                    >
+                        добавить договор
+                    </button>
                 </section>
+
+                {#if isSwitchContractOpened}
+                    <section class='wide-button-section'>
+                        <span class='wide-button-span'>Выберите нужный договор</span>
+                        {#each processor.opersSvelte[processor.curInd].data.allPossContracts as contract}
+                            <div class='wide-button-group'>
+                                <span class='wide-button-span'>{processor.getContractInfo(contract)}</span>
+                                <button
+                                    type='button'
+                                    class='wide-button'
+                                    onclick={() => processor.opersSvelte[processor.curInd].refreshContract(contract)}
+                                >
+                                    Выбрать договор
+                                </button>
+                            </div>
+                            
+                        {/each}
+
+
+                    </section>
+                {/if}
+
+
+                {#if isNewContractOpened}
+                    <section class="input-section">
+                        <span class='input-field-span'>Номер договора</span>
+                        <input 
+                            class="input-field"
+                            type="text" 
+                            bind:value={contractNum.value} 
+                            placeholder="строка до 50 знаков"
+                            class:input-error={!contractNum.isValid}
+                        />
+
+                        <span class='input-field-span'>Дата договора</span>
+                        <input 
+                            class="input-field"
+                            type="text" 
+                            bind:value={contractDate.value} 
+                            placeholder="дд.мм.гггг"
+                            class:input-error={!contractDate.isValid}
+                        />
+
+                        <span class='input-field-span'>Название договора</span>
+                        <input 
+                            class="input-field"
+                            type="text" 
+                            bind:value={contractTitle.value} 
+                            placeholder="строка до 50 знаков"
+                            class:input-error={!contractTitle.isValid}
+                        />
+
+                        <span class='input-field-span'>Дата начала</span>
+                        <input 
+                            class="input-field"
+                            type="text" 
+                            bind:value={contractStDate.value} 
+                            placeholder="дд.мм.гггг"
+                            class:input-error={!contractStDate.isValid}
+                        />
+
+                        <span class='input-field-span'>Дата завершения</span>
+                        <input 
+                            class="input-field"
+                            type="text" 
+                            bind:value={contractEndDate.value} 
+                            placeholder="дд.мм.гггг"
+                            class:input-error={!contractEndDate.isValid}
+                        />
+
+                        <span class='input-field-span'>Валюта договора</span>
+                        <input 
+                            class="input-field"
+                            type="text" 
+                            bind:value={contractCurrency.value} 
+                            placeholder="РУБ"
+                            class:input-error={!contractCurrency.isValid}
+                        />
+
+                        <span class='input-field-span'>Сумма договора</span>
+                        <input 
+                            class="input-field"
+                            type="text" 
+                            bind:value={contractTotAmnt.value} 
+                            placeholder="Сумма в валюте договора"
+                            class:input-error={!contractTotAmnt.isValid}
+                        />
+
+                        <span class='input-field-span'>Рассрочка в днях</span>
+                        <input 
+                            class="input-field"
+                            type="text" 
+                            bind:value={contractDefDays.value} 
+                            placeholder="количество дней"
+                            class:input-error={!contractDefDays.isValid}
+                        />
+
+                        <span class='input-field-span'>Описание</span>
+                        <input 
+                            class="input-field"
+                            type="text" 
+                            bind:value={contractDescr.value} 
+                            placeholder="строка до 50 знаков"
+                            class:input-error={!contractDescr.isValid}
+                        />
+
+                        <button class='medium-button'
+                            type='button'
+                            onclick={addNewContract}
+                            disabled={isMakeContrPushed || isContrValid}
+                        >
+                            Добавить договор
+                        </button>
+                    </section>
+                {/if}
             {/if}
+
+            
 
             
 

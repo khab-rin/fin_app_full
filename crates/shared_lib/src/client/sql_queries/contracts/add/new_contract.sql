@@ -1,4 +1,26 @@
-SELECT
+INSERT INTO contracts(
+    contract_id,
+    user_id,
+    comp_id,
+    ctrpty_id,
+    contract_num,
+    contract_date,
+    title,
+    st_date,
+    end_date,
+    currency,
+    total_amount,
+    payment_deferral_days,
+    is_active,
+    descrip,
+    entr_date,
+    is_del
+) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+ON CONFLICT (contract_id)
+    DO UPDATE SET
+        descrip = EXCLUDED.descrip,
+        is_del = EXCLUDED.is_del
+RETURNING
     contract_id AS "contract_id: BoxUuid",
     
     user_id AS "user_id: BoxUuid",
@@ -25,5 +47,3 @@ SELECT
     entr_date AS "entr_date: Date",
 
     is_del AS "is_del: Integ"
-FROM contracts
-WHERE comp_id = $1 AND ctrpty_id = $2

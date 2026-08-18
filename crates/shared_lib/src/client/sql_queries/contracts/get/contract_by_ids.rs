@@ -1,15 +1,16 @@
 use crate::{Status, ClientState, ProcessError};
-use crate::primitives::frozen::text::{Date, RubF, BoxUuid, DocNum, Currency};
+use crate::primitives::frozen::text::{Integ, Date, RubF, BoxUuid, DocNum, Currency};
 use crate::sql_models::contracts::implements::Contract;
 
 pub async fn get_contracts_by_comp_ctrpty_ids(
     state: &ClientState,
-    comp_id: &BoxUuid,
     ctrpty_id: &BoxUuid
 ) -> Result<Vec<Contract>, Status> {
 
     let session = state.get_session().await
         .map_err(|err| err.process_err(err, ""))?; 
+
+    let comp_id = session.session_user.company.comp_id.clone();
 
     sqlx::query_file_as!(
             Contract,

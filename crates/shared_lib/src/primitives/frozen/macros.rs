@@ -147,12 +147,9 @@ macro_rules! frozen_primitives {
                 value: <sqlx::Postgres as sqlx::Database>::ValueRef<'r>,
             ) -> Result<Self, Box<dyn std::error::Error + Send + Sync>> {
                
-                let raw_val = <$data_type as sqlx::Decode<'r, sqlx::Postgres>>::decode(value)?;
+                let type_val = <$data_type as sqlx::Decode<'r, sqlx::Postgres>>::decode(value)?;
                 
-                let validated = Self::new(&raw_val.to_string())
-                    .map_err(|e| format!("Failed to decode {}: {:?}", stringify!($name), e))?;
-                
-                Ok(validated)
+                Ok(Self{data: type_val})
             }
         }
 

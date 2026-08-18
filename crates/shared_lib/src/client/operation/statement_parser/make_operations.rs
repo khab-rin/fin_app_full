@@ -85,7 +85,6 @@ pub async fn make_statement_pay_operation_raw(
     let contracts = if let Some(ctrpty) = ctrpty_option.as_ref() {
         get_contracts_by_comp_ctrpty_ids (
             state,
-            &comp_id,
             &ctrpty.comp_id
         ).await
         .map_err(|err| err.process_err(err, ""))?
@@ -204,7 +203,6 @@ pub async fn make_statement_rec_operation_raw(
     let contracts = if let Some(ctrpty) = ctrpty_option.as_ref() {
         get_contracts_by_comp_ctrpty_ids (
             state,
-            &comp_id,
             &ctrpty.comp_id
         ).await
         .map_err(|err| err.process_err(err, ""))?

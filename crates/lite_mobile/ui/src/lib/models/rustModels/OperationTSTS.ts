@@ -2,9 +2,10 @@
 import type { Account } from "./Account";
 import type { ContractOption } from "./ContractOption";
 import type { DocType } from "./DocType";
+import type { NewContrData } from "./NewContrData";
 import type { Operation } from "./Operation";
 import type { OperationInfo } from "./OperationInfo";
 import type { OperationRaw } from "./OperationRaw";
 import type { OperationStep } from "./OperationStep";
 
-export type OperationTSTS = { operation_raw: OperationRaw, operation: Operation, contract_option: ContractOption, doc_type: DocType, account: Account, oper_step: OperationStep, oper_inf: OperationInfo, };
+export type OperationTSTS = { operation_raw: OperationRaw, operation: Operation, contract_option: ContractOption, doc_type: DocType, account: Account, oper_step: OperationStep, oper_inf: OperationInfo, new_contract_data: NewContrData, };

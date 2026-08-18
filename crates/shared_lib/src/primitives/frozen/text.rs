@@ -208,6 +208,13 @@ frozen_primitives!(
     "Поле_пароля",
     default_fmt);
 
+frozen_primitives!(
+    Integ,
+    init_integer_from_str,
+    i32,
+    "Целое число",
+    default_fmt);
+
 
 make_enum_frozen! {
     CompStatus, {
@@ -230,8 +237,8 @@ make_enum_frozen! {
 
 make_enum_frozen! {
     Currency, {
-        RUB, "РУБ", {"RUB", "rub", "руб"},
-        EUR, "ЕВРО", {"EUR", "eur", "евро"},
-        USD, "ДОЛЛ", {"USD", "usd", "долл"}
+        RUB, "RUB", {"rub", "руб"},
+        EUR, "EUR", {"eur", "евро"},
+        USD, "USD", {"usd", "долл"}
     }
 }

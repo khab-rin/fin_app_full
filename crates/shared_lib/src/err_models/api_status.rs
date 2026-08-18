@@ -21,12 +21,16 @@ where
 {
     #[track_caller]
     fn process_err(self, local_err: Status, ext_info: &str) -> Status {
-        let caller = std::panic::Location::caller();
+        
         let tech_err = anyhow::Error::msg(self.to_string());
-
+        
         #[cfg(feature = "server")]
         {   
+            let caller = std::panic::Location::caller();
+            let location = format!("api_error_at::{}:{}:{}", caller.file().replace(".rs", ""), caller.line(), caller.column());
+
             tracing::error!(
+                location = &location,
                 tech_err = ?tech_err,
                 local_err = ?local_err,
                 ext_info = ext_info,

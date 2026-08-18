@@ -396,7 +396,9 @@ pub(crate) fn init_password_from_str(password: &str) -> Result<String, Status> {
         .ok_or(Status::ValidPassword)
 }
 
-
+pub(crate) fn init_integer_from_str(val: &str) -> Result<i32, Status> {
+    val.parse::<i32>().map_err(|_| Status::ValidI32)
+}
 
 
 

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::primitives::frozen::text::{BoxUuid, CompInn, Email, FirstName, Kpp, MidName, Password, PersInn, Phone, Snils, SurName};
+use crate::primitives::frozen::text::{Integ, BoxUuid, CompInn, Email, FirstName, Kpp, MidName, Password, PersInn, Phone, Snils, SurName};
 use crate::service::auth_service::general::SessionUser;
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
@@ -171,7 +171,7 @@ pub enum SmsRuResponseTextCode {
 #[derive(Deserialize, Debug)]
 pub struct SmsruCallResponse {
     pub status: String,
-    pub status_code: i32,
+    pub status_code: Integ,
     pub check_id: Option<String>,
     pub call_phone: Option<Phone>,
     pub call_phone_pretty: Option<String>,
@@ -181,8 +181,8 @@ pub struct SmsruCallResponse {
 #[derive(Deserialize, Debug)]
 pub struct SmsruGetResResponse {
     pub status: String,
-    pub status_code: i32,
-    pub check_status: Option<i32>,
+    pub status_code: Integ,
+    pub check_status: Option<Integ>,
     pub check_status_text: Option<String>,
 }
 
