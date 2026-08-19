@@ -3,7 +3,7 @@ use std::fmt;
 use std::str::FromStr;
 use std::convert::Infallible;
 
-use crate::Status;
+use crate::{Status, make_enum_frozen};
 use crate::sql_models::operation::macros::ParseFromStrMapValue;
 use crate::primitives::frozen::text::{BoxUuid, Date, DateTime, DocNum, RubF, TextInfo};
 use crate::sql_models::operation::account::Account;
@@ -76,137 +76,84 @@ pub struct Operation {
     pub entr_date: DateTime,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize,  ts_rs::TS)]
-#[serde(rename_all = "snake_case")]
-pub enum DocType {
-    // --- Банковские документы ---
-    BankOrder,         // Банковский ордер
-    PaymentOrder,      // Платежное поручение
-    PaymentClaim,      // Платежное требование
-    CollectionOrder,   // Инкассовое поручение
-    BankStatement,     // Банковская выписка
-
-    // --- Кассовые документы ---
-    CashReceipt,       // Приходный кассовый ордер (ПКО)
-    CashVoucher,       // Расходный кассовый ордер (РКО)
-    CashCheck,         // Кассовый чек / БСО
-
-    // --- Товарные документы ---
-    WaybillTorg12,     // Товарная накладная (ТОРГ-12)
-    Upd,               // Универсальный передаточный документ (УПД)
-    TransportWaybill,  // Транспортная накладная (ТН / ТТН)
-    AcceptanceAct,     // Акт приема-передачи (ОС, имущества)
-
-    // --- Услуги и работы ---
-    ServiceAct,        // Акт оказанных услуг / выполненных работ
-
-    // --- Налоговые и расчетные ---
-    VatInvoice,        // Счет-фактура (СФ)
-    PaymentInvoice,    // Счет на оплату
-    ReconciliationAct, // Акт сверки взаиморасчетов
-
-    // --- Внутренние и корректировочные ---
-    AccountingNote,    // Бухгалтерская справка
-    WriteOffAct,       // Акт списания
-    CorrectionAct,     // Корректировочный акт / КСФ
-
-    // --- Прочее ---
-    Other,             // Иной документ
-}
-
-impl DocType {
-    /// Основная логика парсинга: принимает любую строку и всегда возвращает DocType
-    pub fn parse_str(s: &str) -> Self {
-        let clean_str = s.trim().to_lowercase();
-
-        match clean_str.as_str() {
-            "bank_order" | "bankorder" | "банковский ордер" | "мемориальный ордер" => Self::BankOrder,
-            "payment_order" | "paymentorder" | "платежное поручение" | "платежка" | "пп" => Self::PaymentOrder,
-            "payment_claim" | "платежное требование" => Self::PaymentClaim,
-            "collection_order" | "инкассовое поручение" => Self::CollectionOrder,
-            "bank_statement" | "банковская выписка" | "выписка банка" | "выписка" => Self::BankStatement,
-
-            "cash_receipt" | "приходный кассовый ордер" | "пко" => Self::CashReceipt,
-            "cash_voucher" | "расходный кассовый ордер" | "рко" => Self::CashVoucher,
-            "cash_check" | "кассовый чек" | "чек" | "бсо" => Self::CashCheck,
-
-            "torg12" | "waybill_torg12" | "товарная накладная" | "торг-12" | "торг 12" | "накладная" => Self::WaybillTorg12,
-            "upd" | "универсальный передаточный документ" | "упд" => Self::Upd,
-            "transport_waybill" | "транспортная накладная" | "тн" | "ттн" => Self::TransportWaybill,
-            "acceptance_act" | "акт приема-передачи" | "акт приема передачи" => Self::AcceptanceAct,
-
-            "service_act" | "акт оказанных услуг" | "акт выполненных работ" | "акт" => Self::ServiceAct,
-
-            "vat_invoice" | "счет-фактура" | "счет фактура" | "сф" => Self::VatInvoice,
-            "payment_invoice" | "invoice" | "счет на оплату" | "счет" => Self::PaymentInvoice,
-            "reconciliation_act" | "акт сверки" | "акт сверки взаиморасчетов" => Self::ReconciliationAct,
 
 
-            "accounting_note" | "бухгалтерская справка" | "справка" => Self::AccountingNote,
-            "write_off_act" | "акт списания" | "списание" => Self::WriteOffAct,
-            "correction_act" | "корректировочный акт" | "ксф" | "корректировочная счет-фактура" => Self::CorrectionAct,
-
-            _ => Self::Other,
-        }
-    }
-
-    pub fn as_str(&self) -> &'static str {
-        match self {
-            Self::BankOrder => "Банковский ордер",
-            Self::PaymentOrder => "Платежное поручение",
-            Self::PaymentClaim => "Платежное требование",
-            Self::CollectionOrder => "Инкассовое поручение",
-            Self::BankStatement => "Банковская выписка",
-            
-            Self::CashReceipt => "Приходный кассовый ордер",
-            Self::CashVoucher => "Расходный кассовый ордер",
-            Self::CashCheck => "Кассовый чек",
-            
-            Self::WaybillTorg12 => "Товарная накладная (ТОРГ-12)",
-            Self::Upd => "Универсальный передаточный документ (УПД)",
-            Self::TransportWaybill => "Транспортная накладная",
-            Self::AcceptanceAct => "Акт приема-передачи",
-            
-            Self::ServiceAct => "Акт оказанных услуг",
-            
-            Self::VatInvoice => "Счет-фактура",
-            Self::PaymentInvoice => "Счет на оплату",
-            Self::ReconciliationAct => "Акт сверки",
-            
-            Self::AccountingNote => "Бухгалтерская справка",
-            Self::WriteOffAct => "Акт списания",
-            Self::CorrectionAct => "Корректировочный акт",
-            
-            Self::Other => "Прочее",
-        }
+make_enum_frozen! {
+    DocType, {
+        BankOrder, "банковский ордер", {
+            "BANK_ORDER", "bank_order", "bankorder", "мемориальный ордер"
+        },
+        PaymentOrder, "платежное поручение", {
+            "PAYMENT_ORDER", "payment_order", "paymentorder", "платежка", "пп"
+        },
+        PaymentClaim, "платежное требование", {
+            "PAYMENT_CLAIM", "payment_claim"
+        },
+        CollectionOrder, "инкассовое поручение", {
+            "COLLECTION_ORDER", "collection_order"
+        },
+        BankStatement, "банковская выписка", {
+            "BANK_STATEMENT", "bank_statement", "выписка банка", "выписка"
+        },
+        CashReceipt, "приходный кассовый ордер", {
+            "CASH_RECEIPT", "cash_receipt", "пко"
+        },
+        CashVoucher, "расходный кассовый ордер", {
+            "CASH_VOUCHER", "cash_voucher", "рко"
+        },
+        CashCheck, "кассовый чек", {
+            "CASH_CHECK", "cash_check", "чек", "бсо"
+        },
+        WaybillTorg12, "товарная накладная", {
+            "WAYBILL_TORG12", "torg12", "waybill_torg12", "торг-12", "торг 12", "накладная"
+        },
+        Upd, "универсальный передаточный документ", {
+            "UPD", "upd", "упд"
+        },
+        TransportWaybill, "транспортная накладная", {
+            "TRANSPORT_WAYBILL", "transport_waybill", "тн", "ттн"
+        },
+        AcceptanceAct, "акт приема-передачи", {
+            "ACCEPTANCE_ACT", "acceptance_act", "акт приема передачи"
+        },
+        ServiceAct, "акт оказанных услуг", {
+            "SERVICE_ACT", "service_act", "акт выполненных работ", "акт"
+        },
+        VatInvoice, "счет-фактура", {
+            "VAT_INVOICE", "vat_invoice", "счет фактура", "сф"
+        },
+        PaymentInvoice, "счет на оплату", {
+            "PAYMENT_INVOICE", "payment_invoice", "invoice", "счет"
+        },
+        ReconciliationAct, "акт сверки", {
+            "RECONCILIATION_ACT", "reconciliation_act", "акт сверки взаиморасчетов"
+        },
+        AccountingNote, "бухгалтерская справка", {
+            "ACCOUNTING_NOTE", "accounting_note", "справка"
+        },
+        WriteOffAct, "акт sписания", {
+            "WRITE_OFF_ACT", "write_off_act", "списание"
+        },
+        CorrectionAct, "корректировочный акт", {
+            "CORRECTION_ACT", "correction_act", "ксф", "корректировочная счет-фактура"
+        },
+        Other, "прочее", {
+            "OTHER", "other"
+        },
     }
 }
 
-impl FromStr for DocType {
-    type Err = Infallible;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(Self::parse_str(s))
-    }
-}
 
-impl From<&str> for DocType {
-    fn from(s: &str) -> Self {
-        Self::parse_str(s)
-    }
-}
-
-impl fmt::Display for DocType {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.as_str())
-    }
-}
 
 impl ParseFromStrMapValue for DocType {
     fn parse_from_str_map_value(value: Option<&&str>) -> Result<Self, Status> {
         match value {
-            Some(s) => Ok(DocType::parse_str(s)),
-            None => Ok(DocType::Other), 
+            Some(s) => {
+                let clean = s.trim().to_lowercase();
+                Ok(clean.parse::<DocType>().unwrap_or(DocType::Other))
+            },
+            None => Ok(DocType::Other)
         }
     }
 }

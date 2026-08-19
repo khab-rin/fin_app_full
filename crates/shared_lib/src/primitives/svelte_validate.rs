@@ -329,10 +329,14 @@ impl SvelteValidator {
             SvelteValidator::Account => match serde_json::from_str::<Account>(value) {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::DocType => match DocType::parse_str(value) {
-                DocType::Other => Ok(false),
-                _ => Ok(true)
-            },
+            SvelteValidator::DocType => {
+                let clean = value.trim().to_lowercase();
+                match DocType::from_str(value) {
+                    Ok(DocType::Other) => Ok(false),
+                    Ok(_) => Ok(true),
+                    Err(_) => Ok(false)
+                }
+            }
             SvelteValidator::String => Ok(true),
             SvelteValidator::Currency => match value.parse::<Currency>() {
                 Ok(_) => Ok(true), Err(_) => Ok(false),

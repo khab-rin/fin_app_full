@@ -23,7 +23,7 @@
 
     
 
-    let processor = $state(new StateProcessor([]));
+    let processor = $state(new StateProcessor());
 
 
 
@@ -42,8 +42,10 @@
             refreshCtrptyPushed = true;
             let data = {compInn: compInn.value, kpp: kpp.value};
             const newCompany: Company | null = await invoke<Company>("cmd_get_comp_by_inn_kpp", data);
-            processor.opersSvelte[processor.curInd].refreshCtrpty(newCompany);
             refreshCtrptyPushed = false;
+            openCtrpty = false;
+            processor.opersSvelte[processor.curInd].refreshCtrpty(newCompany);
+            
             
         } catch (err) {
             const next_step: OperationStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
@@ -98,6 +100,13 @@
         
     }
 
+    function switchContract(contract: Contract) {
+        processor.opersSvelte[processor.curInd].refreshContract(contract)
+        isContrOpened = false;
+        isNewContractOpened = false;
+        isSwitchContractOpened = false;
+    }
+
     async function addNewContract() {
         if (isMakeContrPushed) {return;}
 
@@ -119,9 +128,14 @@
             const freshContracts: Contract[] = await invoke<Contract[]> (
                 "cmd_add_new_contract", {data: data}
             )
+            isMakeContrPushed = false;
+            isContrOpened = true;
+            isNewContractOpened = false;
+            isSwitchContractOpened = true;
+            
 
             processor.opersSvelte[processor.curInd].refreshContracts(freshContracts);
-            isMakeContrPushed = false;
+            
 
         } catch(err) {
             const next_step: OperationStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
@@ -140,12 +154,15 @@
         processor?.prev()
     }
     
-    onMount (async() => {
+    onMount(async () => {
         if (OperationType.SuccessRaw in operStep.step) {
-
-            processor = new StateProcessor(operStep.step.SuccessRaw.operations);
+            await processor.init(operStep.step.SuccessRaw.operations);
         } else {
-            const next_step: OperationStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
+            const next_step: OperationStep = {
+                TryLater: {
+                    text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"
+                }
+            };
             console.error("System Logic Error, wrong current step");
             operStep.add(next_step);
         }
@@ -204,36 +221,7 @@
                 Редактировать
             </button>
         </div>
-
-
-        <div class='input-group'>
-            <span class='input-field-span'>
-                Счет Дебет
-            </span>
-            <input 
-                class="input-field"
-                type="text" 
-                bind:value={processor.opersSvelte[processor.curInd].data.debet.value} 
-                disabled={true}
-                placeholder="Номер счеба"
-                class:input-error={!processor.opersSvelte[processor.curInd].data.debet.isValid}
-            />
-        </div>
-
-        <div class="input-group">
-            <span class='input-field-span'>
-                Счет Кредит
-            </span>
-            <input 
-                class="input-field"
-                type="text" 
-                bind:value={processor.opersSvelte[processor.curInd].data.credit.value} 
-                disabled={true}
-                placeholder="Номер счета"
-                class:input-error={!processor.opersSvelte[processor.curInd].data.credit.isValid}
-            />
-        </div>
-
+        
         <div class='input-group'>
             <span class='input-group-span'>
                 Информация о договоре
@@ -276,7 +264,7 @@
                                 <button
                                     type='button'
                                     class='wide-button'
-                                    onclick={() => processor.opersSvelte[processor.curInd].refreshContract(contract)}
+                                    onclick={() => switchContract(contract)}
                                 >
                                     Выбрать договор
                                 </button>
@@ -382,16 +370,104 @@
                     </section>
                 {/if}
             {/if}
-
-            
-
-            
-
-
         </div>
 
+        <div class='input-group'>
+            <span class='input-field-span'>
+                Счет Дебет
+            </span>
+            <input 
+                class="input-field"
+                type="text" 
+                bind:value={processor.opersSvelte[processor.curInd].data.debet.value} 
+                disabled={true}
+                placeholder="Номер счета"
+                class:input-error={!processor.opersSvelte[processor.curInd].data.debet.isValid}
+            />
+        </div>
 
+        <div class="input-group">
+            <span class='input-field-span'>
+                Счет Кредит
+            </span>
+            <input 
+                class="input-field"
+                type="text" 
+                bind:value={processor.opersSvelte[processor.curInd].data.credit.value} 
+                disabled={true}
+                placeholder="Номер счета"
+                class:input-error={!processor.opersSvelte[processor.curInd].data.credit.isValid}
+            />
+        </div>
 
+        <div class="input-group">
+            <span class='input-field-span'>
+                Сумма операции
+            </span>
+            <input
+                class = 'input-field'
+                type='text'
+                bind:value={processor.opersSvelte[processor.curInd].data.amount.value}
+                disabled={false}
+                placeholder='xxx.xx'
+                class:input-error={!processor.opersSvelte[processor.curInd].data.amount.isValid}
+            />
+        </div>
+
+        <div class="input-group">
+            <span class='input-field-span'>
+                Дата операции
+            </span>
+            <input
+                class = 'input-field'
+                type='text'
+                bind:value={processor.opersSvelte[processor.curInd].data.operDate.value}
+                disabled={false}
+                placeholder='xx.xx.xxxx'
+                class:input-error={!processor.opersSvelte[processor.curInd].data.operDate.isValid}
+            />
+        </div>
+
+        <div class="input-group">
+            <span class='input-field-span'>
+                Тип банковского документа
+            </span>
+            <input
+                class = 'input-field'
+                type='text'
+                bind:value={processor.opersSvelte[processor.curInd].data.docType.value}
+                disabled={true}
+                placeholder='xxx.xx'
+                class:input-error={!processor.opersSvelte[processor.curInd].data.docType.isValid}
+            />
+        </div>
+
+        <div class="input-group">
+            <span class='input-field-span'>
+                Номер банковского документа
+            </span>
+            <span class='input-field-span'>
+                {processor.opersSvelte[processor.curInd].data.docNum.value}
+            </span>
+        </div>
+
+        <div class="input-group">
+            <span class='input-field-span'>
+                Дата банковского документа
+            </span>
+            <span class='input-field-span'>
+                {processor.opersSvelte[processor.curInd].data.docDate.value}
+            </span>
+        </div>
+
+        <div class="input-group">
+            <span class='input-field-span'>
+                Дата составления операции
+            </span>
+            <span class='input-field-span'>
+                {processor.opersSvelte[processor.curInd].data.entrDate.value}
+            </span>
+        </div>
 
     </section>
 {/if}

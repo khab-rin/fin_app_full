@@ -37,6 +37,8 @@ export class OperationSvelte {
         isConfirmed: false
     })
 
+    
+
     isValid = $derived(
         this.data.operId.isValid &&
         this.data.userId.isValid &&
@@ -60,41 +62,42 @@ export class OperationSvelte {
         this.data.isConfirmed
     );
 
-    private fromRustRaw(raw: OperationRaw) {
-        this.data.operId.value = raw.oper_id;
-        this.data.userId.value = raw.user_id;
-        this.data.compId.value = raw.comp_id;
+    constructor() {}
 
-        this.data.ctrptyId.value = raw.ctrpty?.comp_id ?? "";
-        this.data.ctrptyName.value = raw.ctrpty?.metadata?.comp_name?.short_egrul_name ?? "";
+    static async fromRaw(raw: OperationRaw): Promise<OperationSvelte> {
+        const instance = new OperationSvelte();
+        
+        instance.data.operId.value = raw.oper_id;
+        instance.data.userId.value = raw.user_id;
+        instance.data.compId.value = raw.comp_id;
 
-        this.data.allPossContracts = raw.contract.contracts;
-        this.data.contractId.value = raw.contract.current?.contract_id ?? "";
-        this.data.contractNum.value = raw.contract.current?.contract_num ?? "";
-        this.data.contractDate.value = raw.contract.current?.contract_date ?? "";
+        instance.data.ctrptyId.value = raw.ctrpty?.comp_id ?? "";
+        instance.data.ctrptyName.value = raw.ctrpty?.metadata?.comp_name?.short_egrul_name ?? "";
 
-        this.data.debet.value = raw.debet;
-        this.data.credit.value = raw.credit;
-        this.data.amount.value = raw.amount;
-        this.data.operDate.value = raw.oper_date ?? "";
+        instance.data.allPossContracts = raw.contract.contracts;
+        instance.data.contractId.value = raw.contract.current?.contract_id ?? "";
+        instance.data.contractNum.value = raw.contract.current?.contract_num ?? "";
+        instance.data.contractDate.value = raw.contract.current?.contract_date ?? "";
 
-        this.data.docType.value = raw.doc_type;
-        this.data.docNum.value = raw.doc_num;
-        this.data.docDate.value = raw.doc_date;
+        instance.data.debet.value = raw.debet;
+        instance.data.credit.value = raw.credit;
+        instance.data.amount.value = raw.amount;
+        instance.data.operDate.value = raw.oper_date ?? "";
 
-        this.data.isStorno = raw.is_storno;
-        this.data.isDel = raw.is_del;
+        instance.data.docType.value = raw.doc_type;
+        await instance.data.docType.validate();
 
-        this.data.entrDate.value = raw.entr_date;
+        instance.data.docNum.value = raw.doc_num;
+        instance.data.docDate.value = raw.doc_date;
 
-        this.data.isConfirmed = false;
+        instance.data.isStorno = raw.is_storno;
+        instance.data.isDel = raw.is_del;
+        instance.data.entrDate.value = raw.entr_date;
+        instance.data.isConfirmed = false;
+
+        return instance;
     }
 
-    constructor(raw?: OperationRaw) {
-        if (raw) {
-            this.fromRustRaw(raw);
-        }
-    }
 
     refreshCtrpty(ctrpty?: Company) {
         if (ctrpty) {

@@ -38,32 +38,7 @@ pub(crate) async fn add_contract(
         contract.entr_date.as_ref(),
         contract.is_del.as_ref()
     ).fetch_one(&state.pool_fast).await
-    .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
-
-
-
-    const SQL_QUERY: &str = include_str!("/home/khabipovrinat/dev/fin_app_full/crates/back_api/src/db/sql_queries/contracts/add/new_contr.sql");
-
-    let contract: Contract = sqlx::query_as(SQL_QUERY)
-        .bind(&contract.contract_id)
-        .bind(contract.user_id)
-        .bind(contract.comp_id)
-        .bind(contract.ctrpty_id)
-        .bind(contract.contract_num)
-        .bind(contract.contract_date)
-        .bind(contract.title)
-        .bind(contract.st_date)
-        .bind(contract.end_date)
-        .bind(contract.currency)
-        .bind(contract.total_amount)
-        .bind(contract.payment_deferral_days)
-        .bind(contract.is_active)
-        .bind(contract.descrip)
-        .bind(contract.entr_date)
-        .bind(contract.is_del)
-        .fetch_one(&state.pool_fast).await
-        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
-            
+    .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;    
 
     Ok(contract)
     

@@ -123,7 +123,7 @@ pub async fn make_statement_pay_operation_raw(
 
     let oper_date = block_fields.pay_date.clone();
 
-    let doc_type = block_fields.doc_type;
+    let doc_type = block_fields.doc_type.clone();
 
     let doc_num = block_fields.doc_num.clone();
 
@@ -242,7 +242,7 @@ pub async fn make_statement_rec_operation_raw(
 
     let oper_date = block_fields.pay_date.clone();
 
-    let doc_type = block_fields.doc_type;
+    let doc_type = block_fields.doc_type.clone();
 
     let doc_num = block_fields.doc_num.clone();
 
@@ -322,7 +322,7 @@ pub async fn make_statement_home_operation_raw(
 
     let oper_date = parsed_block.block_fields.pay_date.clone();
 
-    let doc_type =parsed_block.block_fields.doc_type;
+    let doc_type = parsed_block.block_fields.doc_type.clone();
 
     let doc_num = parsed_block.block_fields.doc_num.clone();
 

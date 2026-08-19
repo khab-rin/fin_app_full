@@ -1,5 +1,4 @@
 import { operStep } from "./OperationManager.svelte";
-
 import type { Operation } from "../rustModels/Operation";
 import type { OperationRaw } from "../rustModels/OperationRaw";
 import type { Contract } from '$lib/models/rustModels/Contract';
@@ -9,29 +8,43 @@ export class StateProcessor {
     opersRaw = $state<OperationRaw[]>([]);
     opersSvelte = $state<OperationSvelte[]>([]);
     opersRust = $state<(Operation | null)[]>([]);
-    curInd = 0;
-    maxInd = 0;
+    curInd = $state(0); // делаем индексы реактивными, чтобы Svelte обновлял экран при переключении
+    maxInd = $state(0);
 
 
-    constructor(opers: OperationRaw[]) {
-        for (const operRaw of opers) {
-            const operSvelte = new OperationSvelte(operRaw);
-            const operRust = operSvelte.makeRust();
-            this.opersSvelte.push(operSvelte);
-            this.opersRust.push(operRust);
+    constructor() {
+        this.opersRaw = [];
+        this.opersSvelte = [];
+        this.opersRust = [];
+        this.curInd = 0;
+        this.maxInd = 0;
+    }
 
-        }
+
+    async init(opers: OperationRaw[]) {
+        
         this.opersRaw = opers;
         this.curInd = 0;
-        this.maxInd = this.opersSvelte.length - 1;
+        this.maxInd = opers.length - 1;
+
+        for (const operRaw of opers) {
+            const operSvelte = await OperationSvelte.fromRaw(operRaw);
+            this.opersSvelte.push(operSvelte);
+        }
+
     }
 
     next() {
-        this.curInd = (this.curInd + 1) % this.maxInd;
+        const total = this.opersSvelte.length;
+        if (total === 0) return;
+        this.curInd = (this.curInd + 1) % total;
     }
 
     prev() {
-        this.curInd = (this.curInd - 1) % this.maxInd;
+        const total = this.opersSvelte.length;
+        if (total === 0) return;
+        // Безопасный переход назад для циклического массива в JS
+        this.curInd = (this.curInd - 1 + total) % total;
     }
 
     getContractInfo(contract: Contract) {

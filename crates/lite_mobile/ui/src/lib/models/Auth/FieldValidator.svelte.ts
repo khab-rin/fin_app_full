@@ -3,6 +3,8 @@ import type { SvelteValidator } from "$lib/models/rustModels/SvelteValidator";
 
 export class FieldValidator {
     _isValid = $state(false);
+
+    _russianName = $state("");
     
     private _value = $state(""); 
     
@@ -29,6 +31,11 @@ export class FieldValidator {
                 typeValue: this.typeValue,
                 value: this._value
             });
+
+            if (this._isValid && this.typeValue == 'DocType') {
+                this._value = await invoke<string>('cmd_get_doc_type_russ_name', {docType: this._value})
+            }
+
         } catch (err) {
             this._isValid = false;
             console.error("COMMAND cmd_validate_field FAILED, data = ", this.typeValue, this._value, err);

@@ -169,6 +169,11 @@ macro_rules! frozen_primitives {
     };
 }
 
+
+pub trait RussEnumName {
+    fn russian_enum_name(&self) -> String;
+}
+
 #[macro_export]
 macro_rules! impl_as_str {
     ($en_name:ident, { $($en_key:ident => $str_key:expr),* $(,)? }) => {
@@ -195,11 +200,12 @@ macro_rules! make_enum_frozen {
                 $(
                     #[serde(alias=$alias)]
                 )*
+                #[ts(rename = $r_name)]
                 $l_name,
             )*
         }
 
-        impl_as_str! {$name, { $($l_name => $r_name),* }}
+        $crate::impl_as_str! {$name, { $($l_name => $r_name),* }}
 
         impl std::str::FromStr for $name {
             type Err = $crate::err_models::implements::Status;
@@ -213,6 +219,14 @@ macro_rules! make_enum_frozen {
                         )*
                     )*
                     _ => Err($crate::err_models::implements::Status::ValidEnum)
+                }
+            }
+        }
+
+        impl $crate::primitives::frozen::macros::RussEnumName for $name {
+            fn russian_enum_name(&self) -> String {
+                match self {
+                    $(Self::$l_name => $r_name.to_string(),)*
                 }
             }
         }
