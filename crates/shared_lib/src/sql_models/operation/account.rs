@@ -5,8 +5,8 @@ use strum::{AsRefStr, Display, EnumString};
 #[derive(
     Debug,
     Clone,
-    PartialEq,
     Eq,
+    PartialEq,
     Hash,
     Serialize,
     Deserialize,
@@ -644,6 +644,7 @@ impl Account {
                 Account::ShortLoans,
                 Account::LongLoans,
                 Account::OtherPayables,
+                Account::SpecBankAcc
             ],
             Account::ForBankAcc => &[
                 Account::Customers,

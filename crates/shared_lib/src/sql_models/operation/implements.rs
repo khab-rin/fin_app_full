@@ -1,7 +1,4 @@
 use serde::{Deserialize, Serialize};
-use std::fmt;
-use std::str::FromStr;
-use std::convert::Infallible;
 
 use crate::{Status, make_enum_frozen};
 use crate::sql_models::operation::macros::ParseFromStrMapValue;
@@ -59,6 +56,7 @@ pub struct Operation {
 
     pub comp_id: BoxUuid,
     pub ctrpty_id: BoxUuid,
+
     pub contract_id: Option<BoxUuid>,
 
     pub debet: Account,
@@ -165,9 +163,9 @@ pub struct OperationDocument {
     pub doc_data: Date
 }
 
-pub fn make_oper_id(doc_num: &DocNum, doc_date: &Date, amount: &RubF, ctrpty: &Option<Company>) -> BoxUuid {
-    let text_id = if let Some(comp) = ctrpty {
-        format!("{}-{}-{}-{}", doc_num.as_ref(), doc_date.as_ref(), amount.as_ref(), comp.comp_id.as_ref())
+pub fn make_oper_id(doc_num: &DocNum, doc_date: &Date, amount: &RubF, ctrpty_id: &Option<BoxUuid>) -> BoxUuid {
+    let text_id = if let Some(id) = ctrpty_id {
+        format!("{}-{}-{}-{}", doc_num.as_ref(), doc_date.as_ref(), amount.as_ref(), id.as_ref())
     } else {
         format!("{}-{}-{}", doc_num.as_ref(), doc_date.as_ref(), amount.as_ref())
     };

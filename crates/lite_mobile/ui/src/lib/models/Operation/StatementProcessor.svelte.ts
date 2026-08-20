@@ -8,8 +8,9 @@ export class StateProcessor {
     opersRaw = $state<OperationRaw[]>([]);
     opersSvelte = $state<OperationSvelte[]>([]);
     opersRust = $state<(Operation | null)[]>([]);
-    curInd = $state(0); // делаем индексы реактивными, чтобы Svelte обновлял экран при переключении
+    curInd = $state(0); 
     maxInd = $state(0);
+    _unProcceed = $state(0);
 
 
     constructor() {
@@ -18,6 +19,7 @@ export class StateProcessor {
         this.opersRust = [];
         this.curInd = 0;
         this.maxInd = 0;
+        this._unProcceed = 0;
     }
 
 
@@ -26,10 +28,12 @@ export class StateProcessor {
         this.opersRaw = opers;
         this.curInd = 0;
         this.maxInd = opers.length - 1;
+        this._unProcceed = opers.length;
 
         for (const operRaw of opers) {
             const operSvelte = await OperationSvelte.fromRaw(operRaw);
             this.opersSvelte.push(operSvelte);
+            this.opersRust.push(null);
         }
 
     }
@@ -43,7 +47,6 @@ export class StateProcessor {
     prev() {
         const total = this.opersSvelte.length;
         if (total === 0) return;
-        // Безопасный переход назад для циклического массива в JS
         this.curInd = (this.curInd - 1 + total) % total;
     }
 
@@ -51,5 +54,13 @@ export class StateProcessor {
         const num = contract.contract_num;
         const d = contract.contract_date;
         return `Договор № ${num} от ${d}`;
+    }
+
+    get unProceed() {
+        return this._unProcceed
+    }
+
+    procceedToRust() {
+        
     }
 }

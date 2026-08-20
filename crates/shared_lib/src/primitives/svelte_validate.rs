@@ -326,12 +326,12 @@ impl SvelteValidator {
             SvelteValidator::PoaReqElemsFlag=> match value.parse::<PoaReqElemsFlag>() {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
-            SvelteValidator::Account => match serde_json::from_str::<Account>(value) {
+            SvelteValidator::Account => match value.parse::<Account>() {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
             },
             SvelteValidator::DocType => {
                 let clean = value.trim().to_lowercase();
-                match DocType::from_str(value) {
+                match DocType::from_str(&clean) {
                     Ok(DocType::Other) => Ok(false),
                     Ok(_) => Ok(true),
                     Err(_) => Ok(false)

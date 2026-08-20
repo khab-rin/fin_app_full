@@ -23,7 +23,7 @@ use crate::client::operation::statement_parser::comment::parse_comment;
 use crate::client::operation::statement_parser::make_operations::make_statement_operation_raw;
 use crate::client::sql_queries::companys::add::new_companys::add_companys_by_inn_cpp_acc;
 use crate::client::mchd::show_powers::check_access;
-use crate::client::sql_queries::operations::get::ext_ids_by_operations::get_ext_ids_by_ext_id;
+use crate::client::sql_queries::operations::get::exist_ids_by_operations::get_exist_ids_by_ids;
 
 
 pub async fn parse_statement(
@@ -194,8 +194,8 @@ pub async fn parse_statement(
             } 
         }
     }
-
-    let exist_ids = match get_ext_ids_by_ext_id(state, &operations).await {
+    
+    let exist_ids = match get_exist_ids_by_ids(state, &operations).await {
         Ok(ids) => ids,
         Err(err) => {
             err.process_err(err, "");
@@ -210,7 +210,6 @@ pub async fn parse_statement(
         }
     }
     
-
     let success_result = OperationStep::SuccessRaw  {
         
         text: OperationInfo::SuccessRaw,

@@ -5,17 +5,28 @@ import type { Account } from "../rustModels/Account";
 import type { DocType } from "../rustModels/DocType";
 import type {Company} from '$lib/models/rustModels/Company';
 import type { Contract } from "../rustModels/Contract";
+import type { OperationStep } from "../rustModels/OperationStep";
+import { invoke } from "@tauri-apps/api/core";
+import type { NewContrData } from "../rustModels/NewContrData";
 
 export class OperationSvelte {
+
+
+    private _isAccountsCompatible = $state(false);
+    _cntrPty: Company | null = $state(null);
+    _allPossContracts: Contract[] = $state([]);
+    _isConfirmed = $state(false);
+    _isDuplicate = $state(false);
+
+
     data = $state({
         operId: new FieldValidator("BoxUuid", ""),
         userId: new FieldValidator("BoxUuid", ""),
-        compId: new FieldValidator("BoxUuid", ""),
 
+        compId: new FieldValidator("BoxUuid", ""),
         ctrptyId: new FieldValidator("BoxUuid", ""),
         ctrptyName: new FieldValidator("CompanyName", ""),
 
-        allPossContracts: [] as Contract[],
         contractId: new FieldValidator("BoxUuid", ""),
         contractNum: new FieldValidator("DocNum", ""),
         contractDate: new FieldValidator("Date", ""),
@@ -33,39 +44,14 @@ export class OperationSvelte {
         isDel: false,
 
         entrDate: new FieldValidator("Date", ""),
-
-        isConfirmed: false
     })
-
-    
-
-    isValid = $derived(
-        this.data.operId.isValid &&
-        this.data.userId.isValid &&
-        this.data.compId.isValid &&
-
-        this.data.ctrptyId.isValid &&
-        this.data.ctrptyName.isValid &&
-
-        this.data.contractId.isValid &&
-        this.data.contractNum.isValid &&
-        this.data.contractDate.isValid &&
-
-        this.data.debet.isValid &&
-        this.data.credit.isValid &&
-        this.data.amount.isValid &&
-        this.data.operDate.isValid &&
-
-        this.data.docType.isValid &&
-        this.data.docNum.isValid &&
-        this.data.docDate.isValid &&
-        this.data.isConfirmed
-    );
 
     constructor() {}
 
     static async fromRaw(raw: OperationRaw): Promise<OperationSvelte> {
         const instance = new OperationSvelte();
+        instance._allPossContracts = raw.contract.contracts;
+        instance._cntrPty = raw.ctrpty;
         
         instance.data.operId.value = raw.oper_id;
         instance.data.userId.value = raw.user_id;
@@ -74,13 +60,14 @@ export class OperationSvelte {
         instance.data.ctrptyId.value = raw.ctrpty?.comp_id ?? "";
         instance.data.ctrptyName.value = raw.ctrpty?.metadata?.comp_name?.short_egrul_name ?? "";
 
-        instance.data.allPossContracts = raw.contract.contracts;
+        
         instance.data.contractId.value = raw.contract.current?.contract_id ?? "";
         instance.data.contractNum.value = raw.contract.current?.contract_num ?? "";
         instance.data.contractDate.value = raw.contract.current?.contract_date ?? "";
 
         instance.data.debet.value = raw.debet;
         instance.data.credit.value = raw.credit;
+        instance.compateAccounts();
         instance.data.amount.value = raw.amount;
         instance.data.operDate.value = raw.oper_date ?? "";
 
@@ -93,21 +80,85 @@ export class OperationSvelte {
         instance.data.isStorno = raw.is_storno;
         instance.data.isDel = raw.is_del;
         instance.data.entrDate.value = raw.entr_date;
-        instance.data.isConfirmed = false;
 
         return instance;
     }
+    
+    isValid = $derived(
+        this.data.operId.isValid &&
+        this.data.userId.isValid &&
 
+        this.data.compId.isValid &&
+        this.data.ctrptyId.isValid &&
 
-    refreshCtrpty(ctrpty?: Company) {
-        if (ctrpty) {
-            this.data.ctrptyId.value = ctrpty.comp_id;
-            this.data.ctrptyName.value = ctrpty.metadata.comp_name?.short_egrul_name ?? "";
-        }
+        this.data.contractId.isValid &&
+
+        this.data.debet.isValid &&
+        this.data.credit.isValid &&
+        this.data.amount.isValid &&
+        this.data.operDate.isValid &&
+
+        this.data.docType.isValid &&
+        this.data.docNum.isValid &&
+        this.data.docDate.isValid &&
+
+        this.data.entrDate.isValid
+    );
+
+    async refreshCtrpty(compInn: string, kpp: string) {
+        let data = {compInn: compInn, kpp: kpp};
+        const newCompany: Company | null = await invoke<Company>(
+            "cmd_get_comp_by_inn_kpp", 
+            data
+        );
+        this.data.ctrptyId.value = newCompany.comp_id;
+        this.data.ctrptyName.value = newCompany.metadata.comp_name?.short_egrul_name ?? "";
+
+        const contracts = await invoke<Contract[]>(
+            "cmd_get_contracts_by_ctrpty_id",
+            {ctrptyId: newCompany.comp_id}
+        );
+        this._allPossContracts = contracts;
+        this.data.contractId.value = "";
+        this.data.contractDate.value = "";
+        this.data.contractNum.value = "";
+        const [operId: BoxUuid, flag: Boolean] = ['1', false];
     }
 
-    refreshContracts(contracts: Contract[]) {
-        this.data.allPossContracts = contracts;
+    
+
+    async compateAccounts() {
+        try {
+            let leftAcc = this.data.debet.value;
+            let rigthAcc = this.data.credit.value;
+            this._isAccountsCompatible = await invoke<boolean>(
+                "cmd_is_accounts_compatible",
+                {leftAcc:leftAcc, rigthAcc: rigthAcc}
+            )
+        } catch(err) {
+            console.error("cmd_is_accounts_compatible FAILED, err = ", err);
+            this._isAccountsCompatible = false;
+        }
+        
+    }
+    
+    get isAccountsCompatible() {
+        return this._isAccountsCompatible
+    }
+
+
+
+    
+
+    async refreshContracts(data: NewContrData) {
+        const freshContracts: Contract[] = await invoke<Contract[]>(
+            "cmd_add_new_contract",
+            {data: data}
+        );
+        this._allPossContracts = freshContracts;
+        this.data.contractId.value = "";
+        this.data.contractDate.value = "";
+        this.data.contractNum.value = "";
     }
 
     refreshContract(contract: Contract) {
@@ -123,7 +174,8 @@ export class OperationSvelte {
         if (!num || !d || !id) {return "без договора"}
         return `Договор № ${num} от ${d}`;
     }
-    
+
+
 
     makeRust(): Operation | null {
         if (!this.isValid) {

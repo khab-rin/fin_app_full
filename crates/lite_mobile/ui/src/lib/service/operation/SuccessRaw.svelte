@@ -21,11 +21,15 @@
 	import type { Currency } from '$lib/models/rustModels/Currency';
 	import type { Contract } from '$lib/models/rustModels/Contract';
 
-    
-
     let processor = $state(new StateProcessor());
 
-
+    $effect(() => {
+        const op = processor.opersSvelte?.[processor.curInd];
+        if (op?.data) {
+            const _ = op.data.credit.value;
+            op.compateAccounts();
+        }
+    });
 
     let kpp = new FieldValidator("Kpp", "");
     let compInn  = new FieldValidator("CompInn", "");
@@ -39,14 +43,10 @@
     async function refreshCtrpty() {
         if (refreshCtrptyPushed) {return;}
         try {
-            refreshCtrptyPushed = true;
-            let data = {compInn: compInn.value, kpp: kpp.value};
-            const newCompany: Company | null = await invoke<Company>("cmd_get_comp_by_inn_kpp", data);
+            refreshCtrptyPushed = true; 
+            processor.opersSvelte[processor.curInd].refreshCtrpty(compInn.value, kpp.value);
             refreshCtrptyPushed = false;
             openCtrpty = false;
-            processor.opersSvelte[processor.curInd].refreshCtrpty(newCompany);
-            
-            
         } catch (err) {
             const next_step: OperationStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
             console.error("cmd_get_comp_by_inn_kpp FAILED, err = ",  err);
@@ -125,17 +125,11 @@
         }
 
         try {
-            const freshContracts: Contract[] = await invoke<Contract[]> (
-                "cmd_add_new_contract", {data: data}
-            )
+            processor.opersSvelte[processor.curInd].refreshContracts(data);
             isMakeContrPushed = false;
             isContrOpened = true;
             isNewContractOpened = false;
-            isSwitchContractOpened = true;
-            
-
-            processor.opersSvelte[processor.curInd].refreshContracts(freshContracts);
-            
+            isSwitchContractOpened = true;  
 
         } catch(err) {
             const next_step: OperationStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
@@ -170,305 +164,331 @@
 
 </script>
 
+{#if processor}
+    <p>Осталось обработать - {processor.unProceed} операций</p>
+{/if}
+
 {#if processor && processor.opersSvelte.length > 0}
-    <section class='input-section'>
 
-        <div class="input-group">
-            {#if openCtrpty}
-                <span class='input-field-span'>
-                    Инн организации
-                </span>
-                <input 
-                    class="input-field"
-                    type="text" 
-                    bind:value={compInn.value} 
-                    placeholder="10 | 12 цифр"
-                    class:input-error={!compInn.isValid}
-                />
-
-                <span class='input-field-span'>
-                    Кпп организации
-                </span>
-                <input 
-                    class="input-field"
-                    type="text" 
-                    bind:value={kpp.value} 
-                    placeholder="0 или 9 цифр"
-                    class:input-error={!kpp.isValid}
-                />
-
-                <button
-                    type='button'
-                    class='medium-button'
-                    disabled={!compInn.isValid || !kpp.isValid || refreshCtrptyPushed}
-                    onclick={refreshCtrpty}
-                >
-                    сменить контрагента
-                </button>
-            {/if}
-            
+    <div class="input-group">
+        {#if openCtrpty}
             <span class='input-field-span'>
-                Название организации
+                Инн организации
             </span>
+            <input 
+                class="input-field"
+                type="text" 
+                bind:value={compInn.value} 
+                placeholder="10 | 12 цифр"
+                class:input-error={!compInn.isValid}
+            />
 
-            <strong>{processor.opersSvelte[processor.curInd].data.ctrptyName.value}</strong>
-
-            <button 
-                class='medium-button'
-                type='button'
-                onclick={switchCtrpty}
-                >
-                Редактировать
-            </button>
-        </div>
-        
-        <div class='input-group'>
-            <span class='input-group-span'>
-                Информация о договоре
+            <span class='input-field-span'>
+                Кпп организации
             </span>
-            <strong>{processor.opersSvelte[processor.curInd].contractStr}</strong>
+            <input 
+                class="input-field"
+                type="text" 
+                bind:value={kpp.value} 
+                placeholder="0 или 9 цифр"
+                class:input-error={!kpp.isValid}
+            />
 
             <button
                 type='button'
                 class='medium-button'
-                onclick={openContract}
-                >
-                    Договор
+                disabled={!compInn.isValid || !kpp.isValid || refreshCtrptyPushed}
+                onclick={refreshCtrpty}
+            >
+                сменить контрагента
             </button>
+        {/if}
+        
+        <span class='input-field-span'>
+            Название организации контрагента
+        </span>
+        <input 
+            class="input-field"
+            type="text" 
+            bind:value={processor.opersSvelte[processor.curInd].data.ctrptyName.value}
+            disabled={true} 
+            class:input-error={!processor.opersSvelte[processor.curInd].data.ctrptyName.isValid}
+        />
 
-            {#if isContrOpened}
-                <section class='navi-button-section'>
-                    <button
-                        type='button'
-                        class='medium-button'
-                        onclick={openSwitchContract}
-                    >
-                        выбрать договор
-                    </button>
+        <button 
+            class='medium-button'
+            type='button'
+            onclick={switchCtrpty}
+            >
+            Контрагент
+        </button>
+    </div>
+    
+    <div class='input-group'>
+        <span class='input-group-span'>
+            Информация о договоре
+        </span>
 
-                    <button
+        <input 
+            class="input-field"
+            type="text" 
+            bind:value={processor.opersSvelte[processor.curInd].contractStr}
+            disabled={true} 
+        />
+    
+        <button
+            type='button'
+            class='medium-button'
+            onclick={openContract}
+            >
+                Договор
+        </button>
+
+        {#if isContrOpened}
+            <section class='navi-button-section'>
+                <button
+                    type='button'
+                    class='medium-button'
+                    onclick={openSwitchContract}
+                >
+                    выбрать договор
+                </button>
+
+                <button
+                    type='button'
+                    class='medium-button'
+                    onclick={openNewContract}
+                >
+                    добавить договор
+                </button>
+            </section>
+
+            {#if isSwitchContractOpened}
+                <section class='wide-button-section'>
+                    <span class='wide-button-span'>Выберите нужный договор</span>
+                    {#each processor.opersSvelte[processor.curInd]._allPossContracts as contract}
+                        <div class='wide-button-group'>
+                            <span class='wide-button-span'>{processor.getContractInfo(contract)}</span>
+                            <button
+                                type='button'
+                                class='wide-button'
+                                onclick={() => switchContract(contract)}
+                            >
+                                Выбрать договор
+                            </button>
+                        </div>
+                        
+                    {/each}
+
+
+                </section>
+            {/if}
+
+
+            {#if isNewContractOpened}
+                <section class="input-section">
+                    <span class='input-field-span'>Номер договора</span>
+                    <input 
+                        class="input-field"
+                        type="text" 
+                        bind:value={contractNum.value} 
+                        placeholder="строка до 50 знаков"
+                        class:input-error={!contractNum.isValid}
+                    />
+
+                    <span class='input-field-span'>Дата договора</span>
+                    <input 
+                        class="input-field"
+                        type="text" 
+                        bind:value={contractDate.value} 
+                        placeholder="дд.мм.гггг"
+                        class:input-error={!contractDate.isValid}
+                    />
+
+                    <span class='input-field-span'>Название договора</span>
+                    <input 
+                        class="input-field"
+                        type="text" 
+                        bind:value={contractTitle.value} 
+                        placeholder="строка до 50 знаков"
+                        class:input-error={!contractTitle.isValid}
+                    />
+
+                    <span class='input-field-span'>Дата начала</span>
+                    <input 
+                        class="input-field"
+                        type="text" 
+                        bind:value={contractStDate.value} 
+                        placeholder="дд.мм.гггг"
+                        class:input-error={!contractStDate.isValid}
+                    />
+
+                    <span class='input-field-span'>Дата завершения</span>
+                    <input 
+                        class="input-field"
+                        type="text" 
+                        bind:value={contractEndDate.value} 
+                        placeholder="дд.мм.гггг"
+                        class:input-error={!contractEndDate.isValid}
+                    />
+
+                    <span class='input-field-span'>Валюта договора</span>
+                    <input 
+                        class="input-field"
+                        type="text" 
+                        bind:value={contractCurrency.value} 
+                        placeholder="РУБ"
+                        class:input-error={!contractCurrency.isValid}
+                    />
+
+                    <span class='input-field-span'>Сумма договора</span>
+                    <input 
+                        class="input-field"
+                        type="text" 
+                        bind:value={contractTotAmnt.value} 
+                        placeholder="Сумма в валюте договора"
+                        class:input-error={!contractTotAmnt.isValid}
+                    />
+
+                    <span class='input-field-span'>Рассрочка в днях</span>
+                    <input 
+                        class="input-field"
+                        type="text" 
+                        bind:value={contractDefDays.value} 
+                        placeholder="количество дней"
+                        class:input-error={!contractDefDays.isValid}
+                    />
+
+                    <span class='input-field-span'>Описание</span>
+                    <input 
+                        class="input-field"
+                        type="text" 
+                        bind:value={contractDescr.value} 
+                        placeholder="строка до 50 знаков"
+                        class:input-error={!contractDescr.isValid}
+                    />
+
+                    <button class='medium-button'
                         type='button'
-                        class='medium-button'
-                        onclick={openNewContract}
+                        onclick={addNewContract}
+                        disabled={isMakeContrPushed || isContrValid}
                     >
-                        добавить договор
+                        Добавить договор
                     </button>
                 </section>
-
-                {#if isSwitchContractOpened}
-                    <section class='wide-button-section'>
-                        <span class='wide-button-span'>Выберите нужный договор</span>
-                        {#each processor.opersSvelte[processor.curInd].data.allPossContracts as contract}
-                            <div class='wide-button-group'>
-                                <span class='wide-button-span'>{processor.getContractInfo(contract)}</span>
-                                <button
-                                    type='button'
-                                    class='wide-button'
-                                    onclick={() => switchContract(contract)}
-                                >
-                                    Выбрать договор
-                                </button>
-                            </div>
-                            
-                        {/each}
-
-
-                    </section>
-                {/if}
-
-
-                {#if isNewContractOpened}
-                    <section class="input-section">
-                        <span class='input-field-span'>Номер договора</span>
-                        <input 
-                            class="input-field"
-                            type="text" 
-                            bind:value={contractNum.value} 
-                            placeholder="строка до 50 знаков"
-                            class:input-error={!contractNum.isValid}
-                        />
-
-                        <span class='input-field-span'>Дата договора</span>
-                        <input 
-                            class="input-field"
-                            type="text" 
-                            bind:value={contractDate.value} 
-                            placeholder="дд.мм.гггг"
-                            class:input-error={!contractDate.isValid}
-                        />
-
-                        <span class='input-field-span'>Название договора</span>
-                        <input 
-                            class="input-field"
-                            type="text" 
-                            bind:value={contractTitle.value} 
-                            placeholder="строка до 50 знаков"
-                            class:input-error={!contractTitle.isValid}
-                        />
-
-                        <span class='input-field-span'>Дата начала</span>
-                        <input 
-                            class="input-field"
-                            type="text" 
-                            bind:value={contractStDate.value} 
-                            placeholder="дд.мм.гггг"
-                            class:input-error={!contractStDate.isValid}
-                        />
-
-                        <span class='input-field-span'>Дата завершения</span>
-                        <input 
-                            class="input-field"
-                            type="text" 
-                            bind:value={contractEndDate.value} 
-                            placeholder="дд.мм.гггг"
-                            class:input-error={!contractEndDate.isValid}
-                        />
-
-                        <span class='input-field-span'>Валюта договора</span>
-                        <input 
-                            class="input-field"
-                            type="text" 
-                            bind:value={contractCurrency.value} 
-                            placeholder="РУБ"
-                            class:input-error={!contractCurrency.isValid}
-                        />
-
-                        <span class='input-field-span'>Сумма договора</span>
-                        <input 
-                            class="input-field"
-                            type="text" 
-                            bind:value={contractTotAmnt.value} 
-                            placeholder="Сумма в валюте договора"
-                            class:input-error={!contractTotAmnt.isValid}
-                        />
-
-                        <span class='input-field-span'>Рассрочка в днях</span>
-                        <input 
-                            class="input-field"
-                            type="text" 
-                            bind:value={contractDefDays.value} 
-                            placeholder="количество дней"
-                            class:input-error={!contractDefDays.isValid}
-                        />
-
-                        <span class='input-field-span'>Описание</span>
-                        <input 
-                            class="input-field"
-                            type="text" 
-                            bind:value={contractDescr.value} 
-                            placeholder="строка до 50 знаков"
-                            class:input-error={!contractDescr.isValid}
-                        />
-
-                        <button class='medium-button'
-                            type='button'
-                            onclick={addNewContract}
-                            disabled={isMakeContrPushed || isContrValid}
-                        >
-                            Добавить договор
-                        </button>
-                    </section>
-                {/if}
             {/if}
-        </div>
+        {/if}
+    </div>
 
-        <div class='input-group'>
-            <span class='input-field-span'>
-                Счет Дебет
-            </span>
-            <input 
-                class="input-field"
-                type="text" 
-                bind:value={processor.opersSvelte[processor.curInd].data.debet.value} 
-                disabled={true}
-                placeholder="Номер счета"
-                class:input-error={!processor.opersSvelte[processor.curInd].data.debet.isValid}
-            />
-        </div>
+    <div class='input-group'>
+        <span class='input-field-span'>
+            Счет Дебет
+        </span>
+        <input 
+            class="input-field"
+            type="text" 
+            bind:value={processor.opersSvelte[processor.curInd].data.debet.value} 
+            disabled={true}
+            placeholder="Номер счета"
+            class:input-error={!processor.opersSvelte[processor.curInd].data.debet.isValid}
+        />
+    </div>
 
-        <div class="input-group">
-            <span class='input-field-span'>
-                Счет Кредит
-            </span>
-            <input 
-                class="input-field"
-                type="text" 
-                bind:value={processor.opersSvelte[processor.curInd].data.credit.value} 
-                disabled={true}
-                placeholder="Номер счета"
-                class:input-error={!processor.opersSvelte[processor.curInd].data.credit.isValid}
-            />
-        </div>
+    <div class="input-group">
+        <span class='input-field-span'>
+            Счет Кредит
+        </span>
+        <input 
+            class="input-field"
+            type="text" 
+            bind:value={processor.opersSvelte[processor.curInd].data.credit.value} 
+            disabled={false}
+            placeholder="Номер счета"
+            class:input-error={!processor.opersSvelte[processor.curInd].data.credit.isValid ||
+                !processor.opersSvelte[processor.curInd].isAccountsCompatible
+            }
+        />
+    </div>
 
-        <div class="input-group">
-            <span class='input-field-span'>
-                Сумма операции
-            </span>
-            <input
-                class = 'input-field'
-                type='text'
-                bind:value={processor.opersSvelte[processor.curInd].data.amount.value}
-                disabled={false}
-                placeholder='xxx.xx'
-                class:input-error={!processor.opersSvelte[processor.curInd].data.amount.isValid}
-            />
-        </div>
+    <div class="input-group">
+        <span class='input-field-span'>
+            Сумма операции
+        </span>
+        <input
+            class = 'input-field'
+            type='text'
+            bind:value={processor.opersSvelte[processor.curInd].data.amount.value}
+            disabled={false}
+            placeholder='xxx.xx'
+            class:input-error={!processor.opersSvelte[processor.curInd].data.amount.isValid}
+        />
+    </div>
 
-        <div class="input-group">
-            <span class='input-field-span'>
-                Дата операции
-            </span>
-            <input
-                class = 'input-field'
-                type='text'
-                bind:value={processor.opersSvelte[processor.curInd].data.operDate.value}
-                disabled={false}
-                placeholder='xx.xx.xxxx'
-                class:input-error={!processor.opersSvelte[processor.curInd].data.operDate.isValid}
-            />
-        </div>
+    <div class="input-group">
+        <span class='input-field-span'>
+            Дата операции
+        </span>
+        <input
+            class = 'input-field'
+            type='text'
+            bind:value={processor.opersSvelte[processor.curInd].data.operDate.value}
+            disabled={true}
+            placeholder='xx.xx.xxxx'
+            class:input-error={!processor.opersSvelte[processor.curInd].data.operDate.isValid}
+        />
+    </div>
 
-        <div class="input-group">
-            <span class='input-field-span'>
-                Тип банковского документа
-            </span>
-            <input
-                class = 'input-field'
-                type='text'
-                bind:value={processor.opersSvelte[processor.curInd].data.docType.value}
-                disabled={true}
-                placeholder='xxx.xx'
-                class:input-error={!processor.opersSvelte[processor.curInd].data.docType.isValid}
-            />
-        </div>
+    <div class="input-group">
+        <span class='input-field-span'>
+            Тип банковского документа
+        </span>
+        <input
+            class = 'input-field'
+            type='text'
+            bind:value={processor.opersSvelte[processor.curInd].data.docType.value}
+            disabled={true}
+            class:input-error={!processor.opersSvelte[processor.curInd].data.docType.isValid}
+        />
+    </div>
 
-        <div class="input-group">
-            <span class='input-field-span'>
-                Номер банковского документа
-            </span>
-            <span class='input-field-span'>
-                {processor.opersSvelte[processor.curInd].data.docNum.value}
-            </span>
-        </div>
+    <div class="input-group">
+        <span class='input-field-span'>
+            Номер банковского документа
+        </span>
+        <input
+            class = 'input-field'
+            type='text'
+            bind:value={processor.opersSvelte[processor.curInd].data.docNum.value}
+            disabled={true}
+            class:input-error={!processor.opersSvelte[processor.curInd].data.docNum.isValid}
+        />
+    </div>
 
-        <div class="input-group">
-            <span class='input-field-span'>
-                Дата банковского документа
-            </span>
-            <span class='input-field-span'>
-                {processor.opersSvelte[processor.curInd].data.docDate.value}
-            </span>
-        </div>
+    <div class="input-group">
+        <span class='input-field-span'>
+            Дата банковского документа
+        </span>
+        <input
+            class = 'input-field'
+            type='text'
+            bind:value={processor.opersSvelte[processor.curInd].data.docDate.value}
+            disabled={true}
+            class:input-error={!processor.opersSvelte[processor.curInd].data.docDate.isValid}
+        />
+    </div>
 
-        <div class="input-group">
-            <span class='input-field-span'>
-                Дата составления операции
-            </span>
-            <span class='input-field-span'>
-                {processor.opersSvelte[processor.curInd].data.entrDate.value}
-            </span>
-        </div>
+    <div class="input-group">
+        <span class='input-field-span'>
+            Дата составления операции
+        </span>
+        <input
+            class = 'input-field'
+            type='text'
+            bind:value={processor.opersSvelte[processor.curInd].data.entrDate.value}
+            disabled={true}
+            class:input-error={!processor.opersSvelte[processor.curInd].data.entrDate.isValid}
+        />
+    </div>
 
-    </section>
 {/if}
 

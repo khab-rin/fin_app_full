@@ -121,7 +121,7 @@ pub async fn make_statement_pay_operation_raw(
     
     let amount = block_fields.statement_amount.clone();
 
-    let oper_date = block_fields.pay_date.clone();
+    let oper_date = block_fields.rec_date.clone();
 
     let doc_type = block_fields.doc_type.clone();
 
@@ -135,7 +135,9 @@ pub async fn make_statement_pay_operation_raw(
 
     let entr_date = Date::unchecked(chrono::Utc::now().naive_utc());
 
-    let oper_id = make_oper_id(&doc_num, &doc_date, &amount, &ctrpty_option);
+    let ctrpty_id_ref = &ctrpty_option.as_ref().map(|c| c.comp_id.clone());
+
+    let oper_id = make_oper_id(&doc_num, &doc_date, &amount, ctrpty_id_ref);
 
     let is_sync = Some(false);
 
@@ -240,7 +242,7 @@ pub async fn make_statement_rec_operation_raw(
     
     let amount = block_fields.statement_amount.clone();
 
-    let oper_date = block_fields.pay_date.clone();
+    let oper_date = block_fields.rec_date.clone();
 
     let doc_type = block_fields.doc_type.clone();
 
@@ -254,7 +256,9 @@ pub async fn make_statement_rec_operation_raw(
 
     let entr_date = Date::unchecked(chrono::Utc::now().naive_utc());
 
-    let oper_id = make_oper_id(&doc_num, &doc_date, &amount, &ctrpty_option);
+    let ctrpty_id_ref = &ctrpty_option.as_ref().map(|c| c.comp_id.clone());
+
+    let oper_id = make_oper_id(&doc_num, &doc_date, &amount, ctrpty_id_ref);
 
     let is_sync = Some(false);
 
@@ -334,7 +338,9 @@ pub async fn make_statement_home_operation_raw(
 
     let entr_date = Date::unchecked(chrono::Utc::now().naive_utc());
 
-    let oper_id = make_oper_id(&doc_num, &doc_date, &amount, &ctrpty_option);
+    let ctrpty_id_ref = &ctrpty_option.as_ref().map(|c| c.comp_id.clone());
+
+    let oper_id = make_oper_id(&doc_num, &doc_date, &amount, ctrpty_id_ref);
 
     let is_sync = Some(false);
 
