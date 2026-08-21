@@ -8,15 +8,43 @@ import type { Contract } from "../rustModels/Contract";
 import type { OperationStep } from "../rustModels/OperationStep";
 import { invoke } from "@tauri-apps/api/core";
 import type { NewContrData } from "../rustModels/NewContrData";
+import type { BoxUuid } from "../rustModels/BoxUuid";
 
 export class OperationSvelte {
 
-
+	private _isDuplicate = $state(false);
     private _isAccountsCompatible = $state(false);
-    _cntrPty: Company | null = $state(null);
-    _allPossContracts: Contract[] = $state([]);
-    _isConfirmed = $state(false);
-    _isDuplicate = $state(false);
+	private _isConfirmed = $state(false);
+	private _cntrPty = $state<Company | null>(null);
+    private _allPossContracts: Contract[] = [];
+
+	get isDuplicate() {
+		return this._isDuplicate;
+	}
+    
+	get isDuplicateStr() {
+		if (this._isDuplicate) {
+			return "Операция дубликат"
+		} else {
+			return "Новая операция"
+		}
+	}
+
+	get isAccountsCompatible() {
+		return this._isAccountsCompatible;
+	}
+
+	get allPossContracts() {
+		return this._allPossContracts;
+	}
+
+	get isConfirmed() {
+		return this._isConfirmed
+	}
+
+	get cntrPty() {
+		return this._cntrPty;
+	}
 
 
     data = $state({
@@ -46,45 +74,7 @@ export class OperationSvelte {
         entrDate: new FieldValidator("Date", ""),
     })
 
-    constructor() {}
-
-    static async fromRaw(raw: OperationRaw): Promise<OperationSvelte> {
-        const instance = new OperationSvelte();
-        instance._allPossContracts = raw.contract.contracts;
-        instance._cntrPty = raw.ctrpty;
-        
-        instance.data.operId.value = raw.oper_id;
-        instance.data.userId.value = raw.user_id;
-        instance.data.compId.value = raw.comp_id;
-
-        instance.data.ctrptyId.value = raw.ctrpty?.comp_id ?? "";
-        instance.data.ctrptyName.value = raw.ctrpty?.metadata?.comp_name?.short_egrul_name ?? "";
-
-        
-        instance.data.contractId.value = raw.contract.current?.contract_id ?? "";
-        instance.data.contractNum.value = raw.contract.current?.contract_num ?? "";
-        instance.data.contractDate.value = raw.contract.current?.contract_date ?? "";
-
-        instance.data.debet.value = raw.debet;
-        instance.data.credit.value = raw.credit;
-        instance.compateAccounts();
-        instance.data.amount.value = raw.amount;
-        instance.data.operDate.value = raw.oper_date ?? "";
-
-        instance.data.docType.value = raw.doc_type;
-        await instance.data.docType.validate();
-
-        instance.data.docNum.value = raw.doc_num;
-        instance.data.docDate.value = raw.doc_date;
-
-        instance.data.isStorno = raw.is_storno;
-        instance.data.isDel = raw.is_del;
-        instance.data.entrDate.value = raw.entr_date;
-
-        return instance;
-    }
-    
-    isValid = $derived(
+	isValid = $derived(
         this.data.operId.isValid &&
         this.data.userId.isValid &&
 
@@ -102,35 +92,104 @@ export class OperationSvelte {
         this.data.docNum.isValid &&
         this.data.docDate.isValid &&
 
-        this.data.entrDate.isValid
+        this.data.entrDate.isValid &&
+		this._cntrPty != null
     );
 
-    async refreshCtrpty(compInn: string, kpp: string) {
-        let data = {compInn: compInn, kpp: kpp};
-        const newCompany: Company | null = await invoke<Company>(
-            "cmd_get_comp_by_inn_kpp", 
-            data
-        );
-        this.data.ctrptyId.value = newCompany.comp_id;
-        this.data.ctrptyName.value = newCompany.metadata.comp_name?.short_egrul_name ?? "";
+    constructor() {
+		$effect(() => {
+			const left = this.data.debet.value;
+			const rigth = this.data.credit.value;
+			this.compateAccounts(left, rigth);
+		})
 
-        const contracts = await invoke<Contract[]>(
-            "cmd_get_contracts_by_ctrpty_id",
-            {ctrptyId: newCompany.comp_id}
-        );
-        this._allPossContracts = contracts;
-        this.data.contractId.value = "";
-        this.data.contractDate.value = "";
-        this.data.contractNum.value = "";
-        const [operId: BoxUuid, flag: Boolean] = ['1', false];
+		$effect(() => {
+			[
+				this.data.docNum.value, 
+				this.data.operDate.value, 
+				this.data.amount.value, 
+				this._cntrPty?.comp_id
+			];
+			this.cmdIsOperationExist()
+		});
+	}
+
+	fromRaw(raw: OperationRaw) {
+
+        this._allPossContracts = raw.contract.contracts;
+        this._cntrPty = raw.ctrpty;
+        
+        this.data.operId.value = raw.oper_id;
+        this.data.userId.value = raw.user_id;
+        this.data.compId.value = raw.comp_id;
+
+        this.data.ctrptyId.value = raw.ctrpty?.comp_id ?? "";
+        this.data.ctrptyName.value = raw.ctrpty?.metadata?.comp_name?.short_egrul_name ?? "";
+
+        
+        this.data.contractId.value = raw.contract.current?.contract_id ?? "";
+        this.data.contractNum.value = raw.contract.current?.contract_num ?? "";
+        this.data.contractDate.value = raw.contract.current?.contract_date ?? "";
+
+        this.data.debet.value = raw.debet;
+        this.data.credit.value = raw.credit;
+        this.data.amount.value = raw.amount;
+        this.data.operDate.value = raw.oper_date ?? "";
+
+        this.data.docType.value = raw.doc_type;
+        this.data.docNum.value = raw.doc_num;
+        this.data.docDate.value = raw.doc_date;
+
+        this.data.isStorno = raw.is_storno;
+        this.data.isDel = raw.is_del;
+        this.data.entrDate.value = raw.entr_date;
     }
 
-    
+	async cmdIsOperationExist() {
+		if (
+			!this.data.docNum.isValid ||
+			!this.data.operDate.isValid ||
+			!this.data.amount.isValid ||
+			this._cntrPty == null
+		) {
+			this._isDuplicate = false;
+			this.data.operId.value = "";
+			return;
+		}
 
-    async compateAccounts() {
+		const docNum = this.data.docNum.isValid ? this.data.docNum.value : null;
+		const operDate = this.data.operDate.isValid ? this.data.operDate.value : null;
+		const amount = this.data.amount.isValid ? this.data.amount.value : null;
+		const ctrptyId = this._cntrPty?.comp_id ?? null;
+
+		let data = {
+			docNum: docNum,
+			operDate: operDate,
+			amount: amount,
+			ctrptyId: ctrptyId
+		};
+
+		try {
+			let [operId, flag] = await invoke<[BoxUuid, boolean]>(
+			"cmd_is_operation_exist",
+			data
+			); 
+			this.data.operId.value = operId;
+			this._isDuplicate = flag;
+		} catch(err) {
+			this.data.operId.value = "";
+			this._isDuplicate = false;
+		}
+		
+	}
+
+	async compateAccounts(leftAcc: string, rigthAcc: string) {
+		if (!this.data.debet.isValid || !this.data.credit.isValid) {
+			this._isAccountsCompatible = false;
+			return;
+		}
+
         try {
-            let leftAcc = this.data.debet.value;
-            let rigthAcc = this.data.credit.value;
             this._isAccountsCompatible = await invoke<boolean>(
                 "cmd_is_accounts_compatible",
                 {leftAcc:leftAcc, rigthAcc: rigthAcc}
@@ -139,18 +198,37 @@ export class OperationSvelte {
             console.error("cmd_is_accounts_compatible FAILED, err = ", err);
             this._isAccountsCompatible = false;
         }
+    }
+
+
+    async refreshCtrpty(compInn: string, kpp: string) {
+        let data = {compInn: compInn, kpp: kpp};
+        const newCompany: Company | null = await invoke<Company>(
+            "cmd_get_comp_by_inn_kpp", 
+            data
+        );
+		this._cntrPty = newCompany;
+        this.data.ctrptyId.value = newCompany?.comp_id ?? "";
+        this.data.ctrptyName.value = newCompany?.metadata.comp_name?.short_egrul_name ?? "";
+		
+		if (newCompany) {
+			const contracts = await invoke<Contract[]>(
+				"cmd_get_contracts_by_ctrpty_id",
+				{ctrptyId: newCompany?.comp_id ?? ""}
+			);
+			this._allPossContracts = contracts;
+		}
         
+        this.data.contractId.value = "";
+        this.data.contractDate.value = "";
+        this.data.contractNum.value = "";
+
     }
-    
-    get isAccountsCompatible() {
-        return this._isAccountsCompatible
-    }
-
-
-
-    
 
     async refreshContracts(data: NewContrData) {
+		if (data.ctrpty_id == "") {
+			return
+		}
         const freshContracts: Contract[] = await invoke<Contract[]>(
             "cmd_add_new_contract",
             {data: data}
@@ -175,13 +253,10 @@ export class OperationSvelte {
         return `Договор № ${num} от ${d}`;
     }
 
-
-
     makeRust(): Operation | null {
         if (!this.isValid) {
             return null;
         }
-
         return { 
             oper_id: this.data.operId.value,
             user_id: this.data.userId.value, 
@@ -200,5 +275,4 @@ export class OperationSvelte {
             entr_date: this.data.entrDate.value, 
         };
     }
-
 }

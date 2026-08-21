@@ -163,12 +163,26 @@ pub struct OperationDocument {
     pub doc_data: Date
 }
 
-pub fn make_oper_id(doc_num: &DocNum, doc_date: &Date, amount: &RubF, ctrpty_id: &Option<BoxUuid>) -> BoxUuid {
-    let text_id = if let Some(id) = ctrpty_id {
-        format!("{}-{}-{}-{}", doc_num.as_ref(), doc_date.as_ref(), amount.as_ref(), id.as_ref())
-    } else {
-        format!("{}-{}-{}", doc_num.as_ref(), doc_date.as_ref(), amount.as_ref())
-    };
+pub fn make_oper_id(
+    doc_num: &Option<DocNum>, 
+    oper_date: &Option<Date>, 
+    amount: &Option<RubF>, 
+    ctrpty_id: &Option<BoxUuid>
+) -> BoxUuid {
+    
+    let num_str = doc_num.as_ref().map_or("".to_string(), |v| v.to_string());
+    let date_str = oper_date.as_ref().map_or("".to_string(), |v| v.to_string());
+    let amount_str = amount.as_ref().map_or("".to_string(), |v| v.to_string());
+    let ctrpty_str = ctrpty_id.as_ref().map_or("".to_string(), |v| v.to_string());
+
+    // 2. Теперь макрос format! спокойно принимает эти строки, так как они "живы"
+    let text_id = format!(
+        "{}-{}-{}-{}",
+        num_str,
+        date_str,
+        amount_str,
+        ctrpty_str
+    );
 
     BoxUuid::unchecked(uuid::Uuid::new_v5(&uuid::Uuid::NAMESPACE_OID, text_id.as_bytes()))
 }

@@ -48,9 +48,9 @@ pub fn cmd_is_accounts_compatible(
 #[tauri::command]
 pub async fn cmd_is_operation_exist(
     state: tauri::State<'_, ClientState>,
-    doc_num: DocNum, 
-    doc_date: Date, 
-    amount: RubF, 
+    doc_num: Option<DocNum>, 
+    doc_date: Option<Date>, 
+    amount: Option<RubF>, 
     ctrpty_id: Option<BoxUuid>
 ) -> Result<(BoxUuid, bool), Status> {
 

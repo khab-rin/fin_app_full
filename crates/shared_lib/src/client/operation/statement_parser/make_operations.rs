@@ -137,7 +137,7 @@ pub async fn make_statement_pay_operation_raw(
 
     let ctrpty_id_ref = &ctrpty_option.as_ref().map(|c| c.comp_id.clone());
 
-    let oper_id = make_oper_id(&doc_num, &doc_date, &amount, ctrpty_id_ref);
+    let oper_id = make_oper_id(&Some(doc_num.clone()), &oper_date, &Some(amount.clone()), ctrpty_id_ref);
 
     let is_sync = Some(false);
 
@@ -258,7 +258,7 @@ pub async fn make_statement_rec_operation_raw(
 
     let ctrpty_id_ref = &ctrpty_option.as_ref().map(|c| c.comp_id.clone());
 
-    let oper_id = make_oper_id(&doc_num, &doc_date, &amount, ctrpty_id_ref);
+    let oper_id = make_oper_id(&Some(doc_num.clone()), &oper_date, &Some(amount.clone()), ctrpty_id_ref);
 
     let is_sync = Some(false);
 
@@ -340,7 +340,7 @@ pub async fn make_statement_home_operation_raw(
 
     let ctrpty_id_ref = &ctrpty_option.as_ref().map(|c| c.comp_id.clone());
 
-    let oper_id = make_oper_id(&doc_num, &doc_date, &amount, ctrpty_id_ref);
+    let oper_id = make_oper_id(&Some(doc_num.clone()), &oper_date, &Some(amount.clone()), ctrpty_id_ref);
 
     let is_sync = Some(false);
 

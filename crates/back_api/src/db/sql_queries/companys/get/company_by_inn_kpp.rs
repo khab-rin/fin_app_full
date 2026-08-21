@@ -14,8 +14,8 @@ pub(crate) async fn get_company_by_inn_kpp(
     let dto_option = sqlx::query_file_as!(
         CompanyDto,
         "src/db/sql_queries/companys/get/company_by_inn_kpp.sql",
-        inn.as_ref(),
-        kpp.as_ref()
+        inn,
+        kpp
     ).fetch_optional(&state.pool_fast)
     .await
     .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?; 
