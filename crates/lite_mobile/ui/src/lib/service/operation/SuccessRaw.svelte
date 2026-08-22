@@ -1,4 +1,121 @@
+
+
 <script lang='ts'>
+	import {onMount} from 'svelte';
+	import {operStep} from '$lib/models/Operation/OperationManager.svelte';
+	import { OperationType } from '$lib/models/Operation/OperationValues';
+	import { StateProcessor } from '$lib/models/Operation/StatementProcessor.svelte';
+	import type { OperationStep } from '$lib/models/rustModels/OperationStep';
+
+	let processor = new StateProcessor;
+
+
+	onMount(async() => {
+		if (OperationType.SuccessRaw in operStep.step) {
+			await processor.init(operStep.step.SuccessRaw.operations)
+		} else {
+			const next_step: OperationStep = {
+				TryLater: {
+					text: 'Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение'
+				}
+			};
+			console.error('System Logic Error, wrong current step');
+			operStep.add(next_step);
+
+		}
+	})
+</script>
+
+{#if processor}
+	{processor.unProcceed}
+{/if}
+
+{#if processor && processor.curOper}
+	<div class='input-group'>
+        <span class='input-field-span'>
+            Счет Дебет
+        </span>
+        <input
+            class = 'input-field'
+            type='text'
+            bind:value={processor.curOper.data.debet.value}
+            disabled={false}
+            placeholder='Номер счета'
+            class:input-error={!processor.curOper.data.debet.isValid}
+        />
+    </div>
+
+	<div class='input-group'>
+        <span class='input-field-span'>
+            Счет Кредит
+        </span>
+        <input
+            class = 'input-field'
+            type='text'
+            bind:value={processor.curOper.data.credit.value}
+            disabled={false}
+            placeholder='Номер счета'
+            class:input-error={!processor.curOper.data.credit.isValid ||
+				!processor.curOper.isCompare
+			}
+        />
+    </div>
+
+	<div class='input-group'>
+        <span class='input-field-span'>
+            Сумма операции
+        </span>
+        <input
+            class = 'input-field'
+            type='text'
+            bind:value={processor.curOper.data.amount.value}
+            disabled={false}
+            placeholder='xxx.xx'
+            class:input-error={!processor.curOper.data.amount.isValid}
+        />
+    </div>
+
+	<div class='input-group'>
+        <span class='input-field-span'>
+            Дата операции
+        </span>
+        <input
+            class = 'input-field'
+            type='text'
+            bind:value={processor.curOper.data.operDate.value}
+            disabled={false}
+            placeholder='xx.xx.xxxx'
+            class:input-error={!processor.curOper.data.operDate.isValid}
+        />
+    </div>
+
+	<div class='wide-button-group'>
+		<span class='wide-button-group-span'>
+			Обработать без возможности дальнейшего редактирования
+		</span>
+		<button
+			type='button'
+			class='wide-button'
+			onclick={() => processor.makeRust()}
+			disabled={!processor.curOper.isValid}
+		>
+			Обработать
+		</button>
+	</div>
+{/if}
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <script lang='ts'>
 
     import { info } from '@tauri-apps/plugin-log';
 
@@ -21,9 +138,8 @@
 	import type { Currency } from '$lib/models/rustModels/Currency';
 	import type { Contract } from '$lib/models/rustModels/Contract';
 
-    let processor = new StateProcessor();
+    let processor = $state(new StateProcessor());
 
-	let curOper = $derived(processor.curOper);
 
     let kpp = new FieldValidator('Kpp', '');
     let compInn  = new FieldValidator('CompInn', '');
@@ -162,7 +278,7 @@
     <p>Осталось обработать - {processor.unProceed} операций</p>
 {/if}
 
-{#if curOper}
+{#if processor.curOper}
 
     <div class='input-group'>
         {#if openCtrpty}
@@ -204,9 +320,9 @@
         <input 
             class='input-field'
             type='text' 
-            bind:value={curOper.data.ctrptyName.value}
+            bind:value={processor.curOper.data.ctrptyName.value}
             disabled={true} 
-            class:input-error={!curOper.data.ctrptyName.isValid}
+            class:input-error={!processor.curOper.data.ctrptyName.isValid}
         />
 
         <button 
@@ -226,7 +342,7 @@
         <input 
             class='input-field'
             type='text' 
-            bind:value={curOper.contractStr}
+            bind:value={processor.curOper.contractStr}
             disabled={true} 
         />
     
@@ -260,7 +376,7 @@
             {#if isSwitchContractOpened}
                 <section class='wide-button-section'>
                     <span class='wide-button-span'>Выберите нужный договор</span>
-                    {#each curOper.allPossContracts as contract}
+                    {#each processor.curOper.allPossContracts as contract}
                         <div class='wide-button-group'>
                             <span class='wide-button-span'>{processor.getContractInfo(contract)}</span>
                             <button
@@ -381,10 +497,10 @@
         <input 
             class='input-field'
             type='text' 
-            bind:value={curOper.data.debet.value} 
+            bind:value={processor.curOper.data.debet.value} 
             disabled={true}
             placeholder='Номер счета'
-            class:input-error={!curOper.data.debet.isValid}
+            class:input-error={!processor.curOper.data.debet.isValid}
         />
     </div>
 
@@ -395,11 +511,11 @@
         <input 
             class='input-field'
             type='text' 
-            bind:value={curOper.data.credit.value} 
+            bind:value={processor.curOper.data.credit.value} 
             disabled={false}
             placeholder='Номер счета'
-            class:input-error={!curOper.data.credit.isValid ||
-                !curOper.isAccountsCompatible
+            class:input-error={!processor.curOper.data.credit.isValid ||
+                !processor.curOper.isAccountsCompatible
             }
         />
     </div>
@@ -411,10 +527,10 @@
         <input
             class = 'input-field'
             type='text'
-            bind:value={curOper.data.amount.value}
+            bind:value={processor.curOper.data.amount.value}
             disabled={false}
             placeholder='xxx.xx'
-            class:input-error={!curOper.data.amount.isValid}
+            class:input-error={!processor.curOper.data.amount.isValid}
         />
     </div>
 
@@ -425,10 +541,10 @@
         <input
             class = 'input-field'
             type='text'
-            bind:value={curOper.data.operDate.value}
+            bind:value={processor.curOper.data.operDate.value}
             disabled={true}
             placeholder='xx.xx.xxxx'
-            class:input-error={!curOper.data.operDate.isValid}
+            class:input-error={!processor.curOper.data.operDate.isValid}
         />
     </div>
 
@@ -439,9 +555,9 @@
         <input
             class = 'input-field'
             type='text'
-            bind:value={curOper.data.docType.value}
+            bind:value={processor.curOper.data.docType.value}
             disabled={true}
-            class:input-error={!curOper.data.docType.isValid}
+            class:input-error={!processor.curOper.data.docType.isValid}
         />
     </div>
 
@@ -452,9 +568,9 @@
         <input
             class = 'input-field'
             type='text'
-            bind:value={curOper.data.docNum.value}
+            bind:value={processor.curOper.data.docNum.value}
             disabled={true}
-            class:input-error={!curOper.data.docNum.isValid}
+            class:input-error={!processor.curOper.data.docNum.isValid}
         />
     </div>
 
@@ -465,9 +581,9 @@
         <input
             class = 'input-field'
             type='text'
-            bind:value={curOper.data.docDate.value}
+            bind:value={processor.curOper.data.docDate.value}
             disabled={true}
-            class:input-error={!curOper.data.docDate.isValid}
+            class:input-error={!processor.curOper.data.docDate.isValid}
         />
     </div>
 
@@ -478,9 +594,9 @@
         <input
             class = 'input-field'
             type='text'
-            bind:value={curOper.data.entrDate.value}
+            bind:value={processor.curOper.data.entrDate.value}
             disabled={true}
-            class:input-error={!curOper.data.entrDate.isValid}
+            class:input-error={!processor.curOper.data.entrDate.isValid}
         />
     </div>
 
@@ -491,9 +607,9 @@
         <input
             class = 'input-field'
             type='text'
-            bind:value={curOper.isDuplicate}
+            bind:value={processor.curOper.isDuplicateStr}
             disabled={true}
-            class:input-error={!curOper.data.entrDate.isValid}
+            class:input-error={!processor.curOper.data.entrDate.isValid}
         />
     </div>
 
@@ -505,6 +621,7 @@
 			type='button'
 			class='wide-button'
 			onclick={processor.makeRust}
+			disabled={!processor.curOper.isValid}
 		>
 			Обработать
 		</button>
@@ -515,4 +632,4 @@
 
 
 {/if}
-
+ -->

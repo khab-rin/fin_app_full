@@ -22,8 +22,13 @@ export class FieldValidator {
 
     set value(newValue: string) {
         this._value = newValue;
-        this.validate();
+		this.validate();
     }
+
+	async async_set(newValue: string) {
+		this._value = newValue;
+		await this.validate();
+	}
 
     async validate() {
         try {

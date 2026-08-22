@@ -63,5 +63,13 @@ pub async fn cmd_is_operation_exist(
         }
 }
 
+#[tauri::command]
+pub fn cmd_get_acc_info(
+	state: tauri::State<'_, ClientState>,
+	account: Account
+) -> Result<String, Status> {
+	Ok(account.info())
+}
+
 
 

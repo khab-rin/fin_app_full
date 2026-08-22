@@ -358,91 +358,91 @@ pub enum Account {
 }
 
 impl Account {
-    pub const fn info(self) -> AccInfo {
-        match self {
-            // Раздел I. Внеоборотные активы
-            Account::PPE => AccInfo { code: "01", name: "Основные средства" },
-            Account::Depreciation => AccInfo { code: "02", name: "Aмортизация основных средств" },
-            Account::InvestmentProperty => AccInfo { code: "03", name: "Доходные вложения в материальные ценности" },
-            Account::Intangibles => AccInfo { code: "04", name: "Нематериальные активы" },
-            Account::IntangAmort => AccInfo { code: "05", name: "Амортизация нематериальных активов" },
-            Account::RnD => AccInfo { code: "06", name: "Расходы на научно-исследовательские, опытно-конструкторские и технологические работы" },
-            Account::InstallEquipment => AccInfo { code: "07", name: "Оборудование к установке" },
-            Account::CAPEX => AccInfo { code: "08", name: "Вложения во внеоборотные активы" },
-            Account::TaxAssets => AccInfo { code: "09", name: "Отложенные налоговые активы" },
+    pub fn info(self) -> String {
+		match self {
+			// Раздел I. Внеоборотные активы
+			Account::PPE => format!("счет {} - {}", "01", "Основные средства"),
+			Account::Depreciation => format!("счет {} - {}", "02", "Амортизация основных средств"),
+			Account::InvestmentProperty => format!("счет {} - {}", "03", "Доходные вложения в материальные ценности"),
+			Account::Intangibles => format!("счет {} - {}", "04", "Нематериальные активы"),
+			Account::IntangAmort => format!("счет {} - {}", "05", "Амортизация нематериальных активов"),
+			Account::RnD => format!("счет {} - {}", "06", "Расходы на научно-исследовательские, опытно-конструкторские и технологические работы"),
+			Account::InstallEquipment => format!("счет {} - {}", "07", "Оборудование к установке"),
+			Account::CAPEX => format!("счет {} - {}", "08", "Вложения во внеоборотные активы"),
+			Account::TaxAssets => format!("счет {} - {}", "09", "Отложенные налоговые активы"),
 
-            // Раздел II. Производственные запасы
-            Account::Materials => AccInfo { code: "10", name: "Материалы" },
-            Account::Animals => AccInfo { code: "11", name: "Животные на выращивании и откорме" },
-            Account::InventoryReserve => AccInfo { code: "14", name: "Резервы под снижение стоимости материальных ценностей" },
-            Account::MaterialPurchases => AccInfo { code: "15", name: "Заготовление и приобретение материальных ценностей" },
-            Account::MaterialVariances => AccInfo { code: "16", name: "Отклонение в стоимости материальных ценностей" },
-            Account::InputVAT => AccInfo { code: "19", name: "Налог на добавленную стоимость по приобретенным ценностям" },
+			// Раздел II. Производственные запасы
+			Account::Materials => format!("счет {} - {}", "10", "Материалы"),
+			Account::Animals => format!("счет {} - {}", "11", "Животные на выращивании и откорме"),
+			Account::InventoryReserve => format!("счет {} - {}", "14", "Резервы под снижение стоимости материальных ценностей"),
+			Account::MaterialPurchases => format!("счет {} - {}", "15", "Заготовление и приобретение материальных ценностей"),
+			Account::MaterialVariances => format!("счет {} - {}", "16", "Отклонение в стоимости материальных ценностей"),
+			Account::InputVAT => format!("счет {} - {}", "19", "Налог на добавленную стоимость по приобретенным ценностям"),
 
-            // Раздел III. Затраты на производство
-            Account::MainProduction => AccInfo { code: "20", name: "Основное производство" },
-            Account::SemiFinished => AccInfo { code: "21", name: "Полуфабрикаты собственного производства" },
-            Account::SupportServices => AccInfo { code: "23", name: "Вспомогательные производства" },
-            Account::FactoryOverhead => AccInfo { code: "25", name: "Общепроизводственные расходы" },
-            Account::GeneralOverhead => AccInfo { code: "26", name: "Общехозяйственные расходы" },
-            Account::ProductionDefects => AccInfo { code: "28", name: "Брак в производстве" },
-            Account::SocialFacilities => AccInfo { code: "29", name: "Обслуживающие производства и хозяйства" },
+			// Раздел III. Затраты на производство
+			Account::MainProduction => format!("счет {} - {}", "20", "Основное производство"),
+			Account::SemiFinished => format!("счет {} - {}", "21", "Полуфабрикаты собственного производства"),
+			Account::SupportServices => format!("счет {} - {}", "23", "Вспомогательные производства"),
+			Account::FactoryOverhead => format!("счет {} - {}", "25", "Общепроизводственные расходы"),
+			Account::GeneralOverhead => format!("счет {} - {}", "26", "Общехозяйственные расходы"),
+			Account::ProductionDefects => format!("счет {} - {}", "28", "Брак в производстве"),
+			Account::SocialFacilities => format!("счет {} - {}", "29", "Обслуживающие производства и хозяйства"),
 
-            // Раздел IV. Готовая продукция и товары
-            Account::Products => AccInfo { code: "40", name: "Выпуск продукции (работ, услуг)" },
-            Account::Goods => AccInfo { code: "41", name: "Товары" },
-            Account::TradingMargin => AccInfo { code: "42", name: "Торговая наценка" },
-            Account::FinishedGoods => AccInfo { code: "43", name: "Готовая продукция" },
-            Account::SellingExpenses => AccInfo { code: "44", name: "Расходы на продажу" },
-            Account::ShippedGoods => AccInfo { code: "45", name: "Товары отгруженные" },
-            Account::CompletedContractStages => AccInfo { code: "46", name: "Выполненные этапы по незавершенным работам" },
+			// Раздел IV. Готовая продукция и товары
+			Account::Products => format!("счет {} - {}", "40", "Выпуск продукции (работ, услуг)"),
+			Account::Goods => format!("счет {} - {}", "41", "Товары"),
+			Account::TradingMargin => format!("счет {} - {}", "42", "Торговая наценка"),
+			Account::FinishedGoods => format!("счет {} - {}", "43", "Готовая продукция"),
+			Account::SellingExpenses => format!("счет {} - {}", "44", "Расходы на продажу"),
+			Account::ShippedGoods => format!("счет {} - {}", "45", "Товары отгруженные"),
+			Account::CompletedContractStages => format!("счет {} - {}", "46", "Выполненные этапы по незавершенным работам"),
 
-            // Раздел V. Денежные средства
-            Account::Cash => AccInfo { code: "50", name: "Касса" },
-            Account::CashInHand => AccInfo { code: "50.01", name: "Касса организации" },
-            Account::OperatingCash => AccInfo { code: "50.02", name: "Операционная касса" },
-            Account::MonetaryDocuments => AccInfo { code: "50.03", name: "Денежные документы" },
-            Account::BankAcc => AccInfo { code: "51", name: "Расчетные счета" },
-            Account::ForBankAcc => AccInfo { code: "52", name: "Валютные счета" },
-            Account::SpecBankAcc => AccInfo { code: "55", name: "Специальные счета в банках" },
-            Account::TransfersInTransit => AccInfo { code: "57", name: "Переводы в пути" },
-            Account::FinancialInvestments => AccInfo { code: "58", name: "Финансовые вложения" },
-            Account::InvestmentReserve => AccInfo { code: "59", name: "Резервы под обесценение финансовых вложений" },
+			// Раздел V. Денежные средства
+			Account::Cash => format!("счет {} - {}", "50", "Касса"),
+			Account::CashInHand => format!("счет {} - {}", "50.01", "Касса организации"),
+			Account::OperatingCash => format!("счет {} - {}", "50.02", "Операционная касса"),
+			Account::MonetaryDocuments => format!("счет {} - {}", "50.03", "Денежные документы"),
+			Account::BankAcc => format!("счет {} - {}", "51", "Расчетные счета"),
+			Account::ForBankAcc => format!("счет {} - {}", "52", "Валютные счета"),
+			Account::SpecBankAcc => format!("счет {} - {}", "55", "Специальные счета в банках"),
+			Account::TransfersInTransit => format!("счет {} - {}", "57", "Переводы в пути"),
+			Account::FinancialInvestments => format!("счет {} - {}", "58", "Финансовые вложения"),
+			Account::InvestmentReserve => format!("счет {} - {}", "59", "Резервы под обесценение финансовых вложений"),
 
-            // Раздел VI. Расчеты
-            Account::Vendors => AccInfo { code: "60", name: "Расчеты с поставщиками и подрядчиками" },
-            Account::Customers => AccInfo { code: "62", name: "Расчеты с покупателями и заказчиками" },
-            Account::BadDebtReserve => AccInfo { code: "63", name: "Резервы по сомнительным долгам" },
-            Account::ShortLoans => AccInfo { code: "66", name: "Расчеты по краткосрочным кредитам и займам" },
-            Account::LongLoans => AccInfo { code: "67", name: "Расчеты по долгосрочным кредитам и займам" },
-            Account::Taxes => AccInfo { code: "68", name: "Расчеты по налогам и сборам" },
-            Account::Social => AccInfo { code: "69", name: "Расчеты по социальному страхованию и обеспечению" },
-            Account::Payroll => AccInfo { code: "70", name: "Расчеты с персоналом по оплате труда" },
-            Account::Advances => AccInfo { code: "71", name: "Расчеты с подотчетными лицами" },
-            Account::OtherPayrollTransactions => AccInfo { code: "73", name: "Расчеты с персоналом по прочим операциям" },
-            Account::OwnerSettlements => AccInfo { code: "75", name: "Расчеты с учредителями" },
-            Account::OtherPayables => AccInfo { code: "76", name: "Расчеты с разными дебиторами и кредиторами" },
-            Account::DeferredTaxLiabilities => AccInfo { code: "77", name: "Отложенные налоговые обязательства" },
-            Account::InternalSettlements => AccInfo { code: "79", name: "Внутрихозяйственные расчеты" },
+			// Раздел VI. Расчеты
+			Account::Vendors => format!("счет {} - {}", "60", "Расчеты с поставщиками и подрядчиками"),
+			Account::Customers => format!("счет {} - {}", "62", "Расчеты с покупателями и заказчиками"),
+			Account::BadDebtReserve => format!("счет {} - {}", "63", "Резервы по сомнительным долгам"),
+			Account::ShortLoans => format!("счет {} - {}", "66", "Расчеты по краткосрочным кредитам и займам"),
+			Account::LongLoans => format!("счет {} - {}", "67", "Расчеты по долгосрочным кредитам и займам"),
+			Account::Taxes => format!("счет {} - {}", "68", "Расчеты по налогам и сборам"),
+			Account::Social => format!("счет {} - {}", "69", "Расчеты по социальному страхованию и обеспечению"),
+			Account::Payroll => format!("счет {} - {}", "70", "Расчеты с персоналом по оплате труда"),
+			Account::Advances => format!("счет {} - {}", "71", "Расчеты с подотчетными лицами"),
+			Account::OtherPayrollTransactions => format!("счет {} - {}", "73", "Расчеты с персоналом по прочим операциям"),
+			Account::OwnerSettlements => format!("счет {} - {}", "75", "Расчеты с учредителями"),
+			Account::OtherPayables => format!("счет {} - {}", "76", "Расчеты с разными дебиторами и кредиторами"),
+			Account::DeferredTaxLiabilities => format!("счет {} - {}", "77", "Отложенные налоговые обязательства"),
+			Account::InternalSettlements => format!("счет {} - {}", "79", "Внутрихозяйственные расчеты"),
 
-            // Раздел VII. Капитал
-            Account::EquityCapital => AccInfo { code: "80", name: "Уставный капитал" },
-            Account::TreasuryStock => AccInfo { code: "81", name: "Собственные доли (акции)" },
-            Account::ReserveCapital => AccInfo { code: "82", name: "Резервный капитал" },
-            Account::AdditionalCapital => AccInfo { code: "83", name: "Добавочный капитал" },
-            Account::RetainedProfit => AccInfo { code: "84", name: "Нераспределенная прибыль (непокрытый убыток)" },
-            Account::TargetedFinancing => AccInfo { code: "86", name: "Целевое финансирование" },
+			// Раздел VII. Капитал
+			Account::EquityCapital => format!("счет {} - {}", "80", "Уставный капитал"),
+			Account::TreasuryStock => format!("счет {} - {}", "81", "Собственные доли (акции)"),
+			Account::ReserveCapital => format!("счет {} - {}", "82", "Резервный капитал"),
+			Account::AdditionalCapital => format!("счет {} - {}", "83", "Добавочный капитал"),
+			Account::RetainedProfit => format!("счет {} - {}", "84", "Нераспределенная прибыль (непокрытый убыток)"),
+			Account::TargetedFinancing => format!("счет {} - {}", "86", "Целевое финансирование"),
 
-            // Раздел VIII. Финансовые результаты
-            Account::Revenue => AccInfo { code: "90", name: "Продажи" },
-            Account::OtherIncome => AccInfo { code: "91", name: "Прочие доходы и расходы" },
-            Account::ShortagesAndLosses => AccInfo { code: "94", name: "Недостачи и потери от порчи ценностей" },
-            Account::Provisions => AccInfo { code: "96", name: "Резервы предстоящих расходов" },
-            Account::DeferredExpenses => AccInfo { code: "97", name: "Расходы будущих периодов" },
-            Account::DeferredIncome => AccInfo { code: "98", name: "Доходы будущих периодов" },
-            Account::FinancialResults => AccInfo { code: "99", name: "Прибыли и убытки" },
-        }
-    }
+			// Раздел VIII. Финансовые результаты
+			Account::Revenue => format!("счет {} - {}", "90", "Продажи"),
+			Account::OtherIncome => format!("счет {} - {}", "91", "Прочие доходы и расходы"),
+			Account::ShortagesAndLosses => format!("счет {} - {}", "94", "Недостачи и потери от порчи ценностей"),
+			Account::Provisions => format!("счет {} - {}", "96", "Резервы предстоящих расходов"),
+			Account::DeferredExpenses => format!("счет {} - {}", "97", "Расходы будущих периодов"),
+			Account::DeferredIncome => format!("счет {} - {}", "98", "Доходы будущих периодов"),
+			Account::FinancialResults => format!("счет {} - {}", "99", "Прибыли и убытки"),
+		}
+	}
 
     pub const fn get_correspondents(&self) -> &'static [Account] {
         match self {
