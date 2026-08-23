@@ -50,6 +50,7 @@ pub fn run_lib() {
             commands::mchd::cmd_lend_mchd,
             commands::mchd::cmd_make_xml_doc_files,
             commands::mchd::cmd_show_powers,
+			commands::operation::cmd_get_acc_info,
             commands::operation::cmd_get_doc_type_russ_name,
             commands::operation::cmd_load_bank_statement,
             commands::operation::cmd_is_accounts_compatible,

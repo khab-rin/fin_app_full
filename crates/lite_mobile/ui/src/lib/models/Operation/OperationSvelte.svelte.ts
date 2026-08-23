@@ -5,10 +5,12 @@ import type { Account } from "../rustModels/Account";
 import type { Operation } from "../rustModels/Operation";
 import type { OperationRaw } from "../rustModels/OperationRaw";
 import { invoke } from "@tauri-apps/api/core";
+import type { Company } from "../rustModels/Company";
 
 export class OperationSvelte {
 	
 	data = $state({
+		ctrPtyName: new FieldValidator('CompanyName', '');
 		debet: new FieldValidator('Account', ''),
 		credit: new FieldValidator('Account', ''),
 		amount: new FieldValidator('RubF', ''),
@@ -37,66 +39,21 @@ export class OperationSvelte {
 	private _isCompare = $state<boolean>(false);
 	get isCompare() {return this._isCompare}
 
-	private _debetStr = "";
+	private _debetStr = $state<string>('');
 	get debetStr() {return this._debetStr;}
 
-	private _creditStr = "";
+	private _creditStr = $state<string>('');
 	get creditStr() {return this._creditStr};
 
 
+	private _ctrPty: Company | null = null;
 
-	constructor() {
-		$effect(() => {
-			let leftAcc = this.data.debet.value;
-			let rigthAcc = this.data.credit.value; 
-			let isCurrent = true;
-			this.cmdCompareAccounts(leftAcc, rigthAcc, () => isCurrent);
-			return () => { isCurrent = false;};
-		});
-
-		$effect(() => {
-			let isCurrent = true;
-			const f = (result: string) => {if (isCurrent) this._debetStr = result;};
-			if (!this.data.debet.isValid) {f(""); return;}
-			const account = this.data.debet.value;
-			this.cmdGetAccStr(account, f);
-			return () => {isCurrent = false};
-		});
-
-		$effect(() => {
-
-		});
-
-	}
-
-	
-	async cmdCompareAccounts(
-		leftAcc: string, 
-		rigthAcc: string,
-		checkCurrent: () => boolean
-	) {
-		if (!this.data.debet.isValid || !this.data.credit.isValid) {
-			this._isCompare = false;
-			return;
-		}
-		try {
-			const res: boolean = await invoke<boolean>(
-				'cmd_is_accounts_compatible',
-				{leftAcc:leftAcc, rigthAcc: rigthAcc}
-			);
-			if (checkCurrent()) {
-				this._isCompare = res;
-			}
-		} catch(err) {
-			if (checkCurrent()) {
-				this._isCompare = false;
-			}
-			console.error("cmd_is_accounts_compatible FAILED, err = ", err);
-		}
-	}
 
 	async fromRaw(raw: OperationRaw) {
+		this._ctrPty = raw.ctrpty;
+
 		await Promise.all([
+			this.data.ctrPtyName.async_set(raw.ctrpty?.metadata.comp_name?.short_egrul_name ?? ''),
 			this.data.debet.async_set(raw.debet),
 			this.data.credit.async_set(raw.credit),
 			this.data.amount.async_set(raw.amount),
@@ -105,7 +62,59 @@ export class OperationSvelte {
 		]);
 	}
 
-	
+	constructor() {
+		$effect(() => {
+			const leftAcc = this.data.debet.value;
+			const rigthAcc = this.data.credit.value; 
+			let isCurrent = true;
+
+			const f1 = (result: boolean) => {if (isCurrent) this._isCompare = result;};
+			const f2 = (result: string) => {if (isCurrent) this._debetStr = result};
+			const f3 = (result: string) => {if (isCurrent) this._creditStr = result;};
+
+			let pr = [];
+
+			if (this.data.debet.isValid && this.data.credit.isValid) {
+				pr.push(this.cmdCompareAccounts(leftAcc, rigthAcc, f1));
+			} else {
+				f1(false);
+			}
+
+			if (this.data.debet.isValid) {
+				pr.push(this.cmdGetAccStr(leftAcc, f2));
+			} else {
+				f2('');
+			}
+
+			if (this.data.credit.isValid) {
+				pr.push(this.cmdGetAccStr(rigthAcc, f3));
+			} else {
+				f3('')
+			}
+
+			Promise.all(pr);
+
+			return () => { isCurrent = false;};
+		});
+
+	}
+
+	async cmdCompareAccounts(
+		leftAcc: string, 
+		rigthAcc: string,
+		callback: (res: boolean) => void
+	) {
+		try {
+			let res: boolean = await invoke<boolean>(
+				'cmd_is_accounts_compatible',
+				{leftAcc:leftAcc, rigthAcc: rigthAcc}
+			);
+			callback(res);
+		} catch(err) {
+			console.error("cmd_is_accounts_compatible FAILED, err = ", err);
+			callback(false);
+		}
+	}
 
 	async cmdGetAccStr(account: string, callback: (res: string)=> void) {
 		try {
@@ -119,6 +128,17 @@ export class OperationSvelte {
 			callback("");
 		}
 	}
+
+	async cmdChangeCtrPty(compInn: string, kpp: string) {
+		let data = {compInn: compInn, kpp: kpp}
+		const newCompany = await invoke<Company|null> (
+			'cmd_get_comp_by_inn_kpp', data
+		);
+		this._ctrPty = newCompany;
+
+	}
+
+	
 
 	makeRust(): Operation | null {
 		if (!this.isValid || this.isDuplicate ) {

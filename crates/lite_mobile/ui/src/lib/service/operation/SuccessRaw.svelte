@@ -6,8 +6,20 @@
 	import { OperationType } from '$lib/models/Operation/OperationValues';
 	import { StateProcessor } from '$lib/models/Operation/StatementProcessor.svelte';
 	import type { OperationStep } from '$lib/models/rustModels/OperationStep';
+	import { FieldValidator } from '$lib/models/Auth/FieldValidator.svelte';
 
 	let processor = new StateProcessor;
+
+	let openCtrpty = $state(false);
+	let compInn = new FieldValidator('CompInn', '');
+	let kpp = new FieldValidator('Kpp', '');
+	let changeCtrptyPushed = $state(false);
+
+	async function changeCtrpty() {
+		if (changeCtrptyPushed) {return;}
+		changeCtrptyPushed = true;
+
+	}
 
 
 	onMount(async() => {
@@ -27,13 +39,51 @@
 </script>
 
 {#if processor}
-	{processor.unProcceed}
+	колечество необработанных операций {processor.unProcceed}
 {/if}
 
 {#if processor && processor.curOper}
+	<div class='input-field-group'>
+		{#if openCtrpty}
+			<span class='input-field-group'>
+				Инн орназизации
+			</span>
+			<input
+				class='input-group'
+				type='text'
+				placeholder='10 | 12 цифр'
+				bind:value={compInn.value}
+				class:input-error={!compInn.isValid}
+
+			/>
+
+			<span class='input-field-group'>
+				Кпп орназизации
+			</span>
+			<input
+				class='input-group'
+				type='text'
+				placeholder='10 | 12 цифр'
+				bind:value={kpp.value}
+				class:input-error={!kpp.isValid}
+
+			/>
+
+			<button
+				type='button'
+				class='wide-button'
+				disabled={!compInn.isValid || !kpp.isValid}
+			>
+				Сменить контрагента
+			</button>
+
+		{/if}
+	</div>
+
+
 	<div class='input-group'>
         <span class='input-field-span'>
-            Счет Дебет
+            Дебет {processor.curOper.debetStr}
         </span>
         <input
             class = 'input-field'
@@ -47,7 +97,7 @@
 
 	<div class='input-group'>
         <span class='input-field-span'>
-            Счет Кредит
+            Кредит {processor.curOper.creditStr}
         </span>
         <input
             class = 'input-field'
