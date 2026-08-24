@@ -634,6 +634,7 @@ impl Account {
                 Account::OtherPayrollTransactions,
             ],
             Account::BankAcc => &[
+				Account::BankAcc,
                 Account::Customers,
                 Account::Cash,
                 Account::CashInHand,

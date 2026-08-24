@@ -54,6 +54,8 @@ pub async fn cmd_is_operation_exist(
     ctrpty_id: Option<BoxUuid>
 ) -> Result<(BoxUuid, bool), Status> {
 
+	log::info!("cmd_is_operation_exist run");
+
     let check_oper_id = make_oper_id(&doc_num, &doc_date, &amount, &ctrpty_id);
 
     match get_exist_id_by_id(&state, &check_oper_id).await

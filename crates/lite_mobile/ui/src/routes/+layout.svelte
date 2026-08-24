@@ -16,9 +16,9 @@
 	function handlePointerOutside(event: PointerEvent) {
 		if (
 			pageManager.settingsOnOff && // Если меню открыто
-			menuRef && // И меню уже отрендерилось в DOM
-			!menuRef.contains(event.target as Node) && // И тап был НЕ по самому меню
-			!(event.target as HTMLElement).closest('.param-button') // И тап был НЕ по кнопке шестеренки
+			menuRef &&
+			!menuRef.contains(event.target as Node) &&
+			!(event.target as HTMLElement).closest('.param-button') 
 		) {
 			pageManager.settingsOnOff = false; // Закрываем меню
 		}
