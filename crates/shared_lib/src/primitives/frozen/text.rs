@@ -184,7 +184,7 @@ frozen_primitives!(
     BoxUuid,
     init_boxuuid,
     uuid::Uuid,
-    "Фиас_код_адреса",
+    "код Uuid",
     default_fmt);
 
 frozen_primitives!(

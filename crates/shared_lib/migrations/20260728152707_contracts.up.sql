@@ -18,12 +18,12 @@ CREATE TABLE IF NOT EXISTS contracts (
 
     payment_deferral_days INTEGER NOT NULL DEFAULT 0,
 
-    is_active INTEGER NOT NULL DEFAULT 1,
+    is_active BOOLEAN NOT NULL DEFAULT true,
     descrip TEXT NOT NULL DEFAULT '',
     
     entr_date TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
 
-    is_del INTEGER NOT NULL DEFAULT 0
+    is_del BOOLEAN NOT NULL DEFAULT false
 );
 
 CREATE INDEX IF NOT EXISTS idx_contracts_comp_id ON contracts(comp_id);

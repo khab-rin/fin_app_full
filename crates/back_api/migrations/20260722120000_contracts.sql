@@ -18,11 +18,11 @@ CREATE TABLE IF NOT EXISTS contracts (
 
     payment_deferral_days INT NOT NULL DEFAULT 0,
 
-    is_active INT NOT NULL DEFAULT 1,
+    is_active BOOLEAN NOT NULL DEFAULT true,
     descrip TEXT NOT NULL DEFAULT '',
     
     entr_date DATE NOT NULL DEFAULT CURRENT_DATE,
 
-    is_del INT NOT NULL DEFAULT 0
+    is_del BOOLEAN NOT NULL DEFAULT false
 
 );

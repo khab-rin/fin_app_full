@@ -7,7 +7,6 @@
     import type {OperationStep} from '$lib/models/rustModels/OperationStep';
     import type {RasBicAcc} from '$lib/models/rustModels/RasBicAcc';
 	import { operStep } from '$lib/models/Operation/OperationManager.svelte';
-	import { OperationType } from '$lib/models/Operation/OperationValues';
 
     let path = $state('');
     let selectedBankAcc = $state<RasBicAcc | null>(null);
@@ -29,6 +28,14 @@
         path === '' ||
         selectedBankAcc === null
     );
+	
+	function bankAccStr(bankAcc: RasBicAcc | null) {
+		if (bankAcc == null) {
+			return "Счет не выбран"
+		} else {
+			return `бик ${bankAcc.bic}, счет ${bankAcc.ras_acc}`
+		}
+	}
 
     let dialogRef = $state<HTMLDialogElement | null>(null);
 
@@ -181,11 +188,7 @@
     >
 
         <span class="wide-button-span">
-             - {selectedBankAcc ? "Текущий выбор" : "Нажмите для просмотра списка"}
-        </span>
-
-        <span class="wide-button-span">
-            {selectedBankAcc || "Выбрать счет для загрузки"} >
+        	{bankAccStr(selectedBankAcc)}
         </span>
     </button>
 </div>
@@ -212,7 +215,7 @@
                                 onclick={() => selectAcc(acc)}
                             >
                                 <span class="wide-button-span">
-                                    Счет: {acc.ras_acc} (БИК: {acc.bic})
+                                    {bankAccStr(acc)}
                                 </span>
                             </button>
                         </div>

@@ -295,16 +295,12 @@ pub(crate) fn init_phone_from_str(val: &str) -> Result<String, Status> {
     Ok(digits)
 }
 
-pub(crate) fn init_boxuuid<T: ToString>(val: T) -> Result<uuid::Uuid, Status> 
-{
+pub(crate) fn init_boxuuid<T: ToString>(val: T) -> Result<uuid::Uuid, Status> {
     let s = val.to_string();
     let trimmed = s.trim();
-    if trimmed.is_empty() {
-        Ok(uuid::Uuid::new_v4())
-    } else {
-        uuid::Uuid::parse_str(trimmed)
-            .map_err(|_| Status::ValidUuid)
-    }
+
+    uuid::Uuid::parse_str(trimmed)
+        .map_err(|_| Status::ValidUuid)
 }
 
 pub(crate) fn init_fio(val: &str) -> Result<String, Status> {

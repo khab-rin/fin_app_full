@@ -1,7 +1,7 @@
 
 
 use shared_lib::primitives::frozen::text::{BoxUuid, DocNum, RubF, Date};
-use shared_lib::sql_models::operation::implements::{DocType, make_oper_id};
+use shared_lib::sql_models::operation::implements::{DocType, make_oper_id, Operation};
 use shared_lib::{ClientState, ProcessError, Status};
 use shared_lib::primitives::composite::implements::RasBicAcc;
 use shared_lib::sql_models::operation::service::OperationStep;
@@ -73,5 +73,15 @@ pub fn cmd_get_acc_info(
 	Ok(account.info())
 }
 
+#[tauri::command]
+pub fn cmd_process_operations(
+	state: tauri::State<'_, ClientState>,
+	option_operations: Vec<Option<Operation>>
+) -> Result<(), Status> {
+	let operations: Vec<Operation> = option_operations.into_iter().flatten().collect();
+
+
+	Ok(())
+}
 
 
