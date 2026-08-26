@@ -1,5 +1,7 @@
 use crate::{ClientState, Status, ProcessError};
 use crate::sql_models::operation::implements::Operation;
+use crate::service::api_routes::implements::ApiRoutes;
+use crate::client::back_api::post_query::post_query_back_api;
 
 pub async fn add_new_operations(
 	state: &ClientState,
@@ -7,6 +9,15 @@ pub async fn add_new_operations(
 ) -> Result<(), Status> {
 	let session = state.get_session().await
 		.map_err(|err| err.process_err(err, ""))?;
+
+	
+	post_query_back_api(
+		state, 
+		state.config.get_sql_long(), 
+		ApiRoutes::SqlOperationsAddMany, 
+		&operations).await
+		.map_err(|err| err.process_err(err, ""))?;
+
 
 	let mut tx = session.local_db.begin().await
 		.map_err(|err| err.process_err(Status::SqLitePoolErr, ""))?;
@@ -35,5 +46,5 @@ pub async fn add_new_operations(
 	}
 
 
-	Err(Status::Unknown)
+	Ok(())
 }

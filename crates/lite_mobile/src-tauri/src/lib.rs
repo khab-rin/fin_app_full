@@ -7,7 +7,6 @@ use tauri::Manager;
 
 use shared_lib::service::auth_service::client_state::*;
 
-
 pub fn run_lib() {
 
     let app = tauri::Builder::default()
@@ -70,6 +69,7 @@ pub fn run_lib() {
             app_handle: app.handle().clone(),
             session: tokio::sync::Mutex::new(None),
         };
+
         app.manage(state);
 
         app.run(|_app_handle, _event| {});

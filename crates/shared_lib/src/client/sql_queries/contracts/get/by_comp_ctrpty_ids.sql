@@ -19,11 +19,11 @@ SELECT
 
     payment_deferral_days AS "payment_deferral_days: Integ",
 
-    is_active AS "is_active: Integ",
+    is_active AS "is_active: bool",
     descrip AS "descrip: String",
     
     entr_date AS "entr_date: Date",
 
-    is_del AS "is_del: Integ"
+    is_del AS "is_del: bool"
 FROM contracts
 WHERE comp_id = $1 AND ctrpty_id = $2

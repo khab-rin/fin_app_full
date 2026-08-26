@@ -2,6 +2,7 @@ use std::time::Duration;
 use std::str::FromStr;
 use std::sync::{OnceLock, Arc};
 
+
 use serde::{Serialize, Deserialize};
 use reqwest::header::{CONTENT_TYPE, ACCEPT, HeaderMap};
 use tauri::Manager;
@@ -14,6 +15,7 @@ use crate::{Status, ProcessError};
 use crate::make_header;
 use crate::service::auth_service::general::*;
 use crate::service::auth_service::implements::SessionUserToken;
+use crate::client::sql_queries::null_elems::make_null_postgress_elements;
 
 
 
@@ -243,6 +245,9 @@ pub(crate) async fn init_session(
         local_db: pool,
         token: user_data.token.clone(),
     });
+
+	make_null_postgress_elements(&session).await
+		.map_err(|err| err.process_err(err, ""))?;
 
     let mut session_ref = state.session.lock().await;
     *session_ref = Some(session);

@@ -1,0 +1,33 @@
+INSERT INTO operations(
+	oper_id,
+    user_id,
+    comp_id,
+    ctrpty_id,
+    contract_id,
+    debet,
+    credit,
+    amount,
+    oper_date,
+    doc_type,
+    doc_num,
+    doc_date,
+    is_storno,
+    is_del,
+    entr_date
+) SELECT * FROM UNNEST(
+	$1::uuid[], 
+    $2::uuid[], 
+    $3::uuid[],
+    $4::uuid[],
+   	$5::_uuid,
+    $6::text[],
+	$7::text[], 
+    $8::NUMERIC[], 
+    $9::DATE[],
+    $10::text[],
+    $11::text[],
+    $12::DATE[],
+	$13::BOOLEAN[], 
+    $14::BOOLEAN[], 
+    $15::DATE[]
+) ON CONFLICT(oper_id) DO NOTHING

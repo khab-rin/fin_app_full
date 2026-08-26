@@ -22,7 +22,7 @@ pub(crate) async fn add_contract(
         Contract,
         "src/db/sql_queries/contracts/add/new_contr.sql",
         contract.contract_id.as_ref(),
-        &contract.user_id.as_ref(),
+        contract.user_id.as_ref(),
         contract.comp_id.as_ref(),
         contract.ctrpty_id.as_ref(),
         contract.contract_num.as_ref(),
@@ -33,10 +33,10 @@ pub(crate) async fn add_contract(
         contract.currency.as_str(),
         contract.total_amount.as_ref(),
         contract.payment_deferral_days.as_ref(),
-        contract.is_active.as_ref(),
+        &contract.is_active,
         contract.descrip.as_str(),
         contract.entr_date.as_ref(),
-        contract.is_del.as_ref()
+        &contract.is_del
     ).fetch_one(&state.pool_fast).await
     .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;    
 

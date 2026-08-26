@@ -5,44 +5,69 @@ edition="2021"
 
 [dependencies]
 shared_lib = { workspace = true, features = ['server'] }
+
+argon2 = { workspace = true }
+
 axum = { workspace = true }
+
+base64 = "0.22.1"
+
+blake3 = { workspace = true }
+
+directories = { workspace = true }
+
+chrono = { workspace = true }
+
+dotenvy = { workspace = true }
+
+futures = { workspace = true }
+
+home = "0.5.12"
+
+password-hash = { workspace = true }
+
+quick-xml = { workspace = true }
+
+rand = { workspace = true }
+
+rust_decimal = { workspace = true, features = ["db-postgres"] }
+
+regex = { workspace = true }
+
+reqwest = { workspace = true, features = ["json", "rustls", "query", "cookies", "form"] }
+reqwest-middleware = { workspace = true, features = ["json", "query"]  }
+reqwest-retry = { workspace = true }
+
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+sqlx = { workspace = true, features = ["postgres", "rust_decimal"] }
+
+tokio = { workspace = true }
+
+toml = { workspace = true }
+
+tower-http = { workspace = true, features = ["trace"] }
 
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 tracing-appender = { workspace = true }
 
-tokio = { workspace = true }
-futures = { workspace = true }
-
-sqlx = { workspace = true, features = ["postgres", "rust_decimal"] }
-
-serde = { workspace = true }
-serde_json = { workspace = true }
-
-quick-xml = { workspace = true }
-
-dotenvy = { workspace = true }
-
 uuid = { workspace = true, features = ["v5"] }
-chrono = { workspace = true }
 
-toml = { workspace = true }
 
-reqwest = { workspace = true, features = ["json", "rustls", "query", "cookies", "form"] }
-tower-http = { workspace = true, features = ["trace"] }
-reqwest-middleware = { workspace = true, features = ["json", "query"]  }
-reqwest-retry = { workspace = true }
 
-argon2 = { workspace = true }
-password-hash = { workspace = true }
-rand = { workspace = true }
-blake3 = { workspace = true }
 
-regex = { workspace = true }
-base64 = "0.22.1"
-directories = { workspace = true }
-home = "0.5.12"
-tauri-plugin-log.workspace = true
+
+
+
+
+
+
+
+
+
+
 
 
 

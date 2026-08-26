@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use shared_lib::{Status, ProcessError};
 use shared_lib::sql_models::company::implements::{Company, CompanyDto};
 use shared_lib::primitives::frozen::text::{BoxUuid, CompInn, Kpp, CompStatus, CompType, DateTime};
@@ -35,6 +33,7 @@ pub(crate) async fn add_company(
     let company_dto = sqlx::query_file_as!(
             CompanyDto,
             "src/db/sql_queries/companys/add/company.sql",
+			company.comp_id.as_ref(),
             company.comp_inn.as_ref(),
             company.kpp.as_ref(),
             company.comp_type.as_str(),

@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS operations (
 
     comp_id UUID NOT NULL REFERENCES companys(comp_id),
     ctrpty_id UUID NOT NULL REFERENCES companys(comp_id),
-    contract_id UUID REFERENCES contracts(contract_id),
+    contract_id UUID NOT NULL REFERENCES contracts(contract_id),
 
     debet VARCHAR(10) NOT NULL,
     credit VARCHAR(10) NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS operations (
     is_storno BOOLEAN NOT NULL DEFAULT false,
     is_del BOOLEAN NOT NULL DEFAULT false,
 
-    entr_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+    entr_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
 CREATE INDEX IF NOT EXISTS idx_operations_comp_date ON operations(comp_id, oper_date);

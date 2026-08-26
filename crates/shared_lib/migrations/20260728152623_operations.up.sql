@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS operations (
     comp_id TEXT NOT NULL REFERENCES companys(comp_id),
     ctrpty_id TEXT NOT NULL REFERENCES companys(comp_id),
 
-    contract_id TEXT REFERENCES contracts(contract_id),
+    contract_id TEXT NOT NULL REFERENCES contracts(contract_id),
 
     debet TEXT NOT NULL,
     credit TEXT NOT NULL,

@@ -57,7 +57,7 @@ pub struct Operation {
     pub comp_id: BoxUuid,
     pub ctrpty_id: BoxUuid,
 
-    pub contract_id: Option<BoxUuid>,
+    pub contract_id: BoxUuid,
 
     pub debet: Account,
     pub credit: Account,
@@ -71,7 +71,7 @@ pub struct Operation {
     pub is_storno: bool,
     pub is_del: bool,
 
-    pub entr_date: DateTime,
+    pub entr_date: Date,
 }
 
 

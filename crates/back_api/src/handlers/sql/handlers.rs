@@ -45,5 +45,12 @@ pub async fn sql_add_new_contract_handler(
     let contr = add_contract(&state, data).await?;
 
     Ok(Json(contr))
+}
 
+pub async fn sql_operations_add_many_handler(
+	State(state): State<Arc<BackApiState>>,
+	Json(data): Json<Contract>
+) -> Result<(), Status> {
+
+	Ok(())
 }

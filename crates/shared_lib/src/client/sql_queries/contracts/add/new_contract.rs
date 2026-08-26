@@ -58,13 +58,13 @@ pub async fn make_new_contract(
 
         payment_deferral_days: data.contract_def_days,
 
-        is_active: Integ::unchecked(1),
+        is_active: true,
 
         descrip: data.contract_descr,
 
         entr_date,
 
-        is_del: Integ::unchecked(0),
+        is_del: false,
     };
 
     post_query_back_api(

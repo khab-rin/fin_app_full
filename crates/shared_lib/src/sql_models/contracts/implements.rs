@@ -24,12 +24,12 @@ pub struct Contract {
 
     pub payment_deferral_days: Integ,
 
-    pub is_active: Integ,
+    pub is_active: bool,
     pub descrip: String,
     
     pub entr_date: Date,
 
-    pub is_del: Integ,
+    pub is_del: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, ts_rs::TS)]

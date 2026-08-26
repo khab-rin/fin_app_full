@@ -1,7 +1,6 @@
 mod db;
 mod handlers;
 mod config;
-mod models;
 
 use std::sync::Arc;
 use axum::{routing::post, Router};
@@ -12,6 +11,8 @@ use shared_lib::service::api_routes::implements::ApiRoutes;
 use shared_lib::static_data::init_re;
 
 use crate::handlers::sql::handlers::sql_new_companys_handler;
+
+use crate::db::sql_queries::null_elems::make_null_postgress_elements;
 
 use crate::handlers::service::auth_service::handler::{
     register_step1_handler, 
@@ -28,7 +29,8 @@ use crate::handlers::service::mchd::handler::{
 
 use crate::handlers::sql::handlers::{
     get_person_by_inn_handler,
-    sql_add_new_contract_handler
+    sql_add_new_contract_handler,
+	sql_operations_add_many_handler
 };
 
 
@@ -94,6 +96,8 @@ async fn main() {
         config: config::Config::global()
     });
 
+	make_null_postgress_elements(&state).await.expect("err");
+
     let app: Router = Router::new()
         .route(
             ApiRoutes::AuthRegisterStep1.get_path(),
@@ -123,6 +127,9 @@ async fn main() {
         ).route(
             ApiRoutes::SqlComppanysAddByInnKpp.get_path(),
             post(sql_new_companys_handler)
+		).route(
+			ApiRoutes::SqlOperationsAddMany.get_path(),
+			post(sql_operations_add_many_handler)
         ).route(
             ApiRoutes::SqlPersonGetByInn.get_path(), 
             post(get_person_by_inn_handler)
@@ -139,3 +146,4 @@ async fn main() {
 
     axum::serve(listener, app).await.expect("msg");
 }
+

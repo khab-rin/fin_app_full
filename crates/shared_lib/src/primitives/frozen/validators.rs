@@ -298,7 +298,9 @@ pub(crate) fn init_phone_from_str(val: &str) -> Result<String, Status> {
 pub(crate) fn init_boxuuid<T: ToString>(val: T) -> Result<uuid::Uuid, Status> {
     let s = val.to_string();
     let trimmed = s.trim();
-
+	if trimmed.len() == 0 {
+		return Ok(uuid::Uuid::nil());
+	}
     uuid::Uuid::parse_str(trimmed)
         .map_err(|_| Status::ValidUuid)
 }

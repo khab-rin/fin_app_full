@@ -1,4 +1,5 @@
 INSERT INTO users(
+	user_id,
     pers_id,
     comp_id,
     phone,
@@ -7,8 +8,12 @@ INSERT INTO users(
     guids
 )
 VALUES (
-    $1, $2, $3, $4, $5, $6
+    $1, $2, $3, $4, $5, $6, $7
 )
+ON CONFLICT (pers_id, comp_id)
+	DO UPDATE SET
+		email = EXCLUDED.email,
+		guids = EXCLUDED.guids
 RETURNING
     user_id AS "user_id: BoxUuid",
     guids AS "guids: Vec<BoxUuid>",
