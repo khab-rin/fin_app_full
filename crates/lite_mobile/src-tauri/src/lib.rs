@@ -52,6 +52,7 @@ pub fn run_lib() {
 			commands::operation::cmd_get_acc_info,
             commands::operation::cmd_get_doc_type_russ_name,
             commands::operation::cmd_load_bank_statement,
+			commands::operation::cmd_process_operations,
             commands::operation::cmd_is_accounts_compatible,
             commands::operation::cmd_is_operation_exist,
             commands::other::cmd_validate_field,
@@ -59,8 +60,7 @@ pub fn run_lib() {
             commands::sql_queries::cmd_get_comp_bank_accs,
             commands::sql_queries::cmd_get_comp_by_inn_kpp,
             commands::sql_queries::cmd_add_new_contract,
-            commands::sql_queries::cmd_get_contracts_by_ctrpty_id,
-            
+            commands::sql_queries::cmd_get_contracts_by_ctrpty_id, 
         ]).build(tauri::generate_context!())
         .expect("error while building tauri application");
         

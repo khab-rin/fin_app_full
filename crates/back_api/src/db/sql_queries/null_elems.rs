@@ -8,8 +8,8 @@ pub async fn make_null_postgress_elements(
 	state: &BackApiState
 ) -> Result<(), Status> {
 	let null_uuid = BoxUuid::unchecked(uuid::Uuid::nil());
-	let null_pers_inn = PersInn::unchecked("000000000000".to_string());
-	let null_comp_inn = CompInn::unchecked("0000000000".to_string());
+	let null_pers_inn = PersInn::unchecked("202000000000".to_string());
+	let null_comp_inn = CompInn::unchecked("0010000000".to_string());
 	let null_kpp = Kpp::unchecked("000000000".to_string());
 	let null_date = Date::unchecked(chrono::Local::now().date_naive());
 

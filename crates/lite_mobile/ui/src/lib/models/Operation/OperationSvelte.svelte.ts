@@ -157,8 +157,6 @@ export class OperationSvelte {
 		this._currContract = null;
 	}
 
-
-
 	async fromRaw(raw: OperationRaw) {
 		this._ctrPty = raw.ctrpty;
 		this._allPossContracts = raw.contract.contracts ?? [];
@@ -353,7 +351,7 @@ export class OperationSvelte {
 
 				ctrpty_id: this.data.ctrptyId.value, 
 
-				contract_id: this._currContract?.contract_id ?? null,
+				contract_id: this._currContract?.contract_id ?? "",
 
 				debet: this.data.debet.value as Account, 
 				credit: this.data.credit.value  as Account, 

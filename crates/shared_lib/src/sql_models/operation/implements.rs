@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{Status, make_enum_frozen};
 use crate::sql_models::operation::macros::ParseFromStrMapValue;
-use crate::primitives::frozen::text::{BoxUuid, Date, DateTime, DocNum, RubF, TextInfo};
+use crate::primitives::frozen::text::{BoxUuid, Date, DocNum, RubF, TextInfo};
 use crate::sql_models::operation::account::Account;
 use crate::sql_models::company::implements::Company;
 use crate::sql_models::contracts::implements::{Contract, NewContrData};
@@ -172,7 +172,20 @@ pub fn make_oper_id(
     
     let num_str = doc_num.as_ref().map_or("".to_string(), |v| v.to_string());
     let date_str = oper_date.as_ref().map_or("".to_string(), |v| v.to_string());
-    let amount_str = amount.as_ref().map_or("".to_string(), |v| v.to_string());
+    let amount_str = amount.as_ref().map_or("".to_string(), |v| {
+        let s = v.to_string();
+        if s.contains('.') {
+            let trimmed = s.trim_end_matches('0');
+            if trimmed.ends_with('.') {
+                // Если после удаления нулей осталась только точка (например, 12.0 -> 12.)
+                trimmed.trim_end_matches('.').to_string()
+            } else {
+                trimmed.to_string()
+            }
+        } else {
+            s
+        }
+    });
     let ctrpty_str = ctrpty_id.as_ref().map_or("".to_string(), |v| v.to_string());
 
     // 2. Теперь макрос format! спокойно принимает эти строки, так как они "живы"
@@ -185,6 +198,7 @@ pub fn make_oper_id(
     );
 
     BoxUuid::unchecked(uuid::Uuid::new_v5(&uuid::Uuid::NAMESPACE_OID, text_id.as_bytes()))
+
 }
 
 

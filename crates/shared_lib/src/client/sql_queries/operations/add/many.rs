@@ -45,6 +45,7 @@ pub async fn add_new_operations(
 		.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
 	}
 
+	tx.commit().await.map_err(|err| err.process_err(Status::SqliteCommitErr, ""))?;
 
 	Ok(())
 }

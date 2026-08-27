@@ -6,4 +6,4 @@ import type { DocNum } from "./DocNum";
 import type { Integ } from "./Integ";
 import type { RubF } from "./RubF";
 
-export type Contract = { contract_id: BoxUuid, user_id: BoxUuid, comp_id: BoxUuid, ctrpty_id: BoxUuid, contract_num: DocNum, contract_date: Date, title: string, st_date: Date, end_date: Date, currency: Currency, total_amount: RubF, payment_deferral_days: Integ, is_active: Integ, descrip: string, entr_date: Date, is_del: Integ, };
+export type Contract = { contract_id: BoxUuid, user_id: BoxUuid, comp_id: BoxUuid, ctrpty_id: BoxUuid, contract_num: DocNum, contract_date: Date, title: string, st_date: Date, end_date: Date, currency: Currency, total_amount: RubF, payment_deferral_days: Integ, is_active: boolean, descrip: string, entr_date: Date, is_del: boolean, };

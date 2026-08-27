@@ -1,3 +1,208 @@
+/* ==========================================================================
+   2. ОБЩИЕ СТИЛИ ДЛЯ ВСЕХ КНОПОК
+   ========================================================================== */
+
+.green-button,
+.blue-button,
+.yellow-button,
+.purple-button {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    
+    width: 100%;               /* Заполняет всю ширину ячейки .btn-cell */
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    border: 1px solid transparent;
+    box-sizing: border-box;
+    transition: all 0.15s ease-in-out;
+}
+
+/* Эффект клика (когда нажали и держат) */
+.green-button:active:not(:disabled),
+.blue-button:active:not(:disabled),
+.yellow-button:active:not(:disabled),
+.purple-button:active:not(:disabled) {
+    transform: scale(0.98);    /* Визуальное уменьшение */
+}
+
+
+/* ==========================================================================
+   3. ЧЕТЫРЕ ЦВЕТА С HEX-ПАЛИТРОЙ (#)
+   ========================================================================== */
+
+/* -------------------- GREEN BUTTON -------------------- */
+.green-button {
+    background-color: #dcfce7;
+    border-color: #bbf7d0;
+    color: #000000;            /* Цвет задан один раз */
+}
+.green-button:hover:not(:disabled) {
+    background-color: #22c55e; /* Наведена: плотный, непрозрачный */
+    border-color: #16a34a;
+}
+.green-button:active:not(:disabled) {
+    background-color: #15803d !important; /* Нажата: самый темный */
+    border-color: #166534 !important;
+}
+.green-button:disabled {
+    background-color: #f0fdf4; /* Неактивна: самый бледный */
+    border-color: #e6f4ea;
+    opacity: 0.4;              /* Делает кнопку и черный текст блеклыми */
+    cursor: not-allowed;
+}
+
+/* -------------------- BLUE BUTTON -------------------- */
+.blue-button {
+    background-color: #e0f2fe; /* Активна */
+    border-color: #bae6fd;
+    color: #000000;
+}
+.blue-button:hover:not(:disabled) {
+    background-color: #3b82f6; /* Наведена */
+    border-color: #2563eb;
+}
+.blue-button:active:not(:disabled) {
+    background-color: #1d4ed8 !important; /* Нажата */
+    border-color: #1e40af !important;
+}
+.blue-button:disabled {
+    background-color: #f0f9ff; /* Неактивна */
+    border-color: #e0f2fe;
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* -------------------- YELLOW BUTTON -------------------- */
+.yellow-button {
+    background-color: #fef9c3; /* Активна */
+    border-color: #fef08a;
+    color: #000000;
+}
+.yellow-button:hover:not(:disabled) {
+    background-color: #eab308; /* Наведена */
+    border-color: #ca8a04;
+}
+.yellow-button:active:not(:disabled) {
+    background-color: #a16207 !important; /* Нажата */
+    border-color: #854d0e !important;
+}
+.yellow-button:disabled {
+    background-color: #fefce8; /* Неактивна */
+    border-color: #fef9c3;
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* -------------------- PURPLE BUTTON -------------------- */
+.purple-button {
+    background-color: #f3e8ff; /* Активна */
+    border-color: #e9d5ff;
+    color: #000000;
+}
+.purple-button:hover:not(:disabled) {
+    background-color: #a855f7; /* Наведена */
+    border-color: #9333ea;
+}
+.purple-button:active:not(:disabled) {
+    background-color: #7e22ce !important; /* Нажата */
+    border-color: #6b21a8 !important;
+}
+.purple-button:disabled {
+    background-color: #faf5ff; /* Неактивна */
+    border-color: #f3e8ff;
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+
+
+
+.shaded-card {
+    /* 1. Эффект стекла: базовый фон полностью прозрачен, но накладывает 10% затемнения */
+    background-color: rgba(0, 0, 0, 0.1); 
+    
+    /* Ободок: тоже полупрозрачный черный, чтобы гармонично смотреться на любом цвете */
+    border: 1px solid rgba(0, 0, 0, 0.15); 
+    border-radius: 12px;       /* Мягкое скругление углов */
+    
+    /* 2. Отступы */
+    padding: 1.5rem;           /* Внутренние поля до контента */
+    margin: 2rem 0;            /* Внешние отступы сверху и снизу */
+    box-sizing: border-box;
+    
+    /* Плавный переход для эффекта наведения */
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+/* При наведении область затемняется еще на 5% (суммарно 15% затемнения) */
+.shaded-card:hover {
+    background-color: rgba(0, 0, 0, 0.15); 
+    border-color: rgba(0, 0, 0, 0.25);     
+}
+
+
+
+
+
+.button-group-1,
+.button-group-2,
+.button-group-3 {
+    display: grid;             /* Включаем сетку Grid для управления элементами */
+    gap: 1rem;                 /* Расстояние между кнопками по горизонтали и вертикали */
+    width: 100%;               /* Занимает всю ширину родительского блока */
+    padding: 1.25rem;          /* Внутренний отступ от рамки до кнопок */
+    margin: 2rem 0;            /* Отступы сверху и снизу всей области */
+    
+    background-color: #f0fdfa; /* Нежный светло-бирюзовый фон */
+    border: 1px solid #ccfbf1; /* Аккуратная рамка */
+    border-radius: 12px;       /* Закругление углов области */
+    box-sizing: border-box;
+    transition: background-color 0.25s ease-in-out, border-color 0.25s ease-in-out; 
+}
+
+/* Эффект плавного затемнения при наведении на любой из контейнеров */
+.button-group-1:hover,
+.button-group-2:hover,
+.button-group-3:hover {
+    background-color: #e0f2fe; /* Спокойный голубой тон */
+    border-color: #bae6fd;     /* Рамка тоже темнеет */
+}
+
+
+/* ==========================================================================
+   2. УПРАВЛЕНИЕ КОЛИЧЕСТВОМ ЭЛЕМЕНТОВ В РЯДУ ДЛЯ КАЖДОЙ ГРУППЫ
+   ========================================================================== */
+
+/* Группа 1: ровно 1 кнопка в линии (растягивается на всю ширину) */
+.button-group-1 {
+    grid-template-columns: repeat(1, 1fr);
+}
+
+/* Группа 2: ровно 2 кнопки в линии (делят пространство 50 на 50) */
+.button-group-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+/* Группа 3: ровно 3 кнопки в линии (делят пространство на 3 равные части) */
+.button-group-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* NAVI BUTTONS */
 

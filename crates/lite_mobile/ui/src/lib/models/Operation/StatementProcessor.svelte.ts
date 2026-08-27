@@ -1,4 +1,3 @@
-import type { Integ } from "../rustModels/Integ";
 import type { Operation } from "../rustModels/Operation";
 import type { OperationRaw } from "../rustModels/OperationRaw";
 import { OperationSvelte } from "./OperationSvelte.svelte";
@@ -6,6 +5,7 @@ import { OperationSvelte } from "./OperationSvelte.svelte";
 export class StateProcessor {
 	private _svelteOperations: OperationSvelte[] = [];
 	private _rustOperations: (Operation | null)[] = [];
+	get rustOperations() { return this._rustOperations; }
 	private _curIndex: number | null = null;
 	private _totalOperations: number = 0;
 	private _unProcceed = $state<number>(0);

@@ -1,27 +1,22 @@
 use serde::{Serialize, Deserialize};
 
-use crate::sql_models::operation::implements::{OperationRaw, Operation};
+use crate::sql_models::operation::implements::OperationRaw;
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub enum OperationStep {
     AccInput { text: OperationInfo },
 
-    AccessDenied { text: OperationInfo },
-
     Loading { text: OperationInfo },
 
-    ManualInput{ text: OperationInfo },
+    ManualInput { text: OperationInfo },
 
-    StatementParser { text: OperationInfo },
+	ProcessSuccess {text: OperationInfo, count: i32 },
 
-    SuccessRaw {
+    StatementLoader { text: OperationInfo },
+
+    StatementSuccess {
         text: OperationInfo,
         operations: Vec<OperationRaw>
-    },
-
-    Success {
-        text: OperationInfo,
-        operations: Vec<Operation>
     },
 
     TryLater { text: OperationInfo },
@@ -56,6 +51,9 @@ pub enum OperationInfo {
 
     #[serde(rename = "Выберите расчетный счет и загрузите банковскую выписку")]
     StatementParser,
+
+	#[serde(rename = "Выписка обработана, добавлено операций - ")]
+	StatementSuccess,
 
     #[serde(rename = "Указанный банковский счет и банковский счет выписки не совпадают")]
     WrongBankAcc,

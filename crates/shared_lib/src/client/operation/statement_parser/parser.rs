@@ -39,7 +39,7 @@ pub async fn parse_statement(
     match check_access(state, &HomeMchdPower::H210).await {
         Ok(true) => {},
         Ok(false) => {
-            return Ok(OperationStep::AccessDenied { text: OperationInfo::AccessDenied })
+            return Ok(OperationStep::TryLater { text: OperationInfo::AccessDenied })
         },
         Err(err) => {
             err.process_err(err, "");
@@ -210,8 +210,7 @@ pub async fn parse_statement(
         }
     }
     
-    let success_result = OperationStep::SuccessRaw  {
-        
+    let success_result = OperationStep::StatementSuccess {
         text: OperationInfo::SuccessRaw,
         operations
     };

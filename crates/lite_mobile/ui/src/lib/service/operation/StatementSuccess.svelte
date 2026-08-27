@@ -2,6 +2,7 @@
 
 <script lang='ts'>
 	import {onMount} from 'svelte';
+	import {invoke} from '@tauri-apps/api/core';
 	import {operStep} from '$lib/models/Operation/OperationManager.svelte';
 	import { OperationType } from '$lib/models/Operation/OperationValues';
 	import { StateProcessor } from '$lib/models/Operation/StatementProcessor.svelte';
@@ -45,6 +46,8 @@
 		isContractsOpen = false;
 	}
 
+	let isProcessOperationsPushed = $state(false);
+
 	async function cmdAddNewContract() {
 		if (isNewContractPushed) return;
 		try {
@@ -62,7 +65,7 @@
 			isNewContractPushed = false;
 			isNewContractOpen = false;
 			isContractsOpen = false;
-			operStep.add(next_step);
+			operStep.step = next_step;
 		}
 	}
 
@@ -79,14 +82,29 @@
 			}
 			console.error("cmdChangeCtrPty FAILED, err = ", err);
 			changeCtrptyPushed = false;
-			operStep.add(next_step);
+			operStep.step = next_step;
+		}
+	}
+
+	async function cmdProcessOperations() {
+		if (isProcessOperationsPushed) {return;}
+		try {
+			const next_step = await invoke<OperationStep>(
+				"cmd_process_operations",
+				{optionOperations: processor.rustOperations}
+			);
+			operStep.step = next_step;
+		} catch(err) {
+			const next_step: OperationStep = {TryLater: {text: 'Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение'}};
+			console.error("cmdProcessOperations FAILED, err = ", err);
+			operStep.step = next_step;
 		}
 	}
 
 
 	onMount(async() => {
-		if (OperationType.SuccessRaw in operStep.step) {
-			await processor.init(operStep.step.SuccessRaw.operations)
+		if (OperationType.StatementSuccess in operStep.step) {
+			await processor.init(operStep.step.StatementSuccess.operations)
 		} else {
 			const next_step: OperationStep = {
 				TryLater: {
@@ -94,7 +112,7 @@
 				}
 			};
 			console.error('System Logic Error, wrong current step');
-			operStep.add(next_step);
+			operStep.step = next_step;
 
 		}
 	})
@@ -153,8 +171,6 @@
 
 		{/if}
 
-		
-
 		<button 
 			type='button'
 			class='medium-button'
@@ -164,7 +180,6 @@
 			Контрагент
 		</button>
 	</div>
-
 
 	<div class='input-group'>
         <span class='input-field-span'>
@@ -424,4 +439,19 @@
 		</div>
 		
 	</section>
+{/if}
+
+
+{#if (processor && processor.unProcceed == 0)}
+	<div class='wide-button-group'>
+		<button
+			type='button'
+			class='wide-button'
+			disabled={processor.unProcceed > 0}
+			onclick={cmdProcessOperations}
+		>
+			сохранить операции
+		</button>
+
+	</div>
 {/if}

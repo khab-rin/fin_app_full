@@ -4,11 +4,12 @@ use shared_lib::primitives::frozen::text::{BoxUuid, DocNum, RubF, Date};
 use shared_lib::sql_models::operation::implements::{DocType, make_oper_id, Operation};
 use shared_lib::{ClientState, ProcessError, Status};
 use shared_lib::primitives::composite::implements::RasBicAcc;
-use shared_lib::sql_models::operation::service::OperationStep;
+use shared_lib::sql_models::operation::service::{OperationInfo, OperationStep};
 
 use shared_lib::primitives::frozen::macros::RussEnumName; 
 use shared_lib::sql_models::operation::account::Account;
 use shared_lib::client::sql_queries::operations::get::exist_id_by_id::get_exist_id_by_id;
+use shared_lib::client::sql_queries::operations::add::many::add_new_operations;
 
 use crate::service::operation::make_bank_statement_operations;
 
@@ -49,14 +50,12 @@ pub fn cmd_is_accounts_compatible(
 pub async fn cmd_is_operation_exist(
     state: tauri::State<'_, ClientState>,
     doc_num: Option<DocNum>, 
-    doc_date: Option<Date>, 
+    oper_date: Option<Date>, 
     amount: Option<RubF>, 
     ctrpty_id: Option<BoxUuid>
 ) -> Result<(BoxUuid, bool), Status> {
 
-	log::info!("cmd_is_operation_exist run");
-
-    let check_oper_id = make_oper_id(&doc_num, &doc_date, &amount, &ctrpty_id);
+    let check_oper_id = make_oper_id(&doc_num, &oper_date, &amount, &ctrpty_id);
 
     match get_exist_id_by_id(&state, &check_oper_id).await
         .map_err(|err| err.process_err(err, ""))? {
@@ -74,14 +73,22 @@ pub fn cmd_get_acc_info(
 }
 
 #[tauri::command]
-pub fn cmd_process_operations(
+pub async  fn cmd_process_operations(
 	state: tauri::State<'_, ClientState>,
 	option_operations: Vec<Option<Operation>>
-) -> Result<(), Status> {
+) -> Result<OperationStep, Status> {
 	let operations: Vec<Operation> = option_operations.into_iter().flatten().collect();
 
+	let count = operations.len() as i32;
 
-	Ok(())
+	if let Err(err) = add_new_operations(&state, operations).await {
+		err.process_err(err, "");
+		return Ok(OperationStep::TryLater { text: OperationInfo::ClientApiSystemError });
+	}
+
+	let step = OperationStep::ProcessSuccess { text: OperationInfo::StatementSuccess, count };
+
+	Ok(step)
 }
 
 

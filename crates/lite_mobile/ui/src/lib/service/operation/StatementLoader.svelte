@@ -84,7 +84,7 @@
         } catch(err) {
             const next_step: OperationStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
             console.error("get_own_bank_accs FAILED BY PATH LOAD, err = ", err);
-            operStep.add(next_step);
+            operStep.step = next_step;
         }
     }
 
@@ -95,7 +95,7 @@
         } catch (err) {
             const next_step: OperationStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
             console.error("cmd_get_own_bank_accs FAILED, err = ", err);
-            operStep.add(next_step);
+            operStep.step = next_step;
         }
     };
 
@@ -114,7 +114,7 @@
             const next_step: OperationStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
             console.error("cmd_add_comp_bank_acc FAILED, err = ", err);
             isPushAddAcc= false;
-            operStep.add(next_step);
+            operStep.step = next_step;
         }
     };
 
@@ -135,12 +135,12 @@
             const next_step: OperationStep = await invoke<OperationStep>("cmd_load_bank_statement", data);
             
             isPushParseStatement = false;
-            operStep.add(next_step);
+            operStep.step = next_step;
         } catch(err) {
             console.error("FUN cmd_load_bank_statement FAILED, err = ", err);
             const next_step: OperationStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
             isPushParseStatement = false;
-            operStep.add(next_step);
+            operStep.step = next_step;
 
         }
     }
@@ -271,7 +271,7 @@
             class='input-field'
             class:input-error={!bic.isValid}
         />
-        {#if !bic._isValid}
+        {#if !bic.isValid}
             <span class="input-error-span">
                 Некорректный БИК
             </span>

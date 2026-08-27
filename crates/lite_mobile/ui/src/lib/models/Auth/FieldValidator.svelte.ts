@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import type { SvelteValidator } from "$lib/models/rustModels/SvelteValidator";
 
 export class FieldValidator {
-    _isValid = $state(false);
+    private _isValid = $state(false);
 
     _russianName = $state("");
     

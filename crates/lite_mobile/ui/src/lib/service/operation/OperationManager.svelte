@@ -5,19 +5,13 @@
 	import { currAuthStep } from '$lib/models/Auth/AuthStep.svelte';
 
     function closeOper() {
-        const next_step: OperationStep = {Loading: {text: "Выберите функционал работы с проводками"}};
-        operStep.add(next_step);
         pageManager.Page = null;
     }
 
-    function handleGoBack() {
-        operStep.back();
-    }
-
-    function handleGoNext() {
-        currAuthStep.next();
-    }
-
+	function goToLoading() {
+		const next_step: OperationStep = {Loading:{text: 'Выберите функционал работы с проводками'}};
+		operStep.step = next_step;
+	}
 </script>
 
 <p class="text-small">{operStep.currentText}</p>
@@ -28,28 +22,16 @@
     <p>Загрузка или ошибка...</p>
 {/if}
 
-<section class="medium-button-section">
-    <div class="medium-button-group">
-        <button
-            class="medium-button"
-            type="button"
-            onclick={handleGoBack}>
-            <span class="navi-button-text">Назад</span>
-        </button>
-    </div>
-
-    <div class="medium-button-group">
-        <button
-            class="medium-button"
-            type="button"
-            onclick={handleGoNext}>
-            <span class="navi-button-text">Вперед</span>
-        </button>
-    </div>
-    
-</section>
 
 <div class="main-button-group">
+	<button
+		type='button'
+		class='main-button'
+		onclick={goToLoading}
+	>
+		Меню операций
+	</button>
+
     <button
         type="button"
         class="main-button"

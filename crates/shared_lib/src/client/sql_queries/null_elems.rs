@@ -3,16 +3,13 @@ use crate::service::auth_service::general::ActiveSession;
 use crate::{Status, ProcessError};
 use crate::primitives::frozen::text::{DocNum, Currency, Integ, BoxUuid, CompInn, CompStatus, CompType, Date, DateTime, Kpp, PersInn, RubF};
 
-
-
-
 pub async fn make_null_postgress_elements(
 	session: &ActiveSession
 ) -> Result<(), Status> {
 
 	let null_uuid = BoxUuid::unchecked(uuid::Uuid::nil());
-	let null_pers_inn = PersInn::unchecked("000000000000".to_string());
-	let null_comp_inn = CompInn::unchecked("0000000000".to_string());
+	let null_pers_inn = PersInn::unchecked("202000000000".to_string());
+	let null_comp_inn = CompInn::unchecked("0010000000".to_string());
 	let null_kpp = Kpp::unchecked("000000000".to_string());
 	let null_date = Date::unchecked(chrono::Local::now().date_naive());
 	let null_date_time = DateTime::unchecked(chrono::Local::now());

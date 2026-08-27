@@ -18,7 +18,7 @@ pub async fn make_bank_statement_operations(
             state, 
             ras_bic_acc, 
             path).await {
-        Ok(OperationStep::SuccessRaw { operations, ..}) => operations,
+        Ok(OperationStep::StatementSuccess { operations, ..}) => operations,
         Ok(res) => return Ok(res),
         Err(err) => {
             err.process_err(err, "");
@@ -36,7 +36,7 @@ pub async fn make_bank_statement_operations(
     }
 
 
-    Ok(OperationStep::SuccessRaw { text: SuccessRaw, operations: in_operations })
+    Ok(OperationStep::StatementSuccess { text: SuccessRaw, operations: in_operations })
 
   
 }

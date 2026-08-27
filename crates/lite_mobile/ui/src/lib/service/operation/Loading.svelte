@@ -4,20 +4,31 @@
 
     let isPushedStatementParser = $state(false);
     let isPushedManualInput = $state(false);
+	let isPushedNewBankAcc = $state(false);
 
     function goToStatementParser () {
+		if (isPushedStatementParser) {return;}
         isPushedStatementParser = true;
-        const next_step: OperationStep = {StatementParser: {text: "Выберите расчетный счет и загрузите банковскую выписку"}};
+        const next_step: OperationStep = {StatementLoader: {text: "Выберите расчетный счет и загрузите банковскую выписку"}};
         isPushedStatementParser = false;
-        operStep.add(next_step)
+        operStep.step = next_step;
     }
 
     function goToManualInput() {
+		if (isPushedManualInput) {return;}
         isPushedManualInput = true;
         const next_step: OperationStep = {ManualInput: {text: "Введите данные для проводок вручную"}};
         isPushedManualInput = false;
-        operStep.add(next_step)
+        operStep.step = next_step;
     }
+
+	function goToNewBankAcc() {
+		if (isPushedNewBankAcc) {return;}
+		isPushedNewBankAcc = true;
+		const next_step: OperationStep = {AccInput: {text: 'Введите БИК банка и номер расчетного счета'}};
+		isPushedNewBankAcc = false;
+		operStep.step = next_step;
+	}
 </script>
 
 <section class='wide-button-section'>
