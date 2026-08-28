@@ -28,34 +28,35 @@
 {/if}
 
 
-<section class="navi-button-section">
-    <div class="navi-button-group">
+<section class="group-two">
+    <div>
         <button
-            class="medium-button"
+            class="purple-button"
             type="button"
-            onclick={handleGoBack}>
-            <span class="navi-button-text">Назад</span>
+            onclick={handleGoBack}
+		>
+            <span class="purple-button-span">Назад</span>
         </button>
     </div>
 
-    <div class="navi-button-group">
+    <div>
         <button
-            class="medium-button"
+            class="purple-button"
             type="button"
             onclick={handleGoNext}>
-            <span class="navi-button-text">Вперед</span>
+            <span class="purple-button-span">Вперед</span>
         </button>
     </div>
     
 </section>
 
-<div class="main-button-group">
+<div class="blue-button-group">
     <button
         type="button"
-        class="main-button"
+        class="blue-button"
         onclick={closeMchd}
         >
-        <span class="main-button-span">
+        <span class="blue-button-span">
             Основной экран
         </span>
     </button>

@@ -3,9 +3,10 @@
 @import './buttons.css';
 @import './check_box.css';
 @import './combo.css';
+@import './group.css';
 @import './h_p.css';
 @import './info.css';
-@import './input_group.css';
+@import './input.css';
 @import "./layout.css";
 @import "./pooling.css";
 @import "./popover.css";

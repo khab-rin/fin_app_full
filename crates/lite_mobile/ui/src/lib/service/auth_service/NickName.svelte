@@ -61,13 +61,13 @@
 <div class="selector-wrapper">
     <button
         type="button"
-        class="wide-button"
+        class="green-button"
         disabled={IsPushed}
         
         onclick={openAccountsModal}
     >
 
-        <span class="wide-button-span">
+        <span class="green-button-span">
              - {curr_nick ? "Текущий выбор" : "Нажмите для просмотра списка"}
         </span>
 
@@ -92,35 +92,34 @@
             <ul class="dialog-list">
                 {#each currAuthStep.nick_names as name (name)}
                     <li>
-                        <div class="wide-button-grid">
-                            <button 
-                                type="button" 
-                                class="wide-button"
-                                onclick={() => {
-                                    curr_nick = name;
-                                    closeAccountsModal();}    
-                                }
-                            >
-                                <span class="wide-button-span">{name}</span>
-                            </button>
-                        </div>
+						<button 
+							type="button" 
+							class="yellow-button"
+							onclick={() => {
+								curr_nick = name;
+								closeAccountsModal();}    
+							}
+						>
+							<span class="yellow-button-span">{name}</span>
+						</button>
+		
                     </li>
                 {/each}
             </ul>
 
-            <div class="wide-button-grid">
-                <button class="wide-button"
-                    type="button"
-                    onclick={closeAccountsModal}
-                    >
-                    
-                    <span class="wide-button-span">
-                        Отмена
-                    </span>
+
+			<button class="green-button"
+				type="button"
+				onclick={closeAccountsModal}
+				>
+				
+				<span class="wide-button-span">
+					Отмена
+				</span>
 
 
-                </button>
-            </div>
+			</button>
+
 
         {:else}
             <p>На этом устройстве еще нет сохраненных аккаунтов</p>
@@ -130,18 +129,17 @@
 </dialog>
 
 {#if curr_nick}
-    <div class="main-button-group">
+    <div class="group-one">
         <button 
             type="button" 
-            class="main-button" 
+            class="green-button" 
             disabled={IsPushed}
             onclick={() => call_nick_handle(curr_nick)}
         >
             {#if IsPushed}
-                <span class="main-button-span"></span>
-                <span class="main-button-span">Проверка...</span>
+                <span class="green-button-span">Проверка...</span>
             {:else}
-                <span class="main-button-span">Войти как {curr_nick}</span>
+                <span class="green-button-span">Войти как {curr_nick}</span>
             {/if}
         </button>
     </div>

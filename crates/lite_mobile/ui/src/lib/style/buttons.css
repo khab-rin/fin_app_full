@@ -1,6 +1,3 @@
-/* ==========================================================================
-   2. ОБЩИЕ СТИЛИ ДЛЯ ВСЕХ КНОПОК
-   ========================================================================== */
 
 .green-button,
 .blue-button,
@@ -9,8 +6,7 @@
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     font-size: 0.95rem;
     font-weight: 500;
-    
-    width: 100%;               /* Заполняет всю ширину ячейки .btn-cell */
+    width: 100%;
     padding: 0.75rem 1rem;
     border-radius: 8px;
     cursor: pointer;
@@ -18,6 +14,8 @@
     border: 1px solid transparent;
     box-sizing: border-box;
     transition: all 0.15s ease-in-out;
+		min-width: 0;             
+    overflow: hidden;
 }
 
 /* Эффект клика (когда нажали и держат) */
@@ -28,10 +26,45 @@
     transform: scale(0.98);    /* Визуальное уменьшение */
 }
 
+.green-button[hidden],
+.blue-button[hidden],
+.yellow-button[hidden],
+.purple-button[hidden] {
+    display: block !important; 
+    visibility: hidden !important;
+    pointer-events: none;
+    opacity: 0 !important;
+}
 
-/* ==========================================================================
-   3. ЧЕТЫРЕ ЦВЕТА С HEX-ПАЛИТРОЙ (#)
-   ========================================================================== */
+.green-button-span,
+.blue-button-span,
+.yellow-button-span,
+.purple-button-span {
+    display: block;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.green-button-label,
+.blue-button-label,
+.yellow-button-label,
+.purple-button-label {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 12px;           
+    font-weight: 600;          
+    color: #000000 !important; 
+		display: block;            
+  	margin-bottom: 8px;        
+   	padding: 0.25rem 0.6rem;           
+		border-radius: 6px;                
+		width: fit-content;                
+    box-sizing: border-box;            
+}
+
 
 /* -------------------- GREEN BUTTON -------------------- */
 .green-button {
@@ -54,6 +87,10 @@
     cursor: not-allowed;
 }
 
+.green-button-span  { color: color-mix(in srgb, #dcfce7 15%, #000000) !important; }
+.green-button-label  { background-color: #dcfce7; } 
+
+
 /* -------------------- BLUE BUTTON -------------------- */
 .blue-button {
     background-color: #e0f2fe; /* Активна */
@@ -74,6 +111,10 @@
     opacity: 0.4;
     cursor: not-allowed;
 }
+
+.blue-button-span   { color: color-mix(in srgb, #e0f2fe 15%, #000000) !important; }
+.blue-button-label   { background-color: #e0f2fe; }
+
 
 /* -------------------- YELLOW BUTTON -------------------- */
 .yellow-button {
@@ -96,6 +137,10 @@
     cursor: not-allowed;
 }
 
+.yellow-button-span { color: color-mix(in srgb, #fef9c3 15%, #000000) !important; }
+.yellow-button-label { background-color: #fef9c3; }
+
+
 /* -------------------- PURPLE BUTTON -------------------- */
 .purple-button {
     background-color: #f3e8ff; /* Активна */
@@ -117,306 +162,26 @@
     cursor: not-allowed;
 }
 
+.purple-button-span { color: color-mix(in srgb, #f3e8ff 15%, #000000) !important; }
+.purple-button-label { background-color: #f3e8ff; }
 
 
 
-.shaded-card {
-    /* 1. Эффект стекла: базовый фон полностью прозрачен, но накладывает 10% затемнения */
+
+
+.shaded {
     background-color: rgba(0, 0, 0, 0.1); 
-    
-    /* Ободок: тоже полупрозрачный черный, чтобы гармонично смотреться на любом цвете */
     border: 1px solid rgba(0, 0, 0, 0.15); 
-    border-radius: 12px;       /* Мягкое скругление углов */
-    
-    /* 2. Отступы */
-    padding: 1.5rem;           /* Внутренние поля до контента */
-    margin: 2rem 0;            /* Внешние отступы сверху и снизу */
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 2rem 0;
     box-sizing: border-box;
-    
-    /* Плавный переход для эффекта наведения */
-    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+     transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
 }
 
 /* При наведении область затемняется еще на 5% (суммарно 15% затемнения) */
-.shaded-card:hover {
+.shaded:hover {
     background-color: rgba(0, 0, 0, 0.15); 
     border-color: rgba(0, 0, 0, 0.25);     
 }
 
-
-
-
-
-.button-group-1,
-.button-group-2,
-.button-group-3 {
-    display: grid;             /* Включаем сетку Grid для управления элементами */
-    gap: 1rem;                 /* Расстояние между кнопками по горизонтали и вертикали */
-    width: 100%;               /* Занимает всю ширину родительского блока */
-    padding: 1.25rem;          /* Внутренний отступ от рамки до кнопок */
-    margin: 2rem 0;            /* Отступы сверху и снизу всей области */
-    
-    background-color: #f0fdfa; /* Нежный светло-бирюзовый фон */
-    border: 1px solid #ccfbf1; /* Аккуратная рамка */
-    border-radius: 12px;       /* Закругление углов области */
-    box-sizing: border-box;
-    transition: background-color 0.25s ease-in-out, border-color 0.25s ease-in-out; 
-}
-
-/* Эффект плавного затемнения при наведении на любой из контейнеров */
-.button-group-1:hover,
-.button-group-2:hover,
-.button-group-3:hover {
-    background-color: #e0f2fe; /* Спокойный голубой тон */
-    border-color: #bae6fd;     /* Рамка тоже темнеет */
-}
-
-
-/* ==========================================================================
-   2. УПРАВЛЕНИЕ КОЛИЧЕСТВОМ ЭЛЕМЕНТОВ В РЯДУ ДЛЯ КАЖДОЙ ГРУППЫ
-   ========================================================================== */
-
-/* Группа 1: ровно 1 кнопка в линии (растягивается на всю ширину) */
-.button-group-1 {
-    grid-template-columns: repeat(1, 1fr);
-}
-
-/* Группа 2: ровно 2 кнопки в линии (делят пространство 50 на 50) */
-.button-group-2 {
-    grid-template-columns: repeat(2, 1fr);
-}
-
-/* Группа 3: ровно 3 кнопки в линии (делят пространство на 3 равные части) */
-.button-group-3 {
-    grid-template-columns: repeat(3, 1fr);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* NAVI BUTTONS */
-
-.navi-button-section {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem;
-    width: 100%;
-    padding: 1rem;
-    margin-top: 2rem;
-    border-top: 1px solid #e5e7eb;
-}
-
-.navi-button-group {
-    flex: 0 0 calc(50% - 0.5rem); 
-    max-width: 220px;
-}
-
-
-/* MEDIUM BUTTON */
-
-.medium-button-section {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem;
-    padding: 1rem;
-    margin-top: 2rem;
-    border-top: 1px solid #e5e7eb;
-}
-
-.medium-button-group {
-    flex: 1 1 180px; 
-    max-width: 220px;
-}
-
-.medium-button {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    background-color: #fef08a; 
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-weight: 500;
-}
-
-.medium-button:hover:not(:disabled) {
-    background-color: #fde047;
-    border-color: #9ca3af;
-    transform: translateY(-1px);
-}
-
-/* ИЗМЕНЕНО: теперь анимация клика не работает, если кнопка disabled */
-.medium-button:active:not(:disabled) {
-    transform: translateY(0);
-    background-color: #eab308;
-}
-
-
-.medium-button:disabled {
-    background-color: #f3f4f6;
-    color: #9ca3af;
-    border-color: #e5e7eb;
-    cursor: not-allowed;
-    transform: none !important;
-    pointer-events: none;
-}
-
-.medium-button-span {
-    display: block;
-    font-size: 0.9rem;
-    white-space: nowrap;
-    text-align: center;
-}
-
-.medium-button[hidden] {
-    visibility: hidden !important;
-    pointer-events: none;
-}
-
-
-
-/* MAIN BUTTON */
-
-.main-button-group {
-    display: flex;
-    justify-content: center;
-    margin-top: 1.5rem;
-}
-
-.main-button {
-    background-color: #3b82f6;
-    color: white;
-    border: none;
-    padding: 0.75rem 2rem;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background 0.2s;
-    min-width: 250px;
-}
-
-.main-button:hover:not(:disabled) {
-    background-color: #2563eb;
-}
-
-.main-button:disabled {
-    background-color: #d1d5db;
-    cursor: not-allowed;
-    opacity: 0.7;
-}
-
-.main-batton-span {
-    display: block;
-    text-align: center;
-}
-
-
-
-
-/* ==========================================================================
-   WIDE BUTTON (Универсальная широкая кнопка)
-   ========================================================================== */
-
-.wide-button-section {
-    display: flex;
-    flex-direction: column;
-
-    justify-content: center;
-    align-items: center;
-
-    gap: 1rem;
-    width: 100%;
-    max-width: 400;
-    margin: 0 auto;
-}
-
-.wide-button-group {
-    width: 100%;
-    border-top: 1px solid #e5e7eb;
-}
-
-.wide-button {
-  /* Позиционирование и размеры */
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* Элементы внутри (например, текст и стрелочка) расходятся по краям */
-  width: 100%;
-  box-sizing: border-box; /* Чтобы padding не раздувал кнопку наружу */
-  
-  /* Отступы и скругления */
-  padding: 14px 20px;
-  border-radius: 12px;
-  
-  /* Шрифты */
-  font-family: inherit; /* Наследует шрифт проекта */
-  font-size: 1rem;
-  font-weight: 500;
-  line-height: 1.4;
-  text-align: left;
-  
-  /* Цвета по умолчанию (светлая нейтральная тема) */
-  color: #212529;
-  background-color: #3e8b4280;
-  border: 1px solid #dee2e6;
-  
-  /* Плавные анимации */
-  cursor: pointer;
-  user-select: none;
-  transition: 
-    background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-    border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.1s ease,
-    box-shadow 0.2s ease;
-}
-
-/* Состояние: Наведение мыши (Hover) */
-.wide-button:hover:not(:disabled) {
-  background-color: #05f539;
-  border-color: #ced4da;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-}
-
-/* Состояние: Активное нажатие (Active) */
-.wide-button:active:not(:disabled) {
-  background-color: #f1f3f5;
-  transform: scale(0.995); /* Легкий эффект вдавливания */
-}
-
-/* Состояние: Фокус со стрелочек клавиатуры (Доступность) */
-.wide-button:focus-visible {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
-}
-
-/* Состояние: Заблокирована (Disabled) */
-.wide-button:disabled {
-  opacity: 0.55;
-  background-color: #e9ecef;
-  border-color: #dee2e6;
-  color: #868e96;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-/* Внутренний спан для текста */
-.wide-button-span {
-  display: inline-block;
-  width: 100%;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis; /* Если ник будет слишком длинным, он аккуратно обрежется троеточием */
-}

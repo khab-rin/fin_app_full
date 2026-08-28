@@ -49,6 +49,7 @@ export class OperationSvelte {
 	private _ctrPty = $state<Company | null>(null);
 	get ctrPty() {return this._ctrPty;}
 
+
 	private _isNewContractValid = $derived(
 		!this.newContrData.ctrPtyId.isValid ||
 		!this.newContrData.contractNum.isValid ||

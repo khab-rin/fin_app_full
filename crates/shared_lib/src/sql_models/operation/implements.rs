@@ -52,9 +52,10 @@ pub struct ContractOption {
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, ts_rs::TS)]
 pub struct Operation {
     pub oper_id: BoxUuid,
+	
     pub user_id: BoxUuid,
-
     pub comp_id: BoxUuid,
+
     pub ctrpty_id: BoxUuid,
 
     pub contract_id: BoxUuid,

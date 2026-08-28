@@ -50,85 +50,70 @@
     <p>Загрузка или ошибка...</p>
 {/if}
 
+<h6> Навигация по авторизации </h6>
+<section class="group-two">
+	<div>
+		<button
+			class="purple-button"
+			type="button"
+			onclick={handleGoBack}
+		>
+			Шаг назад
+		</button>
+	</div>
 
-<section class="navi-button-section">
-
-    <h6> Навигация по авторизации </h6>
-
-    <div class="navi-button-group">
-        <button
-            class="medium-button"
-            type="button"
-            onclick={handleGoBack}
-        >
-            <span class="medium-button-span">
-                Шаг назад
-            </span>
-        </button>
-    </div>
-
-    <div class="navi-button-group">
-        <button
-            class="medium-button"
-            type="button"
-            hidden={isPassword}
-            onclick={goToPassword}
-        >
-            <span class="medium-button-span">
-                Вход по паролю
-            </span>
-        </button>
-    </div>
-
-    <div class="navi-button-group">
-        <button
-            class="medium-button"
-            type="button"
-            hidden={isRegistrerStep1}
-            onclick={goToRegisterStep1}
-        >
-            <span class="medium-button-span">
-                Регистрация шаг 1
-            </span>
-        </button>
-    </div>
-
-    <div class="navi-button-group">
-        <button
-            class="medium-button"
-            type="button"
-            hidden={isRegistrerStep2}
-            onclick={goToRegisterStep2}
-        >
-            <span class="medium-button-span">
-                Регистрация шаг 2
-            </span>
-        </button>
-    </div>
-
-    <div class="navi-button-group">
-        <button
-            class="medium-button"
-            type="button"
-            hidden={isNickName}
-            onclick={goToNickName}
-        >
-            <span class="medium-button-span">
-                Войти как
-            </span>
-        </button>
-    </div>
-
-    <div class="navi-button-group">
-        <button
-            class="medium-button"
-            type="button"
-            onclick={handleGoNext}
-        >
-            <span class="medium-button-span">
-                Шаг вперед
-            </span>
-        </button>
-    </div>
-
+	<div>
+		<button
+			class="purple-button"
+			type="button"
+			hidden={isPassword}
+			onclick={goToPassword}
+		>
+			Вход по паролю
+		</button>
+	</div>
+	
+	<div>
+		<button
+			class="purple-button"
+			type="button"
+			hidden={isRegistrerStep1}
+			onclick={goToRegisterStep1}
+		>
+			Регистрация шаг 1
+		</button>
+	</div>
+	
+	<div>
+		<button
+			class="purple-button"
+			type="button"
+			hidden={isRegistrerStep2}
+			onclick={goToRegisterStep2}
+		>
+			Регистрация шаг 2
+		</button>
+	</div>
+	
+	<div>
+		<button
+			class="purple-button"
+			type="button"
+			hidden={isNickName}
+			onclick={goToNickName}
+		>
+			Войти как
+		</button>
+	</div>
+	
+	<div>
+		<button
+			class="purple-button"
+			type="button"
+			onclick={handleGoNext}
+		>
+			Шаг вперед
+		</button>
+	</div>
+	
 </section>

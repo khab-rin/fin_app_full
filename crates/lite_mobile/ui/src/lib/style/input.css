@@ -1,4 +1,126 @@
-/* Контейнер секции */
+.green-field {
+    --field-color: green;
+}
+
+.yellow-field {
+    --field-color: #eab308; /* Насыщенный желтый для видимости рамок */
+}
+
+.blue-field {
+    --field-color: blue;
+}
+
+/* ==========================================================================
+   2. ОБЩИЕ СТИЛИ ДЛЯ ВСЕХ LABEL (Одинаковые для каждого поля)
+   ========================================================================== */
+.green-field-label,
+.yellow-field-label,
+.blue-field-label {
+    font-size: 12px;           /* Небольшой аккуратный размер букв */
+    color: #000000 !important; /* Цвет строго черный */
+    font-weight: 600;          /* Слегка жирный для хорошей читаемости */
+    margin-bottom: 2px;        /* Уменьшили отступ: теперь он максимально приклеен к инпуту */
+    display: inline-block;     /* inline-block занимает высоту СТРОГО по размеру текста, а не всю строку */
+    width: fit-content;        /* Защита: элемент физически сжимается до границ текста */
+    line-height: 1;            /* Схлопывает лишние скрытые отступы браузера вокруг букв */
+    padding: 0;                /* Обнуляем возможные внутренние отступы */
+    margin-top: 0;             /* Обнуляем отступ сверху, чтобы не отдаляться от предыдущих элементов */
+}
+
+/* ==========================================================================
+   3. УПРАВЛЕНИЕ ПРОЗРАЧНОСТЬЮ ПОЛЕЙ ПРОЦЕНТАМИ (Сразу для всех цветов)
+   ========================================================================== */
+
+/* СОСТОЯНИЕ 1: Почти прозрачный (когда внутри виден placeholder) */
+.green-field,
+.yellow-field,
+.blue-field {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.75rem;
+    border: 1px solid color-mix(in srgb, var(--field-color) 40%, transparent);
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    color: #000000 !important; /* Текст пользователя всегда черный */
+    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    background-color: color-mix(in srgb, var(--field-color) 15%, transparent);
+}
+
+/* СОСТОЯНИЕ 2: Средняя прозрачность (когда пользователь пишет / фокус) */
+.green-field:focus,
+.yellow-field:focus,
+.blue-field:focus {
+    background-color: color-mix(in srgb, var(--field-color) 50%, transparent);
+    border-color: var(--field-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--field-color) 20%, transparent); 
+}
+
+/* СОСТОЯНИЕ 3: Совсем не прозрачный (когда заполнено правильно и фокус ушел) */
+.green-field:not(:placeholder-shown):not(:focus),
+.yellow-field:not(:placeholder-shown):not(:focus),
+.blue-field:not(:placeholder-shown):not(:focus) {
+    background-color: var(--field-color);
+    border-color: var(--field-color);
+}
+
+
+.green-field::placeholder,
+.yellow-field::placeholder,
+.blue-field::placeholder {
+    color: #6b7280;
+}
+
+.green-field:disabled,
+.yellow-field:disabled,
+.blue-field:disabled {
+    -webkit-appearance: none;   /* Сброс системных стилей Apple */
+    appearance: none;            /* Сброс системных стилей остальных браузеров */
+    
+    background-color: #ffffff !important; /* Насильно делаем фон чисто белым */
+    border-color: #d1d5db !important;     /* Делаем рамку нейтральной светло-серой */
+    color: #9ca3af !important;            /* Цвет текста становится блеклым */
+    cursor: not-allowed;                  /* Курсор меняется на знак "запрещено" */
+    box-shadow: none !important;          /* Убираем любые тени при блокировке */
+    opacity: 1;                           /* Защита от системного затухания в iOS */
+}
+
+.green-field.input-error,
+.yellow-field.input-error,
+.blue-field.input-error {
+    /* Нежно-красный плотный фон, полученный смешиванием красного и белого */
+    background-color: color-mix(in srgb, red 12%, white) !important; 
+    border-color: red !important;
+}
+
+/* Вид поля с ошибкой, когда пользователь кликнул в него (в фокусе) */
+.green-field.input-error:focus,
+.yellow-field.input-error:focus,
+.blue-field.input-error:focus {
+    background-color: color-mix(in srgb, red 20%, white) !important; /* Чуть насыщеннее при вводе */
+    border-color: red !important;
+    /* Красное фокусное кольцо вокруг поля */
+    box-shadow: 0 0 0 3px color-mix(in srgb, red 20%, transparent) !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .input-section {
     display: flex;
     flex-direction: column;
@@ -11,12 +133,6 @@
     margin: 1rem auto;
 }
 
-/* Группа ввода */
-.input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
 
 /* Лейбл */
 .input-group-label {
@@ -42,35 +158,11 @@
     background-color: #0da3d1a0;
 }
 
-.input-field:disabled {
-    -webkit-appearance: none; /* Сбрасываем системные стили Safari/Chrome */
-    appearance: none;          /* Сбрасываем системные стили остальных браузеров */
-    
-    background-color: #4c829280 !important; /* Насильно красим в светло-серый */
-    color: #080000;                       /* Делаем текст внутри блеклым */
-    cursor: not-allowed;
-    opacity: 1;                           /* Убираем возможную прозрачность от браузера */
-}
 
 
-/* Стилизация ошибки */
-.input-error {
-    border-color: #ef4444 !important;
-}
 
-.input-error:focus {
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
-}
 
-.input-error-span {
-    font-size: 0.8rem;
-    color: #ef4444;
-    margin-top: -0.25rem;
-}
 
-/* ==========================================================================
-   СТИЛИ ДЛЯ СЕЛЕКТОРА ГРАЖДАНСТВА (INPUT-SELECT)
-   ========================================================================== */
 
 /* Контейнер группы (лейбл + селектор) */
 .input-select-group {

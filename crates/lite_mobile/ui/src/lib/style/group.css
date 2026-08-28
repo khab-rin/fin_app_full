@@ -1,0 +1,31 @@
+.group-one,
+.group-two,
+.group-three {
+    display: grid;             /* Включаем сетку Grid для управления элементами */
+    gap: 1rem;                 /* Расстояние между кнопками по горизонтали и вертикали */
+    width: 100%;               /* Занимает всю ширину родительского блока */        /* Отступы сверху и снизу всей области */
+		background-color: rgba(0, 0, 0, 0.1); 
+    border: 1px solid rgba(0, 0, 0, 0.15); 
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    box-sizing: border-box;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.group-one:hover,
+.group-two:hover,
+.group-three:hover {
+    background-color: rgba(0, 0, 0, 0.15); 
+    border-color: rgba(0, 0, 0, 0.25); 
+}
+
+.group-one {
+    grid-template-columns: repeat(1, 1fr);
+}
+.group-two {
+    grid-template-columns: repeat(2, 1fr);
+}
+.group-three {
+    grid-template-columns: repeat(3, 1fr);
+}

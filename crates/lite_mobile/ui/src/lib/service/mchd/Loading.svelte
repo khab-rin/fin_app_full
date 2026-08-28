@@ -56,69 +56,69 @@
 </script>
 
 
-<section class="wide-button-section">
-    <div class="wide-button-group">
+<section class="group-one">
+    <div>
         <button
             type="button"
-            class="wide-button"
+            class="green-button"
             onclick={goToBTBMchd}
             disabled={isBTBPushed}
         >
-            <span class="wide-button-span">
+            <span class="green-button-span">
                 Создать B2B МЧД
             </span>
         </button>
     </div>
 
-    <div class="wide-button-group">
+    <div>
         <button
             type="button"
-            class="wide-button"
+            class="green-button"
             onclick={goToFnsMchd}
             disabled={isFnsPushed}
         >
-            <span class="wide-button-span">
+            <span class="green-button-span">
                 Создать МЧД для отчетности
             </span>
         </button>
     </div>
 
-    <div class="wide-button-group">
+    <div>
         <button
             type="button"
-            class="wide-button"
+            class="green-button"
             onclick={goToHomeMchd}
             disabled={isHomePushed}
         >
-            <span class="wide-button-span">
+            <span class="green-button-span">
                 Создать МЧД для работы в системе
             </span>
         </button>
     </div>
 
 
-    <div class="wide-button-group">
+    <div>
         <button
             type="button"
-            class="wide-button"
+            class="green-button"
             onclick={goToLendMchd}
             disabled={isLendPushed}
 
             >
-            <span class='wide-button-span'>
+            <span class='green-button-span'>
                 Отправить подписанный МЧД
             </span>
         </button>
     </div>
 
-    <div class="wide-button-group">
+    <div>
         <button
             type="button"
-            class="wide-button"
+            class="green-button"
             disabled={isShowPowersPushed}
             onclick={goToShowPowers}
             >
-            <span class='wide-button-span'>
+            <span class='green-button-span'>
                 Посмотреть текущие полномочия
             </span>
         </button>

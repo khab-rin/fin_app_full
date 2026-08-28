@@ -104,32 +104,32 @@
 
 
 
-<section class="input-section">
-    <div class="input-wide-button-grid">
-        <label class="input-wide-button-grid-label" for="jsonFilePath">
+<section class="group-one">
+    <div>
+        <label class="green-field-label" for="jsonFilePath">
             Загрузите путь до json файла
         </label>
-  
         <input
             type="text"
             id="jsonFilePath"
             value={jsonFilePath}
-            class="input-field"
+            class="green-field"
+			disabled={true}
         />
         <button
             type="button"
             id="xmlFileButton"
-            class="wide-button"
+            class="green-button"
             onclick={getJsonFilePath}
             disabled={isLoadJsonFile}
-            >
+        >
             Загрузите xml файл
         </button>
 
     </div>
 
-    <div class="input-wide-button-grid">
-        <label class="input-wide-button-grid-label" for="signFilePath">
+    <div>
+        <label class="green-field-label" for="signFilePath">
             Загрузите путь до файла ЭЦП
         </label>
   
@@ -137,32 +137,32 @@
             type="text"
             id="signFilePath"
             value={signFilePath}
-            class="input-field"
+            class="green-field"
+			disabled={true}
         />
         <button
             type="button"
             id="sigFileButton"
-            class="wide-button"
+            class="green-button"
             onclick={getSignFilePath}
             disabled={isLoadSignFile}
-            >
+        >
             Загрузите файл подписи
         </button>
 
     </div>
+
+	<div>
+		<button
+			type="button"
+			id='Register'
+			class='purple-button'
+			disabled={isPushedRegister || IsDataReady}
+			onclick={register}
+
+		>
+			<span class='purple-button-span'>Отправить файлы на регистрацию</span>
+		</button>
+	</div>
 </section>
 
-<div class="main-button-group">
-    <button
-        type="button"
-        id='Register'
-        class='main-button'
-        disabled={isPushedRegister || IsDataReady}
-        onclick={register}
-
-        >
-        <span class='main-button-span'>Отправить файлы на регистрацию</span>
-    </button>
-
-
-</div>

@@ -29,8 +29,6 @@
     let jsonFileByteArray: Uint8Array | null = null;
 
 
-
-
     async function saveDoc(file: Uint8Array | null, fileType: 'doc' | 'json') {
         if (!file) {
             console.error("Ошибка: Попытка сохранить пустой файл (null)");
@@ -80,21 +78,21 @@
 
 </script>
 
-<section class='input-section'>
-    <div class='input-wide-button-grid'>
-        <label class='input-wide-button-grid-label' for='docFile'>
+<section class='group-one'>
+    <div>
+        <label class='green-field-label' for='docFile'>
             Сохранить файл в формате doc
         </label>
         <input
             id='docFile'
             type='text'
             value={filePath.doc}
-            class='input-field'
+            class='green-field'
         >
 
         <button
             type='button'
-            class='wide-button'
+            class='green-button'
             onclick={() => saveDoc(docFileBytesArray, 'doc')}
             disabled={isSaved['doc']}
         >
@@ -102,20 +100,20 @@
         </button>
     </div>
 
-    <div class='input-wide-button-grid'>
-        <label class='input-wide-button-grid-label' for='jsonFile'>
+    <div>
+        <label class='green-field-label' for='jsonFile'>
             Сохранить файл в формате json
         </label>
         <input
+			class='green-field'
             id='jsonFile'
             type='text'
             value={filePath.json}
-            class='input-field'
         >
 
         <button
             type='button'
-            class='wide-button'
+            class='green-button'
             onclick={() => saveDoc(jsonFileByteArray, 'json')}
             disabled={isSaved['json']}
         >
