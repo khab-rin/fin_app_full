@@ -2,4 +2,4 @@
 import type { OperationInfo } from "./OperationInfo";
 import type { OperationRaw } from "./OperationRaw";
 
-export type OperationStep = { "AccInput": { text: OperationInfo, } } | { "Loading": { text: OperationInfo, } } | { "ManualInput": { text: OperationInfo, } } | { "NewBankAcc": { text: OperationInfo, } } | { "ProcessSuccess": { text: OperationInfo, count: number, } } | { "StatementLoader": { text: OperationInfo, } } | { "StatementSuccess": { text: OperationInfo, operations: Array<OperationRaw>, } } | { "TryLater": { text: OperationInfo, } };
+export type OperationStep = { "AccInput": { text: OperationInfo, } } | { "Loading": { text: OperationInfo, } } | { "ManualInput": { text: OperationInfo, } } | { "ProcessSuccess": { text: OperationInfo, count: number, } } | { "StatementLoader": { text: OperationInfo, } } | { "StatementSuccess": { text: OperationInfo, operations: Array<OperationRaw>, } } | { "TryLater": { text: OperationInfo, } };

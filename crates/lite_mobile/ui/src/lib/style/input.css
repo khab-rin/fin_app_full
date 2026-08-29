@@ -1,14 +1,72 @@
 .green-field {
     --field-color: green;
 }
+.green-field-select {
+    background-color: color-mix(in srgb, #22c55e 15%, transparent) !important;
+    border: 1px solid color-mix(in srgb, #22c55e 40%, transparent);
+}
+.green-field-select:focus {
+    background-color: color-mix(in srgb, #22c55e 50%, transparent) !important;
+    border-color: #22c55e;
+    box-shadow: 0 0 0 3px color-mix(in srgb, #22c55e 20%, transparent); 
+}
+.green-field-select option {
+    background-color: color-mix(in srgb, #22c55e 12%, white) !important; /* Плотный нежно-зеленый фон */
+    color: #000000 !important;
+}
+.green-field-select option:disabled {
+    color: #9ca3af !important;
+}
+
+
+
+
 
 .yellow-field {
     --field-color: #eab308; /* Насыщенный желтый для видимости рамок */
 }
+.yellow-field-select {
+    background-color: color-mix(in srgb, #eab308 15%, transparent) !important;
+    border: 1px solid color-mix(in srgb, #eab308 40%, transparent);
+}
+.yellow-field-select:focus {
+    background-color: color-mix(in srgb, #eab308 50%, transparent) !important;
+    border-color: #eab308;
+    box-shadow: 0 0 0 3px color-mix(in srgb, #eab308 20%, transparent); 
+}
+.yellow-field-select option {
+    background-color: color-mix(in srgb, #eab308 12%, white) !important; /* Плотный нежно-желтый фон */
+    color: #000000 !important;
+}
+.yellow-field-select option:disabled {
+    color: #9ca3af !important;
+}
+
+
+
+
 
 .blue-field {
     --field-color: blue;
 }
+.blue-field-select {
+    background-color: color-mix(in srgb, #3b82f6 15%, transparent) !important;
+    border: 1px solid color-mix(in srgb, #3b82f6 40%, transparent);
+}
+.blue-field-select:focus {
+    background-color: color-mix(in srgb, #3b82f6 50%, transparent) !important;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px color-mix(in srgb, #3b82f6 20%, transparent); 
+}
+
+.blue-field-select option {
+    background-color: color-mix(in srgb, #3b82f6 12%, white) !important; /* Плотный нежно-синий фон */
+    color: #000000 !important;
+}
+.blue-field-select option:disabled {
+    color: #9ca3af !important;
+}
+
 
 /* ==========================================================================
    2. ОБЩИЕ СТИЛИ ДЛЯ ВСЕХ LABEL (Одинаковые для каждого поля)
@@ -102,6 +160,122 @@
     /* Красное фокусное кольцо вокруг поля */
     box-shadow: 0 0 0 3px color-mix(in srgb, red 20%, transparent) !important;
 }
+
+.green-field-select,
+.yellow-field-select,
+.blue-field-select {
+		-webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 100%;
+    padding: 0.75rem 2.5rem 0.75rem 0.75rem; /* Справа отступ больше под стрелочку */
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    color: #000000 !important; /* Текст пользователя всегда черный и читаемый */
+    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+		background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://w3.org' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+}
+
+.green-field-select:disabled,
+.yellow-field-select:disabled,
+.blue-field-select:disabled {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    
+    cursor: not-allowed;
+    opacity: 1; /* Отключаем системное затухание Apple/Chrome */
+    background-color: #ffffff !important; /* Белый фон при блокировке, как у инпутов */
+    border-color: #d1d5db !important;     /* Нейтральная серая рамка */
+    color: #9ca3af !important;            /* Блеклый цвет текста */
+    box-shadow: none !important;
+    
+    /* Меняем стрелочку на полупрозрачную серую */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-opacity='0.5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+}
+
+.green-field-select.input-error,
+.yellow-field-select.input-error,
+.blue-field-select.input-error {
+    background-color: color-mix(in srgb, red 12%, white) !important; 
+    border-color: red !important;
+}
+
+/* Ошибка в фокусе */
+.green-field-select.input-error:focus,
+.yellow-field-select.input-error:focus,
+.blue-field-select.input-error:focus {
+    background-color: color-mix(in srgb, red 20%, white) !important;
+    border-color: red !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, red 20%, transparent) !important;
+}
+
+/* Текст ошибки под селектором (Универсальный мелкий спан для всей формы) */
+.input-select-error-span {
+    display: block;
+    font-size: 11px;
+    color: red;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+
+/* ==========================================================================
+   4. ПОДСКАЗКИ (Кастомный Tooltip со знаком вопроса)
+   ========================================================================== */
+
+.input-tool {
+    cursor: help;
+    border: 1px solid #9ca3af;
+    border-radius: 50%;
+    padding: 1px 5px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #4b5563;
+    margin-left: 6px;
+    position: relative;
+    display: inline-block;
+    line-height: 1;
+    background-color: #f3f4f6;
+    vertical-align: middle;
+}
+
+/* Всплывающее окно подсказки при наведении */
+.input-tool::after {
+    content: attr(data-input-tool);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 130%;                  /* Появление ровно под знаком вопроса */
+    width: 260px;               /* Оптимальная ширина для мобильных экранов */
+    padding: 10px;
+    background: #1f2937;        /* Современный графитовый темный фон */
+    color: #ffffff;
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 1.4;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-weight: 400;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+    z-index: 100;
+    pointer-events: none;       /* Чтобы подсказка не перехватывала мышь */
+    text-align: left;
+    white-space: normal;        /* Разрешаем автоматический перенос строк текста */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.input-tool:hover::after {
+    visibility: visible;
+    opacity: 1;
+}
+
 
 
 

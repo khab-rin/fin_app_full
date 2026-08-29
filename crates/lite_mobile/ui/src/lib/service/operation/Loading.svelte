@@ -31,33 +31,42 @@
 	}
 </script>
 
-<section class='wide-button-section'>
-    <div class='wide-button-group'>
-        <button
-            type='button'
-            class='wide-button'
-            onclick={goToStatementParser}
-            disabled={isPushedStatementParser}
-        >
-            <span class='wide-button-span'>
-                Загрзить проводки из банковской выписки
-            </span>
-        </button>
-    </div>
 
-    <div class='wide-button-group'>
-        <button
-            type='button'
-            class='wide-button'
-            onclick={goToManualInput}
-            disabled={isPushedManualInput}
-        >
-            <span class='wide-button-span'>
-                Создать проводки вручную
-            </span>
-        </button>
-    </div>
-</section>
+<div class='group-one'>
+	<button
+		type='button'
+		class='green-button'
+		onclick={goToStatementParser}
+		disabled={isPushedStatementParser}
+	>
+		<span class='green-button-span'>
+			Загрзить проводки из банковской выписки
+		</span>
+	</button>
+
+	<button
+		type='button'
+		class='green-button'
+		onclick={goToManualInput}
+		disabled={isPushedManualInput}
+	>
+		<span class='green-button-span'>
+			Создать проводки вручную
+		</span>
+	</button>
+
+	<button
+		type='button'
+		class='green-button'
+		onclick={goToNewBankAcc}
+		disabled={isPushedManualInput}
+	>
+		<span class='green-button-span'>
+			Добавить расчетный счет
+		</span>
+	</button>
+</div>
+
 
 
 

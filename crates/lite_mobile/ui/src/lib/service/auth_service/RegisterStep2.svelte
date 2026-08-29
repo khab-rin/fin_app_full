@@ -156,12 +156,12 @@
 		<button
 			type="button"
 			id='Register'
-			class='purple-button'
+			class='green-button'
 			disabled={isPushedRegister || IsDataReady}
 			onclick={register}
 
 		>
-			<span class='purple-button-span'>Отправить файлы на регистрацию</span>
+			<span class='green-button-span'>Отправить файлы на регистрацию</span>
 		</button>
 	</div>
 </section>

@@ -23,19 +23,17 @@
     });
 </script>
 
-<section class='info-section'>
+<section class='group-one'>
     <h3 class='h3'> Полномочия для доступа к разделам системы </h3>
 
     <ul class='info-group'>
         {#each homePowers as power (power)}
             <li class='key-value-info'>
-                
                 {#await currentMchdStep.get_power_info(power)}
-                    
-                    <span class="info-value-span">Загрузка...</span>
+                    <span class="green-field-span for={power}">Загрузка...</span>
                 {:then info} 
-                    <span class='info-key-span'>{info?.code}</span>
-                    <span class="info-value-span">{info?.name}</span>
+					<label class="green-field-label" for={power}>{power}</label>
+                    <span class="info-value-span" id={power}>{info?.name}</span>
                 {:catch error}
                     <span title={error} class="info-value-error-span">Ошибка</span>
                 {/await}
@@ -44,17 +42,17 @@
     </ul>
 </section>
 
-<section class='info-section'>
+<section class='group-one'>
     <h3 class='h3'> Полномочия для отчетности в ФНС </h3>
 
-    <ul class='info-group'>
+	<ul class='info-group'>
         {#each fnsPowers as power (power)}
             <li class='key-value-info'>
-                <span class='info-key-span'>{power}</span>
                 {#await currentMchdStep.get_power_info(power)}
-                    <span class="info-value-span">Загрузка...</span>
+                    <span class="green-field-span for={power}">Загрузка...</span>
                 {:then info} 
-                    <span class="info-value-span">{info?.name}</span>
+					<label class="green-field-label" for={power}>{power}</label>
+                    <span class="info-value-span" id={power}>{info?.name}</span>
                 {:catch error}
                     <span title={error} class="info-value-error-span">Ошибка</span>
                 {/await}
@@ -63,17 +61,17 @@
     </ul>
 </section>
 
-<section class='info-section'>
+<section class='group-one'>
     <h3 class='h3'> Полномочия для ЭДО с контрагентами </h3>
 
     <ul class='info-group'>
-        {#each btbPowers as power (power)}
+        {#each homePowers as power (power)}
             <li class='key-value-info'>
-                <span class='info-key-span'>{power}</span>
                 {#await currentMchdStep.get_power_info(power)}
-                    <span class="info-value-span">Загрузка...</span>
+                    <span class="green-field-span for={power}">Загрузка...</span>
                 {:then info} 
-                    <span class="info-value-span">{info?.name}</span>
+					<label class="green-field-label" for={power}>{info?.code}</label>
+                    <span class="info-value-span" id={power}>{info?.name}</span>
                 {:catch error}
                     <span title={error} class="info-value-error-span">Ошибка</span>
                 {/await}

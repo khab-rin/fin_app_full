@@ -85,9 +85,9 @@
 
 
 
-<section class="input-section">
-    <div class="input-wide-button-grid">
-        <label class="input-wide-button-grid-label" for="xlsFile">
+<section class="group-one">
+    <div>
+        <label class="green-field-label" for="xlsFile">
             Сохранить XML файл
         </label>
   
@@ -95,11 +95,11 @@
             id="xlsFile"
             type="text"
             value={xmlPathSaved}
-            class="input-field"
+            class="green-field"
         />
         <button
             type="button"
-            class="wide-button"
+            class="green-button"
             onclick={save_xml_file}
             disabled={xmlSavePushed}
             >
@@ -108,8 +108,8 @@
 
     </div>
 
-    <div class="input-wide-button-grid">
-        <label class="input-wide-button-grid-label" for="xlsFile">
+    <div>
+        <label class="green-field-label" for="xlsFile">
             Сохранить DOC файл
         </label>
   
@@ -117,11 +117,11 @@
             id="xlsFile"
             type="text"
             value={docPathSaved}
-            class="input-field"
+            class="green-field"
         />
         <button
             type="button"
-            class="wide-button"
+            class="green-button"
             onclick={save_doc_file}
             disabled={docSavePushed}
             >

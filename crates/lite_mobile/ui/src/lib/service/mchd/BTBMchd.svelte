@@ -192,22 +192,22 @@
     </div>
 </section>
 
-<div class="main-button-group">
-    <button
-        type="button"
-        hidden={firstStep}
-        onclick={switchSecondStep}
-        disabled={isMainPushed || firstDone}
-        class="main-button"
-        id="mchd-tax-firstStep-button"
-        
-    >
-        <span class="main-button-span">
-            Завершить 1 этап
-        </span>
 
-    </button>
-</div>
+<button
+	type="button"
+	hidden={firstStep}
+	onclick={switchSecondStep}
+	disabled={isMainPushed || firstDone}
+	class="green-button"
+	id="mchd-tax-firstStep-button"
+	
+>
+	<span class="green-button-span">
+		Завершить 1 этап
+	</span>
+
+</button>
+
 
 
 <section class="group-one" hidden={secondStep}>
@@ -323,40 +323,40 @@
         {/if}
     </div>
 
-    <div>
+    <div class="green-field-select">
         <label class="green-field-label" for="userIsCitizen">Гражданство</label>
         <select
             id="userIsCitizen"
             bind:value={currentMchdStep.data.userIsCitizen.value}
             disabled={isMainPushed}
-            class="input-select"
-            class:input-select-error={!currentMchdStep.data.managerIsCitizen.value}
+            class="green-field"
+            class:input-error={!currentMchdStep.data.userIsCitizen.isValid}
         >
             <option value="" disabled selected>Выберите статус гражданства</option>
             <option value="1">1 — Гражданин РФ</option>
             <option value="2">2 — Иностранный гражданин</option>
             <option value="3">3 — Лицо без гражданства</option>
         </select>
-        {#if !currentMchdStep.data.managerIsCitizen.isValid}
+        {#if !currentMchdStep.data.userIsCitizen.isValid}
             <span class="input-select-error-span">Выберите статус из списка</span>
         {/if}
     </div>
 </section>
 
-<div class="main-button-group">
-    <button
-        type="button"
-        hidden={secondStep}
-        onclick={switchThirdStep}
-        disabled={isMainPushed || secondDone}
-        class="main-button"
-        id="mchd-tax-secondStep-button"
-    >
-        <span class="main-button-span">
-            Завершить 2 этап
-        </span>
-    </button>
-</div>
+
+<button
+	type="button"
+	hidden={secondStep}
+	onclick={switchThirdStep}
+	disabled={isMainPushed || secondDone}
+	class="green-button"
+	id="mchd-tax-secondStep-button"
+>
+	<span class="green-button-span">
+		Завершить 2 этап
+	</span>
+</button>
+
 
 <section class="group-one" hidden={thirdStep}>
     <div>
@@ -423,7 +423,7 @@
         {/if}
     </div>
 
-    <div>
+    <div class="green-field-select">
         <label class="green-field-label" for="userGender">Пол пользователя</label>
         <select 
             id="userGender"
@@ -522,15 +522,14 @@
         />
     </div>
 
-    <!-- Гражданство -->
-    <div>
+    <div class="green-field-select">
         <label class="green-field-label" for="userIsCitizen">Гражданство</label>
         <select
             id="userIsCitizen"
             bind:value={currentMchdStep.data.userIsCitizen.value}
             disabled={isMainPushed}
-            class="green-field-select"
-            class:input-select-error={!currentMchdStep.data.userIsCitizen.isValid}
+            class="green-field"
+            class:input-error={!currentMchdStep.data.userIsCitizen.isValid}
         >
             <option value="" disabled selected>Выберите статус гражданства</option>
             <option value="1">1 — Гражданин РФ</option>
@@ -543,21 +542,21 @@
     </div>
 </section>
 
-<div class="main-button-group">
-    <button
-        type="button"
-        hidden={thirdStep}
-        onclick={ switchForthStep }
-        disabled={isMainPushed || thirdDone}
-        class="main-button"
-    >
-        <span class="main-button-span">
-            Завершить 3 этап
-        </span>
-    </button>
-</div>
 
-<section class="input-section" hidden={forthStep}>
+<button
+	type="button"
+	hidden={thirdStep}
+	onclick={ switchForthStep }
+	disabled={isMainPushed || thirdDone}
+	class="green-button"
+>
+	<span class="green-button-span">
+		Завершить 3 этап
+	</span>
+</button>
+
+
+<section class="group-one" hidden={forthStep}>
     <h3 class="h3">Выберите полномочия</h3>
 
     <label class="check-box-label">
@@ -569,81 +568,88 @@
         <span class="check-box-span">Выбрать все машинописные полномочия для взаимодействия с ФНС РФ</span>
     </label>
 
-    <ul class="input-group">
-        {#each allPowers as power (power)}
-            <li class="check-box-li">
-                <label class="check-box-label">
-                    <input
-                        type="checkbox"
-                        checked={selectedPowers.has(power)}
-                        onchange={() => togglePower(power)}
-                        disabled={allPowersSelected}
-                    />
-                    
-                    <span class="check-box-small-span">{power}</span>
-
-                    {#await currentMchdStep.get_power_info(power)}
-                        <span class="check-box-span">Загрузка...</span>
-                    {:then info}
-                        <span class="check-box-span">{info?.name}</span>
-                    {:catch error}
-                        <span title={error} class="check-box-span" style="color: red;">Ошибка</span>
-                    {/await}
-                </label>
-            </li>
-        {/each}
-    </ul>
-
+	<ui class='group-one'>
+		{#each allPowers as power (power)}
+			<li>
+				<label
+					class='green-field-label'
+					for={power}
+				>
+					{power}
+				</label>
+				<div 
+					class='text-check-box'
+					id={power}
+				>
+					<span> 
+						{#await currentMchdStep.get_power_info(power)}
+							Загрузка
+						{:then info} 
+							{info?.name}
+						{:catch error}
+							Ошибка
+						{/await}
+					</span>	
+					<input
+						type="checkbox"
+						checked={selectedPowers.has(power)}
+						onchange={() => togglePower(power)}
+						disabled={allPowersSelected}
+					/>
+				</div>
+			</li>
+		{/each}
+	</ui>
 </section>
 
-<section class="navi-button-section">
-    <div class="navi-button-group">
+<section class='group-two'>
+    <div>
         <button
-            class="medium-button"
+            class="purple-button"
             type="button"
             hidden={!firstStep}
             onclick={switchFirstStep}
         >
-            <span class="navi-button-text">
+            <span class="purple-button-span">
                 Этап 1
             </span>
         </button>
     </div>
 
-    <div class="navi-button-group">
+    <div>
         <button
-            class="medium-button"
+            class="purple-button"
             type="button"
             hidden={!secondStep}
             onclick={switchSecondStep}
         >
-            <span class="navi-button-text">
+            <span class="purple-button-span">
                 Этап 2
             </span>
         </button>
     </div>
 
-    <div class="navi-button-group">
+    <div>
         <button
-            class="medium-button"
+            class="purple-button"
             type="button"
             hidden={!thirdStep}
             onclick={switchThirdStep}
         >
-            <span class="navi-button-text">
+            <span class="purple-button-span">
                 Этап 3
             </span>
         </button>
     </div>
 
-    <div class="navi-button-group">
+    <div>
         <button
-            class="medium-button"
+            class="purple-button"
             type="button"
             hidden={!forthStep}
             onclick={switchForthStep}
         >
-            <span class="navi-button-text">
+            <span class="purple-button-span">
                 Этап 4
             </span>
         </button>
@@ -651,16 +657,14 @@
 </section>
 
 
-<div class="main-button-group">
-    <button
-        type="button"
-        id="lend-mchd"
-        class="main-button"
-        onclick={lendMchd}
-        disabled={allDone}>
-        <span class=main-batton-span>
-            Зарегистрировать
-        </span>
-    </button>
 
-</div>
+<button
+	type="button"
+	id="lend-mchd"
+	class="blue-button"
+	onclick={lendMchd}
+	disabled={allDone}>
+	<span class=main-batton-span>
+		Зарегистрировать
+	</span>
+</button>

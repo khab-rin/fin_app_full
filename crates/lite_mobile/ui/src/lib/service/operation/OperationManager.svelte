@@ -23,22 +23,30 @@
 {/if}
 
 
-<div class="main-button-group">
-	<button
-		type='button'
-		class='main-button'
-		onclick={goToLoading}
-	>
-		Меню операций
-	</button>
+<div class='group-one'>
+	<div>
+		<button
+			type='button'
+			class='blue-button'
+			onclick={goToLoading}
+		>
+			<span class="blue-button-span">
+				Меню операций
+			</span>
+		</button>
+	</div>
 
-    <button
-        type="button"
-        class="main-button"
-        onclick={closeOper}
-        >
-        <span class="main-button-span">
-            Основной экран
-        </span>
-    </button>
+	<div>
+		<button
+			type="button"
+			class="blue-button"
+			onclick={closeOper}
+			>
+			<span class="blue-button-span">
+				Основной экран
+			</span>
+		</button>
+	</div>
+
+
 </div>

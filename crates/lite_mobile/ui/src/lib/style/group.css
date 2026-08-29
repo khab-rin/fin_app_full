@@ -1,31 +1,50 @@
+/* 1. ОБЩИЕ СТИЛИ ДЕКОРАЦИИ ДЛЯ ВСЕХ ГРУПП И ДЛЯ TEXT-CHECK-BOX */
+/* Эти свойства одинаково выделяют область для каждого элемента */
 .group-one,
 .group-two,
-.group-three {
-    display: grid;             /* Включаем сетку Grid для управления элементами */
-    gap: 1rem;                 /* Расстояние между кнопками по горизонтали и вертикали */
-    width: 100%;               /* Занимает всю ширину родительского блока */        /* Отступы сверху и снизу всей области */
-		background-color: rgba(0, 0, 0, 0.1); 
+.group-three,
+.text-check-box {
+    background-color: rgba(0, 0, 0, 0.1); 
     border: 1px solid rgba(0, 0, 0, 0.15); 
     border-radius: 12px;
     padding: 1.5rem;
-    margin: 2rem 0;
     box-sizing: border-box;
     transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
 }
 
+/* 2. ВНЕШНИЕ ОТСТУПЫ И ШИРИНА ДЛЯ БОЛЬШИХ ГРУПП */
+/* Оставляем margin здесь, чтобы .text-check-box внутри списка не создавал лишних гигантских отступов и не рос в размерах */
+.group-one,
+.group-two,
+.group-three {
+    width: 100%;
+    margin: 2rem 0;
+}
+
+/* 3. ЭФФЕКТ НАВЕДЕНИЯ (HOVER) */
+/* Анимация цвета работает одинаково для всех */
 .group-one:hover,
 .group-two:hover,
-.group-three:hover {
+.group-three:hover,
+.text-check-box:hover {
     background-color: rgba(0, 0, 0, 0.15); 
     border-color: rgba(0, 0, 0, 0.25); 
 }
 
-.group-one {
-    grid-template-columns: repeat(1, 1fr);
+/* 4. СТРУКТУРА ДЛЯ БОЛЬШИХ ГРУПП (GRID) */
+.group-one, .group-two, .group-three {
+    display: grid;
+    gap: 1rem;
 }
-.group-two {
-    grid-template-columns: repeat(2, 1fr);
-}
-.group-three {
-    grid-template-columns: repeat(3, 1fr);
+.group-one   { grid-template-columns: repeat(1, 1fr); }
+.group-two   { grid-template-columns: repeat(2, 1fr); }
+.group-three { grid-template-columns: repeat(3, 1fr); }
+
+/* 5. СТРУКТУРА ДЛЯ ВНУТРЕННЕЙ СТРОКИ (FLEX) */
+.text-check-box {
+    display: flex;
+    justify-content: space-between; /* Текст влево, чекбокс вправо */
+    align-items: center;           /* Центрирование элементов по вертикали */
+    width: 100%;                   /* Растягивается на всю ширину внутри li */
+    gap: 16px;                     /* Безопасное расстояние между текстом и чекбоксом */
 }
