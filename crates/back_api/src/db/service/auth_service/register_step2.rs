@@ -156,9 +156,6 @@ pub(crate) async fn register_step2(
         }
     }
 
-
-
-
     let crypto_url = format!(
         "{}/{}",
         state.config.crypto_servise.url.trim_end_matches('/'),
@@ -199,6 +196,8 @@ pub(crate) async fn register_step2(
         }
     };
 
+	tracing::info!(check = check_result.text);
+
     if !check_result.is_signed {
         return Ok(AuthStep::RegisterStep1 {text: AuthInfo::WrongSignFile});
     }
@@ -210,6 +209,8 @@ pub(crate) async fn register_step2(
             return Ok(failed_result)
         }
     };
+
+	tracing::info!(check = ?sign_fields);
 
 
     if !check_auth_person(&json_data, &sign_fields) {

@@ -65,12 +65,12 @@
     <h3 class='h3'> Полномочия для ЭДО с контрагентами </h3>
 
     <ul class='info-group'>
-        {#each homePowers as power (power)}
+        {#each btbPowers as power (power)}
             <li class='key-value-info'>
                 {#await currentMchdStep.get_power_info(power)}
                     <span class="green-field-span for={power}">Загрузка...</span>
                 {:then info} 
-					<label class="green-field-label" for={power}>{info?.code}</label>
+					<label class="green-field-label" for={power}>{power}</label>
                     <span class="info-value-span" id={power}>{info?.name}</span>
                 {:catch error}
                     <span title={error} class="info-value-error-span">Ошибка</span>

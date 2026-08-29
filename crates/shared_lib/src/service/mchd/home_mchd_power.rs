@@ -370,11 +370,6 @@ impl HomeMchdPower {
             HomeMchdPower::H1011,
         ]
     }
-
-    pub fn parse_from_str(val: &str) -> Self {
-        let val_beat = format!("\"{val}\"");
-        serde_json::from_str(&val_beat).unwrap_or(Self::Unknown)
-    }
 }
 
 

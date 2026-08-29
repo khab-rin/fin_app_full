@@ -100,13 +100,13 @@ pub(crate) async fn show_powers(
 
         if let Some(text) = text_powers {
             for power in text.as_ref().split(" -*- ") {
-                let home_power = HomeMchdPower::parse_from_str(power.trim());
+                let home_power = HomeMchdPower::parse_text_power(power.trim());
                 home_powers.insert(home_power);
             }
         }
 
         for power in &root_poa.delegate_powers.mchd_powers {
-            let home_power = HomeMchdPower::parse_from_str(power.powers_code.as_ref());
+            let home_power = HomeMchdPower::parse_text_power(power.powers_code.as_ref());
             if poa.tax_file_identificator.is_some() {
                 fns.insert(home_power);
             } else {

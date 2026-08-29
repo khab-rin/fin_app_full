@@ -48,9 +48,7 @@
 		placeholder="9 цифр"
 		class:input-error={!bic.isValid}
 	/>
-</div>
 
-<div class='group-one'>
 	<label class='green-field-label' for='operAccInn'>
 		Введите номер расчетного счета
 	</label>

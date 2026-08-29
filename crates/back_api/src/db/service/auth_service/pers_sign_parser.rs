@@ -87,7 +87,7 @@ pub fn check_auth_person(
     fields: &CryptoSignFields
 ) -> bool {
 
-    init_data.comp_inn == fields.comp_inn
+    init_data.pers_inn == fields.pers_inn && init_data.snils == fields.snils
 
 }
 
@@ -100,10 +100,6 @@ pub fn check_auth_manager(
 
     tracing::info!(init_data = ?init_data, fields = ?fields);
 
-    if init_data.comp_inn.len() == 10 {
-        fields.man_title.is_some() && init_data.pers_inn == fields.pers_inn
-    } else {
-        fields.pers_inn == init_data.pers_inn && fields.snils == init_data.snils
-    }
+    init_data.comp_inn == fields.comp_inn && init_data.pers_inn == fields.pers_inn
 
 }

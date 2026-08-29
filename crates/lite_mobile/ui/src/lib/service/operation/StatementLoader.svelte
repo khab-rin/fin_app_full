@@ -152,46 +152,46 @@
 
 </script>
 
-<section class='input-section'>
-    <div class='input-wide-button-grid'>
-        <label class="input-wide-button-grid-label" for="statementPath">
+<section class='group-one'>
+    <div>
+        <label class="green-input-label" for="statementPath">
             Укажите путь до файла выписки
         </label>
         <input
             type='text'
             id='statementPath'
             value={path}
-            class='input-field'
+            class='green-field'
 
         />
         <button
             type='button'
             id='statementPathButton'
-            class='wide-button'
+            class='green-button'
             onclick={selectFile}
             disabled={isPushFileLoad}
-            >
+        >
             Загрузите файл выписки
         </button>
-
     </div>
-</section>
 
+	<div>
+		<button
+			type="button"
+			class="green-button"
+			disabled={isPushedAccLoad}
+			
+			onclick={openAccModal}
+		>
 
-<div class="selector-wrapper">
-    <button
-        type="button"
-        class="wide-button"
-        disabled={isPushedAccLoad}
-        
-        onclick={openAccModal}
-    >
-
-        <span class="wide-button-span">
-        	{bankAccStr(selectedBankAcc)}
-        </span>
+			<span class="wide-button-span">
+				{bankAccStr(selectedBankAcc)}
+			</span>
     </button>
-</div>
+
+
+	</div>
+</section>
 
 
 <dialog 
@@ -203,33 +203,31 @@
     <h5>Выбор счета</h5>
 
 
-    <div class="selector-dialog-content">
+    <div class="group-one">
         {#if bankAccounts.length > 0}
-            <ul class="dialog-list">
+            <ul>
                 {#each bankAccounts as acc (acc)}
                     <li>
-                        <div class="wide-button-grid">
-                            <button 
-                                type="button" 
-                                class="wide-button"
-                                onclick={() => selectAcc(acc)}
-                            >
-                                <span class="wide-button-span">
-                                    {bankAccStr(acc)}
-                                </span>
-                            </button>
-                        </div>
+						<button 
+							type="button" 
+							class="yellow-button"
+							onclick={() => selectAcc(acc)}
+						>
+							<span class="yellow-button-span">
+								{bankAccStr(acc)}
+							</span>
+						</button>
                     </li>
                 {/each}
             </ul>
 
-            <div class="wide-button-grid">
-                <button class="wide-button"
+            <div>
+                <button class="yellow-button"
                     type="button"
                     onclick={closeAccModal}
                     >
                     
-                    <span class="wide-button-span">
+                    <span class="yellow-button-span">
                         Отмена
                     </span>
 
@@ -244,10 +242,10 @@
 
 </dialog>
 
-<div class = 'main-button-group'>
+<div class = 'group-one'>
     <button
         type='button'
-        class='main-button'
+        class='green-button'
         disabled={parseStatementDisabled}
         onclick ={parseStatement}
     >
@@ -257,9 +255,9 @@
     </button>
 </div>
 
-<section class='input-section'>
-    <div class='input-group'>
-        <label class='input-group-label' for='inputBic'>
+<section class='group-one'>
+    <div>
+        <label class='yellow-field-label' for='inputBic'>
             Введите бик Вашего банка
         </label>
         <input
@@ -268,31 +266,31 @@
             bind:value={bic.value}
             disabled={isPushAddAcc}
             placeholder="9 цифр"
-            class='input-field'
+            class='yellow-field'
             class:input-error={!bic.isValid}
         />
         {#if !bic.isValid}
-            <span class="input-error-span">
+            <span class="yellow-field-error-span">
                 Некорректный БИК
             </span>
         {/if}
     </div>
 
-    <div class='input-group'>
-        <label class='input-group-label' for='inputRasAcc'>
+    <div>
+        <label class='yellow-field-label' for='operStateLoaderRassAcc'>
             Введите номер расчетного счета
         </label>
         <input
             type='text'
-            id='inputRasAcc'
+            id='operStateLoaderRassAcc'
             bind:value={rasAcc.value}
             disabled={isPushAddAcc}
             placeholder="20 цифр"
-            class='input-field'
+            class='yellow-field'
             class:input-error={!rasAcc.isValid}
         />
         {#if !rasAcc.isValid}
-            <span class="input-error-span">
+            <span class="yellow-field-error-span">
                 Некорректный БИК
             </span>
         {/if}
