@@ -154,7 +154,7 @@
 
 <section class='group-one'>
     <div>
-        <label class="green-input-label" for="statementPath">
+        <label class="green-field-label" for="statementPath">
             Укажите путь до файла выписки
         </label>
         <input
@@ -164,33 +164,32 @@
             class='green-field'
 
         />
-        <button
-            type='button'
-            id='statementPathButton'
-            class='green-button'
-            onclick={selectFile}
-            disabled={isPushFileLoad}
-        >
-            Загрузите файл выписки
-        </button>
-    </div>
+	</div>
 
-	<div>
-		<button
-			type="button"
-			class="green-button"
-			disabled={isPushedAccLoad}
-			
-			onclick={openAccModal}
-		>
+	<button
+		type='button'
+		id='statementPathButton'
+		class='green-button'
+		onclick={selectFile}
+		disabled={isPushFileLoad}
+	>
+		Выбрать файл выписки
+	</button>
+ 
 
-			<span class="wide-button-span">
-				{bankAccStr(selectedBankAcc)}
-			</span>
+	<button
+		type="button"
+		class="green-button"
+		disabled={isPushedAccLoad}
+		
+		onclick={openAccModal}
+	>
+
+		<span class="wide-button-span">
+			{bankAccStr(selectedBankAcc)}
+		</span>
     </button>
 
-
-	</div>
 </section>
 
 
@@ -242,18 +241,18 @@
 
 </dialog>
 
-<div class = 'group-one'>
-    <button
-        type='button'
-        class='green-button'
-        disabled={parseStatementDisabled}
-        onclick ={parseStatement}
-    >
 
-        Загрузить выписку
+<button
+	type='button'
+	class='green-button'
+	disabled={parseStatementDisabled}
+	onclick ={parseStatement}
+>
 
-    </button>
-</div>
+	Загрузить выписку
+
+</button>
+
 
 <section class='group-one'>
     <div>
@@ -295,15 +294,13 @@
             </span>
         {/if}
     </div>
-</section>
 
-<div class = 'main-button-group'>
-    <button
+	<button
         type='button'
-        class='main-button'
+        class='green-button'
         disabled={isPushAddAcc || bankAccReady}
         onclick ={addAcc}
     >
         Добавить расчетный счет
     </button>
-</div>
+</section>

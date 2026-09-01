@@ -19,9 +19,6 @@
 }
 
 
-
-
-
 .yellow-field {
     --field-color: #eab308; /* Насыщенный желтый для видимости рамок */
 }
@@ -41,9 +38,6 @@
 .yellow-field-select option:disabled {
     color: #9ca3af !important;
 }
-
-
-
 
 
 .blue-field {
@@ -78,7 +72,7 @@
     color: #000000 !important; /* Цвет строго черный */
     font-weight: 600;          /* Слегка жирный для хорошей читаемости */
     margin-bottom: 2px;        /* Уменьшили отступ: теперь он максимально приклеен к инпуту */
-    display: inline-block;     /* inline-block занимает высоту СТРОГО по размеру текста, а не всю строку */
+    display: block;     /* inline-block занимает высоту СТРОГО по размеру текста, а не всю строку */
     width: fit-content;        /* Защита: элемент физически сжимается до границ текста */
     line-height: 1;            /* Схлопывает лишние скрытые отступы браузера вокруг букв */
     padding: 0;                /* Обнуляем возможные внутренние отступы */
@@ -281,195 +275,18 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-.input-section {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem; /* Отступ между группами полей */
-    padding: 2rem;
-    background-color: #a5bfc740;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    max-width: 500px;
-    margin: 1rem auto;
+.input-span {
+	font-size: 0.925rem;
+	color: #334155;
+	text-align: left;
+	font-weight: 450;
+	line-height: 1.4;
+	background-color: #ffffff;    /* Белый фон */
+	display: inline-block;        /* Позволяет задавать padding и border */
+	padding: 6px 12px;            /* Внутренние отступы: 6px сверху/снизу, 12px слева/справа */
+	border-radius: 6px;           /* Красивое легкое скругление углов */
+	border: 1px solid #e2e8f0;    /* Необязательно: тонкая серая рамка, чтобы фон не сливался с общей страницей */
+	width: 100%;                  /* Необязательно: если нужно, чтобы плашка растягивалась на всю ширину контейнера */
+	box-sizing: border-box;       /* Гарантирует, что padding не раздует ширину элемента */
 }
 
-
-/* Лейбл */
-.input-group-label {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #374151;
-}
-
-/* Поле ввода */
-.input-field {
-    padding: 0.75rem;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: all 0.2s ease;
-    outline: none;
-    background-color: #4c829280;
-}
-
-.input-field:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-    background-color: #0da3d1a0;
-}
-
-
-
-
-
-
-
-/* Контейнер группы (лейбл + селектор) */
-.input-select-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-/* Лейбл */
-.input-select-group-label {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #374151;
-}
-
-/* Сам выпадающий список (Базовое состояние) */
-.input-select {
-    /* Сбрасываем жесткие системные стили операционной системы/браузера */
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-
-    width: 100%;
-    padding: 0.75rem 2.5rem 0.75rem 0.75rem; /* Справа отступ больше под стрелочку */
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 1rem;
-    outline: none;
-    transition: all 0.2s ease;
-    
-    /* Цвет фона (если нужен плотный, укоротите до #4c8292) */
-    background-color: #4c829280 !important; 
-    color: #ffffff; /* Белый цвет текста, чтобы отлично читался */
-
-    /* Добавляем красивую кастомную стрелочку svg белого цвета вместо стандартной */
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
-    background-repeat: no-repeat;
-    background-position: right 0.75rem center;
-    background-size: 1rem;
-}
-
-/* Состояние фокуса (активно) */
-.input-select:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
-    background-color: #4c8292 !important; /* Делаем чуть плотнее при фокусе */
-}
-
-/* Состояние, когда поле заблокировано (disabled) */
-.input-select:disabled {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    
-    cursor: not-allowed;
-    opacity: 1; /* Отключаем системное затухание Apple/Chrome */
-    
-    /* Сохраняем фирменный синеватый фон, но делаем его блеклым */
-    background-color: rgba(76, 130, 146, 0.4) !important; 
-    color: rgba(255, 255, 255, 0.5) !important;
-    
-    /* Меняем стрелочку на полупрозрачную */
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-opacity='0.4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
-}
-
-/* Стилизация внутренних опций списка (чтобы они не были белыми) */
-.input-select option {
-    background-color: #4c8292 !important; /* Плотный цвет для выпадающего меню */
-    color: #ffffff !important;
-}
-
-/* Опция-заглушка (Выберите статус...) в заблокированном списке */
-.input-select option:disabled {
-    color: rgba(255, 255, 255, 0.4) !important;
-}
-
-/* ==========================================================================
-   ОШИБКИ И СИГНАЛИЗАЦИЯ
-   ========================================================================== */
-
-/* Состояние ошибки на селекторе */
-.input-select.input-select-error {
-    border-color: #ef4444 !important;
-}
-
-.input-select.input-select-error:focus {
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
-}
-
-/* Текст ошибки под селектором */
-.input-select-error-span {
-    display: block;
-    font-size: 0.8rem;
-    color: #ef4444;
-    margin-top: 0.25rem;
-}
-
-
-.input-tool {
-    cursor: help;
-    border: 1px solid #aaa;
-    border-radius: 50%;
-    padding: 2px 6px;
-    font-size: 10px;
-    color: #666;
-    margin-left: 5px;
-    position: relative;
-    display: inline-block;
-}
-
-.input-tool::after {
-    content: attr(data-input-tool);
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    top: 120%; /* Появление под знаком вопроса */
-    width: 300px; /* Фиксируем ширину для длинного текста */
-    padding: 10px;
-    background: #333;
-    color: #fff;
-    border-radius: 6px;
-    font-size: 12px;
-    line-height: 1.4;
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity 0.2s;
-    z-index: 100;
-    pointer-events: none; /* Чтобы подсказка не "перехватывала" мышь */
-    text-align: left;
-    white-space: normal; /* Разрешаем перенос строк */
-}
-
-.input-tool:hover::after {
-    visibility: visible;
-    opacity: 1;
-}

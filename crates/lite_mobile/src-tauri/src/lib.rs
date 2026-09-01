@@ -55,6 +55,8 @@ pub fn run_lib() {
 			commands::operation::cmd_process_operations,
             commands::operation::cmd_is_accounts_compatible,
             commands::operation::cmd_is_operation_exist,
+			commands::other::cmd_get_today,
+			commands::other::cmd_get_user_comp_ids,
             commands::other::cmd_validate_field,
             commands::sql_queries::cmd_add_comp_bank_acc,
             commands::sql_queries::cmd_get_comp_bank_accs,

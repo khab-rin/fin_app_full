@@ -10,6 +10,7 @@ import type { Contract } from "../rustModels/Contract";
 import type { Currency } from "../rustModels/Currency";
 import type { NewContrData } from "../rustModels/NewContrData";
 import type { BoxUuid } from "../rustModels/BoxUuid";
+import type {Date} from '$lib/models/rustModels/Date';
 
 export class OperationSvelte {
 	
@@ -334,6 +335,23 @@ export class OperationSvelte {
 		}
 		await this.data.ctrptyId.asyncSet(newCompany?.comp_id ?? '');
 		await this.newContrData.ctrPtyId.asyncSet(newCompany?.comp_id ?? '');
+	}
+
+	async cmdGetUserCompId() {
+		let [userId, compId] = await invoke<[BoxUuid, BoxUuid]>(
+		'cmd_get_user_comp_ids',
+			{}
+		);
+		this.data.userId.value = userId;
+		this.data.compId.value = compId;
+	}
+
+	async cmdGetToday() {
+		let today = await invoke<Date>(
+			'cmd_get_today',
+			{}
+		);
+		this.data.entrDate.value = today;
 	}
 
 	

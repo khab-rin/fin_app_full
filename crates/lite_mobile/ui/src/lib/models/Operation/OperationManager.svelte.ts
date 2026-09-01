@@ -56,10 +56,8 @@ class OperationManager {
             return StatementLoader
         } else if (OperationType.StatementSuccess in this._step) {
 			return StatementSuccess
-		} else if (OperationType.TryLater in this._step) {
+		} else {
             return TryLater
-        } else {
-            return null
         }
     }
 }

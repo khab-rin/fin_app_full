@@ -28,34 +28,17 @@
 
     <ul class='info-group'>
         {#each homePowers as power (power)}
-            <li class='key-value-info'>
-                {#await currentMchdStep.get_power_info(power)}
-                    <span class="green-field-span for={power}">Загрузка...</span>
-                {:then info} 
-					<label class="green-field-label" for={power}>{power}</label>
-                    <span class="info-value-span" id={power}>{info?.name}</span>
-                {:catch error}
-                    <span title={error} class="info-value-error-span">Ошибка</span>
-                {/await}
-            </li>
-        {/each}
-    </ul>
-</section>
-
-<section class='group-one'>
-    <h3 class='h3'> Полномочия для отчетности в ФНС </h3>
-
-	<ul class='info-group'>
-        {#each fnsPowers as power (power)}
-            <li class='key-value-info'>
-                {#await currentMchdStep.get_power_info(power)}
-                    <span class="green-field-span for={power}">Загрузка...</span>
-                {:then info} 
-					<label class="green-field-label" for={power}>{power}</label>
-                    <span class="info-value-span" id={power}>{info?.name}</span>
-                {:catch error}
-                    <span title={error} class="info-value-error-span">Ошибка</span>
-                {/await}
+            <li>
+				<div>
+					{#await currentMchdStep.get_power_info(power)}
+						<span class='green-field-span'>Загрузка...</span>
+					{:then info} 
+						<label class='green-field-label' for='{power}'>{power}</label>
+						<span class='input-span' id='{power}'>{info?.name}</span>
+					{:catch error}
+						<span title={error} class="info-value-error-span">Ошибка</span>
+					{/await}
+				</div>
             </li>
         {/each}
     </ul>
@@ -66,16 +49,40 @@
 
     <ul class='info-group'>
         {#each btbPowers as power (power)}
-            <li class='key-value-info'>
-                {#await currentMchdStep.get_power_info(power)}
-                    <span class="green-field-span for={power}">Загрузка...</span>
-                {:then info} 
-					<label class="green-field-label" for={power}>{power}</label>
-                    <span class="info-value-span" id={power}>{info?.name}</span>
-                {:catch error}
-                    <span title={error} class="info-value-error-span">Ошибка</span>
-                {/await}
+            <li>
+				<div>
+					{#await currentMchdStep.get_power_info(power)}
+						<span class='green-field-span'>Загрузка...</span>
+					{:then info} 
+						<label class='green-field-label' for='{power}'>{power}</label>
+						<span class='input-span' id='{power}'>{info?.name}</span>
+					{:catch error}
+						<span title={error} class="info-value-error-span">Ошибка</span>
+					{/await}
+				</div>
             </li>
         {/each}
     </ul>
 </section>
+
+<section class='group-one'>
+    <h3 class='h3'>Полномочия для отчетности в ФНС</h3>
+
+    <ul class='info-group'>
+        {#each fnsPowers as power (power)}
+            <li>
+				<div>
+					{#await currentMchdStep.get_power_info(power)}
+						<span class='green-field-span'>Загрузка...</span>
+					{:then info} 
+						<label class='green-field-label' for='{power}'>{power}</label>
+						<span class='input-span' id='{power}'>{info?.name}</span>
+					{:catch error}
+						<span title={error} class="info-value-error-span">Ошибка</span>
+					{/await}
+				</div>
+            </li>
+        {/each}
+    </ul>
+</section>
+
