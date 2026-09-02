@@ -58,10 +58,11 @@ pub fn run_lib() {
 			commands::other::cmd_get_today,
 			commands::other::cmd_get_user_comp_ids,
             commands::other::cmd_validate_field,
-            commands::sql_queries::cmd_add_comp_bank_acc,
+			commands::sql_queries::cmd_add_comp_bank_acc,
+			commands::sql_queries::cmd_add_new_contract,
+			commands::sql_queries::cmd_get_all_companys,
             commands::sql_queries::cmd_get_comp_bank_accs,
             commands::sql_queries::cmd_get_comp_by_inn_kpp,
-            commands::sql_queries::cmd_add_new_contract,
             commands::sql_queries::cmd_get_contracts_by_ctrpty_id, 
         ]).build(tauri::generate_context!())
         .expect("error while building tauri application");

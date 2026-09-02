@@ -159,6 +159,16 @@ export class OperationSvelte {
 		this._currContract = null;
 	}
 
+	private _allCtrPtys = $state<Company[]>([]);
+	get allCtrPtys() {return this._allCtrPtys};
+	async cmdGetAllCompanys() {
+		let companys: Company[] = await invoke(
+			'cmd_get_all_companys',
+			{}
+		);
+		this._allCtrPtys = companys;
+	}
+
 	async fromRaw(raw: OperationRaw) {
 		this._ctrPty = raw.ctrpty;
 		this._allPossContracts = raw.contract.contracts ?? [];
@@ -322,19 +332,27 @@ export class OperationSvelte {
 		const newCompany = await invoke<Company|null> (
 			'cmd_get_comp_by_inn_kpp', data
 		);
-		this._ctrPty = newCompany;
+		this.selectCtrPty(newCompany);
 
 		if (newCompany) {
 			const contracts = await invoke<Contract[]>(
 				'cmd_get_contracts_by_ctrpty_id',
 				{ctrptyId: newCompany.comp_id}
 			);
+			if (!this._allCtrPtys.some(c => c.comp_id === newCompany.comp_id)) {
+				this._allCtrPtys.push(newCompany)
+			}
 			this._allPossContracts = contracts;
 		} else {
 			this._allPossContracts = [];
 		}
 		await this.data.ctrptyId.asyncSet(newCompany?.comp_id ?? '');
 		await this.newContrData.ctrPtyId.asyncSet(newCompany?.comp_id ?? '');
+	}
+
+	async selectCtrPty(company: Company | null) {
+		this._ctrPty = company;
+		this.data.ctrptyId.asyncSet(company?.comp_id ?? "");
 	}
 
 	async cmdGetUserCompId() {
@@ -390,5 +408,39 @@ export class OperationSvelte {
 			this._isConfirmed = true;
 			return operation;
 		}
+	}
+
+	async reset() {
+		this._ctrPty = null;
+		this._allPossContracts = [];
+		this._currContract = null;
+
+		await Promise.all([
+			this.data.operId.asyncSet(''),
+
+			this.data.ctrptyId.asyncSet(''),
+
+			this.data.debet.asyncSet(''),
+			this.data.credit.asyncSet(''),
+			this.data.amount.asyncSet(''),
+
+			this.data.operDate.asyncSet(''),
+
+			this.data.docType.asyncSet(''),
+			this.data.docNum.asyncSet(''),
+			this.data.docDate.asyncSet(''),
+			
+			this.newContrData.ctrPtyId.asyncSet(''),
+			this.newContrData.ctrPtyId.asyncSet(''),
+			this.newContrData.contractNum.asyncSet(''),
+			this.newContrData.contractDate.asyncSet(''),
+			this.newContrData.contractTitle.asyncSet(''),
+			this.newContrData.contractStDate.asyncSet(''),
+			this.newContrData.contractEndDate.asyncSet(''),
+			this.newContrData.contractCurrency.asyncSet(''),
+			this.newContrData.contractTotAmnt.asyncSet(''),
+			this.newContrData.contractDefDays.asyncSet(''),
+			this.newContrData.contractDescr.asyncSet(''),
+		]);
 	}
 }

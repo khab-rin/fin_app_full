@@ -1,4 +1,5 @@
 <script lang='ts'>
+	import {invoke} from '@tauri-apps/api/core';
 	import { FieldValidator } from '$lib/models/Auth/FieldValidator.svelte';
 	import { OperationSvelte } from '$lib/models/Operation/OperationSvelte.svelte';
 	import {operStep} from '$lib/models/Operation/OperationManager.svelte';
@@ -9,7 +10,7 @@
 	import { onMount } from 'svelte';
 
 
-	let curOper = new OperationSvelte();
+	let curOper = $state<OperationSvelte>(new OperationSvelte());
 	let rustOperations: Operation[] = $state<Operation[]>([]);
 
 	let isCtrPtyOpen = $state(false);
@@ -36,6 +37,12 @@
 			isChangeCtrPtyPushed = false;
 			operStep.step = next_step;
 		}
+	}
+
+	async function selectCtrPty(ctrPty: Company) {
+		await curOper.selectCtrPty(ctrPty);
+		isCtrPtyOpen = false;
+		(document.getElementById('operManualAllCompanys') as HTMLDialogElement)?.close();
 	}
 
 	let isContractOpen = $state(false);
@@ -83,10 +90,58 @@
 		}	
 	}
 
+
+	let isAddOperationPushed = $state(false);
+	async function addOperation() {
+		if (isAddOperationPushed) {return;}
+		isAddOperationPushed = true;
+
+		try {
+			let operation = curOper.makeRust();
+			if (operation != null) {
+				rustOperations.push(operation);
+				await curOper.reset();
+				compInn.asyncSet('');
+				kpp.asyncSet('');
+				isAddOperationPushed = false;
+			}
+		} catch(err) {
+			console.error("addOperation FAILED, err = ", err);
+			let nextStep: OperationStep = {TryLater :{text: 'Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение'}}
+			isAddOperationPushed = false;
+			operStep.step = nextStep;
+		}
+		
+	}
+
+	let isProcessOperationsPushed = $state(false);
+	async function cmdProcessOperations() {
+		if (isProcessOperationsPushed) {return;}
+		isProcessOperationsPushed = true;
+		try {
+			const nextStep = await invoke<OperationStep>(
+				'cmd_process_operations', 
+				{optionOperations: rustOperations}
+			);
+			isProcessOperationsPushed = false;
+			operStep.step = nextStep;
+		} catch(err) {
+			console.error('cmdProcessOperations FAILED, err = ', err);
+			const next_step: OperationStep = {TryLater: {text: 'Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение'}};
+			isProcessOperationsPushed = false;
+			operStep.step = next_step;
+
+		}
+	}
+
 	onMount(async() => {
 		try {
-			await curOper.cmdGetUserCompId();
-			await curOper.cmdGetToday();
+			await Promise.all([
+				curOper.cmdGetUserCompId(),
+				curOper.cmdGetToday(),
+				curOper.cmdGetAllCompanys(),
+			]);
+
 		} catch(err) {
 			let nextStep:OperationStep = {
 				TryLater: {text: 'Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение'}
@@ -160,6 +215,15 @@
 			class='yellow-button'
 			disabled={!compInn.isValid || !kpp.isValid}
 			onclick={changeCtrpty}
+		>
+			Добавить нового контрагента
+		</button>
+
+		<button
+			type='button'
+			class='yellow-button'
+			disabled={false}
+			onclick={() => (document.getElementById('operManualAllCompanys') as HTMLDialogElement)?.showModal()}
 		>
 			Выбрать контрагента
 		</button>
@@ -429,6 +493,21 @@
 
 <div class='group-one'>
 	<div>
+		<label class='green-field-label' for='OperManualIsDupl'>
+			Признак дуприката
+		</label>
+		<input
+			class='green-field'
+			type='text'
+			id='OperManualIsDupl'
+			bind:value={curOper.isDuplicateStr}
+			disabled={true}
+		/>
+
+	</div>
+
+
+	<div>
 		<label
 			class='green-field-label' 
 			for='OperManualOperDate'
@@ -497,6 +576,261 @@
 	</div>
 </div>
 
-<button>
+<section class='group-one'>
+	<button
+		type='button'
+		class='blue-button'
+		disabled={curOper.isValid || isAddOperationPushed}	
+		onclick={addOperation}
+	>
+		сформировать операцию
+	</button>
 
-</button>
+	<button
+		type='button'
+		class='blue-button'
+		disabled={false}	
+		onclick={cmdProcessOperations}
+	>
+		Загрузить операции
+	</button>
+
+</section>
+
+
+<dialog 
+	class='dialog-top-left'
+	id='operManualAllCompanys'
+	onclick={(e) => {
+		// e.currentTarget — это сам тег dialog
+		const rect = e.currentTarget.getBoundingClientRect();
+		
+		// Проверяем, находится ли клик внутри границ контента окна
+		const isClickInside = 
+			e.clientX >= rect.left &&
+			e.clientX <= rect.right &&
+			e.clientY >= rect.top &&
+			e.clientY <= rect.bottom;
+
+		// Если кликнули за пределами этих границ (по бэкдропу) — закрываем окно
+		if (!isClickInside) {
+			e.currentTarget.close();
+		}
+	}}
+>
+	<section class='group-one'>
+		<span class='yellow-button-span'>
+			Выберите контрагента
+		</span>
+		{#each curOper.allCtrPtys as ctrPty}
+			<li>
+				<button
+					type='button'
+					class='yellow-button'
+					disabled={false}
+					onclick={()=> selectCtrPty(ctrPty)}
+
+				>
+					{ctrPty.metadata.comp_name?.short_egrul_name ?? ""}
+				</button>
+			</li>
+		{/each}
+		<button
+			type='button'
+			class='yellow-button'
+			disabled={false}
+			onclick={()=>(document.getElementById('operManualAllCompanys') as HTMLDialogElement)?.close()}
+		>
+			Закрыть окно
+		</button>
+
+
+	</section>
+</dialog>
+
+
+
+
+<label
+	class='green-field-label' 
+	for='OperManuelDocDate1'
+>
+	operId
+</label>
+<input
+	type='text'
+	class='green-field'
+	id='OperManuelDocDate1'
+	placeholder='00.00.0000'
+	bind:value={curOper.data.operId.value}
+	class:input-error={!curOper.data.operId.isValid}
+/>
+
+<label
+	class='green-field-label' 
+	for='OperManuelDocDate2'
+>
+	userId
+</label>
+<input
+	type='text'
+	class='green-field'
+	id='OperManuelDocDate2'
+	placeholder='00.00.0000'
+	bind:value={curOper.data.userId.value}
+	class:input-error={!curOper.data.userId.isValid}
+/>
+
+<label
+	class='green-field-label' 
+	for='OperManuelDocDate3'
+>
+	compId
+</label>
+<input
+	type='text'
+	class='green-field'
+	id='OperManuelDocDate3'
+	placeholder='00.00.0000'
+	bind:value={curOper.data.compId.value}
+	class:input-error={!curOper.data.compId.isValid}
+/>
+
+<label
+	class='green-field-label' 
+	for='OperManuelDocDate4'
+>
+	ctrptyId
+</label>
+<input
+	type='text'
+	class='green-field'
+	id='OperManuelDocDate4'
+	placeholder='00.00.0000'
+	bind:value={curOper.data.ctrptyId.value}
+	class:input-error={!curOper.data.ctrptyId.isValid}
+/>
+
+<label
+	class='green-field-label' 
+	for='OperManuelDocDate5'
+>
+	debet
+</label>
+<input
+	type='text'
+	class='green-field'
+	id='OperManuelDocDate5'
+	placeholder='00.00.0000'
+	bind:value={curOper.data.debet.value}
+	class:input-error={!curOper.data.debet.isValid}
+/>
+
+<label
+	class='green-field-label' 
+	for='OperManuelDocDate6'
+>
+	credit
+</label>
+<input
+	type='text'
+	class='green-field'
+	id='OperManuelDocDate6'
+	placeholder='00.00.0000'
+	bind:value={curOper.data.credit.value}
+	class:input-error={!curOper.data.credit.isValid}
+/>
+
+<label
+	class='green-field-label' 
+	for='OperManuelDocDate7'
+>
+	amount
+</label>
+<input
+	type='text'
+	class='green-field'
+	id='OperManuelDocDate7'
+	placeholder='00.00.0000'
+	bind:value={curOper.data.amount.value}
+	class:input-error={!curOper.data.amount.isValid}
+/>
+
+<label
+	class='green-field-label' 
+	for='OperManuelDocDate8'
+>
+	operDate
+</label>
+<input
+	type='text'
+	class='green-field'
+	id='OperManuelDocDate8'
+	placeholder='00.00.0000'
+	bind:value={curOper.data.operDate.value}
+	class:input-error={!curOper.data.operDate.isValid}
+/>
+
+<label
+	class='green-field-label' 
+	for='OperManuelDocDate9'
+>
+	docType
+</label>
+<input
+	type='text'
+	class='green-field'
+	id='OperManuelDocDate9'
+	placeholder='00.00.0000'
+	bind:value={curOper.data.docType.value}
+	class:input-error={!curOper.data.docType.isValid}
+/>
+
+<label
+	class='green-field-label' 
+	for='OperManuelDocDate10'
+>
+	docNum
+</label>
+<input
+	type='text'
+	class='green-field'
+	id='OperManuelDocDate10'
+	placeholder='00.00.0000'
+	bind:value={curOper.data.docNum.value}
+	class:input-error={!curOper.data.docNum.isValid}
+/>
+
+<label
+	class='green-field-label' 
+	for='OperManuelDocDate11'
+>
+	docDate
+</label>
+<input
+	type='text'
+	class='green-field'
+	id='OperManuelDocDate11'
+	placeholder='00.00.0000'
+	bind:value={curOper.data.docDate.value}
+	class:input-error={!curOper.data.docDate.isValid}
+/>
+
+<label
+	class='green-field-label' 
+	for='OperManuelDocDate12'
+>
+	entrDate
+</label>
+<input
+	type='text'
+	class='green-field'
+	id='OperManuelDocDate12'
+	placeholder='00.00.0000'
+	bind:value={curOper.data.entrDate.value}
+	class:input-error={!curOper.data.entrDate.isValid}
+/>
+
+
+
+

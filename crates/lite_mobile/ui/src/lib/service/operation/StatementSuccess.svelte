@@ -93,10 +93,12 @@
 				"cmd_process_operations",
 				{optionOperations: processor.rustOperations}
 			);
+			isProcessOperationsPushed = false;
 			operStep.step = next_step;
 		} catch(err) {
 			const next_step: OperationStep = {TryLater: {text: 'Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение'}};
 			console.error("cmdProcessOperations FAILED, err = ", err);
+			isProcessOperationsPushed = false;
 			operStep.step = next_step;
 		}
 	}

@@ -1,0 +1,47 @@
+.dialog-top-left {
+	/* Позиционирование вверху слева */
+	position: fixed;
+	top: 16px;
+	left: 16px;
+	margin: 0;
+	
+	/* Размеры */
+	width: 280px;
+	max-height: 45vh;
+	
+	/* Оформление: светло-розовый фон и рамка */
+	background-color: #fff0f5; /* LavenderBlush */
+	border: 2px solid #ffb6c1;  /* Светло-розовый периметр */
+	border-radius: 12px;
+	padding: 12px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+	overflow: hidden;
+}
+
+/* 2. Класс для диалога договоров (ВНИЗУ СПРАВА) */
+.dialog-bottom-rigth {
+	/* Позиционирование внизу справа */
+	position: fixed;
+	bottom: 16px;
+	right: 16px;
+	margin: 0;
+	
+	/* Размеры */
+	width: 280px;
+	max-height: 45vh;
+	
+	/* Оформление: светло-розовый фон и рамка */
+	background-color: #fff0f5; /* LavenderBlush */
+	border: 2px solid #ffb6c1;  /* Светло-розовый периметр */
+	border-radius: 12px;
+	padding: 12px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+	overflow: hidden;
+}
+
+/* Опционально: легкое размытие заднего фона для обоих окон */
+.dialog-top-left,
+.dialog-bottom-rigth {
+	background: rgba(255, 240, 245, 0.2);
+	backdrop-filter: blur(2px);
+}
