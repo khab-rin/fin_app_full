@@ -2,9 +2,10 @@
     import {operStep} from '$lib/models/Operation/OperationManager.svelte';
     import {pageManager} from '$lib/models/MainManager/MainManager.svelte';
     import type {OperationStep} from '$lib/models/rustModels/OperationStep';
-	import { currAuthStep } from '$lib/models/Auth/AuthStep.svelte';
 
     function closeOper() {
+		const next_step: OperationStep = {Loading:{text: 'Выберите функционал работы с проводками'}};
+		operStep.step = next_step;
         pageManager.Page = null;
     }
 

@@ -5,11 +5,13 @@ use shared_lib::sql_models::operation::implements::{DocType, make_oper_id, Opera
 use shared_lib::{ClientState, ProcessError, Status};
 use shared_lib::primitives::composite::implements::RasBicAcc;
 use shared_lib::sql_models::operation::service::{OperationInfo, OperationStep};
+use shared_lib::service::mchd::home_mchd_power::HomeMchdPower;
 
 use shared_lib::primitives::frozen::macros::RussEnumName; 
 use shared_lib::sql_models::operation::account::Account;
 use shared_lib::client::sql_queries::operations::get::exist_id_by_id::get_exist_id_by_id;
 use shared_lib::client::sql_queries::operations::add::many::add_new_operations;
+use shared_lib::client::mchd::show_powers::check_access;
 
 use crate::service::operation::make_bank_statement_operations;
 
@@ -77,6 +79,24 @@ pub async  fn cmd_process_operations(
 	state: tauri::State<'_, ClientState>,
 	option_operations: Vec<Option<Operation>>
 ) -> Result<OperationStep, Status> {
+
+	match check_access(&state, vec!(
+		HomeMchdPower::H210,
+		HomeMchdPower::H110,
+		HomeMchdPower::H510,
+		HomeMchdPower::H810,
+
+	)).await {
+        Ok(true) => {},
+        Ok(false) => {
+            return Ok(OperationStep::TryLater { text: OperationInfo::AccessDenied })
+        },
+        Err(err) => {
+            err.process_err(err, "");
+			return Err(err);
+        }
+    }
+
 	let operations: Vec<Operation> = option_operations.into_iter().flatten().collect();
 
 	let count = operations.len() as i32;
@@ -86,7 +106,7 @@ pub async  fn cmd_process_operations(
 		return Ok(OperationStep::TryLater { text: OperationInfo::ClientApiSystemError });
 	}
 
-	let step = OperationStep::ProcessSuccess { text: OperationInfo::StatementSuccess, count };
+	let step = OperationStep::ProcessSuccess { text: OperationInfo::Nothing, count };
 
 	Ok(step)
 }

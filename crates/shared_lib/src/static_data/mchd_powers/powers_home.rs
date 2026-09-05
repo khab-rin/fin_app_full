@@ -9,6 +9,7 @@ pub const H211: HomePowerInfo = HomePowerInfo { code: "H211", name: "Распо�
 
 pub const H310: HomePowerInfo = HomePowerInfo { code: "H310", name: "Просматривать первичные документы и налоговую отчетность" };
 pub const H311: HomePowerInfo = HomePowerInfo { code: "H311", name: "Подписывать и отправлять отчетность, акты, УПД и счета-фактуры (полный доступ)" };
+pub const H312: HomePowerInfo = HomePowerInfo { code: "H312", name: "Создавать и проводить бухгалтерские проводки" };
 
 pub const H410: HomePowerInfo = HomePowerInfo { code: "H410", name: "Просматривать складские остатки и накладные" };
 pub const H411: HomePowerInfo = HomePowerInfo { code: "H411", name: "Управлять складом, подписывать товарно-транспортные накладные и акты приемки (полный доступ)" };

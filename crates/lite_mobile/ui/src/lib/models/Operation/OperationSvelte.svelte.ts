@@ -111,7 +111,7 @@ export class OperationSvelte {
 	get creditStr() {return this._creditStr};
 
 
-	private _allPossContracts: Contract[] = [];
+	private _allPossContracts = $state<Contract []>([]);
 	get allPossContracts() {
 		return this._allPossContracts;
 	}
@@ -332,27 +332,28 @@ export class OperationSvelte {
 		const newCompany = await invoke<Company|null> (
 			'cmd_get_comp_by_inn_kpp', data
 		);
-		this.selectCtrPty(newCompany);
-
-		if (newCompany) {
-			const contracts = await invoke<Contract[]>(
-				'cmd_get_contracts_by_ctrpty_id',
-				{ctrptyId: newCompany.comp_id}
-			);
-			if (!this._allCtrPtys.some(c => c.comp_id === newCompany.comp_id)) {
-				this._allCtrPtys.push(newCompany)
-			}
-			this._allPossContracts = contracts;
-		} else {
-			this._allPossContracts = [];
-		}
-		await this.data.ctrptyId.asyncSet(newCompany?.comp_id ?? '');
-		await this.newContrData.ctrPtyId.asyncSet(newCompany?.comp_id ?? '');
+		
+		await this.selectCtrPty(newCompany);
 	}
 
 	async selectCtrPty(company: Company | null) {
 		this._ctrPty = company;
 		this.data.ctrptyId.asyncSet(company?.comp_id ?? "");
+		if (company) {
+			const contracts = await invoke<Contract[]>(
+				'cmd_get_contracts_by_ctrpty_id',
+				{ctrptyId: company.comp_id}
+			);
+			if (!this._allCtrPtys.some(c => c.comp_id === company.comp_id)) {
+				this._allCtrPtys.push(company)
+			}
+			this._allPossContracts = contracts;
+		} else {
+			this._allPossContracts = [];
+		}
+		await this.data.ctrptyId.asyncSet(company?.comp_id ?? '');
+		await this.newContrData.ctrPtyId.asyncSet(company?.comp_id ?? '');
+		this._currContract = null;
 	}
 
 	async cmdGetUserCompId() {

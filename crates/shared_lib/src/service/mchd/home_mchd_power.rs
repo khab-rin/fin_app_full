@@ -131,6 +131,7 @@ pub enum HomeMchdPower {
 	H211,
     H310,
     H311,
+	H312,
    	H410,
     H411,
   	H510,
@@ -217,6 +218,7 @@ impl HomeMchdPower {
             Self::H211 => &H211,
             Self::H310 => &H310,
             Self::H311 => &H311,
+			Self::H312 => &H312,
             Self::H410 => &H410,
             Self::H411 => &H411,
             Self::H510 => &H510,
@@ -263,6 +265,7 @@ impl HomeMchdPower {
         else if t == H211.name { Self::H211 }
         else if t == H310.name { Self::H310 }
         else if t == H311.name { Self::H311 }
+		else if t == H312.name { Self::H312 }
         else if t == H410.name { Self::H410 }
         else if t == H411.name { Self::H411 }
         else if t == H510.name { Self::H510 }
@@ -354,6 +357,7 @@ impl HomeMchdPower {
             HomeMchdPower::H211,
             HomeMchdPower::H310,
             HomeMchdPower::H311,
+			HomeMchdPower::H312,
             HomeMchdPower::H410,
             HomeMchdPower::H411,
             HomeMchdPower::H510,

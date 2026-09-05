@@ -15,14 +15,11 @@ use crate::sql_models::operation::service::{
 };
 use crate::sql_models::operation::implements::OperationRaw;
 use crate::primitives::composite::implements::RasBicAcc;
-use crate::service::mchd::home_mchd_power::HomeMchdPower;
 use crate::sql_models::company::implements::{InnKppMapAcc, CompCrateData};
-
 use crate::client::operation::helper::make_statement_block_map;
 use crate::client::operation::statement_parser::comment::parse_comment;
 use crate::client::operation::statement_parser::make_operations::make_statement_operation_raw;
 use crate::client::sql_queries::companys::add::new_companys::add_companys_by_inn_cpp_acc;
-use crate::client::mchd::show_powers::check_access;
 use crate::client::sql_queries::operations::get::exist_ids_by_operations::get_exist_ids_by_ids;
 
 
@@ -35,17 +32,6 @@ pub async fn parse_statement(
     let failed_result = Ok(OperationStep::TryLater {
         text: OperationInfo::ClientApiSystemError,
     });
-
-    match check_access(state, &HomeMchdPower::H210).await {
-        Ok(true) => {},
-        Ok(false) => {
-            return Ok(OperationStep::TryLater { text: OperationInfo::AccessDenied })
-        },
-        Err(err) => {
-            err.process_err(err, "");
-            return failed_result;
-        }
-    }
 
     let mut new_companys: InnKppMapAcc = HashMap::new();
 
@@ -163,8 +149,6 @@ pub async fn parse_statement(
     for ((comp_inn, kpp), bank_acc) in new_companys {
         data.push(CompCrateData{comp_inn, kpp, bank_acc});
     }
-
-
 
     match add_companys_by_inn_cpp_acc(state, &data).await {
         Ok(_) => {},

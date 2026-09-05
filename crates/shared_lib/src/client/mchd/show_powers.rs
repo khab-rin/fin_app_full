@@ -49,25 +49,29 @@ pub async fn show_powers(
 
 pub async fn check_access(
     state: &ClientState,
-    power: &HomeMchdPower
+    powers: Vec<HomeMchdPower>
 ) -> Result<bool, Status> {
 
     let step = show_powers(state)
         .await
         .map_err(|err| err.process_err(err, ""))?;
 
-    let powers = match step {
+    let all_powers = match step {
         MchdStep::ShowPowers { fns, btb, home, .. } => [fns, btb, home],
         _ => {
             return Err(Status::Tech.process_err(Status::SystemLogicErr, ""));
         }
     };
 
-    for t in powers {
-        if t.contains(power) {
-            return Ok(true);
-        }
-    }
+	let mut flag = powers.len();
 
-    Ok(false)
+	for t in all_powers {
+		for power in powers.iter() {
+			if t.contains(power) {
+				flag -= 1;
+			}
+		}
+	}
+    
+    Ok(flag == 0)
 }
