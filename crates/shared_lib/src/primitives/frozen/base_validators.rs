@@ -3,9 +3,11 @@ use crate::Status;
 
 
 gen_str_validator!(init_str_7_7, 7, 7, Status::ValidMchdStr7_7);
+gen_str_validator!(init_str_3_3, 3, 3, Status::ValidMchdStr3_3);
 gen_str_validator!(init_str_3_8, 3, 8, Status::ValidMchdStr3_8);
 gen_str_validator!(init_str_11_11, 11, 11, Status::ValidMchdStr11_11);
 gen_str_validator!(init_str_3_13, 3, 13, Status::ValidMchdStr3_13);
+gen_str_validator!(init_str_1_20, 1, 20, Status::ValidMchdStr1_20);
 gen_str_validator!(init_str_1_25, 1, 25, Status::ValidMchdStr1_25);
 gen_str_validator!(init_str_1_28, 1, 28, Status::ValidMchdStr1_28);
 gen_str_validator!(init_str_1_50, 1, 50, Status::ValidMchdStr1_50);
@@ -17,9 +19,11 @@ gen_str_validator!(init_str_1_255, 1, 255, Status::ValidMchdStr1_255);
 gen_str_validator!(init_str_6_255, 6, 255, Status::ValidMchdStr6_255);
 gen_str_validator!(init_str_1_1000, 1, 1000, Status::ValidMchdStr1_1000);
 gen_str_validator!(init_str_1_2500, 1, 2500, Status::ValidMchdStr1_2500);
+gen_str_validator!(init_str_1_40, 1, 40, Status::ValidMchdStr1_40);
 gen_str_validator!(init_str_1_4000, 1, 4000, Status::ValidMchdStr1_4000);
 gen_str_validator!(init_str_1_5000, 1, 5000, Status::ValidMchdStr1_5000);
 gen_str_validator!(init_str_1_10000, 1, 10000, Status::ValidMchdStr1_10000);
+gen_str_validator!(init_str_16_16, 16, 16, Status::ValidMchdStr16_16);
 gen_str_validator!(init_str_1_16000, 1, 16000, Status::ValidMchdStr1_16000);
 
 gen_digit_validator!(init_digits_2_2, 2, 2, Status::ValidMchdDig2_2);

@@ -83,3 +83,4 @@ ts-rs = { workspace = true }
 
 uuid = { workspace = true, features = ["v5"] }
 
+vec1 =  {workspace = true, features = ["serde"] }

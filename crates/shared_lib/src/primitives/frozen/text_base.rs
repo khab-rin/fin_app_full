@@ -44,6 +44,13 @@ frozen_primitives!(
     default_fmt);
 
 frozen_primitives!(
+    String3_3,
+    init_str_3_3,
+    String,
+    "Строка_3_3_символов",
+    default_fmt);
+
+frozen_primitives!(
     String11_11,
     init_str_11_11,
     String,
@@ -55,6 +62,13 @@ frozen_primitives!(
     init_str_3_13,
     String,
     "Строка_3_13_символов",
+    default_fmt);
+
+frozen_primitives!(
+    String1_20,
+    init_str_1_20,
+    String,
+    "Строка_1_20_символов",
     default_fmt);
 
 frozen_primitives!(
@@ -137,6 +151,13 @@ frozen_primitives!(
     default_fmt);
 
 frozen_primitives!( 
+    String1_40,
+    init_str_1_40,
+    String,
+    "Текст_1_40_символов",
+    default_fmt);
+
+frozen_primitives!( 
     String1_4000,
     init_str_1_4000,
     String,
@@ -160,10 +181,17 @@ frozen_primitives!(
     default_fmt);
 
 frozen_primitives!(
+    String16_16,
+    init_str_16_16,
+    String,
+    "Строка_16_символов",
+    default_fmt);
+
+frozen_primitives!(
     String1_16000,
     init_str_1_16000,
     String,
-    "Хэш_до_16000_символов",
+    "Строка_до_16000_символов",
     default_fmt);
 
 

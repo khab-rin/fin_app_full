@@ -836,50 +836,50 @@ pub enum AddressChoice {
     FiasAdrRf(String1_1000),
 }
 
-make_mchd_enum!(Gender, {
+make_xls_enum!(Gender, {
     Male => "1",
     Female => "2",
 });
 
-make_mchd_enum!(IsCitizen, {
+make_xls_enum!(IsCitizen, {
     Citizen => "1",
     ForeignCitizen => "2",
     StatelessPerson => "3",
 });
 
-make_mchd_enum!(ManagementType, {
+make_xls_enum!(ManagementType, {
     Sole => "1",
     Joint => "2",
 });
 
-make_mchd_enum!(Flag, {
+make_xls_enum!(Flag, {
     FalseFlag => "0",
     TrueFlag => "1",
 });
 
-make_mchd_enum!(PoaTypeRevocable, {
+make_xls_enum!(PoaTypeRevocable, {
     Revocable => "1",
     Irrevocable => "2",
 });
 
 
-make_mchd_enum!(PoaTypeRedelegatable, {
+make_xls_enum!(PoaTypeRedelegatable, {
     Single => "1",
     Once => "2",
     Successive => "3",
 });
 
-make_mchd_enum!(IrrevocablePoaRedelegationType, {
+make_xls_enum!(IrrevocablePoaRedelegationType, {
     Static => "1",
     Single => "2",
 });
 
-make_mchd_enum!(IrrevocablePoaRevocationCondition, {
+make_xls_enum!(IrrevocablePoaRevocationCondition, {
     Conditional => "1",
     Unconditional => "2",
 });
 
-make_mchd_enum!(DelegateType, {
+make_xls_enum!(DelegateType, {
     LegalEntity => "1",
     IndividualEnt => "2",
     PhysicalPerson => "3",
@@ -887,48 +887,48 @@ make_mchd_enum!(DelegateType, {
     ForeignBranch => "5",
 });
 
-make_mchd_enum!(PrincipalIdentity, {
+make_xls_enum!(PrincipalIdentity, {
     RussianLegalEntity => "1",
     ForeignLegalEntity => "2",
     IndividualEntrepreneur => "3",
     PhysicalPerson => "4",
 });
 
-make_mchd_enum!(InitPrincipalTypeShort, {
+make_xls_enum!(InitPrincipalTypeShort, {
     LegalEntity => "1",
     PhysicalPerson => "2",
 });
 
-make_mchd_enum!(PoaLegalForm, {
+make_xls_enum!(PoaLegalForm, {
     Simple => "1",
     Notarial => "2",
 });
 
-make_mchd_enum!(PowerType, {
+make_xls_enum!(PowerType, {
     Textual => "0",
     MachineReadable => "1",
 });
 
-make_mchd_enum!(PowerCommonType, {
+make_xls_enum!(PowerCommonType, {
     Individual => "1",
     Joint => "2",
 });
 
-make_mchd_enum!(RedelegatePowerLossType, {
+make_xls_enum!(RedelegatePowerLossType, {
     Lost => "1",
     Retained => "2",
 });
 
-make_mchd_enum!(RedelegationStatus, {
+make_xls_enum!(RedelegationStatus, {
     Original => "0",
     Redelegated => "1",
 });
 
-make_mchd_enum!(FormatVersion, {
+make_xls_enum!(FormatVersion, {
     Emchd1 => "EMCHD_1",
 });
 
-make_mchd_enum!(PrincipalNotarialStatus, {
+make_xls_enum!(PrincipalNotarialStatus, {
     RussionPerson => "101",
     ForeignPerson => "102",
     Ip => "299",
@@ -938,7 +938,7 @@ make_mchd_enum!(PrincipalNotarialStatus, {
 });
 
 
-make_mchd_enum!(RussDocumCode, {
+make_xls_enum!(RussDocumCode, {
     PasspRf => "21",
     BirthCert => "03",
     ForeignPassp => "10",
@@ -949,7 +949,7 @@ make_mchd_enum!(RussDocumCode, {
     Snils => "14"
 });
 
-make_mchd_enum!(PoaReqElemsFlag, {
+make_xls_enum!(PoaReqElemsFlag, {
     BTB => "00000000",
     BTBEsia => "01000000",
     BTBNotarial => "00100000",

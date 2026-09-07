@@ -1,5 +1,5 @@
 #[macro_export]
-macro_rules! make_mchd_enum {
+macro_rules! make_xls_enum {
     ($name:ident, { $($variant:ident => $val:expr),* $(,)? }) => {
         #[derive(Debug, Serialize, Deserialize, Copy, PartialEq, Eq, sqlx::Type, Clone, ts_rs::TS)]
         pub enum $name {

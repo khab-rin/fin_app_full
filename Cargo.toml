@@ -76,3 +76,5 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 ts-rs = { version = "10.1", features = ["serde-compat", "no-serde-warnings"] }
 
 uuid = { version = "1.21.0", features = ["v4", "serde"] }
+
+vec1 = {version = "1.12", features = ["serde"]}

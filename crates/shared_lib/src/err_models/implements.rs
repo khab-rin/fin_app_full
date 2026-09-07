@@ -73,6 +73,11 @@ pub enum Status {
     PersInnValid = 157,
     ValidMchdDig7_7 = 158,
     ValidI32 = 159,
+	ValidMchdStr3_3 = 160,
+	ValidMchdStr1_40 = 161,
+	ValidMchdStr16_16 = 162, 
+	ValidMchdStr1_20 = 163,
+
 
     // ==========================================
     // 200-я группа: Ошибки при работе с файлами и структуры данных
