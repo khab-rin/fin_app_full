@@ -17,8 +17,8 @@
             btbPowers = currentMchdStep.step.ShowPowers.btb;
         } else {
             console.error("Ощибка логики менеджера мчд на странице ShowPowers");
-            const next_step: MchdStep = {TryLater: {text: "Критическая ошибка на устройстве..."}};
-            currentMchdStep.add(next_step);
+            const nextStep: MchdStep = {TryLater: {text: "Критическая ошибка на устройстве..."}};
+            currentMchdStep.step = nextStep;
         }
     });
 </script>

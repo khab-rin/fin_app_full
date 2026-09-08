@@ -54,9 +54,9 @@
             
         } catch (err) {
             console.error("FILE SAVING FAILED, ERROR = ", err);
-            const next_step: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
+            const nextStep: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
             isSaved[fileType] = false;
-            currAuthStep.add(next_step);
+            currAuthStep.step = nextStep;
         }
     }
 
@@ -70,9 +70,9 @@
             docFileBytesArray = new Uint8Array(data.doc_file);
             jsonFileByteArray = new Uint8Array(data.json_file);
         } else {    
-            const next_step: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
+            const nextStep: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
             console.error("System Logic Error, wrong current step");
-            currAuthStep.add(next_step);         
+            currAuthStep.step = nextStep;         
         }
     });
 

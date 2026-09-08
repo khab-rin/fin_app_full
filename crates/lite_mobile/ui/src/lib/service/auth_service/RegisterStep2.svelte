@@ -43,9 +43,9 @@
 
         } catch (err) {
             console.error("GET FILE PATH FAILED, ERROR = ", err);
-            const next_step: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
+            const nextStep: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
             isLoadJsonFile = false;
-            currAuthStep.add(next_step);
+            currAuthStep.step = nextStep;
         }
     }
 
@@ -72,9 +72,9 @@
 
         } catch (err) {
             console.error("GET FILE PATH FAILED, ERROR = ", err);
-            const next_step: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
+            const nextStep: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
             isLoadSignFile = false;
-            currAuthStep.add(next_step);
+            currAuthStep.step = nextStep;
         }
     }
 
@@ -86,17 +86,17 @@
             signPath: signFilePath
         };
         try {
-            const next_step: AuthStep = await invoke<AuthStep>("cmd_register_step2", {
+            const nextStep: AuthStep = await invoke<AuthStep>("cmd_register_step2", {
                 data: data
             });
 
             isPushedRegister = false;
-            currAuthStep.add(next_step);
+            currAuthStep.step = nextStep;
         } catch (err) {
             console.error("cmd_register FAILED, ERROR = ", err);
-            const next_step: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
+            const nextStep: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
             isPushedRegister = false;
-            currAuthStep.add(next_step);
+            currAuthStep.step = nextStep;
         }
     }
 

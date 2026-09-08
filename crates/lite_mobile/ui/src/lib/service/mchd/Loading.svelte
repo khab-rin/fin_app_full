@@ -13,44 +13,44 @@
 
     async function goToBTBMchd() {
         isBTBPushed = true;
-        const next_step: MchdStep = {BTBMchd: {text: "Вы на этапе создания доверенности для электронного документооборота с контрагентами, внимательно заполните поля аналогично полям в личных и учредительных документах"}};
+        const nextStep: MchdStep = {BTBMchd: {text: "Вы на этапе создания доверенности для электронного документооборота с контрагентами, внимательно заполните поля аналогично полям в личных и учредительных документах"}};
         isBTBPushed = false;
-        currentMchdStep.add(next_step)
+        currentMchdStep.step = nextStep;
     }
 
     async function goToFnsMchd() {
         isFnsPushed = true;
-        const next_step: MchdStep = {FnsMchd: {text: "Вы на этапе создания доверенности для сдачи отчетности в ФНС, внимательно заполните поля аналогично полям в личных и учредительных документах"}};
+        const nextStep: MchdStep = {FnsMchd: {text: "Вы на этапе создания доверенности для сдачи отчетности в ФНС, внимательно заполните поля аналогично полям в личных и учредительных документах"}};
         isFnsPushed = false;
-        currentMchdStep.add(next_step)
+        currentMchdStep.step = nextStep;
     }
 
     async function goToHomeMchd() {
         isHomePushed = true;
-        const next_step: MchdStep = {HomeMchd: {text: "Вы на этапе создания доверенности для допуска к ветвям функционала данной системы, внимательно заполните поля аналогично полям в личных и учредительных документах"}};
+        const nextStep: MchdStep = {HomeMchd: {text: "Вы на этапе создания доверенности для допуска к ветвям функционала данной системы, внимательно заполните поля аналогично полям в личных и учредительных документах"}};
         isHomePushed = false;
-        currentMchdStep.add(next_step)
+        currentMchdStep.step = nextStep;
     }
 
 
     async function goToLendMchd() {
         isLendPushed = true;
-        const next_step: MchdStep = {LendMchd: { text: "Выберите ранее созданный xml файл доверенности, отсоединенный фалй подписи руководителя организации и отправьте доверенность для регистрации в сервисе МЧД"}}
+        const nextStep: MchdStep = {LendMchd: { text: "Выберите ранее созданный xml файл доверенности, отсоединенный фалй подписи руководителя организации и отправьте доверенность для регистрации в сервисе МЧД"}}
         isLendPushed = false;
-        currentMchdStep.add(next_step)
+        currentMchdStep.step = nextStep;
     }
 
     async function goToShowPowers() {
         isShowPowersPushed = true;
         try {
-            const next_step = await invoke<MchdStep>("cmd_show_powers", {});
+            const nextStep = await invoke<MchdStep>("cmd_show_powers", {});
             isShowPowersPushed = false;
-            currentMchdStep.add(next_step);
+            currentMchdStep.step = nextStep;;
         } catch (err) {
-            const next_step: MchdStep = {TryLater:{text: "Критическая ошибка на устройстве..."}};
+            const nextStep: MchdStep = {TryLater:{text: "Критическая ошибка на устройстве..."}};
             isShowPowersPushed = false;
             console.error("cmd_show_powers FAILED, err = ", err);
-            currentMchdStep.add(next_step);
+            currentMchdStep.step = nextStep;
         }
     }
 </script>

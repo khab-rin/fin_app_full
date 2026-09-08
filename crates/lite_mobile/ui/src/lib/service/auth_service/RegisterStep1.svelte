@@ -50,16 +50,16 @@
         };
 
         try {
-            const next_step = await invoke<AuthStep>("cmd_register_step1", 
+            const nextStep = await invoke<AuthStep>("cmd_register_step1", 
                 {data: regInitData}
             );
             isPushedMakeDocs = false;
-            currAuthStep.add(next_step);
+            currAuthStep.step = nextStep;
         } catch (err) {
             console.error("makeInitDocs FAILED, ERR = ", err);
-            const next_step: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
+            const nextStep: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
             isPushedMakeDocs = false;
-            currAuthStep.add(next_step);
+            currAuthStep.step = nextStep;
         }
     }
 
@@ -68,8 +68,8 @@
             deviceId = await invoke<BoxUuid>("cmd_get_device_id", {}); 
         } catch(err) {
             console.error("FAILED BY cmd_register_step1, err = ", err);
-            const next_step: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
-            currAuthStep.add(next_step);
+            const nextStep: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
+            currAuthStep.step = nextStep;
         }
     });
 

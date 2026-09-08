@@ -1,6 +1,6 @@
 use shared_lib::{ProcessError, Status};
 use shared_lib::primitives::frozen::text::{CompInn, Kpp};
-use shared_lib::parsers::dadata::implements::*;
+use shared_lib::service::parsers::dadata::implements::*;
 
 use crate::config::BackApiState;
 

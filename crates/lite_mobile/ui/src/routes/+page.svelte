@@ -11,6 +11,9 @@
 	pageManager.Page = PageType.Mchd;
   }
 
+  function goToReports() {
+	pageManager.Page = PageType.Report;
+  }
 
 </script>
 
@@ -37,18 +40,38 @@
 	<div>
 		<label
 			class='blue-field-label'
-			for='mainOperationButton'
+			for='mainReportsButton'
+		>
+			Раздел отчетов
+		</label>
+		<button
+			type='button'
+			class='purple-button'
+			id='mainReportsButton'
+			disabled={pageManager.totalOff}
+			onclick={goToReports}
+		>
+			Отчеты
+		</button>
+	</div>
+
+	<div>
+		<label
+			class='blue-field-label'
+			for='mainMchdButton'
 		>
 			Раздел доверенностей
 		</label>
 		<button
 			type='button'
 			class='purple-button'
-			id='mainOperationButton'
+			id='mainMchdButton'
 			disabled={pageManager.totalOff}
-			onclick={goToOperation}
+			onclick={goToMchd}
 		>
 			Доверенности
 		</button>
 	</div>
+
+
 </section>

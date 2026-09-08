@@ -3,7 +3,7 @@ use serde::{Serialize, Deserialize};
 use crate::primitives::frozen::text::{*};
 use crate::primitives::frozen::text_base::*;
 use crate::primitives::composite::implements::Fio;
-use crate::parsers::dadata::implements::AdrWrap;
+use crate::service::parsers::dadata::implements::AdrWrap;
 use crate::service::mchd::implements::Gender;
 
 #[derive(Serialize, Deserialize, sqlx::FromRow, Debug, Clone, ts_rs::TS)]

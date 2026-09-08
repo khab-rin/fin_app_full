@@ -4,7 +4,6 @@ import {AuthStepType} from "$lib/models/Auth/AuthValues";
 import {FieldValidator} from "$lib/models/Auth/FieldValidator.svelte";
 
 import { pageManager } from '../MainManager/MainManager.svelte';
-import { PageType } from '../MainManager/PageValues';
 
 import CallIn from "$lib/service/auth_service/CallIn.svelte";
 import Loading from "$lib/service/auth_service/Loading.svelte";
@@ -16,61 +15,37 @@ import RegisterStep1Success from '$lib/service/auth_service/RegisterStep1Success
 import RegisterStep2 from "$lib/service/auth_service/RegisterStep2.svelte";
 import TryLater from "$lib/service/auth_service/TryLater.svelte";
 
-
-
 import { invoke } from '@tauri-apps/api/core';
 
 
 class SvelteAuthStep {
-    step = $state<AuthStep>({
+    private _step = $state<AuthStep>({
         Loading: { 
             text: "Страница загружается, подождите пожалуйста. В случае зависания попробуйте обновить или перезагрузить приложение"
         }
     });
 
-    private steps: AuthStep[] = $state([]);
-    private index = $state(0);
-    
-    constructor() {
-        this.steps.push(this.step);
-        this.init();
-    }
+	get step() {return this._step;}
 
-    next() {
-        if (this.index < this.steps.length - 1) {
-            this.index++;
-            this.step = this.steps[this.index];
+	set step(nextStep: AuthStep) {
+		if (AuthStepType.SuccessShort in nextStep) {
+			this.data.password.value = "";
+			const nextStep: AuthStep = {Loading: {text: 'Страница загружается, подождите пожалуйста. В случае зависания попробуйте обновить или перезагрузить приложение'}}
+            this._step = nextStep;
+			pageManager.Page = null;
+			return;
         }
-    }
 
-    back() {
-        if (this.index > 0) {
-            this.index--;
-            this.step = this.steps[this.index];
-        }
-    }
-
-    add(next_step: AuthStep) {
-        if (AuthStepType.SuccessShort in next_step) {
-            pageManager.Page = null;
-            this.data.password.value = "";
-        }
-        
-        this.steps = [...this.steps.slice(0, this.index + 1), next_step];
-        
-        this.index++;
-        this.step = next_step;
-    }
+		this._step = nextStep;
+	}
 
     reset() {
-        const next_step: AuthStep = { Loading: {text: "Страница загружается, подождите пожалуйста. В случае зависания попробуйте обновить или перезагрузить приложение"}};
-        this.index = -1;
-        pageManager.Page = PageType.Auth;
-        this.add(next_step);
+        const nextStep: AuthStep = {Loading: {text: 'Страница загружается, подождите пожалуйста. В случае зависания попробуйте обновить или перезагрузить приложение'}}
+        this.step = nextStep;
     }
 
     get isAuthorized() {
-        return AuthStepType.SuccessShort in this.step;
+        return AuthStepType.SuccessShort in this._step;
     }
 
     data = $state({
@@ -157,20 +132,19 @@ class SvelteAuthStep {
         }
     }
 
-    private async init() {
+    async init() {
         try {
             const names = await invoke<string[]>('cmd_get_nick_names');
             this.nick_names = names;
 
             const nextStep = await invoke<AuthStep>("cmd_is_state_active_init");
             
-            this.add(nextStep);
+            this.step = nextStep;
 
         } catch (error) {
             console.error("Ошибка инициализации в синглтоне:", error);
-            this.add({ 
-                TryLater: { text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение" } 
-            });
+			const nextStep: AuthStep = {TryLater: { text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение" }}
+            this.step = nextStep;
         }
     }
 

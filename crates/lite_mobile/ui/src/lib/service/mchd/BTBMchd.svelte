@@ -142,12 +142,12 @@
         }
 
         try {
-            const next_step = await invoke<MchdStep>("cmd_make_xml_doc_files", {data: data})
-            currentMchdStep.add(next_step);
+            const nextStep = await invoke<MchdStep>("cmd_make_xml_doc_files", {data: data})
+            currentMchdStep.step = nextStep;
         } catch(err) {
             console.error("cmd_make_xml_doc_files FAILED, err = ", err);
-            const next_step: MchdStep = {TryLater: {text: "Критическая ошибка на устройстве..."}};
-            currentMchdStep.add(next_step);
+            const nextStep: MchdStep = {TryLater: {text: "Критическая ошибка на устройстве..."}};
+            currentMchdStep.step = nextStep;
         }
     }
 

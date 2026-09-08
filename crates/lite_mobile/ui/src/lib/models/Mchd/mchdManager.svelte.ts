@@ -20,42 +20,19 @@ import WrongData from "$lib/service/mchd/WrongData.svelte";
 
 
 class MchdManager {
-    step = $state<MchdStep>({
+    private _step = $state<MchdStep>({
         Loading: {text: "Выберите действие с машиночитаемыми доверенностями. Вы можете создать и зарегистрировать МЧД на любое физ. лицо от имени организации указанной при регистрации в приложении"}
     });
-    private steps: MchdStep[] = $state([]);
-    private index = $state(0);
 
-    constructor() {
-        this.steps.push(this.step);
-    }
-
-    next() {
-        if (this.index < this.steps.length - 1) {
-            this.index++;
-            this.step = this.steps[this.index];
-        }
-    }
-
-    back() {
-        if (this.index > 0) {
-            this.index--;
-            this.step = this.steps[this.index];
-        }
-    }
-
-    add(next_step: MchdStep) {
-        this.steps.length = this.index + 1;
-        this.steps.push(next_step);
-        this.index++;
-        this.step = next_step;
-    }
+	get step() {return this._step}
+	set step(nextStep: MchdStep) {
+		this._step = nextStep;
+	}
 
     data = $state({
         PoaNumber: new FieldValidator("String1_50", "1"),
         PoaEndDate: new FieldValidator("Date", "18.06.2028"),
         taxOrgIdent: new FieldValidator("Digits4_4", "1655"),
-
 
         managerTitle: new FieldValidator("String1_255", "Директор"),
         managerSurName: new FieldValidator("SurName", "Хабипов"),

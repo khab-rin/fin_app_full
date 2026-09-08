@@ -27,17 +27,17 @@
 
        
         try {
-            let next_step = await invoke<AuthStep>('cmd_session_by_password', {
+            let nextStep = await invoke<AuthStep>('cmd_session_by_password', {
                 data: sendData
             });
             isPushed = false;
-            currAuthStep.add(next_step);
+            currAuthStep.step = nextStep;
 
         } catch (err) {
             console.error("Критическая ошибка cmd_auth_with_password:", err);
-            let next_step: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
+            let nextStep: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
             isPushed = false;
-            currAuthStep.add(next_step);
+            currAuthStep.step = nextStep;
         }
     }
 

@@ -1,6 +1,5 @@
 pub mod alias_types;
 pub mod err_models;
-pub mod parsers;
 pub mod primitives;
 pub mod static_data;
 pub mod sql_models;
@@ -41,6 +40,9 @@ use super::*;
 
         service::mchd::implements::MchdTSRS::export_all_to(output_dir)
             .expect("Не удалось экспортировать MchdTSRS");
+
+		service::reports::service::ReportTSTS::export_all_to(output_dir)
+			.expect("Не удалось экспортировать ReportTSTS");
 
     }
 }

@@ -49,8 +49,8 @@
         } catch(err) {
             console.error("XML FILE SAVING ERROR: ", err);
             xmlSavePushed = false;
-            const next_step: MchdStep = {TryLater: {text: "Критическая ошибка на устройстве..."}};
-            currentMchdStep.add(next_step);
+            const nextStep: MchdStep = {TryLater: {text: "Критическая ошибка на устройстве..."}};
+            currentMchdStep.step = nextStep;
         }
     }
 
@@ -77,8 +77,8 @@
         } catch(err) {
             console.error("DOC FILE SAVING ERROR: ", err);
             docSavePushed = false;
-            const next_step: MchdStep = {TryLater: {text: "Критическая ошибка на устройстве..."}};
-            currentMchdStep.add(next_step);
+            const nextStep: MchdStep = {TryLater: {text: "Критическая ошибка на устройстве..."}};
+            currentMchdStep.step = nextStep;
         }
     }
 </script>

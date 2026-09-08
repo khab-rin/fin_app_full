@@ -8,6 +8,7 @@ use crate::primitives::frozen::text_base::*;
 use crate::service::mchd::implements::*;
 use crate::sql_models::operation::account::Account;
 use crate::sql_models::operation::implements::DocType;
+use crate::service::reports::service::FnsReportType;
 
 #[derive(Serialize, Deserialize, ts_rs::TS, Debug)]
 pub enum SvelteValidator {
@@ -92,7 +93,7 @@ pub enum SvelteValidator {
     String,
     Currency,
     Integ,
-    U32
+    U32,
 }
 
 impl SvelteValidator {
@@ -346,7 +347,7 @@ impl SvelteValidator {
             },
             SvelteValidator::U32 => match value.parse::<u32>() {
                 Ok(_) => Ok(true), Err(_) => Ok(false),
-            },
+            }
         }
     }
 }

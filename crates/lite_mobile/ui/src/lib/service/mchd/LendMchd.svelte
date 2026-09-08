@@ -55,14 +55,14 @@
         }
         try {
             isLendMchdPushed = true;
-            let next_step: MchdStep = await invoke<MchdStep> ("cmd_lend_mchd", data);
+            let nextStep: MchdStep = await invoke<MchdStep> ("cmd_lend_mchd", data);
             isLendMchdPushed = false;
-            currentMchdStep.add(next_step);
+            currentMchdStep.step = nextStep;;
         } catch (err) {
             console.error("Ошибка при отправке данных в cmd_lend_mchd, err = ", err);
             isLendMchdPushed = false;
-            let next_step: MchdStep = {TryLater: {text: "Критическая ошибка на устройстве..."}};
-            currentMchdStep.add(next_step);
+            let nextStep: MchdStep = {TryLater: {text: "Критическая ошибка на устройстве..."}};
+            currentMchdStep.step = nextStep;;
         }
     }
 

@@ -24,6 +24,7 @@ pub struct FnsQuaterAmnts {
 	pub fourth_qu: u64,
 }
 
+
 //СумСтрТип
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct FnsQuaterAmntsInfo {
@@ -40,6 +41,7 @@ pub struct FnsQuaterAmntsInfo {
 	pub one_perc_prev_year: u64,
 }
 
+
 //СвРеоргЮЛ
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct FnsTrnasformationInfo {
@@ -52,6 +54,7 @@ pub struct FnsTrnasformationInfo {
 	#[serde(rename="@КПП", skip_serializing_if = "Option::is_none")]
 	pub kpp: Option<Kpp>,
 }
+
 
 //НПЮЛ
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -70,6 +73,7 @@ pub struct FnsTaxPayerCompany {
 
 }
 
+
 //НПФЛ
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct FnsTaxPayerPerson {
@@ -80,6 +84,7 @@ pub struct FnsTaxPayerPerson {
 	pub pers_inn: PersInn,
 }
 
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum FnsTaxPayerType {
 	#[serde(rename = "НПЮЛ")]
@@ -87,9 +92,6 @@ pub enum FnsTaxPayerType {
 	#[serde(rename = "НПФЛ")]
 	Person(FnsTaxPayerPerson)
 }
-
-
-
 
 
 //СвНП
@@ -109,6 +111,7 @@ pub struct FnsDelegateInfo {
 	pub doc_name: String1_120
 }
 
+
 //Подписант
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct FnsSignature {
@@ -121,6 +124,7 @@ pub struct FnsSignature {
 	#[serde(rename="@ПрПодп")]
 	pub signature: FnsSignatureType
 }
+
 
 //Ставка
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -137,8 +141,8 @@ pub struct FnsRate {
 	#[serde(rename="@СтавкаНалПер")]
 	pub qu_four: Decimal,
 
-	#[serde(rename="@КодЛьгот")]
-	pub rate_reason: String
+	#[serde(rename="@КодЛьгот", skip_serializing_if = "Option::is_none")]
+	pub rate_reason: Option<String>
 }
 
 
@@ -176,7 +180,6 @@ pub struct FnsTradeFee {
 
 	#[serde(rename="ТоргСборУмен")]
 	pub fee_incl_tax: FnsQuaterAmnts
-
 }
 
 
@@ -250,6 +253,7 @@ pub enum FnsFifteenDueChoise {
 	MinTaxAmnt(u64)
 }
 
+
 //СумНалПУ_СмНП
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct FnsTaxFifteen {
@@ -280,8 +284,8 @@ pub struct FnsTaxFifteen {
 	#[serde(rename="@ОКТМО_Пер", skip_serializing_if = "Option::is_none")]
 	pub oktmo_qu_four: Option<Oktmo>,
 
-	#[serde(rename="@НалПУУменПер")]
-	pub avans_qu_four: u64,
+	#[serde(rename="@СумНалПат", skip_serializing_if = "Option::is_none")]
+	pub avans_qu_four: Option<u64>,
 
 }
 
@@ -314,6 +318,7 @@ pub struct FnsTaxFifteenCal {
 	pub min_tax: u64
 }
 
+
 //ОтчетИспКод
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct FnsCharityReportCode {
@@ -339,6 +344,7 @@ pub struct FnsCharityReportCode {
 	pub uncorrect_used_amnt: Option<u64>,
 }
 
+
 //ОтчетИсп
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct FnsCharityReport {
@@ -357,6 +363,7 @@ pub struct FnsCharityReport {
 	#[serde(rename="@СумНеИспСрокИт")]
 	pub incorrectly_used_amount: Option<u64>
 }
+
 
 //СумРасхККТПер
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -410,6 +417,7 @@ pub enum FnsTaxReportType {
 	FifteenPercent(Box<FnsTaxFifteen>)
 }
 
+
 //УСН
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct FnsUsnReport {
@@ -425,6 +433,7 @@ pub struct FnsUsnReport {
 	#[serde(rename = "@ОбНал")]
 	pub usn_object: FnsUsnObject
 }
+
 
 //Документ
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -460,6 +469,7 @@ pub struct FnsUsnDocument {
 	submission_place: FnsSubmissionPlace
 }
 
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct FnsUsnFile {
 	#[serde(rename = "Документ")]
@@ -474,7 +484,6 @@ pub struct FnsUsnFile {
 	#[serde(rename = "@ВерсФорм")]
 	format_version: FnsUsnFromtat
 }
-
 
 
 

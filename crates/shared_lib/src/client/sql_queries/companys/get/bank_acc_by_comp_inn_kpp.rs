@@ -1,6 +1,6 @@
 use crate::{Status, ClientState, ProcessError};
 use crate::primitives::composite::implements::RasBicAcc;
-use crate::parsers::dadata::implements::CtrprtyMetadata;
+use crate::service::parsers::dadata::implements::CtrprtyMetadata;
 use crate::primitives::frozen::text::{CompInn, Kpp};
 
 pub async fn get_bank_accs_by_comp_id(

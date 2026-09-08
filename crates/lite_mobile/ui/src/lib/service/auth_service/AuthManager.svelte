@@ -11,31 +11,23 @@
     let isNickName = $derived(AuthStepType.NickName in currAuthStep.step);
 
     function goToPassword() {
-        let next_step: AuthStep = { Password: { text: "" } };
-        currAuthStep.add(next_step);
+        let nextStep: AuthStep = { Password: { text: "" } };
+        currAuthStep.step = nextStep;
     }
 
     function goToRegisterStep1() {
-        let next_step: AuthStep = { RegisterStep1: { text: "Заполните поля регистрации строго как в документах" } };
-        currAuthStep.add(next_step);
+        let nextStep: AuthStep = { RegisterStep1: { text: "Заполните поля регистрации строго как в документах" } };
+        currAuthStep.step = nextStep;
     }
 
     function goToRegisterStep2() {
-        let next_step: AuthStep = { RegisterStep2: { text: "Укажите путь до xml файла заявления и путь до файла открепленной подписи. Подпись должна быть для указанного файла xml" } };
-        currAuthStep.add(next_step);
+        let nextStep: AuthStep = { RegisterStep2: { text: "Укажите путь до xml файла заявления и путь до файла открепленной подписи. Подпись должна быть для указанного файла xml" } };
+        currAuthStep.step = nextStep;
     }
 
     function goToNickName() {
-        let next_step: AuthStep = { NickName: { text: "" } };
-        currAuthStep.add(next_step);
-    }
-
-    function handleGoBack() {
-        currAuthStep.back(); 
-    }
-
-    function handleGoNext() {
-        currAuthStep.next(); 
+        let nextStep: AuthStep = { NickName: { text: "" } };
+        currAuthStep.step = nextStep;
     }
 </script>
 
@@ -52,15 +44,6 @@
 
 <h6> Навигация по авторизации </h6>
 <section class="group-two">
-	<div>
-		<button
-			class="purple-button"
-			type="button"
-			onclick={handleGoBack}
-		>
-			Шаг назад
-		</button>
-	</div>
 
 	<div>
 		<button
@@ -103,16 +86,6 @@
 			onclick={goToNickName}
 		>
 			Войти как
-		</button>
-	</div>
-	
-	<div>
-		<button
-			class="purple-button"
-			type="button"
-			onclick={handleGoNext}
-		>
-			Шаг вперед
 		</button>
 	</div>
 	

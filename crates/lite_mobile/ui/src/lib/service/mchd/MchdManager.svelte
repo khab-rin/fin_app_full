@@ -4,18 +4,15 @@
 
     import type {MchdStep} from "$lib/models/rustModels/MchdStep";
 
+	function goToLoading() {
+		const nextStep: MchdStep = {Loading: {text: ""}};
+        currentMchdStep.step = nextStep;
+	}
+
     function closeMchd() {
-        const next_step: MchdStep = {Loading: {text: ""}};
-        currentMchdStep.add(next_step);
+        const nextStep: MchdStep = {Loading: {text: ""}};
+        currentMchdStep.step = nextStep;
         pageManager.Page = null;
-    }
-
-    function handleGoBack() {
-        currentMchdStep.back(); 
-    }
-
-    function handleGoNext() {
-        currentMchdStep.next(); 
     }
 </script>
 
@@ -29,35 +26,26 @@
 
 
 <section class="group-two">
-    <div>
-        <button
-            class="purple-button"
-            type="button"
-            onclick={handleGoBack}
-		>
-            <span class="purple-button-span">Назад</span>
-        </button>
-    </div>
 
-    <div>
-        <button
-            class="purple-button"
-            type="button"
-            onclick={handleGoNext}>
-            <span class="purple-button-span">Вперед</span>
-        </button>
-    </div>
-    
+	<button
+		type="button"
+		class="blue-button"
+		onclick={goToLoading}
+		>
+		<span class="blue-button-span">
+			Меню доверенностей
+		</span>
+	</button>
+
+	<button
+		type="button"
+		class="blue-button"
+		onclick={closeMchd}
+		>
+		<span class="blue-button-span">
+			Основной экран
+		</span>
+	</button>
+
 </section>
 
-<div class="blue-button-group">
-    <button
-        type="button"
-        class="blue-button"
-        onclick={closeMchd}
-        >
-        <span class="blue-button-span">
-            Основной экран
-        </span>
-    </button>
-</div>

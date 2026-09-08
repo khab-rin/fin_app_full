@@ -27,16 +27,16 @@
         closeAccountsModal();
         
         try {
-            let next_step = await invoke<AuthStep>('cmd_session_by_nick', { nick: selectedNick });
+            let nextStep = await invoke<AuthStep>('cmd_session_by_nick', { nick: selectedNick });
             IsPushed = false;
-            currAuthStep.add(next_step);
+            currAuthStep.step = nextStep;
         } catch (err) {
-            let next_step: AuthStep = { 
+            let nextStep: AuthStep = { 
                 TryLater: { text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"} 
             };
             console.error("ОШИБКА В call_nick_handle:", err);
             IsPushed = false; 
-            currAuthStep.add(next_step);
+            currAuthStep.step = nextStep;
         }
     }
 
@@ -44,13 +44,13 @@
         try {
             currAuthStep.nick_names = await invoke<string []>('cmd_get_nick_names');
             if (currAuthStep.nick_names.length == 0) {
-                let next_step: AuthStep = {Password: {text: "Пользователь не найден на устройстве, требуется авторизоваться по паролю или пройти регистрацию"}};
-                currAuthStep.add(next_step);
+                let nextStep: AuthStep = {Password: {text: "Пользователь не найден на устройстве, требуется авторизоваться по паролю или пройти регистрацию"}};
+                currAuthStep.step = nextStep;
             }
         } catch(err) {
             console.error("NicnName page FAILED BY 'cmd_get_nick_names, err = ", err);
-            const next_step: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
-            currAuthStep.add(next_step)
+            const nextStep: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
+            currAuthStep.step = nextStep;
         }
     });
 

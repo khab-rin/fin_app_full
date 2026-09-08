@@ -5,7 +5,7 @@ use serde::{Serialize, Deserialize};
 
 use crate::primitives::frozen::text::{BoxUuid, CompStatus, CompType, DateTime, CompInn, Kpp};
 use crate::primitives::composite::implements::RasBicAcc;
-use crate::parsers::dadata::implements::CtrprtyMetadata;
+use crate::service::parsers::dadata::implements::CtrprtyMetadata;
 
 #[derive(Serialize, Deserialize, Clone)]
 #[derive(sqlx::FromRow, Debug)]
