@@ -1,2 +1,2 @@
-pub mod fns_usn;
+pub mod fns_xsd_shemas;
 pub mod service;

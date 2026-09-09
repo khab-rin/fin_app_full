@@ -47,14 +47,16 @@ pub async fn make_bank_statement_operations(
 
     let mut in_operations: Vec<OperationRaw> = vec!();
 
-    for operation_row in all_operations {
-        if operation_row.debet != Account::BankAcc {
+    for opr in all_operations {
+		
+        if opr.debet == Account::BankAcc && opr.credit == Account::SpecBankAcc{
             continue;
         }
-		if operation_row.credit == Account::SpecBankAcc {
-			continue;
-		}
-        in_operations.push(operation_row);
+		if opr.debet == Account::SpecBankAcc && opr.credit == Account::BankAcc{
+            continue;
+        }
+		
+        in_operations.push(opr);
     }
 
 

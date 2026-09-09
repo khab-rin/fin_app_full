@@ -47,6 +47,9 @@ export class OperationSvelte {
 		contractDescr: new FieldValidator('String', 'Охуенный договор'),
 	};
 
+	private _comment = $state<string>('');
+	get comment() {return this._comment;}
+
 	private _ctrPty = $state<Company | null>(null);
 	get ctrPty() {return this._ctrPty;}
 
@@ -173,6 +176,7 @@ export class OperationSvelte {
 		this._ctrPty = raw.ctrpty;
 		this._allPossContracts = raw.contract.contracts ?? [];
 		this._currContract = raw.contract.current;
+		this._comment = raw.comment;
 
 		await Promise.all([
 			this.data.operId.asyncSet(raw.oper_id),

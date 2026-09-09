@@ -125,6 +125,8 @@
 {/if}
 
 {#if processor && processor.curOper}
+	<span>{processor.curOper.comment}</span>
+
 	<section class='group-one'>
 		<div>
 			<label class='green-field-label' for='operStatSuccCtrPtyName'>

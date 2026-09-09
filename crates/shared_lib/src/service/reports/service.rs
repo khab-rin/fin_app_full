@@ -44,22 +44,30 @@ pub enum ReportInfo {
 
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
+#[ts(export)]
 pub enum FnsReportType {
-	#[serde(rename = "Отчет УСН => доходы 6%")]
-	UsnSix,
+    #[serde(rename = "Декларация УСН (Доходы 6%)")]
+    UsnDeclSix,
 
-	#[serde(rename = "Отчет УСН => доходы - расходы 15%")]
-	UsnFifteen,
+    #[serde(rename = "Декларация УСН (Доходы - Расходы 15%)")]
+    UsnDeclFifteen,
+
+    #[serde(rename = "Уведомление УСН (Доходы 6%)")]
+    UsnNotifSix,
+
+    #[serde(rename = "Уведомление УСН (Доходы - Расходы 15%)")]
+    UsnNotifFifteen,
 }
 
 impl FnsReportType {
 	pub fn get_all_fns_report_types() -> Vec<FnsReportType> {
 		vec![
-			Self::UsnSix,
-			Self::UsnFifteen
+			Self::UsnDeclSix,
+			Self::UsnDeclFifteen,
+			Self::UsnNotifSix,
+			Self::UsnNotifFifteen
 		]
 	}
-
 }
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]

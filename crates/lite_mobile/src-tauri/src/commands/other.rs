@@ -1,3 +1,4 @@
+use chrono::Datelike;
 use shared_lib::primitives::frozen::text::{BoxUuid, Date};
 use shared_lib::{ClientState, Status, ProcessError};
 use shared_lib::primitives::svelte_validate::SvelteValidator;
@@ -32,6 +33,12 @@ pub fn cmd_validate_field(
     value: String
 ) -> Result<bool, Status> {
     type_value.validate_svelte_field(&value)
+}
+
+#[tauri::command]
+pub fn cmd_get_current_year(
+) -> Result<i32, Status> {
+	Ok(chrono::Utc::now().year())
 }
 
 

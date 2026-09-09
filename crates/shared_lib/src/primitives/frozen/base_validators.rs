@@ -27,6 +27,7 @@ gen_str_validator!(init_str_16_16, 16, 16, Status::ValidMchdStr16_16);
 gen_str_validator!(init_str_1_16000, 1, 16000, Status::ValidMchdStr1_16000);
 
 gen_digit_validator!(init_digits_2_2, 2, 2, Status::ValidMchdDig2_2);
+gen_digit_validator!(init_digits_20_20, 20, 20, Status::ValidMchdDig20_20);
 gen_digit_validator!(init_digits_3_3, 3, 3, Status::ValidMchdDig3_3);
 gen_digit_validator!(init_digits_4_4, 4, 4, Status::ValidMchdDig4_4);
 gen_digit_validator!(init_digits_7_7, 7, 7, Status::ValidMchdDig7_7);

@@ -203,6 +203,13 @@ frozen_primitives!(
     default_fmt);
 
 frozen_primitives!(
+    Digits20_20,
+    init_digits_20_20,
+    String,
+    "Строка_20_цифр",
+    default_fmt);
+
+frozen_primitives!(
     Digits3_3,
     init_digits_3_3,
     String,
