@@ -20,7 +20,7 @@ macro_rules! tax_primitives {
 
         impl std::default::Default for $name {
             fn default() -> Self {
-                Self { data : *$default() }
+                Self { data : $default() }
             }
         }
 

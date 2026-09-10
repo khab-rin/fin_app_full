@@ -3,7 +3,7 @@ use serde::{Serialize, Deserialize};
 
 use crate::Status;
 use crate::primitives::frozen::text::RubF;
-use crate::primitives::tax_frozen::implements::Nds22;
+use crate::primitives::tax_frozen::implements::{Nds22, Usn6};
 
 calculated_primitives!(
     RubC,
@@ -23,3 +23,6 @@ math_rules!(Mul, mul, *, RubF, Nds22 => RubC);
 math_rules!(Mul, mul, *, RubC, Nds22 => RubC);
 math_rules!(Mul, mul, *, Nds22, RubF => RubC);
 math_rules!(Mul, mul, *, Nds22, RubC => RubC);
+
+math_rules!(Mul, mul, *, RubC, Usn6 => RubC);
+math_rules!(Mul, mul, *, RubF, Usn6 => RubC);

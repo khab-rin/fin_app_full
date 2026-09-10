@@ -12,6 +12,20 @@ pub(crate) fn init_nds22_from_str(nds: &str) -> Result<Decimal, Status> {
         .ok_or(Status::ValidNds)
 }
 
-pub(crate) fn init_nds_22_default() -> &'static Decimal {
-    get_nds_22_default()
+pub(crate) fn init_nds_22_default() -> Decimal {
+    Decimal::from(22) / Decimal::from(122)
+}
+
+
+pub(crate) fn init_usn6_from_str(tax: &str) -> Result<Decimal, Status> {
+    let tax = tax.trim();
+	if tax == "0.06" || tax == "06" || tax == "6" {
+		return Ok(Decimal::from(6) / Decimal::from(100));
+	} else {
+		return Err(Status::ValidUsn6);
+	}
+}
+
+pub(crate) fn init_usn6_default() -> Decimal {
+	Decimal::from(6) / Decimal::from(100)
 }

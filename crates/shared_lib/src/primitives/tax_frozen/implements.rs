@@ -9,3 +9,9 @@ tax_primitives!(
     init_nds22_from_str,
     init_nds_22_default,
     "НДС_22%");
+
+tax_primitives!(
+    Usn6,
+    init_usn6_from_str,
+    init_usn6_default,
+    "УСН_06%");

@@ -57,6 +57,7 @@ pub struct BlockCommentData {
     pub is_salary: bool,
     pub is_invoice: bool,
     pub is_penalty: bool,
+	pub is_depos_persent: bool,
     pub nds_amount: Option<RubF>,
     pub nds_rate: u8,
     pub errors: HashSet<Status>

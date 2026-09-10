@@ -121,12 +121,10 @@
 </script>
 
 {#if processor}
-	колечество необработанных операций {processor.unProcceed}
+	<p>колечество необработанных операций {processor.unProcceed}</p>
 {/if}
 
 {#if processor && processor.curOper}
-	<span>{processor.curOper.comment}</span>
-
 	<section class='group-one'>
 		<div>
 			<label class='green-field-label' for='operStatSuccCtrPtyName'>
@@ -192,6 +190,15 @@
 			Контрагент
 		</button>
 	</section>
+
+	<div>
+		<label class='green-field-label' for='operStatSuccComment'>
+			Комментарий операции
+		</label>
+		<p id='operStatSuccComment'>{processor.curOper.comment}</p>
+
+	</div>
+	
 
 	<section class=group-one>
 		<div>

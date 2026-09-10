@@ -12,7 +12,7 @@ pub async fn cmd_get_all_fns_report_types(
 }
 
 #[tauri::command]
-pub async fn cmd_make_fns_report(
+pub async fn cmd_make_fns_report_files(
 	state: tauri::State<'_, ClientState>,
 	report_type: FnsReportType,
 	year: i32,

@@ -39,7 +39,7 @@
 		if (isCmdMakeFnsReportFilesPushed || !isValid) {return;}
 		try {
 			let data = {
-				report_type: curType,
+				reportType: curType,
 				year: selectedYear,
 				quat: selectedQuat
 			};

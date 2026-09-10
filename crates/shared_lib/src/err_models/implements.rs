@@ -78,6 +78,7 @@ pub enum Status {
 	ValidMchdStr16_16 = 162, 
 	ValidMchdStr1_20 = 163,
 	ValidMchdDig20_20 = 164,
+	ValidUsn6 = 165,
 
 
     // ==========================================

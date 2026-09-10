@@ -645,7 +645,8 @@ impl Account {
                 Account::ShortLoans,
                 Account::LongLoans,
                 Account::OtherPayables,
-                Account::SpecBankAcc
+                Account::SpecBankAcc,
+				Account::OtherIncome
             ],
             Account::ForBankAcc => &[
                 Account::Customers,

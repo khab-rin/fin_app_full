@@ -111,7 +111,7 @@ pub async fn make_statement_pay_operation_raw(
         Account::Taxes
     } else if comment_data.is_salary {
         Account::Payroll
-    } else if comment_data.is_komis {
+    } else if comment_data.is_komis || comment_data.is_depos_persent {
         Account::OtherIncome
     } else {
         Account::Vendors
@@ -121,7 +121,7 @@ pub async fn make_statement_pay_operation_raw(
     
     let amount = block_fields.statement_amount.clone();
 
-    let oper_date = block_fields.rec_date.clone();
+    let oper_date = block_fields.pay_date.clone();
 
     let doc_type = block_fields.doc_type.clone();
 
@@ -236,6 +236,8 @@ pub async fn make_statement_rec_operation_raw(
         Account::ShortLoans
     } else if comment_data.is_komis {
         Account::OtherPayables
+	} else if comment_data.is_depos_persent {
+		Account::OtherIncome
     } else {
         Account::Customers
     };

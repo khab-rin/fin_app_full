@@ -2,7 +2,8 @@ use serde::{Serialize, Deserialize};
 
 use crate::make_xls_enum;
 use crate::primitives::composite::implements::Fio;
-use crate::primitives::frozen::text::{CompInn, Kpp, Oktmo, PersInn, Date, RubF};
+use crate::primitives::frozen::text::{CompInn, Kpp, Oktmo, PersInn, Date};
+use crate::primitives::calculated::implements::RubC;
 use crate::primitives::frozen::text_base::{
 	String1_40, Digits4_4, Digits20_20, String1_120, String1_255, String1_1000
 };
@@ -23,7 +24,7 @@ pub struct UsnNotifTaxPayerCompany {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UsnNotifTaxPayerPerson {
 	#[serde(rename="@ИННФЛ")]
-	pub pers_inn: PersInn,
+	pub pers_inn: CompInn,
 }
 
 
@@ -71,10 +72,10 @@ pub struct UsnNotifNotification {
 	pub oktmo: Oktmo,
 
 	#[serde(rename="@КБК")]
-	pub kbk: Digits20_20,
+	pub kbk: UsnNotifKbk,
 
 	#[serde(rename="@СумНалогАванс")]
-	pub avans_amnt: RubF,
+	pub avans_amnt: RubC,
 
 	#[serde(rename="@Период")]
 	pub period: UsnNotifPeriod,
@@ -154,4 +155,10 @@ make_xls_enum!(UsnNotifUsnKnd, {
 
 make_xls_enum!(UsnNotifUsnFormat, {
     Value => "5.02",
+});
+
+
+make_xls_enum!(UsnNotifKbk, {
+    UsnNotifSix => "18210501011011000110",
+	UsnNotifFifteen => "18210501021011000110"
 });

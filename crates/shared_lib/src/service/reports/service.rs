@@ -1,6 +1,8 @@
 
 use serde::{Serialize, Deserialize};
 
+use crate::primitives::frozen::text::{RubF, Date};
+
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub enum ReportStep {
 	FnsReports { text: ReportInfo },
@@ -69,6 +71,24 @@ impl FnsReportType {
 		]
 	}
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct QuartDates {
+	pub start: Date,
+	pub q1: Date,
+	pub q2: Date,
+	pub q3: Date,
+	pub q4: Date
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct QuartCummulAmnt {
+	pub q1: RubF,
+	pub q2: RubF,
+	pub q3: RubF,
+	pub q4: RubF
+}
+
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub struct ReportTSTS {

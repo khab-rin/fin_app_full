@@ -17,10 +17,24 @@ pub fn parse_comment(
         low.contains("кредит") || 
         low.contains("заем") || 
         low.contains("займ") ||
-        low.contains("ссуд")
+        low.contains("ссуд") ||
+		low.contains("депоз")
     ) {
         parse_data.is_cred_return = true;
     }
+
+	if (low.contains("плат") ||
+		low.contains("упл")) 
+		&&
+		low.contains("проц") 
+		&&
+		(
+        low.contains("кредит") || 
+        low.contains("заем") || 
+        low.contains("займ") ||
+        low.contains("ссуд") || 
+		low.contains("депоз")
+    ) {parse_data.is_depos_persent = true;}
 
     if (
         low.contains("выдач") || 
