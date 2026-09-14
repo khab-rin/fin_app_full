@@ -11,7 +11,12 @@ pub enum ReportStep {
 
 	Loading { text: ReportInfo },
 
-	SaveFiles { text: ReportInfo, xls_file: Vec<u8>, pdf_file: Vec<u8> },
+	SaveFiles { 
+		text: ReportInfo, 
+		xml_name: String,
+		xml_file: Vec<u8>,
+		pdf_name: String, 
+		pdf_file: Vec<u8> },
 
 	TryLater {text: ReportInfo },
 }

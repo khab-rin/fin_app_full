@@ -69,8 +69,8 @@ pub async  fn cmd_is_state_active_init(
 pub async fn cmd_logout(
     state: tauri::State<'_, ClientState>
 ) -> Result<(), Status> {
-
-    log::debug!("cmd_logout running!!!!");
+	
+    log::info!("cmd_logout running!!!!");
 
     let mut session_ref = state.session.lock().await;
     *session_ref = None;

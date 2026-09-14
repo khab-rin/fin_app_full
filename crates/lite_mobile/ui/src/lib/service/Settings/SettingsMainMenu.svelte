@@ -5,6 +5,7 @@
 
     
     async function press_logout() {
+		console.error("press_logout activated");
         pageManager.settingsOnOff = false;
         await logOut();
     }

@@ -15,7 +15,7 @@
 
 	function handlePointerOutside(event: PointerEvent) {
 		if (
-			pageManager.settingsOnOff && // Если меню открыто
+			pageManager.settingsOnOff &&
 			menuRef &&
 			!menuRef.contains(event.target as Node) &&
 			!(event.target as HTMLElement).closest('.param-button') 

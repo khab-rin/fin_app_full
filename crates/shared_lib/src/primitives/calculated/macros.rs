@@ -1,6 +1,7 @@
 macro_rules! calculated_primitives {
     ($avail:vis $name:ident, $data_type:ty, $frozen_name:ident, $label:literal) => {
         #[derive(Debug, Clone, Ord, PartialOrd, Serialize, Deserialize)]
+		#[serde(into = "String")]
         pub struct $name {
             $avail data : $data_type
         }
@@ -21,6 +22,12 @@ macro_rules! calculated_primitives {
                 Self::LABEL
             }
         }
+
+		impl std::convert::From<$name> for String {
+			fn from(value: $name) -> String {
+				value.data.to_string()
+			}
+		}
 
         impl std::convert::TryFrom<$name> for $frozen_name {
             type Error = Status;

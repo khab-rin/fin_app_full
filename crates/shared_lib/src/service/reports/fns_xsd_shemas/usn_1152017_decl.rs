@@ -6,6 +6,7 @@ use crate::make_xls_enum;
 use crate::primitives::frozen::text_base::*;
 use crate::primitives::frozen::text::*;
 use crate::primitives::composite::implements::Fio;
+use crate::service::reports::fns_xsd_shemas::common::*;
 
 
 //СумТип
@@ -122,7 +123,7 @@ pub struct UsnDeclSigner {
 	pub delegate_info: Option<UsnDeclDelegateInfo>,
 
 	#[serde(rename="@ПрПодп")]
-	pub signer: UsnDeclSignerType
+	pub signer: FnsSignerType
 }
 
 
@@ -448,7 +449,7 @@ pub struct UsnDeclUsnDocument {
 	usn_report: UsnDeclUsnReport,
 
 	#[serde(rename = "@КНД")]
-	report_code: UsnDeclUsnKnd,
+	report_code: FnsKnd,
 
 	#[serde(rename = "@ДатаДок")]
 	doc_create_date: Date,
@@ -482,7 +483,7 @@ pub struct UsnDeclUsnFile {
 	program_version: String1_40,
 
 	#[serde(rename = "@ВерсФорм")]
-	format_version: UsnDeclUsnFormat
+	format_version: FnsDocFormVersion
 }
 
 
@@ -497,12 +498,6 @@ make_xls_enum!(UsnDeclLiquidStatus, {
 });
 
 
-make_xls_enum!(UsnDeclSignerType, {
-    TAXPAYER => "1",
-    DELEGATE => "2",
-});
-
-
 make_xls_enum!(UsnDeclEmplyersExistType, {
     WithEmployees => "1",
     WithoutEmployees => "2",
@@ -513,10 +508,6 @@ make_xls_enum!(UsnDeclUsnObject, {
     IncomeMinusExpenses => "2",
 });
 
-
-make_xls_enum!(UsnDeclUsnKnd, {
-    Value => "1152017",
-});
 
 
 make_xls_enum!(UsnDeclReportType, {
@@ -533,9 +524,6 @@ make_xls_enum!(UsnDeclSubmissionPlace, {
 	SuccessorAddress => "215",
 });
 
-make_xls_enum!(UsnDeclUsnFormat, {
-    Value => "5.09",
-});
 
 
 

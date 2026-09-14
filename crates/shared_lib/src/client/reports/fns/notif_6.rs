@@ -1,9 +1,10 @@
 use crate::primitives::frozen::text::{Date, Kpp};
 use crate::{ClientState, ProcessError, Status};
-use crate::service::reports::service::ReportStep;
+use crate::service::reports::service::{ReportStep, ReportInfo};
 use crate::service::reports::fns_xsd_shemas::usn_1110355_notif::*;
 use crate::primitives::frozen::text_base::{Digits4_4, String1_40};
 use crate::primitives::tax_frozen::implements::Usn6;
+use crate::service::reports::fns_xsd_shemas::common::*;
 
 use crate::client::reports::fns::helper::make_quaters;
 use crate::client::sql_queries::operations::get::reports::fns::usn_notif_6::get_quater_cummul_incomes_usn_notif_6;
@@ -40,7 +41,8 @@ pub async fn make_notif_usn_6_files(
 		.metadata
 		.oktmo_company
 		.clone()
-		.ok_or(Status::Tech.process_err(Status::SystemLogicErr, ""))?;
+		.ok_or_else(|| Status::Tech.process_err(Status::SystemLogicErr, "oktmo is not exist"))?;
+
 
 	let kbk = UsnNotifKbk::UsnNotifSix;
 
@@ -67,7 +69,6 @@ pub async fn make_notif_usn_6_files(
 			qu_month_num: UsnNotifPeriodNum::QuTwo, 
 			year: not_year 
 		},
-
 		3 => UsnNotifNotification { 
 			kpp, 
 			oktmo, 
@@ -75,15 +76,6 @@ pub async fn make_notif_usn_6_files(
 			avans_amnt: quat_amonts.q3 * Usn6::default() - quat_amonts.q2 * Usn6::default(), 
 			period: UsnNotifPeriod::NineMonths, 
 			qu_month_num: UsnNotifPeriodNum::QuThree, 
-			year: not_year 
-		},
-		4 => UsnNotifNotification { 
-			kpp, 
-			oktmo, 
-			kbk, 
-			avans_amnt: quat_amonts.q4 * Usn6::default() - quat_amonts.q3 * Usn6::default(),
-			period: UsnNotifPeriod::Year, 
-			qu_month_num: UsnNotifPeriodNum::QuFour, 
 			year: not_year 
 		},
 		_ => {
@@ -109,13 +101,13 @@ pub async fn make_notif_usn_6_files(
 	};
 
 	let signer = UsnNotifSigner {
-		signer_type: UsnNotifSignerType::TAXPAYER,
+		signer_type: FnsSignerType::TAXPAYER,
 		delegate_info: None,
 		fio: session.session_user.person.metadata.fio.clone()
 	};
 
 	let document = UsnNotifDocument {
-		knd: UsnNotifUsnKnd::Value,
+		knd: FnsKnd::UsnNotification,
 		doc_date: Date::unchecked(chrono::Utc::now().date_naive()),
 		branch_code: fns_branch.clone(),
 		tax_payer,
@@ -131,24 +123,27 @@ pub async fn make_notif_usn_6_files(
 	let program_version = String1_40::unchecked(version_str);
 
 	let notif_file = UsnNotifFile {
-		file_id,
+		file_id: file_id.clone(),
 		program_version,
-		format_version: UsnNotifUsnFormat::Value,
+		format_version: FnsDocFormVersion::UsnNotification,
 		document
 	};
 
 	let mut xml_string = String::with_capacity(4096);
 	
-	// 2. Сериализуем структуру с корневым тегом ФНС в строку
 	quick_xml::se::to_writer_with_root(&mut xml_string, "Файл", &notif_file)
 		.map_err(|err| err.process_err(Status::FileWriteError, ""))?;
 
-	// 3. Собираем финальный байтовый вектор (добавляя xml-заголовок)
 	let mut xml_file: Vec<u8> = Vec::with_capacity(xml_string.len() + 50);
 	xml_file.extend_from_slice(b"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 	xml_file.extend_from_slice(xml_string.as_bytes());
 
+	
 
-
-	Err(Status::Unknown)
+	Ok(ReportStep::SaveFiles { 
+		text: ReportInfo::SaveFiles, 
+		xml_name: file_id.to_string(),
+		xml_file: xml_file.clone(), 
+		pdf_name: file_id.to_string(),
+		pdf_file: xml_file })
 }

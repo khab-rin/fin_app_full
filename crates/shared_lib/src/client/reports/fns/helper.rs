@@ -5,6 +5,7 @@ use crate::primitives::frozen::text_base::{Digits4_4, String1_255};
 use crate::{ProcessError, Status};
 use crate::service::auth_service::general::ActiveSession;
 use crate::service::reports::service::QuartDates;
+use crate::service::reports::fns_xsd_shemas::common::FnsKnd;
 
 pub fn make_quaters(
 	year: i32
@@ -27,8 +28,11 @@ pub fn make_quaters(
 pub fn make_file_id(
 	session: &ActiveSession,
 	fns_branch_code: &Digits4_4,
+	knd: FnsKnd
 
 ) -> Result<String1_255, Status> {
+
+	let knd = knd.to_string();
 
 	let fns_code = fns_branch_code.to_string();
 
@@ -42,7 +46,8 @@ pub fn make_file_id(
 
 	let uuid_code = uuid::Uuid::new_v4().simple().to_string();
 
-	let file_id_str = format!("{}{}{}_{}_NO_{:04}{:02}{:02}_{}",
+	let file_id_str = format!("{}_{}{}{}_{}_NO_{:04}{:02}{:02}_{}",
+		"ON_UT",
 		fns_code, comp_inn, kpp,
 		fns_code,
 		year, month, day,

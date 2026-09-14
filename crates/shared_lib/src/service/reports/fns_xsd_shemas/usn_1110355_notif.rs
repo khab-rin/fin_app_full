@@ -2,10 +2,11 @@ use serde::{Serialize, Deserialize};
 
 use crate::make_xls_enum;
 use crate::primitives::composite::implements::Fio;
-use crate::primitives::frozen::text::{CompInn, Kpp, Oktmo, PersInn, Date};
+use crate::primitives::frozen::text::{CompInn, Kpp, Oktmo, Date};
 use crate::primitives::calculated::implements::RubC;
+use crate::service::reports::fns_xsd_shemas::common::*;
 use crate::primitives::frozen::text_base::{
-	String1_40, Digits4_4, Digits20_20, String1_120, String1_255, String1_1000
+	String1_40, Digits4_4, String1_120, String1_255, String1_1000
 };
 
 
@@ -53,7 +54,7 @@ pub struct UsnNotifDelegateInfo {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UsnNotifSigner {
 	#[serde(rename="@ПрПодп")]
-	pub signer_type: UsnNotifSignerType,
+	pub signer_type: FnsSignerType,
 
 	#[serde(rename="СвПред", skip_serializing_if = "Option::is_none")]
 	pub delegate_info: Option<UsnNotifDelegateInfo>,
@@ -93,7 +94,7 @@ pub struct UsnNotifNotification {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UsnNotifDocument {
 	#[serde(rename="@КНД")]
-	pub knd: UsnNotifUsnKnd,
+	pub knd: FnsKnd,
 
 	#[serde(rename="@ДатаДок")]
 	pub doc_date: Date,
@@ -101,7 +102,7 @@ pub struct UsnNotifDocument {
 	#[serde(rename = "@КодНО")]
 	pub branch_code: Digits4_4,
 
-	#[serde(rename="СвНП")]
+	#[serde(rename="$value")]
 	pub tax_payer: UsnNotifTaxPayerChoice,
 
 	#[serde(rename="Подписант")]
@@ -121,17 +122,14 @@ pub struct UsnNotifFile {
 	pub program_version: String1_40,
 
 	#[serde(rename = "@ВерсФорм")]
-	pub format_version: UsnNotifUsnFormat,
+	pub format_version: FnsDocFormVersion,
 
 	#[serde(rename="Документ")]
 	pub document: UsnNotifDocument,
 }
 
 
-make_xls_enum!(UsnNotifSignerType, {
-    TAXPAYER => "1",
-    DELEGATE => "2",
-});
+
 
 
 make_xls_enum!(UsnNotifPeriod, {
@@ -149,13 +147,7 @@ make_xls_enum!(UsnNotifPeriodNum, {
     QuFour => "04",
 });
 
-make_xls_enum!(UsnNotifUsnKnd, {
-    Value => "1110355",
-});
 
-make_xls_enum!(UsnNotifUsnFormat, {
-    Value => "5.02",
-});
 
 
 make_xls_enum!(UsnNotifKbk, {

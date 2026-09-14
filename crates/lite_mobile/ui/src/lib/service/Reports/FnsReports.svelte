@@ -5,6 +5,7 @@
 	import { dialogBackdrop } from '$lib/rules/dialogBorders';
 	import type { ReportStep } from '$lib/models/rustModels/ReportStep';
 	import { reportManager } from '$lib/models/Reports/ReportsManager.svelte';
+	import { FieldValidator } from '$lib/models/Auth/FieldValidator.svelte';
 
 	let allTypes = $state<FnsReportType[]>([]);
 	let curType = $state<FnsReportType | null>(null);
@@ -30,25 +31,34 @@
 		(document.getElementById('reportsFnsAllQuats') as HTMLDialogElement)?.close()
 	}
 
-	let isValid = $derived(
-		isYearValid && curType != null && selectQuat != null
-	);
+	
 	let isCmdMakeFnsReportFilesPushed = $state(false);
+
+	let fnsCode = new FieldValidator("Digits4_4", "");
+
+	let isValid = $derived(
+		isYearValid && curType != null && selectQuat != null && fnsCode.isValid
+	);
 
 	async function cmdMakeFnsReportFiles() {
 		if (isCmdMakeFnsReportFilesPushed || !isValid) {return;}
 		try {
+			isCmdMakeFnsReportFilesPushed = true;
 			let data = {
 				reportType: curType,
 				year: selectedYear,
-				quat: selectedQuat
+				quat: selectedQuat,
+				fnsCode: fnsCode.value
 			};
 			let nextStep: ReportStep = await invoke<ReportStep>(
 				'cmd_make_fns_report_files',
 				data
 			);
+
+			isCmdMakeFnsReportFilesPushed = false;
 			reportManager.step = nextStep;
 		} catch(err) {
+			isCmdMakeFnsReportFilesPushed = false;
 			console.error("cmdMakeFnsReportFiles FAILED, err = ", err);
 			const nextStep: ReportStep = {TryLater: {text: 'Критическая ошибка на устройстве...'}};
 			reportManager.step = nextStep;
@@ -177,6 +187,25 @@
 		Открыть список
 	</button>
 </section>
+
+	<div>
+        <label class="green-field-label" for="taxOrgIdent">
+            4-значный номер налоговой
+            <span class='input-tool' data-input-tool="если вы уверены что не меняли место регистрации организации и в вашей налоговой не происходило слияний\разделений с момента регистрации вашей организации (ип), то это первые 4 цифры инн. В противном случае посмотрите этот код в сданной отчетности">?</span>
+        </label>
+        <input
+            id="taxOrgIdent"
+            type="text"
+            bind:value={fnsCode.value}
+            disabled={false}
+            placeholder="Введите 4-значный номер налоговой в которой Вы подаете отчетность"
+            class="green-field"
+            class:input-error={!fnsCode.isValid}
+        />
+        {#if !fnsCode.isValid}
+            <span class="input-error-span">Некорректный номер</span>
+        {/if}
+    </div>
 
 <section class='group-one'>
 	<div>
