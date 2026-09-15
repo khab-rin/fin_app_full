@@ -8,7 +8,9 @@ use crate::service::reports::fns_xsd_shemas::common::*;
 
 use crate::client::reports::fns::helper::make_quaters;
 use crate::client::sql_queries::operations::get::reports::fns::usn_notif_6::get_quater_cummul_incomes_usn_notif_6;
+use crate::client::reports::fns::notif_pdf::make_notif_pdf;
 use crate::client::reports::fns::helper::make_file_id;
+
 
 pub async fn make_notif_usn_6_files(
 	state: &ClientState,
@@ -44,7 +46,7 @@ pub async fn make_notif_usn_6_files(
 		.ok_or_else(|| Status::Tech.process_err(Status::SystemLogicErr, "oktmo is not exist"))?;
 
 
-	let kbk = UsnNotifKbk::UsnNotifSix;
+	let kbk = UsnNotifKbk::UsnSix;
 
 	let not_year = Digits4_4::new(year.to_string().as_str())
 		.map_err(|err| err.process_err(Status::SystemLogicErr, ""))?;
@@ -115,7 +117,7 @@ pub async fn make_notif_usn_6_files(
 		notifications
 	};
 
-	let file_id = make_file_id(&session, &fns_branch)
+	let file_id = make_file_id(&session, &fns_branch, FnsKnd::UsnDeclatation)
 		.map_err(|err| err.process_err(err, ""))?;
 
 	let version_str = format!("{} v{}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
@@ -138,12 +140,19 @@ pub async fn make_notif_usn_6_files(
 	xml_file.extend_from_slice(b"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 	xml_file.extend_from_slice(xml_string.as_bytes());
 
+	let xml_name = format!("{}.xml", file_id);
+	let pdf_name = format!("{}.pdf", file_id);
+
+	let pdf_file = make_notif_pdf(&session, &notif_file)
+		.map_err(|err| err.process_err(err, ""))?;
+
 	
 
 	Ok(ReportStep::SaveFiles { 
 		text: ReportInfo::SaveFiles, 
-		xml_name: file_id.to_string(),
-		xml_file: xml_file.clone(), 
-		pdf_name: file_id.to_string(),
-		pdf_file: xml_file })
+		xml_name,
+		xml_file, 
+		pdf_name,
+		pdf_file
+	})
 }

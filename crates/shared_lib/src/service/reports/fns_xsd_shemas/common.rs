@@ -19,4 +19,9 @@ make_xls_enum!(FnsSignerType, {
 });
 
 
+make_xls_enum!(UsnNotifKbk, {
+    UsnSix => "18210501011011000110",
+	UsnFifteen => "18210501021011000110"
+});
+
 
