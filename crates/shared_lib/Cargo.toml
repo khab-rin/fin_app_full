@@ -42,6 +42,8 @@ keyring = { workspace = true, optional = true }
 
 log = { workspace = true}
 
+lopdf = { workspace = true}
+
 machine-uid = { workspace = true }
 
 quick-xml = { workspace = true }
@@ -84,3 +86,4 @@ ts-rs = { workspace = true }
 uuid = { workspace = true, features = ["v5"] }
 
 vec1 =  {workspace = true, features = ["serde"] }
+

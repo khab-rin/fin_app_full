@@ -150,7 +150,3 @@ make_xls_enum!(UsnNotifPeriodNum, {
 
 
 
-make_xls_enum!(UsnNotifKbk, {
-    UsnNotifSix => "18210501011011000110",
-	UsnNotifFifteen => "18210501021011000110"
-});

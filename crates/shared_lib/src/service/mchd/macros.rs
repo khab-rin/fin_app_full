@@ -21,5 +21,17 @@ macro_rules! make_xls_enum {
                 }
             }
         }
+
+		impl std::fmt::Display for $name {
+			fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+				let s = match self {
+					$(
+						Self::$variant => $val,
+					)*
+				};
+				write!(f, "{}", s)
+			}
+		}
+
     };
 }
