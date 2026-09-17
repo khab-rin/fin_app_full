@@ -4,7 +4,7 @@ use crate::service::reports::service::{QuartCummulAmnt, QuartDates};
 use crate::primitives::frozen::text::RubF;
 
 
-pub async fn get_quater_cummul_incomes_usn_notif_6(
+pub async fn get_quater_cummul_costs_usn(
 	state: &ClientState,
 	dates: &QuartDates
 ) -> Result<QuartCummulAmnt, Status> {
@@ -13,7 +13,7 @@ pub async fn get_quater_cummul_incomes_usn_notif_6(
 
 	sqlx::query_file_as!(
 		QuartCummulAmnt,
-		"src/client/sql_queries/operations/get/reports/fns/usn_notif_6.sql",
+		"src/client/sql_queries/operations/get/reports/fns/usn_costs.sql",
 		dates.start,
 		dates.q1,
 		dates.q2,

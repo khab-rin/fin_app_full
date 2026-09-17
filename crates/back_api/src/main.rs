@@ -23,6 +23,7 @@ use crate::handlers::service::auth_service::handler::{
 };
 
 use crate::handlers::service::mchd::handler::{
+	verify_user_power_exist_handler,
     register_mchd_hadler,
     show_powers_handler
 };
@@ -121,7 +122,10 @@ async fn main() {
         ).route(
             ApiRoutes::MchdShowPowers.get_path(),
             post(show_powers_handler)
-        ).route(
+		).route(
+			ApiRoutes::MchdVerivyPower.get_path(),
+			post(verify_user_power_exist_handler)
+		).route(
             ApiRoutes::SqlContractAddNew.get_path(), 
             post(sql_add_new_contract_handler)
         ).route(

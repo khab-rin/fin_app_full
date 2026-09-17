@@ -16,15 +16,9 @@ pub(crate) async fn del_guids_by_user_id(
 
     if del_guids.is_empty() { return Ok(()); }
 
-    let prev_guids_option = get_guids_by_user_id(state, user_id)
+    let prev_guids = get_guids_by_user_id(state, user_id)
         .await
         .map_err(|err| err.process_err(err, ""))?;
-     
-
-    let prev_guids = match prev_guids_option {
-        Some(g) => g,
-        None => return Ok(())
-    };
 
     let mut new_guids_set: HashSet<BoxUuid> =HashSet::new();
 

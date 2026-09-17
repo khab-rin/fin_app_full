@@ -15,3 +15,9 @@ tax_primitives!(
     init_usn6_from_str,
     init_usn6_default,
     "УСН_06%");
+
+tax_primitives!(
+    Usn15,
+    init_usn6_from_str,
+    init_usn6_default,
+    "УСН_06%");

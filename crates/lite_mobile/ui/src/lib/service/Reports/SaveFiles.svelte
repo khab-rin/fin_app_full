@@ -121,7 +121,7 @@
 
     <div>
         <label class="green-field-label" for="xlsFile">
-            Сохранить DOC файл
+            Сохранить PDF файл
         </label>
   
         <input

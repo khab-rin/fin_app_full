@@ -1,13 +1,11 @@
-use rust_decimal::Decimal;
 use serde::{Serialize, Deserialize};
 
 use crate::Status;
 use crate::primitives::frozen::text::RubF;
-use crate::primitives::tax_frozen::implements::{Nds22, Usn6};
+use crate::primitives::tax_frozen::implements::{Nds22, Usn6, Usn15};
 
 calculated_primitives!(
     RubC,
-    Decimal,
     RubF,
     "Руб.");
 
@@ -26,3 +24,5 @@ math_rules!(Mul, mul, *, Nds22, RubC => RubC);
 
 math_rules!(Mul, mul, *, RubC, Usn6 => RubC);
 math_rules!(Mul, mul, *, RubF, Usn6 => RubC);
+math_rules!(Mul, mul, *, RubC, Usn15 => RubC);
+math_rules!(Mul, mul, *, RubF, Usn15 => RubC);

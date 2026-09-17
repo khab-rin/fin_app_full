@@ -172,9 +172,9 @@ pub struct AdrWrap {
 #[sqlx(type_name = "jsonb")]
 pub struct DadaCompName {
     #[serde(alias = "full_with_opf")]
-    pub full_egrul_name: Option<CompanyName>,
+    pub full_egrul_name: Option<String1_1000>,
     #[serde(alias = "short_with_opf")]
-    pub short_egrul_name: Option<CompanyName>,
+    pub short_egrul_name: Option<String1_1000>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, sqlx::Type, ts_rs::TS)]

@@ -45,23 +45,12 @@ pub(crate) async fn show_powers(
     let mut btb:HashSet<HomeMchdPower> =  HashSet::new();
     let mut home_powers:HashSet<HomeMchdPower> =  HashSet::new();
 
-    let guids_option = match get_guids_by_user_id(state, user_id).await {
+    let guids = match get_guids_by_user_id(state, user_id).await {
         Ok(o) => o,
         Err(err) => {
             err.process_err(err, "");
             return Ok(failed_result);
         }
-    };
-
-
-    let guids = match guids_option {
-        Some(g) => g,
-        None => return Ok(MchdStep::ShowPowers { 
-            fns: HashSet::new(), 
-            btb: HashSet::new(), 
-            home: HashSet::new(), 
-            text: MchdInfo::ShowPowers 
-        })
     };
 
     let mut del_guids: Vec<BoxUuid> = vec!();
