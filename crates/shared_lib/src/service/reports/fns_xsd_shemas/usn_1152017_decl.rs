@@ -82,7 +82,7 @@ pub struct UsnDeclTaxPayerPerson {
 	pub fio: Fio,
 
 	#[serde(rename="@ИННФЛ")]
-	pub pers_inn: PersInn,
+	pub pers_inn: CompInn,
 }
 
 
@@ -439,15 +439,6 @@ pub struct UsnDeclUsnReport {
 //Документ
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UsnDeclUsnDocument {
-	#[serde(rename = "СвНП")]
-	tax_payer: UsnDeclTaxPayer,
-
-	#[serde(rename = "Подписант")]
-	signer: UsnDeclSigner,
-
-	#[serde(rename = "УСН")]
-	usn_report: UsnDeclUsnReport,
-
 	#[serde(rename = "@КНД")]
 	report_code: FnsKnd,
 
@@ -467,7 +458,16 @@ pub struct UsnDeclUsnDocument {
 	report_version: u16,
 
 	#[serde(rename = "@ПоМесту")]
-	submission_place: UsnDeclSubmissionPlace
+	submission_place: UsnDeclSubmissionPlace,
+
+	#[serde(rename = "СвНП")]
+	tax_payer: UsnDeclTaxPayer,
+
+	#[serde(rename = "Подписант")]
+	signer: UsnDeclSigner,
+
+	#[serde(rename = "УСН")]
+	usn_report: UsnDeclUsnReport,
 }
 
 

@@ -1,7 +1,7 @@
 
 use serde::{Serialize, Deserialize};
 
-use crate::primitives::frozen::text::{RubF, Date};
+use crate::primitives::frozen::text::{RubF, Date, BoxUuid};
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub enum ReportStep {
@@ -38,6 +38,9 @@ pub enum ReportInfo {
 
 	#[serde(rename = "Выберите функционал для работы с отчетами")]
 	Loading,
+
+	#[serde(rename = "Отсутствуют полномочия для выполнения этой операции")]
+	MissPower,
 
 	#[serde(rename = "")]
 	Notning,
@@ -92,6 +95,12 @@ pub struct QuartCummulAmnt {
 	pub q2: RubF,
 	pub q3: RubF,
 	pub q4: RubF
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct VerifyPowersResult {
+	pub is_manager: bool,
+	pub mchd_uuid: Option<BoxUuid>
 }
 
 

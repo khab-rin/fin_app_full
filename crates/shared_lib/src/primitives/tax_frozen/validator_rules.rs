@@ -29,3 +29,16 @@ pub(crate) fn init_usn6_from_str(tax: &str) -> Result<Decimal, Status> {
 pub(crate) fn init_usn6_default() -> Decimal {
 	Decimal::from(6) / Decimal::from(100)
 }
+
+pub(crate) fn init_usn15_from_str(tax: &str) -> Result<Decimal, Status> {
+    let tax = tax.trim();
+	if tax == "0.15" || tax == "15" {
+		return Ok(Decimal::from(15) / Decimal::from(100));
+	} else {
+		return Err(Status::ValidUsn6);
+	}
+}
+
+pub(crate) fn init_usn15_default() -> Decimal {
+	Decimal::from(15) / Decimal::from(100)
+}

@@ -1,20 +1,20 @@
 macro_rules! calculated_primitives {
-    ($avail:vis $name:ident, $data_type:ty, $frozen_name:ident, $label:literal) => {
+    ($avail:vis $name:ident, $frozen_name:ident, $label:literal) => {
         #[derive(Debug, Clone, Ord, PartialOrd, Serialize, Deserialize)]
-		#[serde(into = "String")]
+        #[serde(into = "String")]
         pub struct $name {
-            $avail data : $data_type
+            $avail data: rust_decimal::Decimal
         }
 
         impl $name {
             pub(crate) const LABEL: &'static str = $label;
 
             pub(crate) fn new() -> Self {
-                Self { data: <$data_type>::default() }
+                Self { data: rust_decimal::Decimal::ZERO }
             }
 
-            pub(crate) fn from_raw(value: $data_type) -> Self {
-                Self {data: value}
+            pub(crate) fn from_raw(value: rust_decimal::Decimal) -> Self {
+                Self { data: value }
             }
 
             #[allow(dead_code)]
@@ -23,17 +23,17 @@ macro_rules! calculated_primitives {
             }
         }
 
-		impl std::convert::From<$name> for String {
-			fn from(value: $name) -> String {
-				value.data.to_string()
-			}
-		}
+        impl std::convert::From<$name> for String {
+            fn from(value: $name) -> String {
+                format!("{:.2}", value.data)
+            }
+        }
 
         impl std::convert::TryFrom<$name> for $frozen_name {
             type Error = Status;
             fn try_from(value: $name) -> Result<$frozen_name, Self::Error> {
                 let rounded = value.data.round_dp(2);
-                $frozen_name::new(&rounded.to_string())
+                $frozen_name::new(&format!("{:.2}", rounded))
             }
         }
 
@@ -44,14 +44,14 @@ macro_rules! calculated_primitives {
         }
 
         impl std::ops::Deref for $name {
-            type Target = $data_type;
+            type Target = rust_decimal::Decimal;
             fn deref(&self) -> &Self::Target {
                 &self.data
             }
         }
 
-        impl std::convert::AsRef<$data_type> for $name {
-            fn as_ref(&self) -> &$data_type {
+        impl std::convert::AsRef<rust_decimal::Decimal> for $name {
+            fn as_ref(&self) -> &rust_decimal::Decimal {
                 &self.data
             }
         }
@@ -60,7 +60,7 @@ macro_rules! calculated_primitives {
 
         impl std::fmt::Display for $name {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                write!(f, "{}", &self.data)
+                write!(f, "{:.2}", self.data)
             }
         }
     };

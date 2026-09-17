@@ -207,7 +207,7 @@ pub struct RussOrganization {
     pub principal_notarial_status: Option<PrincipalNotarialStatus>,
 
     #[serde(rename = "@НаимОрг")]
-    pub name: CompanyName,
+    pub name: String1_1000,
 
     #[serde(rename = "@ИННЮЛ", skip_serializing_if = "Option::is_none")]
     pub comp_inn: Option<CompInn>,

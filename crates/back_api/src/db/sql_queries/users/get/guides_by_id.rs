@@ -6,7 +6,7 @@ use crate::config::BackApiState;
 pub(crate) async fn get_guids_by_user_id(
     state: &BackApiState,
     user_id: &BoxUuid
-) -> Result<Option<Vec<BoxUuid>>, Status> {
+) -> Result<Vec<BoxUuid>, Status> {
 
 
     let record_option = sqlx::query_file!(
@@ -16,12 +16,10 @@ pub(crate) async fn get_guids_by_user_id(
     .await
     .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?; 
 
-    let record = match record_option {
-        Some(r) => r,
-        None => return Ok(None)
-    };
+	match record_option {
+		Some(rec) => Ok(rec.guids),
+		None => Ok(vec!())
+	}
 
-
-    Ok(Some(record.guids))
-    
+  
 }

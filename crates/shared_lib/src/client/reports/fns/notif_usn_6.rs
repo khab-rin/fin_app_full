@@ -7,7 +7,7 @@ use crate::primitives::tax_frozen::implements::Usn6;
 use crate::service::reports::fns_xsd_shemas::common::*;
 
 use crate::client::reports::fns::helper::make_quaters;
-use crate::client::sql_queries::operations::get::reports::fns::usn_notif_6::get_quater_cummul_incomes_usn_notif_6;
+use crate::client::sql_queries::operations::get::reports::fns::usn_incomes::get_quater_cummul_incomes_usn;
 use crate::client::reports::fns::notif_pdf::make_notif_pdf;
 use crate::client::reports::fns::helper::make_file_id;
 
@@ -26,7 +26,7 @@ pub async fn make_notif_usn_6_files(
 		.map_err(|err| err.process_err(err, ""))?;
 	
 
-	let quat_amonts = get_quater_cummul_incomes_usn_notif_6(
+	let quat_amonts = get_quater_cummul_incomes_usn(
 		state,
 		&quart_dates
 	).await.map_err(|err| err.process_err(err, ""))?;
