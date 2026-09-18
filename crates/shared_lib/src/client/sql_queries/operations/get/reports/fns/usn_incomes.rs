@@ -22,5 +22,4 @@ pub async fn get_quater_cummul_incomes_usn(
 		dates.q4
 	).fetch_one(&session.local_db).await
 	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))
-
 }

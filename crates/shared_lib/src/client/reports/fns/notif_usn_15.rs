@@ -103,8 +103,8 @@ pub async fn make_notif_15_files(
 		,
 		_ => UsnNotifTaxPayerChoice::Company(
 			UsnNotifTaxPayerCompany {
-			comp_inn: session.session_user.company.comp_inn.clone(),
-			kpp: session.session_user.company.kpp.clone(),
+				comp_inn: session.session_user.company.comp_inn.clone(),
+				kpp: session.session_user.company.kpp.clone(),
 		})
 	};
 

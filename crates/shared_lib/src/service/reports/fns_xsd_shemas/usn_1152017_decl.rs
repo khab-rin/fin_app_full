@@ -7,6 +7,7 @@ use crate::primitives::frozen::text_base::*;
 use crate::primitives::frozen::text::*;
 use crate::primitives::composite::implements::Fio;
 use crate::service::reports::fns_xsd_shemas::common::*;
+use crate::primitives::tax_frozen::implements::Tax;
 
 
 //СумТип
@@ -131,16 +132,16 @@ pub struct UsnDeclSigner {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UsnDeclRate {
 	#[serde(rename="@СтавкаКв", skip_serializing_if = "Option::is_none")]
-	pub qu_one: Option<Decimal>,
+	pub qu_one: Option<Tax>,
 
 	#[serde(rename="@СтавкаПг", skip_serializing_if = "Option::is_none")]
-	pub qu_two: Option<Decimal>,
+	pub qu_two: Option<Tax>,
 
 	#[serde(rename="@Ставка9м", skip_serializing_if = "Option::is_none")]
-	pub qu_three: Option<Decimal>,
+	pub qu_three: Option<Tax>,
 
 	#[serde(rename="@СтавкаНалПер")]
-	pub qu_four: Decimal,
+	pub qu_four: Tax,
 
 	#[serde(rename="@КодЛьгот", skip_serializing_if = "Option::is_none")]
 	pub rate_reason: Option<String>

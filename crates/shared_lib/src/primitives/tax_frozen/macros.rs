@@ -1,19 +1,19 @@
 macro_rules! tax_primitives {
     ($avail:vis $name:ident, $validator:expr, $default:expr, $label:literal) => {
         #[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Serialize, Deserialize)]
-        pub(crate) struct $name {
+        pub struct $name {
             $avail data : Decimal
         }
 
         impl $name {
-            pub(crate) const LABEL: &'static str = $label;
+            pub const LABEL: &'static str = $label;
 
-            pub(crate) fn new(value: &str) -> Result<Self, Status> {
+            pub fn new(value: &str) -> Result<Self, Status> {
                 $validator(value).map(|v| Self {data : v}) 
             }
 
             #[allow(dead_code)]
-            pub(crate) fn label() -> &'static str {
+            pub fn label() -> &'static str {
                 Self::LABEL
             }
         }
