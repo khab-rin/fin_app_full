@@ -1,5 +1,5 @@
 #[macro_use]
-pub(crate) mod macros;
+pub mod macros;
 
 pub mod calculated;
 

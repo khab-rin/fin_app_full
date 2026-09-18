@@ -48,8 +48,6 @@ pub struct Notary {
     pub fio: Fio,    
 }
 
-
-
 //ДокПдтвТип
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
 pub struct DirectAuthorityDoc  {
