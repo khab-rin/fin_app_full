@@ -6,6 +6,7 @@ use crate::{ProcessError, Status};
 use crate::service::auth_service::general::ActiveSession;
 use crate::service::reports::service::QuartDates;
 use crate::service::reports::fns_xsd_shemas::common::FnsKnd;
+use crate::service::reports::fns_xsd_shemas::usn_1152017_decl::UsnDeclEmplyersExistType;
 
 pub fn make_quaters(
 	year: i32
@@ -55,4 +56,19 @@ pub fn make_file_id(
 	let file_id = String1_255::unchecked(file_id_str);
 
 	Ok(file_id)
+}
+
+
+pub fn count_quater_taxes_usn6_decl(
+	tax: &Option<u64>,
+	social: &Option<u64>,
+
+) -> Result<u64, Status> {
+	let t = tax.unwrap_or(0);
+	let s = social.unwrap_or(0);
+
+	match exist_emp_type {
+		UsnDeclEmplyersExistType::WithoutEmployees => Ok(t.saturating_sub(s)),
+		_ => Ok(t.saturating_sub(s).max((t + 1) * 50 / 100))
+	}
 }
