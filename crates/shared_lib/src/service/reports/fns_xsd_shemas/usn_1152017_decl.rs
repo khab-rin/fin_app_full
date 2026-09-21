@@ -188,6 +188,9 @@ pub struct UsnDeclTradeFee {
 //РасчНал1
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UsnDeclTaxSixCal {
+	#[serde(rename="@ПризНП")]
+	pub employers_exist: UsnDeclEmplyersExistType,
+
 	#[serde(rename="Доход")]
 	pub taxable_income: UsnDeclQuaterAmnts,
 	
@@ -198,17 +201,13 @@ pub struct UsnDeclTaxSixCal {
 	pub calc_tax: UsnDeclQuaterAmnts,
 
 	#[serde(rename="УменНал")]
-	pub tax_deduction: UsnDeclQuaterAmnts,
+	pub tot_social: UsnDeclQuaterAmnts,
 
 	#[serde(rename="Стр143Разд2.1.1", skip_serializing_if = "Option::is_none")]
-	pub required_social: Option<UsnDeclQuaterAmntsInfo>,
+	pub ip_social: Option<UsnDeclQuaterAmntsInfo>,
 
 	#[serde(rename="РасчТоргСбор", skip_serializing_if = "Option::is_none")]
 	pub trade_fee: Option<UsnDeclTradeFee>,
-
-	#[serde(rename="@ПризНП")]
-	pub employers_exist: UsnDeclEmplyersExistType
-
 }
 
 
@@ -222,25 +221,25 @@ pub struct UsnDeclTaxSix {
 	pub oktmo_qu_one: Oktmo,
 
 	#[serde(rename="@АвПУКв", skip_serializing_if = "Option::is_none")]
-	pub avans_qu_one: Option<u64>,
+	pub avans_qu_one: Option<i64>,
 
 	#[serde(rename="@ОКТМО_Пг", skip_serializing_if = "Option::is_none")]
 	pub oktmo_qu_two: Option<Oktmo>,
 
 	#[serde(rename="@АвПУУменПг", skip_serializing_if = "Option::is_none")]
-	pub avans_qu_two: Option<u64>,
+	pub avans_qu_two: Option<i64>,
 
 	#[serde(rename="@ОКТМО_9м", skip_serializing_if = "Option::is_none")]
 	pub oktmo_qu_three: Option<Oktmo>,
 
 	#[serde(rename="@АвПУУмен9м", skip_serializing_if = "Option::is_none")]
-	pub avans_qu_three: Option<u64>,
+	pub avans_qu_three: Option<i64>,
 
 	#[serde(rename="@ОКТМО_Пер", skip_serializing_if = "Option::is_none")]
 	pub oktmo_qu_four: Option<Oktmo>,
 
 	#[serde(rename="@НалПУУменПер")]
-	pub avans_qu_four: u64,
+	pub avans_qu_four: i64,
 
 	#[serde(rename="@СумНалПат", skip_serializing_if = "Option::is_none")]
 	pub patent_tax: Option<u64>
