@@ -57,18 +57,3 @@ pub fn make_file_id(
 
 	Ok(file_id)
 }
-
-
-pub fn count_quater_taxes_usn6_decl(
-	tax: &Option<u64>,
-	social: &Option<u64>,
-
-) -> Result<u64, Status> {
-	let t = tax.unwrap_or(0);
-	let s = social.unwrap_or(0);
-
-	match exist_emp_type {
-		UsnDeclEmplyersExistType::WithoutEmployees => Ok(t.saturating_sub(s)),
-		_ => Ok(t.saturating_sub(s).max((t + 1) * 50 / 100))
-	}
-}

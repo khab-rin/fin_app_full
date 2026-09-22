@@ -32,7 +32,7 @@ pub enum Tax {
 }
 
 impl Tax {
-	pub fn multiply_u64(&self, val: u64) -> u64 {
+	pub fn multiply_i64(&self, val: i64) -> i64 {
 		let val_dec = rust_decimal::Decimal::from(val);
 		let rate = match self {
 			Tax::Nds22(rate) => **rate,
@@ -40,7 +40,7 @@ impl Tax {
 			Tax::Usn6(rate) => **rate
 		};
 
-		(val_dec * rate).round().to_u64().unwrap_or(0)
+		(val_dec * rate).round().to_i64().unwrap_or(0)
 	
 	}
 }
