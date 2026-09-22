@@ -117,7 +117,7 @@ pub async fn make_notif_usn_6_files(
 		notifications
 	};
 
-	let file_id = make_file_id(&session, &fns_branch, FnsKnd::UsnDeclatation)
+	let file_id = make_file_id(&session, &fns_branch, FnsKnd::UsnNotification)
 		.map_err(|err| err.process_err(err, ""))?;
 
 	let version_str = format!("{} v{}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));

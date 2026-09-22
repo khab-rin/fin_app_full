@@ -1,7 +1,8 @@
-
+use rust_decimal::prelude::ToPrimitive;
 use serde::{Serialize, Deserialize};
 
 use crate::primitives::frozen::text::{RubF, Date, BoxUuid};
+use crate::service::reports::fns_xsd_shemas::usn_1152017_decl::UsnDeclQuaterAmnts;
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub enum ReportStep {
@@ -95,6 +96,17 @@ pub struct QuartCummulAmnt {
 	pub q2: RubF,
 	pub q3: RubF,
 	pub q4: RubF
+}
+
+impl QuartCummulAmnt {
+	pub fn into_fns_quater_amnts(&self) -> UsnDeclQuaterAmnts {
+		UsnDeclQuaterAmnts {
+			first_qu: self.q1.round().to_i64(),
+			second_qu: self.q2.round().to_i64(),
+			third_qu: self.q3.round().to_i64(),
+			fourth_qu: self.q4.round().to_i64().unwrap_or(0)
+		}
+	}
 }
 
 #[derive(Serialize, Deserialize, Debug)]

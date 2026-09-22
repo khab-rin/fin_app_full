@@ -1,19 +1,19 @@
 use rust_decimal::prelude::ToPrimitive;
 
-use crate::primitives::frozen::text::{CompStatus, Phone};
-use crate::service::reports::fns_xsd_shemas::common::FnsSignerType;
-use crate::service::reports::fns_xsd_shemas::usn_1152017_decl::UsnDeclTaxPayerCompany;
 use crate::{ClientState, ProcessError, Status};
+use crate::primitives::frozen::text::{CompStatus, Date, Phone};
+use crate::service::reports::fns_xsd_shemas::common::*;
+use crate::service::reports::fns_xsd_shemas::usn_1152017_decl::UsnDeclTaxPayerCompany;
 use crate::service::reports::service::{ReportStep, ReportInfo, VerifyPowersResult};
 use crate::service::reports::fns_xsd_shemas::usn_1152017_decl::*;
-use crate::primitives::frozen::text_base::{Digits4_4, String1_120};
+use crate::primitives::frozen::text_base::{Digits4_4, String1_120, String1_40};
 use crate::primitives::tax_frozen::implements::{Tax, Usn6};
 
 use crate::service::api_routes::implements::ApiRoutes;
 use crate::service::mchd::home_mchd_power::HomeMchdPower;
 
 use crate::client::back_api::post_query::post_query_back_api;
-use crate::client::reports::fns::helper::{make_quaters, count_quater_taxes_usn6_decl};
+use crate::client::reports::fns::helper::{make_file_id, make_quaters};
 use crate::client::sql_queries::operations::get::reports::fns::usn_incomes::get_quater_cummul_incomes_usn;
 use crate::client::sql_queries::operations::get::reports::fns::usn_social_fee::get_quater_cummul_social_usn;
 
@@ -42,7 +42,7 @@ pub async fn make_decl_6_files(
 	let user_id = session.session_user.user.user_id.clone();
 
 	let power_verify_response = match post_query_back_api(
-		&state, 
+		state, 
 		state.config.get_std_client(), 
 		ApiRoutes::MchdVerivyPower, 
 		&(user_id, &HomeMchdPower::FNS02))
@@ -66,14 +66,22 @@ pub async fn make_decl_6_files(
 	if !power_verify.is_manager && power_verify.mchd_uuid.is_none() {
 		return Ok(ReportStep::TryLater { text: ReportInfo::MissPower });
 	}
-	
-	let comp_name = session.session_user.company.metadata.comp_name
-		.as_ref()
-		.ok_or_else(|| Status::Tech.process_err(Status::DataCorruptionErr, ""))?
-		.short_egrul_name
-		.as_ref()
-		.ok_or_else(|| Status::Tech.process_err(Status::DataCorruptionErr, ""))?
-		.clone();
+
+	let datata_comp_name = match session.session_user.company.metadata.comp_name.as_ref() {
+		Some(d) => d,
+		None => {
+			Status::Tech.process_err(Status::DataCorruptionErr, "");
+			return failed_result;
+		}
+	};
+
+	let comp_name = match datata_comp_name.short_egrul_name.as_ref() {
+		Some(n) => n.clone(), 
+		None => {
+			Status::Tech.process_err(Status::DataCorruptionErr, "");
+			return failed_result;
+		}
+	};
 
 	let comp_inn = session.session_user.company.comp_inn.clone();
 
@@ -160,10 +168,10 @@ pub async fn make_decl_6_files(
 	};
 
 	let taxable_income = UsnDeclQuaterAmnts {
-		first_qu: cumul_incomes_kop.q1.as_ref().round().to_u64(),
-		second_qu: cumul_incomes_kop.q2.as_ref().round().to_u64(),
-		third_qu: cumul_incomes_kop.q3.as_ref().round().to_u64(),
-		fourth_qu: cumul_incomes_kop.q4.as_ref().round().to_u64().unwrap_or(0),
+		first_qu: cumul_incomes_kop.q1.as_ref().round().to_i64(),
+		second_qu: cumul_incomes_kop.q2.as_ref().round().to_i64(),
+		third_qu: cumul_incomes_kop.q3.as_ref().round().to_i64(),
+		fourth_qu: cumul_incomes_kop.q4.as_ref().round().to_i64().unwrap_or(0),
 	};
 
 	let rate = UsnDeclRate {
@@ -176,17 +184,17 @@ pub async fn make_decl_6_files(
 
 	let first_qu = taxable_income.first_qu
 		.zip(rate.qu_one.clone())
-		.map(|(inc, r)| r.multiply_u64(inc));
+		.map(|(inc, r)| r.multiply_i64(inc));
 
 	let second_qu = taxable_income.second_qu
 		.zip(rate.qu_two.clone())
-		.map(|(inc, r)| r.multiply_u64(inc));
+		.map(|(inc, r)| r.multiply_i64(inc));
 
 	let third_qu = taxable_income.third_qu
 		.zip(rate.qu_three.clone())
-		.map(|(inc, r)| r.multiply_u64(inc));
+		.map(|(inc, r)| r.multiply_i64(inc));
 
-	let fourth_qu = rate.qu_four.clone().multiply_u64(taxable_income.fourth_qu); 
+	let fourth_qu = rate.qu_four.clone().multiply_i64(taxable_income.fourth_qu); 
 
 	let calc_tax = UsnDeclQuaterAmnts {
 		first_qu,
@@ -204,19 +212,19 @@ pub async fn make_decl_6_files(
 	};
 
 	let tot_social = UsnDeclQuaterAmnts {
-		first_qu: tax_deduction_dec.q1.as_ref().round().to_u64()
+		first_qu: tax_deduction_dec.q1.as_ref().round().to_i64()
 			.zip(calc_tax.first_qu)
 			.map(|(vznos, tax)| vznos.min(tax)),
 
-		second_qu: tax_deduction_dec.q2.as_ref().round().to_u64()
+		second_qu: tax_deduction_dec.q2.as_ref().round().to_i64()
 			.zip(calc_tax.second_qu)
 			.map(|(vznos, tax)| vznos.min(tax)),
 
-		third_qu: tax_deduction_dec.q3.as_ref().round().to_u64()
+		third_qu: tax_deduction_dec.q3.as_ref().round().to_i64()
 			.zip(calc_tax.third_qu)
 			.map(|(vznos, tax)| vznos.min(tax)),
 
-		fourth_qu: tax_deduction_dec.q4.as_ref().round().to_u64().unwrap_or(0).min(calc_tax.fourth_qu)
+		fourth_qu: tax_deduction_dec.q4.as_ref().round().to_i64().unwrap_or(0).min(calc_tax.fourth_qu)
 	};
 
 	let ip_social = if session.session_user.company.comp_inn.len() == 12 {
@@ -282,17 +290,74 @@ pub async fn make_decl_6_files(
 		patent_tax: None		
 	};
 
-	
+	let report_type = UsnDeclTaxReportType::SixPercent(Box::new(usn_decl_tax_six));
+
+	let charity_report: Option<UsnDeclCharityReport> = None;
+
+	let kkt_expense: Option<UsnDeclKktExpense>  = None;
+
+	let usn_object: UsnDeclUsnObject = UsnDeclUsnObject::Income;
+
+	let usn_report = UsnDeclUsnReport {
+		report_type,
+		charity_report,
+		kkt_expense,
+		usn_object
+	};
+
+	let submission_place = match session.session_user.company.comp_inn.len() {
+		12 => UsnDeclSubmissionPlace::IndividualBusinessAddress,
+		_ => UsnDeclSubmissionPlace::CompanyAddress
+	};
 
 
+	let document = UsnDeclUsnDocument {
+		report_code: FnsKnd::UsnDeclatation,
+		doc_create_date: Date::unchecked(chrono::Utc::now().date_naive()),
+		report_type: UsnDeclReportType::Year,
+		report_year: Digits4_4::unchecked(year.to_string()),
+		branch_code: fns_branch.clone(),
+		report_version: 0,
+		submission_place,
+		tax_payer,
+		signer: decl_signer,
+		usn_report
+	};
 
-	
+	let file_id = match make_file_id(&session, &fns_branch, FnsKnd::UsnDeclatation){
+		Ok(f) => f,
+		Err(err) => {
+			err.process_err(err, "");
+			return failed_result;
+		}
+	};
 
+	let version_str = format!("{} v{}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
 
+	let program_version = String1_40::unchecked(version_str);
 
+	let format_version = FnsDocFormVersion::UsnDeclatation;
 
+	let decl_file = UsnDeclUsnFile {
+		document,
+		file_id: file_id.clone(),
+		program_version,
+		format_version
+	};
 
+	let mut xml_string = String::with_capacity(4096);
 
+	 if let Err(err) = quick_xml::se::to_writer_with_root(&mut xml_string, "Файл", &decl_file) {
+		err.process_err(Status::FileWriteError, "");
+		return failed_result;
+	}
+
+	let mut xml_file: Vec<u8> = Vec::with_capacity(xml_string.len() + 50);
+	xml_file.extend_from_slice(b"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+	xml_file.extend_from_slice(xml_string.as_bytes());
+
+	let xml_name = format!("{}.xml", file_id);
+	let pdf_name = format!("{}.pdf", file_id);
 
 
 

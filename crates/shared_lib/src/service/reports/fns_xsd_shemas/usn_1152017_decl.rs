@@ -14,16 +14,16 @@ use crate::primitives::tax_frozen::implements::Tax;
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UsnDeclQuaterAmnts {
 	#[serde(rename="@СумЗаКв", skip_serializing_if = "Option::is_none")]
-	pub first_qu: Option<u64>,
+	pub first_qu: Option<i64>,
 
 	#[serde(rename="@СумЗаПг", skip_serializing_if = "Option::is_none")]
-	pub second_qu: Option<u64>,
+	pub second_qu: Option<i64>,
 
 	#[serde(rename="@СумЗа9м", skip_serializing_if = "Option::is_none")]
-	pub third_qu: Option<u64>,
+	pub third_qu: Option<i64>,
 
 	#[serde(rename="@СумЗаНалПер")]
-	pub fourth_qu: u64,
+	pub fourth_qu: i64,
 }
 
 
@@ -31,16 +31,16 @@ pub struct UsnDeclQuaterAmnts {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UsnDeclQuaterAmntsInfo {
 	#[serde(rename="@ФиксРазм")]
-	pub fix_amnt: u64,
+	pub fix_amnt: i64,
 
 	#[serde(rename="@ДохПрев300")]
-	pub one_perc: u64,
+	pub one_perc: i64,
 
 	#[serde(rename="@РасПерТекГод")]
-	pub one_perc_curr_year: u64,
+	pub one_perc_curr_year: i64,
 
 	#[serde(rename="@РасПерПредГод")]
-	pub one_perc_prev_year: u64,
+	pub one_perc_prev_year: i64,
 }
 
 
@@ -61,9 +61,6 @@ pub struct UsnDeclTrnasformationInfo {
 //НПЮЛ
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UsnDeclTaxPayerCompany {
-	#[serde(rename="СвРеоргЮЛ", skip_serializing_if = "Option::is_none")]
-	pub transformation_info: Option<UsnDeclTrnasformationInfo>,
-
 	#[serde(rename="@НаимОрг")]
 	pub comp_name: String1_1000,
 
@@ -73,17 +70,19 @@ pub struct UsnDeclTaxPayerCompany {
 	#[serde(rename="@КПП")]
 	pub kpp: Kpp,
 
+	#[serde(rename="СвРеоргЮЛ", skip_serializing_if = "Option::is_none")]
+	pub transformation_info: Option<UsnDeclTrnasformationInfo>,
 }
 
 
 //НПФЛ
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UsnDeclTaxPayerPerson {
-	#[serde(rename="ФИО")]
-	pub fio: Fio,
-
 	#[serde(rename="@ИННФЛ")]
 	pub pers_inn: CompInn,
+
+	#[serde(rename="ФИО")]
+	pub fio: Fio,
 }
 
 
@@ -99,10 +98,11 @@ pub enum UsnDeclTaxPayerType {
 //СвНП
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UsnDeclTaxPayer {
+	#[serde(rename="@Тлф", skip_serializing_if = "Option::is_none")]
+	pub tel: Option<Phone>,
+
 	#[serde(rename = "$value")]
 	pub tax_payer: UsnDeclTaxPayerType,
-	#[serde(rename="@Тлф", skip_serializing_if = "Option::is_none")]
-	pub tel: Option<Phone>
 }
 
 
@@ -117,14 +117,14 @@ pub struct UsnDeclDelegateInfo {
 //Подписант
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UsnDeclSigner {
+	#[serde(rename="@ПрПодп")]
+	pub signer: FnsSignerType,
+
 	#[serde(rename="ФИО", skip_serializing_if = "Option::is_none")]
 	pub fio: Option<Fio>,
 
 	#[serde(rename="СвПред", skip_serializing_if = "Option::is_none")]
 	pub delegate_info: Option<UsnDeclDelegateInfo>,
-
-	#[serde(rename="@ПрПодп")]
-	pub signer: FnsSignerType
 }
 
 
@@ -214,9 +214,6 @@ pub struct UsnDeclTaxSixCal {
 //СумНалПУ_НП
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UsnDeclTaxSix {
-	#[serde(rename="РасчНал1")]
-	pub calculation: UsnDeclTaxSixCal,
-
 	#[serde(rename="@ОКТМО")]
 	pub oktmo_qu_one: Oktmo,
 
@@ -242,7 +239,10 @@ pub struct UsnDeclTaxSix {
 	pub avans_qu_four: i64,
 
 	#[serde(rename="@СумНалПат", skip_serializing_if = "Option::is_none")]
-	pub patent_tax: Option<u64>
+	pub patent_tax: Option<u64>,
+
+	#[serde(rename="РасчНал1")]
+	pub calculation: UsnDeclTaxSixCal,
 }
 
 
@@ -258,12 +258,6 @@ pub enum UsnDeclFifteenDueChoise {
 //СумНалПУ_СмНП
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UsnDeclTaxFifteen {
-	#[serde(rename="$value")]
-	due_choice: UsnDeclFifteenDueChoise,
-	
-	#[serde(rename="РасчНал2")]
-	calculation: UsnDeclTaxFifteenCal,
-
 	#[serde(rename="@ОКТМО")]
 	pub oktmo_qu_one: Oktmo,
 
@@ -288,12 +282,23 @@ pub struct UsnDeclTaxFifteen {
 	#[serde(rename="@СумНалПат", skip_serializing_if = "Option::is_none")]
 	pub avans_qu_four: Option<u64>,
 
+	#[serde(rename="$value")]
+	due_choice: UsnDeclFifteenDueChoise,
+	
+	#[serde(rename="РасчНал2")]
+	calculation: UsnDeclTaxFifteenCal,
 }
 
 
 //СумНалПУ_СмНП
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UsnDeclTaxFifteenCal {
+	#[serde(rename="@УбытПред", skip_serializing_if = "Option::is_none")]
+	pub prev_negative_taxable_base: Option<u64>,
+	
+	#[serde(rename="@ИсчислМин")]
+	pub min_tax: u64,
+
 	#[serde(rename="Доход")]
 	pub income: UsnDeclQuaterAmnts,
 
@@ -311,12 +316,6 @@ pub struct UsnDeclTaxFifteenCal {
 
 	#[serde(rename="Стр223Разд2.2", skip_serializing_if = "Option::is_none")]
 	pub required_social: Option<UsnDeclQuaterAmntsInfo>,
-
-	#[serde(rename="@УбытПред", skip_serializing_if = "Option::is_none")]
-	pub prev_negative_taxable_base: Option<u64>,
-	
-	#[serde(rename="@ИсчислМин")]
-	pub min_tax: u64
 }
 
 
@@ -349,9 +348,6 @@ pub struct UsnDeclCharityReportCode {
 //ОтчетИсп
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UsnDeclCharityReport {
-	#[serde(rename="ОтчетИспКод")]
-	pub charity_report_code: Vec1<UsnDeclCharityReportCode>,
-	
 	#[serde(rename="@СумДенСредИт")]
 	pub total_report_amnt: u64,
 
@@ -362,7 +358,10 @@ pub struct UsnDeclCharityReport {
 	pub unused_amnt: Option<u64>,
 
 	#[serde(rename="@СумНеИспСрокИт")]
-	pub incorrectly_used_amount: Option<u64>
+	pub incorrectly_used_amount: Option<u64>,
+
+	#[serde(rename="ОтчетИспКод")]
+	pub charity_report_code: Vec1<UsnDeclCharityReportCode>,
 }
 
 
@@ -386,9 +385,6 @@ pub struct UsnDeclKktExpenseCalc {
 //РасчСумККТ
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UsnDeclKktExpense {
-	#[serde(rename="СумРасхККТПер")]
-	pub kkt_expense_calc: UsnDeclKktExpenseCalc,
-
 	#[serde(rename="@НаимККТ")]
 	pub kkt_name: String1_40,
 
@@ -405,7 +401,10 @@ pub struct UsnDeclKktExpense {
 	pub kkt_buy_amnt: u64,
 
 	#[serde(rename="@СумРасхККТУм", skip_serializing_if = "Option::is_none")]
-	pub kkt_deduction_2024: Option<u64>
+	pub kkt_deduction_2024: Option<u64>, 
+
+	#[serde(rename="СумРасхККТПер")]
+	pub kkt_expense_calc: UsnDeclKktExpenseCalc,
 }
 
 
@@ -422,17 +421,17 @@ pub enum UsnDeclTaxReportType {
 //УСН
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UsnDeclUsnReport {
+	#[serde(rename = "@ОбНал")]
+	pub usn_object: UsnDeclUsnObject,
+
 	#[serde(rename = "$value")]
-	pub retport_type: UsnDeclTaxReportType,
+	pub report_type: UsnDeclTaxReportType,
 
 	#[serde(rename = "ОтчетИсп", skip_serializing_if = "Option::is_none")]
 	pub charity_report: Option<UsnDeclCharityReport>,
 
 	#[serde(rename = "РасчСумККТ", skip_serializing_if = "Option::is_none")]
-	pub kkt_expense: Option<UsnDeclKktExpense>,
-
-	#[serde(rename = "@ОбНал")]
-	pub usn_object: UsnDeclUsnObject
+	pub kkt_expense: Option<UsnDeclKktExpense>,	
 }
 
 
@@ -440,50 +439,50 @@ pub struct UsnDeclUsnReport {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UsnDeclUsnDocument {
 	#[serde(rename = "@КНД")]
-	report_code: FnsKnd,
+	pub report_code: FnsKnd,
 
 	#[serde(rename = "@ДатаДок")]
-	doc_create_date: Date,
+	pub doc_create_date: Date,
 
 	#[serde(rename = "@Период")]
-	report_type: UsnDeclReportType,
+	pub report_type: UsnDeclReportType,
 
 	#[serde(rename = "@ОтчетГод")]
-	report_year: Digits4_4,
+	pub report_year: Digits4_4,
 
 	#[serde(rename = "@КодНО")]
-	branch_code: Digits4_4,
+	pub branch_code: Digits4_4,
 
 	#[serde(rename = "@НомКорр")]
-	report_version: u16,
+	pub report_version: u16,
 
 	#[serde(rename = "@ПоМесту")]
-	submission_place: UsnDeclSubmissionPlace,
+	pub submission_place: UsnDeclSubmissionPlace,
 
 	#[serde(rename = "СвНП")]
-	tax_payer: UsnDeclTaxPayer,
+	pub tax_payer: UsnDeclTaxPayer,
 
 	#[serde(rename = "Подписант")]
-	signer: UsnDeclSigner,
+	pub signer: UsnDeclSigner,
 
 	#[serde(rename = "УСН")]
-	usn_report: UsnDeclUsnReport,
+	pub usn_report: UsnDeclUsnReport,
 }
 
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UsnDeclUsnFile {
-	#[serde(rename = "Документ")]
-	document: UsnDeclUsnDocument,
-
 	#[serde(rename = "@ИдФайл")]
-	file_id: String1_255,
+	pub file_id: String1_255,
 
 	#[serde(rename = "@ВерсПрог")]
-	program_version: String1_40,
+	pub program_version: String1_40,
 
 	#[serde(rename = "@ВерсФорм")]
-	format_version: FnsDocFormVersion
+	pub format_version: FnsDocFormVersion,
+
+	#[serde(rename = "Документ")]
+	pub document: UsnDeclUsnDocument,
 }
 
 
