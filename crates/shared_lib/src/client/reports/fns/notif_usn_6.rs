@@ -8,7 +8,7 @@ use crate::service::reports::fns_xsd_shemas::common::*;
 
 use crate::client::reports::fns::helper::make_quaters;
 use crate::client::sql_queries::operations::get::reports::fns::usn_incomes::get_quater_cummul_incomes_usn;
-use crate::client::reports::fns::notif_pdf::make_notif_pdf;
+use crate::client::reports::fns::notif_usn_pdf::make_notif_usn_pdf;
 use crate::client::reports::fns::helper::make_file_id;
 
 
@@ -46,7 +46,7 @@ pub async fn make_notif_usn_6_files(
 		.ok_or_else(|| Status::Tech.process_err(Status::SystemLogicErr, "oktmo is not exist"))?;
 
 
-	let kbk = UsnNotifKbk::UsnSix;
+	let kbk = FnsKbk::UsnSix;
 
 	let not_year = Digits4_4::new(year.to_string().as_str())
 		.map_err(|err| err.process_err(Status::SystemLogicErr, ""))?;
@@ -57,8 +57,8 @@ pub async fn make_notif_usn_6_files(
 			oktmo, 
 			kbk, 
 			avans_amnt: quat_amonts.q1 * Usn6::default(), 
-			period: UsnNotifPeriod::FirstQuarter, 
-			qu_month_num: UsnNotifPeriodNum::QuOne, 
+			period: FnsPeriod::FirstQuarter, 
+			qu_month_num: FnsPeriodNum::QuOne, 
 			year: not_year 
 		},
 		 
@@ -67,8 +67,8 @@ pub async fn make_notif_usn_6_files(
 			oktmo, 
 			kbk, 
 			avans_amnt: quat_amonts.q2 * Usn6::default() - quat_amonts.q1 * Usn6::default(), 
-			period: UsnNotifPeriod::HalfYear, 
-			qu_month_num: UsnNotifPeriodNum::QuTwo, 
+			period: FnsPeriod::HalfYear, 
+			qu_month_num: FnsPeriodNum::QuTwo, 
 			year: not_year 
 		},
 		3 => UsnNotifNotification { 
@@ -76,8 +76,8 @@ pub async fn make_notif_usn_6_files(
 			oktmo, 
 			kbk, 
 			avans_amnt: quat_amonts.q3 * Usn6::default() - quat_amonts.q2 * Usn6::default(), 
-			period: UsnNotifPeriod::NineMonths, 
-			qu_month_num: UsnNotifPeriodNum::QuThree, 
+			period: FnsPeriod::NineMonths, 
+			qu_month_num: FnsPeriodNum::QuThree, 
 			year: not_year 
 		},
 		_ => {
@@ -143,7 +143,7 @@ pub async fn make_notif_usn_6_files(
 	let xml_name = format!("{}.xml", file_id);
 	let pdf_name = format!("{}.pdf", file_id);
 
-	let pdf_file = make_notif_pdf(&session, &notif_file)
+	let pdf_file = make_notif_usn_pdf(&session, &notif_file)
 		.map_err(|err| err.process_err(err, ""))?;
 
 	

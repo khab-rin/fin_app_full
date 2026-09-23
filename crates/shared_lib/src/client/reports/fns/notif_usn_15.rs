@@ -9,7 +9,7 @@ use crate::service::reports::fns_xsd_shemas::common::*;
 use crate::client::reports::fns::helper::make_quaters;
 use crate::client::sql_queries::operations::get::reports::fns::usn_incomes::get_quater_cummul_incomes_usn;
 use crate::client::sql_queries::operations::get::reports::fns::usn_costs::get_quater_cummul_costs_usn;
-use crate::client::reports::fns::notif_pdf::make_notif_pdf;
+use crate::client::reports::fns::notif_usn_pdf::make_notif_usn_pdf;
 use crate::client::reports::fns::helper::make_file_id;
 
 
@@ -50,7 +50,7 @@ pub async fn make_notif_15_files(
 		.ok_or_else(|| Status::Tech.process_err(Status::SystemLogicErr, "oktmo is not exist"))?;
 
 
-	let kbk = UsnNotifKbk::UsnFifteen;
+	let kbk = FnsKbk::UsnFifteen;
 
 	let not_year = Digits4_4::new(year.to_string().as_str())
 		.map_err(|err| err.process_err(Status::SystemLogicErr, ""))?;
@@ -61,8 +61,8 @@ pub async fn make_notif_15_files(
 			oktmo, 
 			kbk, 
 			avans_amnt: (quat_incomes.q1 - quater_costs.q1) * Usn15::default(), 
-			period: UsnNotifPeriod::FirstQuarter, 
-			qu_month_num: UsnNotifPeriodNum::QuOne, 
+			period: FnsPeriod::FirstQuarter, 
+			qu_month_num: FnsPeriodNum::QuOne, 
 			year: not_year 
 		},
 		 
@@ -72,8 +72,8 @@ pub async fn make_notif_15_files(
 			kbk, 
 			avans_amnt: (quat_incomes.q2 - quater_costs.q2) * Usn15::default() -
 				(quat_incomes.q1 - quater_costs.q1) * Usn15::default(), 
-			period: UsnNotifPeriod::HalfYear, 
-			qu_month_num: UsnNotifPeriodNum::QuTwo, 
+			period: FnsPeriod::HalfYear, 
+			qu_month_num: FnsPeriodNum::QuTwo, 
 			year: not_year 
 		},
 		3 => UsnNotifNotification { 
@@ -82,8 +82,8 @@ pub async fn make_notif_15_files(
 			kbk, 
 			avans_amnt: (quat_incomes.q3 - quater_costs.q3) * Usn15::default() - 
 				(quat_incomes.q2 - quater_costs.q2) * Usn15::default(), 
-			period: UsnNotifPeriod::NineMonths, 
-			qu_month_num: UsnNotifPeriodNum::QuThree, 
+			period: FnsPeriod::NineMonths, 
+			qu_month_num: FnsPeriodNum::QuThree, 
 			year: not_year 
 		},
 		_ => {
@@ -149,7 +149,7 @@ pub async fn make_notif_15_files(
 	let xml_name = format!("{}.xml", file_id);
 	let pdf_name = format!("{}.pdf", file_id);
 
-	let pdf_file = make_notif_pdf(&session, &notif_file)
+	let pdf_file = make_notif_usn_pdf(&session, &notif_file)
 		.map_err(|err| err.process_err(err, ""))?;
 
 	

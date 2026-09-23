@@ -29,7 +29,7 @@ pub struct UsnDeclQuaterAmnts {
 
 //СумСтрТип
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct UsnDeclQuaterAmntsInfo {
+pub struct IpSocialAmnts {
 	#[serde(rename="@ФиксРазм")]
 	pub fix_amnt: i64,
 
@@ -152,16 +152,16 @@ pub struct UsnDeclRate {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UsnDeclPaidTradeFee {
 	#[serde(rename="@СумТечКв", skip_serializing_if = "Option::is_none")]
-	pub qu_one: Option<u64>,
+	pub qu_one: Option<i64>,
 
 	#[serde(rename="@СумТечПг", skip_serializing_if = "Option::is_none")]
-	pub qu_two: Option<u64>,
+	pub qu_two: Option<i64>,
 
 	#[serde(rename="@СумТеч9м", skip_serializing_if = "Option::is_none")]
-	pub qu_three: Option<u64>,
+	pub qu_three: Option<i64>,
 
 	#[serde(rename="@СумТечНалПер")]
-	pub qu_four: u64
+	pub qu_four: i64
 }
 
 
@@ -204,7 +204,7 @@ pub struct UsnDeclTaxSixCal {
 	pub tot_social: UsnDeclQuaterAmnts,
 
 	#[serde(rename="Стр143Разд2.1.1", skip_serializing_if = "Option::is_none")]
-	pub ip_social: Option<UsnDeclQuaterAmntsInfo>,
+	pub ip_social: Option<IpSocialAmnts>,
 
 	#[serde(rename="РасчТоргСбор", skip_serializing_if = "Option::is_none")]
 	pub trade_fee: Option<UsnDeclTradeFee>,
@@ -239,7 +239,7 @@ pub struct UsnDeclTaxSix {
 	pub avans_qu_four: i64,
 
 	#[serde(rename="@СумНалПат", skip_serializing_if = "Option::is_none")]
-	pub patent_tax: Option<u64>,
+	pub patent_tax: Option<i64>,
 
 	#[serde(rename="РасчНал1")]
 	pub calculation: UsnDeclTaxSixCal,
@@ -249,9 +249,9 @@ pub struct UsnDeclTaxSix {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum UsnDeclFifteenDueChoise {
 	#[serde(rename="НалПУУменПер")]
-	Due(u64),
+	Due(i64),
 	#[serde(rename="НалПУМин")]
-	MinTaxAmnt(u64)
+	MinTaxAmnt(i64)
 }
 
 
@@ -262,31 +262,31 @@ pub struct UsnDeclTaxFifteen {
 	pub oktmo_qu_one: Oktmo,
 
 	#[serde(rename="@АвПУКв", skip_serializing_if = "Option::is_none")]
-	pub avans_qu_one: Option<u64>,
+	pub avans_qu_one: Option<i64>,
 
 	#[serde(rename="@ОКТМО_Пг", skip_serializing_if = "Option::is_none")]
 	pub oktmo_qu_two: Option<Oktmo>,
 
 	#[serde(rename="@АвПУУменПг", skip_serializing_if = "Option::is_none")]
-	pub avans_qu_two: Option<u64>,
+	pub avans_qu_two: Option<i64>,
 
 	#[serde(rename="@ОКТМО_9м", skip_serializing_if = "Option::is_none")]
 	pub oktmo_qu_three: Option<Oktmo>,
 
 	#[serde(rename="@АвПУУмен9м", skip_serializing_if = "Option::is_none")]
-	pub avans_qu_three: Option<u64>,
+	pub avans_qu_three: Option<i64>,
 
 	#[serde(rename="@ОКТМО_Пер", skip_serializing_if = "Option::is_none")]
 	pub oktmo_qu_four: Option<Oktmo>,
 
 	#[serde(rename="@СумНалПат", skip_serializing_if = "Option::is_none")]
-	pub avans_qu_four: Option<u64>,
+	pub avans_qu_four: Option<i64>,
 
 	#[serde(rename="$value")]
-	due_choice: UsnDeclFifteenDueChoise,
+	pub due_choice: UsnDeclFifteenDueChoise,
 	
 	#[serde(rename="РасчНал2")]
-	calculation: UsnDeclTaxFifteenCal,
+	pub calculation: UsnDeclTaxFifteenCal,
 }
 
 
@@ -294,10 +294,10 @@ pub struct UsnDeclTaxFifteen {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UsnDeclTaxFifteenCal {
 	#[serde(rename="@УбытПред", skip_serializing_if = "Option::is_none")]
-	pub prev_negative_taxable_base: Option<u64>,
+	pub prev_negative_taxable_base: Option<i64>,
 	
 	#[serde(rename="@ИсчислМин")]
-	pub min_tax: u64,
+	pub min_tax: i64,
 
 	#[serde(rename="Доход")]
 	pub income: UsnDeclQuaterAmnts,
@@ -315,7 +315,7 @@ pub struct UsnDeclTaxFifteenCal {
 	pub calculated_tax: Option<UsnDeclQuaterAmnts>,
 
 	#[serde(rename="Стр223Разд2.2", skip_serializing_if = "Option::is_none")]
-	pub required_social: Option<UsnDeclQuaterAmntsInfo>,
+	pub required_social: Option<IpSocialAmnts>,
 }
 
 
@@ -329,19 +329,19 @@ pub struct UsnDeclCharityReportCode {
 	pub charity_date: Option<Date>,
 
 	#[serde(rename="@СумДенСред")]
-	pub charity_amnt: u64,
+	pub charity_amnt: i64,
 
 	#[serde(rename="@СумИспСрок")]
-	pub used_amnt: Option<u64>,
+	pub used_amnt: Option<i64>,
 
 	#[serde(rename="@СрокИсп")]
 	pub used_date: Option<Date>,
 
 	#[serde(rename="@СумИспНеСрок")]
-	pub amnt_reminder: Option<u64>,
+	pub amnt_reminder: Option<i64>,
 
 	#[serde(rename="@СумНеИспСрок")]
-	pub uncorrect_used_amnt: Option<u64>,
+	pub uncorrect_used_amnt: Option<i64>,
 }
 
 
@@ -349,16 +349,16 @@ pub struct UsnDeclCharityReportCode {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UsnDeclCharityReport {
 	#[serde(rename="@СумДенСредИт")]
-	pub total_report_amnt: u64,
+	pub total_report_amnt: i64,
 
 	#[serde(rename="@СумИспСрокИт")]
-	pub correct_amnt: Option<u64>,
+	pub correct_amnt: Option<i64>,
 
 	#[serde(rename="@СумИспНеСрокИт")]
-	pub unused_amnt: Option<u64>,
+	pub unused_amnt: Option<i64>,
 
 	#[serde(rename="@СумНеИспСрокИт")]
-	pub incorrectly_used_amount: Option<u64>,
+	pub incorrectly_used_amount: Option<i64>,
 
 	#[serde(rename="ОтчетИспКод")]
 	pub charity_report_code: Vec1<UsnDeclCharityReportCode>,
@@ -369,16 +369,16 @@ pub struct UsnDeclCharityReport {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UsnDeclKktExpenseCalc {
 	#[serde(rename="@СумЗаКв", skip_serializing_if = "Option::is_none")]
-	pub qu_one: Option<u64>,
+	pub qu_one: Option<i64>,
 
 	#[serde(rename="@СумЗаПг", skip_serializing_if = "Option::is_none")]
-	pub qu_two: Option<u64>,
+	pub qu_two: Option<i64>,
 
 	#[serde(rename="@СумЗа9м", skip_serializing_if = "Option::is_none")]
-	pub qu_three: Option<u64>,
+	pub qu_three: Option<i64>,
 
 	#[serde(rename="@СумЗаНалПер")]
-	pub qu_four: u64
+	pub qu_four: i64
 }
 
 
@@ -398,10 +398,10 @@ pub struct UsnDeclKktExpense {
 	pub kkt_reg_date: Date,
 
 	#[serde(rename="@СумРасхККТ")]
-	pub kkt_buy_amnt: u64,
+	pub kkt_buy_amnt: i64,
 
 	#[serde(rename="@СумРасхККТУм", skip_serializing_if = "Option::is_none")]
-	pub kkt_deduction_2024: Option<u64>, 
+	pub kkt_deduction_2024: Option<i64>, 
 
 	#[serde(rename="СумРасхККТПер")]
 	pub kkt_expense_calc: UsnDeclKktExpenseCalc,

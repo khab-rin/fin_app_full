@@ -19,9 +19,23 @@ make_xls_enum!(FnsSignerType, {
 });
 
 
-make_xls_enum!(UsnNotifKbk, {
+make_xls_enum!(FnsKbk, {
     UsnSix => "18210501011011000110",
 	UsnFifteen => "18210501021011000110"
 });
 
+make_xls_enum!(FnsPeriod, {
+    FirstQuarter => "21",
+    HalfYear     => "31",
+    NineMonths   => "33",
+    Year         => "34",
+});
+
+
+make_xls_enum!(FnsPeriodNum, {
+    QuOne => "01",
+    QuTwo => "02",
+	QuThree => "03",
+    QuFour => "04",
+});
 

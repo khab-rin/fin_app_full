@@ -32,7 +32,7 @@ macro_rules! calculated_primitives {
         impl std::convert::TryFrom<$name> for $frozen_name {
             type Error = Status;
             fn try_from(value: $name) -> Result<$frozen_name, Self::Error> {
-                let rounded = value.data.round_dp(2);
+                let rounded = value.data.max(rust_decimal::Decimal::ZERO).round_dp(2);
                 $frozen_name::new(&format!("{:.2}", rounded))
             }
         }

@@ -73,16 +73,16 @@ pub struct UsnNotifNotification {
 	pub oktmo: Oktmo,
 
 	#[serde(rename="@КБК")]
-	pub kbk: UsnNotifKbk,
+	pub kbk: FnsKbk,
 
 	#[serde(rename="@СумНалогАванс")]
 	pub avans_amnt: RubC,
 
 	#[serde(rename="@Период")]
-	pub period: UsnNotifPeriod,
+	pub period: FnsPeriod,
 
 	#[serde(rename="@НомерМесКварт")]
-	pub qu_month_num: UsnNotifPeriodNum,
+	pub qu_month_num: FnsPeriodNum,
 
 	#[serde(rename="@Год")]
 	pub year: Digits4_4,
@@ -127,26 +127,4 @@ pub struct UsnNotifFile {
 	#[serde(rename="Документ")]
 	pub document: UsnNotifDocument,
 }
-
-
-
-
-
-make_xls_enum!(UsnNotifPeriod, {
-    FirstQuarter => "21",
-    HalfYear     => "31",
-    NineMonths   => "33",
-    Year         => "34",
-});
-
-
-make_xls_enum!(UsnNotifPeriodNum, {
-    QuOne => "01",
-    QuTwo => "02",
-	QuThree => "03",
-    QuFour => "04",
-});
-
-
-
 
