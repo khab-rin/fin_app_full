@@ -232,7 +232,7 @@ pub async fn make_decl_6_files(
 		let calculated_1_percent = total_income_year.saturating_sub(300_000) / 100;
 		let one_perc_curr = calculated_1_percent.min(319_444);
 
-		Some(UsnDeclQuaterAmntsInfo {
+		Some(IpSocialAmnts {
 			fix_amnt: 57390,
 			one_perc: one_perc_curr,
 			one_perc_curr_year: one_perc_curr,
@@ -267,10 +267,10 @@ pub async fn make_decl_6_files(
 			return failed_result;
 		};
 
-	let tax_q1_i64 = (calc_tax.first_qu.unwrap_or(0) as i64) - (tot_social.first_qu.unwrap_or(0) as i64);
-	let tax_q2_i64 = (calc_tax.second_qu.unwrap_or(0) as i64) - (tot_social.second_qu.unwrap_or(0) as i64);
-	let tax_q3_i64 = (calc_tax.third_qu.unwrap_or(0) as i64) - (tot_social.third_qu.unwrap_or(0) as i64);
-	let tax_q4_i64 = (calc_tax.fourth_qu.clone() as i64) - (tot_social.fourth_qu.clone() as i64);
+	let tax_q1_i64 = calc_tax.first_qu.unwrap_or(0) - tot_social.first_qu.unwrap_or(0);
+	let tax_q2_i64 = calc_tax.second_qu.unwrap_or(0) - tot_social.second_qu.unwrap_or(0);
+	let tax_q3_i64 = calc_tax.third_qu.unwrap_or(0) - tot_social.third_qu.unwrap_or(0);
+	let tax_q4_i64 = calc_tax.fourth_qu - tot_social.fourth_qu;
 
 	let avans_qu_one: i64 = tax_q1_i64;
 	let avans_qu_two: i64 = tax_q2_i64 - tax_q1_i64;

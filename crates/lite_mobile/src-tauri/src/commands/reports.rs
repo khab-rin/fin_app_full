@@ -34,7 +34,7 @@ pub async fn cmd_make_fns_report_files(
 			return make_decl_6_files(&state, year, quat, fns_code).await.map_err(|err| err.process_err(err, ""))
 		}
 		FnsReportType::UsnDeclFifteen => {
-			return make_decl_15_files(&state, year, quat).await.map_err(|err| err.process_err(err, ""))
+			return make_decl_15_files(&state, year, quat, fns_code).await.map_err(|err| err.process_err(err, ""))
 		}
 	}
 }

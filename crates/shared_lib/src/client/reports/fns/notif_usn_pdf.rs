@@ -4,11 +4,11 @@ use crate::service::auth_service::general::ActiveSession;
 use crate::primitives::frozen::text::MidName;
 use crate::service::reports::fns_xsd_shemas::usn_1110355_notif::UsnNotifFile;
 
-use lopdf::{Document, Object, Dictionary, StringFormat};
+use lopdf::{Document, Object, StringFormat};
 use std::collections::HashMap;
 
 /// Основная функция для генерации PDF-уведомления
-pub fn make_notif_pdf(
+pub fn make_notif_usn_pdf(
     session: &ActiveSession,
     notif: &UsnNotifFile
 ) -> Result<Vec<u8>, Status> {

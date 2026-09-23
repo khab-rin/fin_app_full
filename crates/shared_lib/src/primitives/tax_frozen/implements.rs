@@ -19,9 +19,9 @@ tax_primitives!(
 
 tax_primitives!(
     Usn15,
-    init_usn6_from_str,
+    init_usn15_from_str,
     init_usn6_default,
-    "УСН_06%");
+    "УСН_15%");
 
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
