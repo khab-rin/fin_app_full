@@ -144,12 +144,12 @@ pub async fn make_decl_6_files(
 		}
 	};
 
-	let signer = match power_verify.is_manager {
+	let signer_type = match power_verify.is_manager {
 		true => FnsSignerType::TAXPAYER,
 		false => FnsSignerType::DELEGATE
 	};
 
-	let decl_signer = UsnDeclSigner {fio, delegate_info, signer };
+	let decl_signer = UsnDeclSigner {fio, delegate_info, signer_type };
 
 	let dates = match make_quaters(year) {
 		Ok(d) => d,
@@ -314,7 +314,7 @@ pub async fn make_decl_6_files(
 	let document = UsnDeclUsnDocument {
 		report_code: FnsKnd::UsnDeclatation,
 		doc_create_date: Date::unchecked(chrono::Utc::now().date_naive()),
-		report_type: UsnDeclReportType::Year,
+		report_period: UsnDeclReportPeriod::Year,
 		report_year: Digits4_4::unchecked(year.to_string()),
 		branch_code: fns_branch.clone(),
 		report_version: 0,

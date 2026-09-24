@@ -118,7 +118,7 @@ pub struct UsnDeclDelegateInfo {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UsnDeclSigner {
 	#[serde(rename="@ПрПодп")]
-	pub signer: FnsSignerType,
+	pub signer_type: FnsSignerType,
 
 	#[serde(rename="ФИО", skip_serializing_if = "Option::is_none")]
 	pub fio: Option<Fio>,
@@ -280,13 +280,15 @@ pub struct UsnDeclTaxFifteen {
 	pub oktmo_qu_four: Option<Oktmo>,
 
 	#[serde(rename="@СумНалПат", skip_serializing_if = "Option::is_none")]
-	pub avans_qu_four: Option<i64>,
+	pub patent_tax: Option<i64>,
 
 	#[serde(rename="$value")]
 	pub due_choice: UsnDeclFifteenDueChoise,
 	
 	#[serde(rename="РасчНал2")]
 	pub calculation: UsnDeclTaxFifteenCal,
+
+	
 }
 
 
@@ -445,7 +447,7 @@ pub struct UsnDeclUsnDocument {
 	pub doc_create_date: Date,
 
 	#[serde(rename = "@Период")]
-	pub report_type: UsnDeclReportType,
+	pub report_period: UsnDeclReportPeriod,
 
 	#[serde(rename = "@ОтчетГод")]
 	pub report_year: Digits4_4,
@@ -509,7 +511,7 @@ make_xls_enum!(UsnDeclUsnObject, {
 
 
 
-make_xls_enum!(UsnDeclReportType, {
+make_xls_enum!(UsnDeclReportPeriod, {
     Year => "34",
 	ReorganizationOrLiquidation => "50",
 	TaxModeChange => "95",
