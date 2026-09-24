@@ -138,12 +138,12 @@ pub async fn make_decl_15_files(
 		}
 	};
 
-	let signer = match power_verify.is_manager {
+	let signer_type = match power_verify.is_manager {
 		true => FnsSignerType::TAXPAYER,
 		false => FnsSignerType::DELEGATE
 	};
 
-	let decl_signer = UsnDeclSigner {fio, delegate_info, signer };
+	let decl_signer = UsnDeclSigner {fio, delegate_info, signer_type };
 
 	let dates = match make_quaters(year) {
 		Ok(d) => d,
@@ -227,11 +227,10 @@ pub async fn make_decl_15_files(
 	};
 
 
-	let (q1, q2, q3, q4) = (
+	let (q1, q2, q3) = (
 		calculated_tax.first_qu.unwrap_or(0),
-		calculated_tax.second_qu.unwrap_or(0) - calculated_tax.first_qu.unwrap_or(0),
-		calculated_tax.third_qu.unwrap_or(0) - calculated_tax.second_qu.unwrap_or(0),
-		calculated_tax.fourth_qu - calculated_tax.third_qu.unwrap_or(0)
+		(calculated_tax.second_qu.unwrap_or(0) - calculated_tax.first_qu.unwrap_or(0)).max(0),
+		(calculated_tax.third_qu.unwrap_or(0) - calculated_tax.second_qu.unwrap_or(0)).max(0),
 	);
 
 
@@ -290,7 +289,7 @@ pub async fn make_decl_15_files(
 		oktmo_qu_three: None,
 		avans_qu_three: Some(q3),
 		oktmo_qu_four: None,
-		avans_qu_four: Some(q4),
+		patent_tax: None,
 		due_choice,
 		calculation
 	};
@@ -311,7 +310,7 @@ pub async fn make_decl_15_files(
 	let document = UsnDeclUsnDocument {
 		report_code: FnsKnd::UsnDeclatation,
 		doc_create_date: Date::unchecked(chrono::Utc::now().date_naive()),
-		report_type: UsnDeclReportType::Year,
+		report_period: UsnDeclReportPeriod::Year,
 		report_year: Digits4_4::unchecked(year.to_string()),
 		branch_code: fns_branch.clone(),
 		report_version: 0,

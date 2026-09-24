@@ -43,4 +43,10 @@ impl Tax {
 		(val_dec * rate).round().to_i64().unwrap_or(0)
 	
 	}
+	pub fn get_parts(&self) -> (i64, i64) {
+		let t = Self::multiply_i64(&self, 1000);
+		let elm2 = t % 10;
+		let elm1 = t / 10;
+		(elm1, elm2)
+	}
 }
