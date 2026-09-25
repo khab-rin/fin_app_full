@@ -31,7 +31,6 @@ pub async fn make_notif_usn_6_files(
 		&quart_dates
 	).await.map_err(|err| err.process_err(err, ""))?;
 
-
 	let kpp: Option<Kpp> = match session.session_user.company.comp_inn.len() {
 		12 => None,
 		_ => Some(session.session_user.company.kpp.clone())
@@ -71,6 +70,7 @@ pub async fn make_notif_usn_6_files(
 			qu_month_num: FnsPeriodNum::QuTwo, 
 			year: not_year 
 		},
+
 		3 => UsnNotifNotification { 
 			kpp, 
 			oktmo, 

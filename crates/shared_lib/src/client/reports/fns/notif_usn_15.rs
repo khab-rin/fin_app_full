@@ -35,7 +35,6 @@ pub async fn make_notif_15_files(
 	let quater_costs = get_quater_cummul_costs_usn(state, &quart_dates)
 		.await.map_err(|err| err.process_err(err, ""))?;
 
-
 	let kpp: Option<Kpp> = match session.session_user.company.comp_inn.len() {
 		12 => None,
 		_ => Some(session.session_user.company.kpp.clone())
@@ -123,7 +122,7 @@ pub async fn make_notif_15_files(
 		notifications
 	};
 
-	let file_id = make_file_id(&session, &fns_branch, FnsKnd::UsnDeclatation)
+	let file_id = make_file_id(&session, &fns_branch, FnsKnd::UsnNotification)
 		.map_err(|err| err.process_err(err, ""))?;
 
 	let version_str = format!("{} v{}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
