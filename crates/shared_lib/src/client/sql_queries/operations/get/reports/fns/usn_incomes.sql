@@ -5,5 +5,5 @@ SELECT
 	COALESCE(SUM(CASE WHEN oper_date BETWEEN $1 AND $5 THEN amount ELSE 0 END), 0) AS 'q4: RubF'
 FROM operations
 WHERE is_del = 0 AND
-	(debet == '50' OR debet == '51') AND
-	(credit IN ('90', '91', '62', '76', '57'))
+	(debet = '50' OR debet = '51') AND
+	(credit IN ('90', '91', '62', '76', '57', '58'))

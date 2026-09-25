@@ -14,6 +14,7 @@ use crate::client::back_api::post_query::post_query_back_api;
 use crate::client::reports::fns::helper::{make_file_id, make_quaters};
 use crate::client::sql_queries::operations::get::reports::fns::usn_incomes::get_quater_cummul_incomes_usn;
 use crate::client::sql_queries::operations::get::reports::fns::usn_costs::get_quater_cummul_costs_usn;
+use crate::client::reports::fns::decl_usn_pdf::make_decl_usn_pdf;
 
 
 pub async fn make_decl_15_files(
@@ -355,7 +356,19 @@ pub async fn make_decl_15_files(
 	let xml_name = format!("{}.xml", file_id);
 	let pdf_name = format!("{}.pdf", file_id);
 
+	let pdf_file = match make_decl_usn_pdf(&session, &decl_file) {
+		Ok(f) => f,
+		Err(err) => {
+			err.process_err(err, "");
+			return failed_result;
+		}
+	};
 
-
-	Err(Status::Unknown)
+	Ok(ReportStep::SaveFiles { 
+		text: ReportInfo::SaveFiles, 
+		xml_name,
+		xml_file, 
+		pdf_name,
+		pdf_file
+	})
 }

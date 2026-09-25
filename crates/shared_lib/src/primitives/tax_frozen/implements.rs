@@ -1,4 +1,5 @@
 use serde::{Serialize, Deserialize};
+use serde::ser::Serializer;
 use rust_decimal::Decimal;
 use rust_decimal::prelude::ToPrimitive;
 
@@ -20,11 +21,11 @@ tax_primitives!(
 tax_primitives!(
     Usn15,
     init_usn15_from_str,
-    init_usn6_default,
+    init_usn15_default,
     "УСН_15%");
 
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Clone)]
 pub enum Tax {
 	Nds22(Nds22),
     Usn6(Usn6),
@@ -44,9 +45,28 @@ impl Tax {
 	
 	}
 	pub fn get_parts(&self) -> (i64, i64) {
-		let t = Self::multiply_i64(&self, 1000);
+		let t = Self::multiply_i64(self, 1000);
 		let elm2 = t % 10;
 		let elm1 = t / 10;
 		(elm1, elm2)
 	}
+}
+
+impl Serialize for Tax {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+impl std::fmt::Display for Tax {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Tax::Nds22(rate) => write!(f, "{}", rate),
+            Tax::Usn6(rate) => write!(f, "{}", rate),
+            Tax::Usn15(rate) => write!(f, "{}", rate),
+        }
+    }
 }

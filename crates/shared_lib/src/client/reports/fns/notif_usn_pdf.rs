@@ -30,7 +30,7 @@ pub fn make_notif_usn_pdf(
     // Загрузка шаблона PDF из ресурсов
     let pdf_tpl_bytes = include_bytes!("../../../../../../resourses/1110355.pdf"); 
     let mut doc = lopdf::Document::load_mem(pdf_tpl_bytes)
-        .map_err(|err| err.process_err(Status::Tech, "Не удалось загрузить PDF шаблон"))?;
+        .map_err(|err| err.process_err(Status::FileReadError, "Не удалось загрузить PDF шаблон"))?;
 
     // Сборка HashMap со всеми заполняемыми полями
     let mut fields_to_fill: HashMap<String, String> = HashMap::new();
@@ -132,6 +132,20 @@ pub fn fill_pdf_form(doc: &mut Document, data: &HashMap<String, String>) -> Resu
     Ok(())
 }
 
+fn encode_pdf_string(val: &str) -> Vec<u8> {
+    if val.is_ascii() {
+        return val.as_bytes().to_vec();
+    }
+    
+    // Для кириллицы (ФИО) кодируем в UTF-16BE с маркером порядка байт BOM (0xFE 0xFF)
+    let mut encoded = vec![0xFE, 0xFF];
+    for ch in val.encode_utf16() {
+        encoded.push((ch >> 8) as u8);
+        encoded.push((ch & 0xFF) as u8);
+    }
+    encoded
+}
+
 /// Рекурсивная функция обхода и модификации дерева интерактивных полей
 fn traverse_and_fill_field(
     doc: &mut Document,
@@ -139,13 +153,17 @@ fn traverse_and_fill_field(
     parent_name: String,
     data: &HashMap<String, String>,
 ) -> Result<(), lopdf::Error> {
+    // Получаем актуальный словарь объекта напрямую из документа
     let mut dict = doc.get_object(field_ref)?.as_dict()?.clone();
 
-    // Шаг 1. Формируем полное имя текущего поля с учетом родителей
+    // Шаг 1. Формируем имя текущего узла и полный составной путь
+    let mut node_name = String::new();
     let mut current_name = parent_name.clone();
+    
     if let Ok(t_obj) = dict.get(b"T") {
         if let Ok(name_bytes) = t_obj.as_str() {
             if let Ok(name_str) = String::from_utf8(name_bytes.to_vec()) {
+                node_name = name_str.clone();
                 if !current_name.is_empty() {
                     current_name.push('.');
                 }
@@ -154,33 +172,21 @@ fn traverse_and_fill_field(
         }
     }
 
-    // Шаг 2. Проверяем точное совпадение имени (для Text1, Text3, Text8.0 и др.) до спуска в /Kids
-    let value_to_set = data.get(&current_name).cloned();
+    // Шаг 2. Ищем значение (сначала по полному пути, затем по короткому имени узла)
+    let mut value_to_set = data.get(&current_name).cloned();
+    if value_to_set.is_none() && !node_name.is_empty() {
+        value_to_set = data.get(&node_name).cloned();
+    }
 
+    // Если значение найдено, записываем его в текущий узел
     if let Some(ref val) = value_to_set {
-        let pdf_string = Object::String(val.as_bytes().to_vec(), StringFormat::Literal);
+        let pdf_string = Object::String(encode_pdf_string(val), StringFormat::Literal);
         dict.set(b"V", pdf_string);
         dict.remove(b"AP"); 
         doc.set_object(field_ref, Object::Dictionary(dict.clone()));
-        
-        // Если это групповое поле с виджетами на разных страницах (/Kids),
-        // изолируем дочерние ссылки во временный вектор и проталкиваем значения вниз
-        if let Ok(kids_obj) = dict.get(b"Kids") {
-            let mut kid_refs = Vec::new();
-            if let Ok(kids_array) = doc.dereference(kids_obj).and_then(|(_, obj)| obj.as_array()) {
-                for kid in kids_array {
-                    if let Ok(kid_ref) = kid.as_reference() {
-                        kid_refs.push(kid_ref);
-                    }
-                }
-            }
-            for kid_ref in kid_refs {
-                force_set_value_downstream(doc, kid_ref, val)?;
-            }
-        }
     }
 
-    // Шаг 3. Если совпадения по имени на текущем уровне нет, собираем ссылки на /Kids и идем вглубь
+    // Шаг 3. Идем вглубь дерева /Kids
     if let Ok(kids_obj) = dict.get(b"Kids") {
         let mut kid_refs = Vec::new();
         if let Ok(kids_array) = doc.dereference(kids_obj).and_then(|(_, obj)| obj.as_array()) {
@@ -190,35 +196,28 @@ fn traverse_and_fill_field(
                 }
             }
         }
+
         for kid_ref in kid_refs {
+            // КРИТИЧЕСКИЙ МОМЕНТ: Если у родителя (например, Text2) было найдено значение,
+            // но у дочернего элемента нет своего имени /T, мы принудительно передаем 
+            // значение родителя вниз, чтобы заполнились виджеты на всех страницах.
+            let kid_dict = doc.get_object(kid_ref)?.as_dict()?;
+            
+            if kid_dict.get(b"T").is_err() && value_to_set.is_some() {
+                // У дочернего виджета нет своего имени, значит это отображение родительского поля
+                let mut updated_kid_dict = kid_dict.clone();
+                let val = value_to_set.as_ref().unwrap();
+                let pdf_string = Object::String(encode_pdf_string(val), StringFormat::Literal);
+                
+                updated_kid_dict.set(b"V", pdf_string);
+                updated_kid_dict.remove(b"AP");
+                doc.set_object(kid_ref, Object::Dictionary(updated_kid_dict));
+            }
+
+            // В любом случае продолжаем стандартную рекурсию, чтобы не пропустить уникальные поля вроде Text12.0
             traverse_and_fill_field(doc, kid_ref, current_name.clone(), data)?;
         }
     }
 
     Ok(())
-}
-
-/// Вспомогательная функция для сквозного проталкивания значения дочерним виджетам
-fn force_set_value_downstream(doc: &mut Document, field_ref: lopdf::ObjectId, value: &str) -> Result<(), lopdf::Error> {
-    let mut dict = doc.get_object(field_ref)?.as_dict()?.clone();
-    let pdf_string = Object::String(value.as_bytes().to_vec(), StringFormat::Literal);
-    
-    dict.set(b"V", pdf_string);
-    dict.remove(b"AP");
-    doc.set_object(field_ref, Object::Dictionary(dict.clone()));
-
-    if let Ok(kids_obj) = dict.get(b"Kids") {
-        let mut kid_refs = Vec::new();
-        if let Ok(kids_array) = doc.dereference(kids_obj).and_then(|(_, obj)| obj.as_array()) {
-            for kid in kids_array {
-                if let Ok(kid_ref) = kid.as_reference() {
-                    kid_refs.push(kid_ref);
-                }
-            }
-        }
-        for kid_ref in kid_refs {
-            force_set_value_downstream(doc, kid_ref, value)?;
-        }
-	}
-	Ok(())
 }

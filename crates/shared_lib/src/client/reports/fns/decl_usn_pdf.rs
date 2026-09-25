@@ -1,12 +1,14 @@
-
+use std::collections::HashMap;
+use serde_json::Value;
+use lopdf::{Document, Object, Dictionary, StringFormat};
 use serde::{Serialize, Deserialize};
+
+use crate::{ProcessError, Status};
 use crate::primitives::tax_frozen::implements::Tax;
 
-use crate::Status;
 use crate::primitives::tax_frozen::implements::Usn15;
 use crate::service::auth_service::general::ActiveSession;
 use crate::service::reports::fns_xsd_shemas::usn_1152017_decl::*;
-use crate::service::reports::fns_xsd_shemas::common::*;
 
 #[derive(Serialize, Deserialize, Default, Debug, Clone)]
 pub struct Elems {
@@ -449,7 +451,6 @@ pub fn make_decl_usn_pdf(
 	decl: &UsnDeclUsnFile
 ) -> Result<Vec<u8>, Status> {
 
-	let mut pages_count = 1;
 
 	let mut elems = Elems::default();
 
@@ -519,21 +520,30 @@ pub fn make_decl_usn_pdf(
 
 	match &decl.document.usn_report.report_type {
 		UsnDeclTaxReportType::FifteenPercent(report) => {
-			fill_fifteen_usn_pdf(report, &mut elems);
+			fill_fifteen_usn_elems(report, &mut elems);
 		},
 		UsnDeclTaxReportType::SixPercent(report) => {
-			fill_six_usn_pdf(report, &mut elems)
+			fill_six_usn_elems(report, &mut elems)
 		}
 	}
 
-
-	Err(Status::Unknown)
+	fill_usn_decl_pdf(&elems)
 }
 
-pub fn fill_fifteen_usn_pdf(
+pub fn fill_fifteen_usn_elems(
 	report: &UsnDeclTaxFifteen,
 	elems: &mut Elems
 ) {
+	let s_t_20 = 2;
+	let s_t_42 = 3;
+	let s_t_47 = 4;
+
+	elems.text20 = s_t_20.to_string();
+	elems.text42 = s_t_42.to_string();
+	elems.text47 = s_t_47.to_string();
+
+
+
 	let s210 = report.calculation.income.first_qu.unwrap_or(0);
 	elems.text27_0 = s210.to_string();
 	let s211 = report.calculation.income.second_qu.unwrap_or(0);
@@ -684,16 +694,325 @@ pub fn fill_fifteen_usn_pdf(
 
 	elems.text22_7_1 = s120.to_string();
 
-
-	
-
-
-
 }
 
-pub fn fill_six_usn_pdf(
+
+
+
+pub fn fill_six_usn_elems(
 	report: &UsnDeclTaxSix,
 	elems: &mut Elems
 ) {
 
+	let s_t_16 = 2;
+	let s_t_23 = 3;
+	let s_t_41 = 4;
+
+	elems.text16 = s_t_16.to_string();
+	elems.text23 = s_t_23.to_string();
+	elems.text41 = s_t_41.to_string();
+
+
+	let s102 = report.calculation.employers_exist;
+	elems.text24_0 = s102.to_string();
+
+	let s110 = report.calculation.taxable_income.first_qu.unwrap_or(0);
+	elems.text25_0 = s110.to_string();
+
+	let s111 = report.calculation.taxable_income.second_qu.unwrap_or(0);
+	elems.text25_1 = s111.to_string();
+
+	let s112 = report.calculation.taxable_income.third_qu.unwrap_or(0);
+	elems.text25_2 = s112.to_string();
+
+	let s113 = report.calculation.taxable_income.fourth_qu;
+	elems.text25_3 = s113.to_string();
+
+	let (r1, r2, r3, r4) = (
+		report.calculation.rate.qu_one.as_ref().unwrap_or(&Tax::Usn15(Usn15::default())).clone(),
+		report.calculation.rate.qu_two.as_ref().unwrap_or(&Tax::Usn15(Usn15::default())).clone(),
+		report.calculation.rate.qu_three.as_ref().unwrap_or(&Tax::Usn15(Usn15::default())).clone(),
+		&report.calculation.rate.qu_four,
+	);
+
+	let (s120, s120_1) = Tax::get_parts(&r1);
+	let (s121, s121_1) = Tax::get_parts(&r2);
+	let (s122, s122_1) = Tax::get_parts(&r3);
+	let (s123, s123_1) = Tax::get_parts(r4);
+
+	elems.text34_0 = s120.to_string();
+	elems.text34_1 = s121.to_string();
+	elems.text34_2 = s122.to_string();
+	elems.text34_3 = s123.to_string();
+	elems.text35_0 = s120_1.to_string();
+	elems.text35_1 = s121_1.to_string();
+	elems.text35_2 = s122_1.to_string();
+	elems.text35_3 = s123_1.to_string();
+
+	let s130 = report.calculation.calc_tax.first_qu.unwrap_or(0);
+	let s131 = report.calculation.calc_tax.second_qu.unwrap_or(0);
+	let s132 = report.calculation.calc_tax.third_qu.unwrap_or(0);
+	let s133 = report.calculation.calc_tax.fourth_qu;
+
+	elems.text25_5 = s130.to_string();
+	elems.text25_6 = s131.to_string();
+	elems.text25_7 = s132.to_string();
+	elems.text25_8 = s133.to_string();
+
+	let s140 = report.calculation.tot_social.first_qu.unwrap_or(0).min(s130);
+	let s141 = report.calculation.tot_social.second_qu.unwrap_or(0).min(s131);
+	let s142 = report.calculation.tot_social.third_qu.unwrap_or(0).min(s132);
+	let s143 = report.calculation.tot_social.fourth_qu.min(s133);
+
+	elems.text25_9 = s140.to_string();
+	elems.text25_10 = s140.to_string();
+	elems.text25_11_0 = s140.to_string();
+	elems.text25_11_1_0 = s140.to_string();
+
+	let (s150, s160, s161, s162) = if let Some(social) = &report.calculation.ip_social {
+		(
+			social.fix_amnt,
+			social.one_perc,
+			social.one_perc_curr_year,
+			social.one_perc_prev_year
+		)
+	} else {
+		(0, 0, 0, 0)
+	};
+
+	elems.text25_11_1_1 = s150.to_string();
+	elems.text26_0 = s160.to_string();
+	elems.text26_1 = s161.to_string();
+	elems.text26_2_0_0 = s162.to_string();
+
+	let s010 = &report.oktmo_qu_one;
+	elems.text17_0 = s010.to_string();
+
+	if let Some(o) = &report.oktmo_qu_two {
+		elems.text17_1 = o.to_string();
+	}
+
+	if let Some(o) = &report.oktmo_qu_three {
+		elems.text17_2 = o.to_string();
+	}
+
+	if let Some(o) = &report.oktmo_qu_four {
+		elems.text17_4 = o.to_string();
+	}
+
+	let s020 = if s130 - s140 > 0 {
+		s130 - s140
+	} else { 0 };
+
+	let s040 = if (s131 - s141) - s020 >= 0 {
+		(s131 - s141) - s020
+	} else { 0 };
+
+	let s050 = if (s131 - s141) - s020 < 0 {
+		s020 - (s131 - s141)
+	} else { 0 };
+
+	let s070 = if (s132 - s142) - (s020 + s040 - s050) >= 0 {
+		(s132 - s142) - (s020 + s040 - s050)
+	} else { 0 };
+
+	let s080 = if (s132 - s142) - (s020 + s040 - s050) < 0 {
+		(s020 + s040 - s050) - (s132 - s142)
+	} else { 0 };
+
+
+	let s101 = report.patent_tax.unwrap_or(0);
+
+	let s100 = if (s133 - s143) - (s020 + s040 - s050 + s070 - s080) - s101 >= 0 {
+		(s133 - s143) - (s020 + s040 - s050 + s070 - s080) - s101
+	} else { 0 };
+
+	let s110 = if (s133 - s143) - (s020 + s040 - s050 + s070 - s080) - s101 < 0 {
+		(s020 + s040 - s050 + s070 - s080) + s101 - (s133 - s143)
+	} else { 0 };
+
+	elems.text18_0 = s020.to_string();
+	elems.text18_1 = s040.to_string();
+	elems.text18_2 = s050.to_string();
+	elems.text18_3 = s070.to_string();
+	elems.text18_4 = s080.to_string();
+	elems.text18_5 = s100.to_string();
+	elems.text18_6_0 = s101.to_string();
+	elems.text18_6_1 = s110.to_string();
+
+}
+
+
+
+pub fn fill_usn_decl_pdf(
+	elems: &Elems
+) -> Result<Vec<u8>, Status> {
+	// 1. Загрузка шаблона PDF из ресурсов
+	let pdf_tpl_bytes = include_bytes!("../../../../../../resourses/decl_usn_regul.PDF");
+	let mut doc = lopdf::Document::load_mem(pdf_tpl_bytes)
+		.map_err(|err| err.process_err(Status::FileReadError, "Ошибка загрузки шаблона PDF"))?;
+
+	// 2. Конвертируем структуру Elems в JSON-значение
+	let json_value = serde_json::to_value(elems)
+		.map_err(|_| Status::Tech.process_err(Status::MappingError, "Ошибка сериализации Elems в JSON"))?;
+
+	// 3. Превращаем JSON-объект в HashMap<String, String>, как требует движок
+	let mut data_map = HashMap::new();
+	if let Value::Object(map) = json_value {
+		for (key, val) in map {
+			if let Value::String(s) = val {
+				data_map.insert(key, s);
+			} else if !val.is_null() {
+				// Обработка чисел или булевых значений, если они появятся в структуре
+				data_map.insert(key, val.to_string());
+			}
+		}
+	} else {
+		return Err(Status::Tech.process_err(Status::MappingError, "Структура Elems не является JSON-объектом"));
+	}
+
+	// 4. Запускаем универсальный процесс заполнения через дерево AcroForm
+	fill_pdf_form(&mut doc, &data_map)
+		.map_err(|_| Status::Tech.process_err(Status::FileWriteError, "Ошибка модификации полей PDF"))?;
+
+	// 5. Сохраняем обновленный документ в байтовый вектор
+	let mut output_bytes = Vec::new();
+	doc.save_to(&mut output_bytes)
+		.map_err(|_| Status::Tech.process_err(Status::FileWriteError, "Ошибка сохранения итогового PDF"))?;
+
+	Ok(output_bytes)
+}
+
+
+pub fn fill_pdf_form(doc: &mut Document, data: &HashMap<String, String>) -> Result<(), lopdf::Error> {
+    // 1. Получаем ссылку на ID каталога из трейлера документа
+    let catalog_ref = doc.trailer.get(b"Root")
+        .and_then(|obj| obj.as_reference())?;
+
+    // 2. Получаем изменяемую копию словаря Catalog
+    let mut catalog = doc.get_object(catalog_ref)?.as_dict()?.clone();
+
+    // 3. Ищем или создаем AcroForm с добавлением флага автоматического рендеринга полей
+    if let Ok(acro_form_obj) = catalog.get(b"AcroForm") {
+        if let Ok(acro_form_ref) = acro_form_obj.as_reference() {
+            if let Ok(mut acro_form_dict) = doc.get_object(acro_form_ref).and_then(|obj| obj.as_dict()).map(|d| d.clone()) {
+                
+                // Принудительно заставляем ридер (Acrobat, Chrome) отображать записанный текст
+                acro_form_dict.set(b"NeedAppearances", Object::Boolean(true));
+                doc.set_object(acro_form_ref, Object::Dictionary(acro_form_dict.clone()));
+                
+                if let Ok(fields_obj) = acro_form_dict.get(b"Fields") {
+                    let mut field_refs = Vec::new();
+                    
+                    // Безопасно собираем ссылки во временный вектор для обхода ограничений заимствования
+                    if let Ok(fields_array) = doc.dereference(fields_obj).and_then(|(_, obj)| obj.as_array()) {
+                        for field_item in fields_array {
+                            if let Ok(reference) = field_item.as_reference() {
+                                field_refs.push(reference);
+                            }
+                        }
+                    }
+
+                    // Модифицируем документ
+                    for reference in field_refs {
+                        traverse_and_fill_field(doc, reference, String::new(), data)?;
+                    }
+                }
+            }
+        }
+    }
+    
+    // Сохраняем обновленный каталог обратно в документ
+    doc.set_object(catalog_ref, Object::Dictionary(catalog));
+    Ok(())
+}
+
+fn encode_pdf_string(val: &str) -> Vec<u8> {
+    if val.is_ascii() {
+        return val.as_bytes().to_vec();
+    }
+    
+    // Для кириллицы (ФИО) кодируем в UTF-16BE с маркером порядка байт BOM (0xFE 0xFF)
+    let mut encoded = vec![0xFE, 0xFF];
+    for ch in val.encode_utf16() {
+        encoded.push((ch >> 8) as u8);
+        encoded.push((ch & 0xFF) as u8);
+    }
+    encoded
+}
+
+/// Рекурсивная функция обхода и модификации дерева интерактивных полей
+fn traverse_and_fill_field(
+    doc: &mut Document,
+    field_ref: lopdf::ObjectId,
+    parent_name: String,
+    data: &HashMap<String, String>,
+) -> Result<(), lopdf::Error> {
+    // Получаем актуальный словарь объекта напрямую из документа
+    let mut dict = doc.get_object(field_ref)?.as_dict()?.clone();
+
+    // Шаг 1. Формируем имя текущего узла и полный составной путь
+    let mut node_name = String::new();
+    let mut current_name = parent_name.clone();
+    
+    if let Ok(t_obj) = dict.get(b"T") {
+        if let Ok(name_bytes) = t_obj.as_str() {
+            if let Ok(name_str) = String::from_utf8(name_bytes.to_vec()) {
+                node_name = name_str.clone();
+                if !current_name.is_empty() {
+                    current_name.push('.');
+                }
+                current_name.push_str(&name_str);
+            }
+        }
+    }
+
+    // Шаг 2. Ищем значение (сначала по полному пути, затем по короткому имени узла)
+    let mut value_to_set = data.get(&current_name).cloned();
+    if value_to_set.is_none() && !node_name.is_empty() {
+        value_to_set = data.get(&node_name).cloned();
+    }
+
+    // Если значение найдено, записываем его в текущий узел
+    if let Some(ref val) = value_to_set {
+        let pdf_string = Object::String(encode_pdf_string(val), StringFormat::Literal);
+        dict.set(b"V", pdf_string);
+        dict.remove(b"AP"); 
+        doc.set_object(field_ref, Object::Dictionary(dict.clone()));
+    }
+
+    // Шаг 3. Идем вглубь дерева /Kids
+    if let Ok(kids_obj) = dict.get(b"Kids") {
+        let mut kid_refs = Vec::new();
+        if let Ok(kids_array) = doc.dereference(kids_obj).and_then(|(_, obj)| obj.as_array()) {
+            for kid in kids_array {
+                if let Ok(kid_ref) = kid.as_reference() {
+                    kid_refs.push(kid_ref);
+                }
+            }
+        }
+
+        for kid_ref in kid_refs {
+            // КРИТИЧЕСКИЙ МОМЕНТ: Если у родителя (например, Text2) было найдено значение,
+            // но у дочернего элемента нет своего имени /T, мы принудительно передаем 
+            // значение родителя вниз, чтобы заполнились виджеты на всех страницах.
+            let kid_dict = doc.get_object(kid_ref)?.as_dict()?;
+            
+            if kid_dict.get(b"T").is_err() && value_to_set.is_some() {
+                // У дочернего виджета нет своего имени, значит это отображение родительского поля
+                let mut updated_kid_dict = kid_dict.clone();
+                let val = value_to_set.as_ref().unwrap();
+                let pdf_string = Object::String(encode_pdf_string(val), StringFormat::Literal);
+                
+                updated_kid_dict.set(b"V", pdf_string);
+                updated_kid_dict.remove(b"AP");
+                doc.set_object(kid_ref, Object::Dictionary(updated_kid_dict));
+            }
+
+            // В любом случае продолжаем стандартную рекурсию, чтобы не пропустить уникальные поля вроде Text12.0
+            traverse_and_fill_field(doc, kid_ref, current_name.clone(), data)?;
+        }
+    }
+
+    Ok(())
 }

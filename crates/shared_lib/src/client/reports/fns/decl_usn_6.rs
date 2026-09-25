@@ -16,6 +16,7 @@ use crate::client::back_api::post_query::post_query_back_api;
 use crate::client::reports::fns::helper::{make_file_id, make_quaters};
 use crate::client::sql_queries::operations::get::reports::fns::usn_incomes::get_quater_cummul_incomes_usn;
 use crate::client::sql_queries::operations::get::reports::fns::usn_social_fee::get_quater_cummul_social_usn;
+use crate::client::reports::fns::decl_usn_pdf::make_decl_usn_pdf;
 
 
 
@@ -89,7 +90,7 @@ pub async fn make_decl_6_files(
 
 	let fio = session.session_user.person.metadata.fio.clone();
 
-	let tel: Option<Phone> = session.session_user.company.metadata.phone.clone();
+	let tel: Option<Phone> = session.session_user.person.metadata.phone.clone().into_iter().next();
 
 	let liq_status = match session.session_user.company.comp_status {
 		CompStatus::Active => None,
@@ -359,8 +360,20 @@ pub async fn make_decl_6_files(
 	let xml_name = format!("{}.xml", file_id);
 	let pdf_name = format!("{}.pdf", file_id);
 
+	let pdf_file = match make_decl_usn_pdf(&session, &decl_file) {
+		Ok(f) => f,
+		Err(err) => {
+			err.process_err(err, "");
+			return failed_result;
+		}
+	};
 
+	Ok(ReportStep::SaveFiles { 
+		text: ReportInfo::SaveFiles, 
+		xml_name,
+		xml_file, 
+		pdf_name,
+		pdf_file
+	})
 
-
-	Err(Status::Unknown)
 }
