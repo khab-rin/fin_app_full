@@ -1,8 +1,9 @@
 use std::collections::HashMap;
 use serde_json::Value;
-use lopdf::{Document, Object, Dictionary, StringFormat};
+use lopdf::{Document, Object, Dictionary, StringFormat, ObjectId};
 use serde::{Serialize, Deserialize};
 
+use crate::primitives::frozen::text::MidName;
 use crate::{ProcessError, Status};
 use crate::primitives::tax_frozen::implements::Tax;
 
@@ -510,6 +511,13 @@ pub fn make_decl_usn_pdf(
 	}
 
 	elems.text14 = decl.document.signer.signer_type.to_string();
+	elems.text12_0 = session.session_user.person.metadata.fio.sur_name.to_string();
+	elems.text12_1 = session.session_user.person.metadata.fio.first_name.to_string();
+	elems.text12_2 = session.session_user.person.metadata.fio.mid_name.clone().unwrap_or(MidName::unchecked("")).to_string();
+
+	if let Some(delegate_info) = &decl.document.signer.delegate_info {
+		elems.text12_3 = delegate_info.doc_name.to_string();
+	}
 
 	let date_str = decl.document.doc_create_date.to_string();
 	let y_m_d: Vec<&str> = date_str.split('-').collect();
@@ -527,7 +535,10 @@ pub fn make_decl_usn_pdf(
 		}
 	}
 
-	fill_usn_decl_pdf(&elems)
+
+	let pdf_tpl_bytes: &[u8; _] = include_bytes!("../../../../../../resourses/decl_usn_regul.PDF");
+	
+	custom_pdf_fill(&elems, pdf_tpl_bytes)
 }
 
 pub fn fill_fifteen_usn_elems(
@@ -848,7 +859,7 @@ pub fn fill_usn_decl_pdf(
 	elems: &Elems
 ) -> Result<Vec<u8>, Status> {
 	// 1. Загрузка шаблона PDF из ресурсов
-	let pdf_tpl_bytes = include_bytes!("../../../../../../resourses/decl_usn_regul.PDF");
+	let pdf_tpl_bytes: &[u8; _] = include_bytes!("../../../../../../resourses/decl_usn_regul.PDF");
 	let mut doc = lopdf::Document::load_mem(pdf_tpl_bytes)
 		.map_err(|err| err.process_err(Status::FileReadError, "Ошибка загрузки шаблона PDF"))?;
 
@@ -1009,10 +1020,178 @@ fn traverse_and_fill_field(
                 doc.set_object(kid_ref, Object::Dictionary(updated_kid_dict));
             }
 
-            // В любом случае продолжаем стандартную рекурсию, чтобы не пропустить уникальные поля вроде Text12.0
             traverse_and_fill_field(doc, kid_ref, current_name.clone(), data)?;
         }
     }
 
     Ok(())
+}
+
+
+fn custom_pdf_fill(
+	elems: &Elems,
+	pdf_tpl_bytes: &[u8]
+) -> Result<Vec<u8>, Status> {
+
+	let mut doc = lopdf::Document::load_mem(pdf_tpl_bytes)
+		.map_err(|err| err.process_err(Status::FileReadError, ""))?;
+
+	let mut pdf_key_values_map: HashMap<String, Vec<ObjectId>> = HashMap::new();
+
+	let catalog = doc.catalog()
+		.map_err(|err| err.process_err(Status::FileReadError, ""))?;
+
+	let acro_form_obj = catalog.get_deref(b"AcroForm", &doc)
+        .map_err(|err| err.process_err(Status::SystemLogicErr, "Ключ AcroForm не найден или поврежден"))?;
+
+    let acro_form: &Dictionary = acro_form_obj.as_dict()
+        .map_err(|err| err.process_err(Status::SystemLogicErr, "AcroForm не является словарем"))?;
+
+	collect_pdf_pattern_keys_ids(acro_form, &doc, &mut pdf_key_values_map)
+		.map_err(|err| err.process_err(Status::SystemLogicErr, ""))?;
+
+	log::info!("{:?}", pdf_key_values_map);
+
+
+	// let json_value = serde_json::to_value(elems)
+	// 	.map_err(|err| err.process_err(Status::MappingError, ""))?;
+
+	// let mut date_map: HashMap<String, String> = HashMap::new();
+
+	// if let Value::Object(map) = json_value {
+	// 	for (key, val) in map {
+	// 		if let Value::String(v) = val {
+	// 			if !v.is_empty() {
+	// 				date_map.insert(key, v);
+	// 			}
+	// 		}
+	// 	}
+	// }
+	
+
+	// let fields_obj = acro_form.get_deref(b"Fields", &doc)
+	// 	.map_err(|err| err.process_err(Status::SystemLogicErr, ""))?;
+
+	// let fields_arr = fields_obj.as_array()
+	// 	.map_err(|err| err.process_err(Status::SystemLogicErr, ""))?;
+
+	// let mut fields_to_fill: Vec<(lopdf::ObjectId, String)> = Vec::new();
+
+
+
+
+	// for obj in fields_arr {
+	// 	let field_id: (u32, u16) = match obj {
+    //         lopdf::Object::Reference(id) => *id,
+    //         _ => continue,
+    //     };
+
+    //     let field_dict_obj = doc.dereference(obj)
+    //         .map_err(|err| err.process_err(Status::SystemLogicErr, "Ошибка чтения объекта поля"))?;
+        
+	// 	let field_dict = field_dict_obj.1.as_dict()
+	// 		.map_err(|err| err.process_err(Status::DataCorruptionErr, ""))?;
+
+	// 	let t_obj = field_dict.get_deref(b"T", &doc)
+	// 		.map_err(|err| err.process_err(Status::DataCorruptionErr, ""))?;
+
+	// 	let pdf_string = t_obj.as_str()
+	// 		.map_err(|err| err.process_err(Status::DataCorruptionErr, ""))?;
+
+	// 	let field_name = String::from_utf8_lossy(pdf_string).into_owned();
+
+	// 	if let Some(new_value) = date_map.get(&field_name) {
+	// 		let encoded_bytes = to_pdf_utf16_bom(new_value);
+			
+	// 		// Используем правильные пути к типам внутри lopdf::types
+	// 		let pdf_value_string = lopdf::Object::String(
+	// 			encoded_bytes, 
+	// 			lopdf::StringFormat::Literal
+	// 		);
+
+	// 		let mut updated_dict = field_dict.clone();
+
+	// 		updated_dict.set("V", pdf_value_string);
+
+	// 		updated_dict.remove(b"AP");
+
+	// 		doc.set_object(field_id, lopdf::Object::Dictionary(updated_dict));
+			
+
+	// 		// Здесь мы получили готовое значение pdf_value_string.
+	// 		// На следующем шаге мы проверим наличие /Kids и запишем его.
+	// 	}
+
+        
+    // }
+
+
+
+	Err(Status::Unknown)
+}
+
+
+fn collect_pdf_pattern_keys_ids(
+    acro_form: &Dictionary,
+    doc: &Document, // Добавляем doc, чтобы функция могла читать ссылки внутри PDF
+    result: &mut HashMap<String, Vec<ObjectId>>
+) -> Result<(), Status> {
+
+    // 1. Достаем массив полей напрямую из переданного словаря формы
+    let fields_obj = acro_form.get_deref(b"Fields", doc)
+        .map_err(|err| err.process_err(Status::DataCorruptionErr, "Ключ Fields не найден в форме"))?;
+
+    let fields_arr = fields_obj.as_array()
+        .map_err(|err| err.process_err(Status::DataCorruptionErr, "Fields не является массивом"))?;
+
+    // 2. Обходим структуру полей
+    for obj in fields_arr {
+        if let Object::Reference(field_id) = obj {
+            if let Ok(field_dict_obj) = doc.dereference(obj) {
+                if let Ok(field_dict) = field_dict_obj.1.as_dict() {
+                    
+                    // Извлекаем техническое имя поля (/T)
+                    if let Ok(t_obj) = field_dict.get_deref(b"T", doc) {
+                        if let Ok(pdf_string) = t_obj.as_str() {
+                            let field_name = String::from_utf8_lossy(pdf_string).into_owned();
+                            let mut target_ids = Vec::new();
+
+                            // Проверяем, есть ли дети (/Kids)
+                            if let Ok(kids_obj) = field_dict.get_deref(b"Kids", doc) {
+                                if let Ok(kids_array) = kids_obj.as_array() {
+                                    // Если дети есть (как у ИНН/КПП), собираем ID всех детей
+                                    for kid_ref in kids_array {
+                                        if let Object::Reference(kid_id) = kid_ref {
+                                            target_ids.push(*kid_id);
+                                        }
+                                    }
+                                }
+                            } else {
+                                // Если детей нет (обычное плоское поле), берем ID самого поля
+                                target_ids.push(*field_id);
+                            }
+
+                            // Записываем данные прямо в переданный по ссылке HashMap result
+                            result.entry(field_name).or_default().extend(target_ids);
+                        }
+                    }
+                    
+                }
+            }
+        }
+    }
+
+    Ok(())
+}
+
+fn to_pdf_utf16_bom(
+	text: &str
+) -> Vec<u8> {
+	let mut bytes = vec!(0xFE, 0xFF);
+
+	for mut ch in text.encode_utf16() {
+		bytes.push((ch >> 8) as u8);
+		bytes.push((ch & 0xFF) as u8);
+	}
+	bytes
 }
