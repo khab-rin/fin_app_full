@@ -6,7 +6,6 @@ use crate::{ProcessError, Status};
 use crate::service::auth_service::general::ActiveSession;
 use crate::service::reports::service::QuartDates;
 use crate::service::reports::fns_xsd_shemas::common::FnsKnd;
-use crate::service::reports::fns_xsd_shemas::usn_1152017_decl::UsnDeclEmplyersExistType;
 
 pub fn make_quaters(
 	year: i32
@@ -56,4 +55,13 @@ pub fn make_file_id(
 	let file_id = String1_255::unchecked(file_id_str);
 
 	Ok(file_id)
+}
+
+
+pub fn zero_to_(val: i64) -> String {
+	if val == 0 {
+		"-".to_string()
+	} else {
+		val.to_string()
+	}
 }

@@ -89,6 +89,7 @@ pub enum Status {
     FileInvalideData = 201,
     MappingError = 202,
     SerializationError = 203,
+	PdfFileLogicError = 204,
 
     FileCreateError = 250,
     FileReadError = 251,
