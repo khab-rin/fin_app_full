@@ -1,12 +1,13 @@
 use crate::primitives::frozen::text::MidName;
 use crate::Status;
 use crate::primitives::tax_frozen::implements::Tax;
-
 use crate::primitives::tax_frozen::implements::Usn15;
 use crate::service::auth_service::general::ActiveSession;
 use crate::service::reports::fns_xsd_shemas::usn_1152017_decl::*;
 use crate::client::reports::fns::usn_decl_notif_elems::Elems;
+
 use crate::client::reports::fns::pdf_fill::custom_pdf_fill;
+use crate::client::reports::fns::helper::zero_to_;
 
 pub fn fill_usn_decl_elems_make_pdf(
 	session: &ActiveSession,
@@ -110,7 +111,6 @@ pub fn fill_fifteen_usn_elems(
 	report: &UsnDeclTaxFifteen,
 	elems: &mut Elems
 ) {
-	// Технические признаки — оставляем числами через to_string
 	let s_t_20 = 2;
 	let s_t_42 = 3;
 	let s_t_47 = 4;
@@ -119,7 +119,6 @@ pub fn fill_fifteen_usn_elems(
 	elems.text42 = s_t_42.to_string();
 	elems.text47 = s_t_47.to_string();
 
-	// Доходы (Строки 210-213)
 	let s210 = report.calculation.income.first_qu.unwrap_or(0);
 	elems.text27_0 = zero_to_(s210);
 
@@ -132,7 +131,6 @@ pub fn fill_fifteen_usn_elems(
 	let s213 = report.calculation.income.fourth_qu;
 	elems.text27_3 = zero_to_(s213);
 
-	// Расходы (Строки 220-223)
 	let s220 = report.calculation.expenses.first_qu.unwrap_or(0);
 	elems.text27_4 = zero_to_(s220);
 	
@@ -145,11 +143,9 @@ pub fn fill_fifteen_usn_elems(
 	let s223 = report.calculation.expenses.fourth_qu;
 	elems.text27_7 = zero_to_(s223);
 
-	// Убыток прошлых лет (Строка 230)
 	let s230 = report.calculation.prev_negative_taxable_base.unwrap_or(0);
 	elems.text27_8 = zero_to_(s230);
 
-	// Налоговая база для исчисления налога (Строки 240-243)
 	let s240 = (s210 - s220).max(0);
 	elems.text27_9 = zero_to_(s240);
 
@@ -173,7 +169,6 @@ pub fn fill_fifteen_usn_elems(
 
 	let s253 = (s223 - s213).max(0);
 	elems.text27_16 = zero_to_(s253);
-
 
 	let (r1, r2, r3, r4) = (
 		report.calculation.rate.qu_one.as_ref().unwrap_or(&Tax::Usn15(Usn15::default())).clone(),
@@ -214,7 +209,6 @@ pub fn fill_fifteen_usn_elems(
 	let s280 = report.calculation.min_tax;
 	elems.text27_21_0 = zero_to_(s280);
 
-	// Страховые взносы (Строки 290-320)
 	if let Some(social) = &report.calculation.required_social {
 		let s290 = social.fix_amnt;
 		elems.text27_21_1 = zero_to_(s290);
@@ -229,7 +223,6 @@ pub fn fill_fifteen_usn_elems(
 		elems.text26_2_1_0_2 = zero_to_(s320);
 	}
 
-	// ОКТМО — оставляем как есть через to_string
 	elems.text21_0 = report.oktmo_qu_one.to_string();
 
 	if let Some(o) = &report.oktmo_qu_two {
@@ -244,7 +237,6 @@ pub fn fill_fifteen_usn_elems(
 		elems.text21_3 = o.to_string();
 	}
 
-	// Раздел 1.2 — Авансовые платежи к уплате / уменьшению
 	let s020 = s270;
 	elems.text22_0 = zero_to_(s020);
 
@@ -266,7 +258,6 @@ pub fn fill_fifteen_usn_elems(
 	let s101 = report.patent_tax.unwrap_or(0);
 	elems.text22_6 = zero_to_(s101);
 
-	// Строки 110 и 120 (Налог к уменьшению / Минимальный налог)
 	let s110 = if s273 >= s280 {
 		if s273 - s272 < 0 { (s272 - s273).max(0) } else { 0 }
 	} else {
@@ -283,13 +274,10 @@ pub fn fill_fifteen_usn_elems(
 }
 
 
-
-
 pub fn fill_six_usn_elems(
 	report: &UsnDeclTaxSix,
 	elems: &mut Elems
 ) {
-	// Технические признаки — оставляем числами через to_string
 	let s_t_16 = 2;
 	let s_t_23 = 3;
 	let s_t_41 = 4;
@@ -298,11 +286,9 @@ pub fn fill_six_usn_elems(
 	elems.text23 = s_t_23.to_string();
 	elems.text41 = s_t_41.to_string();
 
-	// Признак налогоплательщика (1 или 2) — оставляем to_string
 	let s102 = report.calculation.employers_exist;
 	elems.text24_0 = s102.to_string();
 
-	// Доходы (Строки 110-113)
 	let s110 = report.calculation.taxable_income.first_qu.unwrap_or(0);
 	elems.text25_0 = zero_to_(s110);
 
@@ -315,7 +301,6 @@ pub fn fill_six_usn_elems(
 	let s113 = report.calculation.taxable_income.fourth_qu;
 	elems.text25_3 = zero_to_(s113);
 
-	// Ставки налога — оставляем через to_string, так как это проценты
 	let (r1, r2, r3, r4) = (
 		report.calculation.rate.qu_one.as_ref().unwrap_or(&Tax::Usn15(Usn15::default())).clone(),
 		report.calculation.rate.qu_two.as_ref().unwrap_or(&Tax::Usn15(Usn15::default())).clone(),
@@ -337,7 +322,6 @@ pub fn fill_six_usn_elems(
 	elems.text35_2 = s122_1.to_string();
 	elems.text35_3 = s123_1.to_string();
 
-	// Исчисленный налог (Строки 130-133)
 	let s130 = report.calculation.calc_tax.first_qu.unwrap_or(0);
 	let s131 = report.calculation.calc_tax.second_qu.unwrap_or(0);
 	let s132 = report.calculation.calc_tax.third_qu.unwrap_or(0);
@@ -348,7 +332,6 @@ pub fn fill_six_usn_elems(
 	elems.text25_7 = zero_to_(s132);
 	elems.text25_8 = zero_to_(s133);
 
-	// Налоговый вычет / Страховые взносы к уменьшению (Строки 140-143)
 	let s140 = report.calculation.tot_social.first_qu.unwrap_or(0).min(s130);
 	let s141 = report.calculation.tot_social.second_qu.unwrap_or(0).min(s131);
 	let s142 = report.calculation.tot_social.third_qu.unwrap_or(0).min(s132);
@@ -359,7 +342,6 @@ pub fn fill_six_usn_elems(
 	elems.text25_11_0 = zero_to_(s142);
 	elems.text25_11_1_0 = zero_to_(s143);
 
-	// Фиксированные страховые взносы IP
 	let (s150, s160, s161, s162) = if let Some(social) = &report.calculation.ip_social {
 		(
 			social.fix_amnt,
@@ -376,7 +358,6 @@ pub fn fill_six_usn_elems(
 	elems.text26_1 = zero_to_(s161);
 	elems.text26_2_0_0 = zero_to_(s162);
 
-	// ОКТМО — оставляем как есть через to_string
 	let s010 = &report.oktmo_qu_one;
 	elems.text17_0 = s010.to_string();
 
@@ -392,7 +373,6 @@ pub fn fill_six_usn_elems(
 		elems.text17_4 = o.to_string();
 	}
 
-	// Раздел 1.1 — Авансовые платежи к уплате / уменьшению
 	let s020 = if s130 - s140 > 0 { s130 - s140 } else { 0 };
 
 	let s040 = if (s131 - s141) - s020 >= 0 { (s131 - s141) - s020 } else { 0 };
@@ -413,7 +393,6 @@ pub fn fill_six_usn_elems(
 		(s020 + s040 - s050 + s070 - s080) + s101 - (s133 - s143)
 	} else { 0 };
 
-	// Присваиваем значения результатов Раздела 1.1 с использованием zero_to_
 	elems.text18_0 = zero_to_(s020);
 	elems.text18_1 = zero_to_(s040);
 	elems.text18_2 = zero_to_(s050);
@@ -425,11 +404,3 @@ pub fn fill_six_usn_elems(
 }
 
 
-
-fn zero_to_(val: i64) -> String {
-	if val == 0 {
-		"-".to_string()
-	} else {
-		val.to_string()
-	}
-}

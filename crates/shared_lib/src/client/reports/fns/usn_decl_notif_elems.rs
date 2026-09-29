@@ -89,6 +89,9 @@ pub struct Elems {
     
     #[serde(rename = "Text12.4")]
     pub text12_4: String, // доверр2
+
+	 #[serde(rename = "Text13.0.0")]
+    pub text13_0_0: String, // лис
     
     #[serde(rename = "Text13.0")]
     pub text13_0: String, // лис
@@ -98,9 +101,15 @@ pub struct Elems {
     
     #[serde(rename = "Text14")]
     pub text14: String, // н
+
+	#[serde(rename = "Text14.0.0")]
+    pub text14_0_0: String, // н
     
     #[serde(rename = "Text15.0")]
     pub text15_0: String, // 22 (день)
+
+	#[serde(rename = "Text15.0.0")]
+    pub text15_0_0: String, // notif avans rub
     
     #[serde(rename = "Text15.1")]
     pub text15_1: String, // 01 (месяц)
@@ -110,7 +119,16 @@ pub struct Elems {
 
     #[serde(rename = "Text16")]
     pub text16: String, // ст2
-    
+
+	#[serde(rename = "Text16.0.0.0")]
+    pub text16_0_0_0: String, // notif avans kop
+
+	#[serde(rename = "Text16.0.1.0")]
+    pub text16_0_1_0: String, // notif avans kop
+
+	#[serde(rename = "Text16.0.2.0")]
+    pub text16_0_2_0: String, // notif avans kop
+
     #[serde(rename = "Text17.0")]
     pub text17_0: String, // 010стр2
     

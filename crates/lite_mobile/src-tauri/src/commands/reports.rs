@@ -2,10 +2,10 @@ use shared_lib::primitives::frozen::text_base::Digits4_4;
 use shared_lib::{ClientState, Status, ProcessError};
 use shared_lib::service::reports::service::{FnsReportType, ReportStep};
 
-use shared_lib::client::reports::fns::decl_usn_6::make_decl_6_files;
-use shared_lib::client::reports::fns::decl_usn_15::make_decl_15_files;
-use shared_lib::client::reports::fns::notif_usn_6::make_notif_usn_6_files;
-use shared_lib::client::reports::fns::notif_usn_15::make_notif_15_files;
+use shared_lib::client::reports::fns::usn_decl_6::make_decl_6_files;
+use shared_lib::client::reports::fns::usn_decl_15::make_decl_15_files;
+use shared_lib::client::reports::fns::usn_notif_6::make_notif_usn_6_files;
+use shared_lib::client::reports::fns::usn_notif_15::make_notif_15_files;
 
 
 #[tauri::command]

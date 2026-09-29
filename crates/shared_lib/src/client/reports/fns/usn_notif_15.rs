@@ -9,7 +9,7 @@ use crate::service::reports::fns_xsd_shemas::common::*;
 use crate::client::reports::fns::helper::make_quaters;
 use crate::client::sql_queries::operations::get::reports::fns::usn_incomes::get_quater_cummul_incomes_usn;
 use crate::client::sql_queries::operations::get::reports::fns::usn_costs::get_quater_cummul_costs_usn;
-use crate::client::reports::fns::notif_usn_pdf::make_notif_usn_pdf;
+use crate::client::reports::fns::fill_usn_notif_elems::fill_usn_notif_elems_make_pdf;
 use crate::client::reports::fns::helper::make_file_id;
 
 
@@ -20,39 +20,65 @@ pub async fn make_notif_15_files(
 	fns_branch: Digits4_4
 ) -> Result<ReportStep, Status> {
 
-	let session = state.get_session().await
-		.map_err(|err| err.process_err(err, ""))?;
+	let failed_result = Ok(ReportStep::TryLater { text: ReportInfo::ClientServiceError });
 
-	let quart_dates = make_quaters(year)
-		.map_err(|err| err.process_err(err, ""))?;
+	let session = match state.get_session().await {
+		Ok(s) => s,
+		Err(err) => {
+			err.process_err(err,"");
+			return failed_result;
+		}
+	};
+
+
+	let quart_dates = match make_quaters(year) {
+		Ok(q) => q,
+		Err(err) => {
+			err.process_err(err,"");
+			return failed_result;
+		}
+	};
+
 	
+	let quat_incomes = match get_quater_cummul_incomes_usn(state, &quart_dates).await {
+		Ok(q) => q,
+		Err(err) => {
+			err.process_err(err,"");
+			return failed_result;
+		}
+	};
 
-	let quat_incomes = get_quater_cummul_incomes_usn(
-		state,
-		&quart_dates
-	).await.map_err(|err| err.process_err(err, ""))?;
 
-	let quater_costs = get_quater_cummul_costs_usn(state, &quart_dates)
-		.await.map_err(|err| err.process_err(err, ""))?;
+	let quater_costs = match get_quater_cummul_costs_usn(state, &quart_dates).await {
+		Ok(q) => q,
+		Err(err) => {
+			err.process_err(err,"");
+			return failed_result;
+		}
+	};
 
 	let kpp: Option<Kpp> = match session.session_user.company.comp_inn.len() {
 		12 => None,
 		_ => Some(session.session_user.company.kpp.clone())
 	};
 
-	let oktmo = session
-		.session_user
-		.company
-		.metadata
-		.oktmo_company
-		.clone()
-		.ok_or_else(|| Status::Tech.process_err(Status::SystemLogicErr, "oktmo is not exist"))?;
-
+	let oktmo = match &session.session_user.company.metadata.oktmo_company {
+		Some(o) => o.clone(),
+		None => {
+			Status::Tech.process_err(Status::SystemLogicErr, "");
+			return failed_result;
+		}
+	};
 
 	let kbk = FnsKbk::UsnFifteen;
 
-	let not_year = Digits4_4::new(year.to_string().as_str())
-		.map_err(|err| err.process_err(Status::SystemLogicErr, ""))?;
+	let not_year = match Digits4_4::new(year.to_string().as_str()) {
+		Ok(y) => y,
+		Err(err) => {
+			err.process_err(err,"");
+			return failed_result;
+		} 
+	};
 
 	let notification = match qu {
 		1 => UsnNotifNotification { 
@@ -122,8 +148,14 @@ pub async fn make_notif_15_files(
 		notifications
 	};
 
-	let file_id = make_file_id(&session, &fns_branch, FnsKnd::UsnNotification)
-		.map_err(|err| err.process_err(err, ""))?;
+	let file_id = match make_file_id(&session, &fns_branch, FnsKnd::UsnNotification) {
+		Ok(id) => id,
+		Err(err) => {
+			err.process_err(err,"");
+			return failed_result;
+		}
+	};
+
 
 	let version_str = format!("{} v{}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
 
@@ -138,8 +170,10 @@ pub async fn make_notif_15_files(
 
 	let mut xml_string = String::with_capacity(4096);
 	
-	quick_xml::se::to_writer_with_root(&mut xml_string, "Файл", &notif_file)
-		.map_err(|err| err.process_err(Status::FileWriteError, ""))?;
+	if let Err(err) = quick_xml::se::to_writer_with_root(&mut xml_string, "Файл", &notif_file){
+		err.process_err(Status::FileWriteError, "");
+		return failed_result;
+	};
 
 	let mut xml_file: Vec<u8> = Vec::with_capacity(xml_string.len() + 50);
 	xml_file.extend_from_slice(b"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
@@ -148,10 +182,15 @@ pub async fn make_notif_15_files(
 	let xml_name = format!("{}.xml", file_id);
 	let pdf_name = format!("{}.pdf", file_id);
 
-	let pdf_file = make_notif_usn_pdf(&session, &notif_file)
-		.map_err(|err| err.process_err(err, ""))?;
+	let pdf_tpl_bytes = include_bytes!("../../../../../../resourses/usn_notif_regular.pdf"); 
 
-	
+	let pdf_file = match fill_usn_notif_elems_make_pdf(&session, &notif_file, pdf_tpl_bytes) {
+		Ok(f) => f,
+		Err(err) => {
+			err.process_err(err, "");
+			return failed_result;
+		}
+	};
 
 	Ok(ReportStep::SaveFiles { 
 		text: ReportInfo::SaveFiles, 
