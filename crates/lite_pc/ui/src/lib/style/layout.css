@@ -1,0 +1,148 @@
+
+/* --- 1. ВЕРХНЯЯ ПАНЕЛЬ (Top Bar) --- */
+.top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background-color: #FDE04780;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    height: 44px; /* Фиксированная аккуратная высота */
+}
+
+/* Аватар пользователя */
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    background-color: #f1f5f9;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s ease;
+}
+.user-avatar:hover {
+    transform: scale(1.05);
+}
+.avatar-icon {
+    font-size: 1.2rem;
+}
+
+/* Поле поиска */
+.search-input {
+    flex: 1;
+    max-width: 500px;
+    padding: 8px 16px;
+    font-size: 0.95rem;
+    border: 1px solid var(--border-color);
+    border-radius: 20px; /* Скругленный инпут в стиле iOS/Modern web */
+    background-color: #f1f5f9;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+.search-input:focus {
+    outline: none;
+    background-color: var(--bg-surface);
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px var(--color-accent-dim);
+}
+
+/* Кнопка настроек (шестеренка) */
+.param-button {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    color: var(--text-muted);
+}
+.param-button:hover:not(:disabled) {
+    background-color: #f1f5f9;
+    color: var(--text-primary);
+    transform: rotate(30deg); /* Эффектный поворот шестеренки при наведении */
+}
+.param-button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+
+/* --- 3. НИЖНЯЯ ПАНЕЛЬ (Down Bar / Dock) --- */
+.down-bar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #FDE04780;
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.03);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 8px 12px calc(8px + env(safe-area-inset-bottom)); /* Поддержка челок iPhone */
+    z-index: 100;
+}
+
+/* Кнопки в нижнем меню */
+.bar-button, .bar-batton {
+    flex: 1;
+    max-width: 90px;
+    background: none;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 6px 0;
+    border-radius: 12px;
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+}
+
+.bar-button:hover, .bar-batton:hover {
+    color: var(--text-primary);
+    background-color: #f8fafc;
+}
+
+/* Иконки в нижнем меню */
+.bar-icon {
+    font-size: 1.4rem;
+    transition: transform 0.2s ease;
+}
+.bar-button:hover .bar-icon, .bar-batton:hover .bar-icon {
+    transform: translateY(-2px); /* Легкий прыжок иконки вверх при наведении */
+}
+
+/* Текст под иконками */
+.bar-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
+/* АКТИВНОЕ СОСТОЯНИЕ КНОПКИ (Текущая страница) */
+.bar-button.active, .bar-batton.active {
+    color: var(--color-accent);
+    background-color: var(--color-accent-dim);
+}
+.bar-button.active .bar-icon, .bar-batton.active .bar-icon {
+    transform: scale(1.1);
+}
+.bar-button.active .bar-label, .bar-batton.active .bar-label {
+    font-weight: 600;
+}
