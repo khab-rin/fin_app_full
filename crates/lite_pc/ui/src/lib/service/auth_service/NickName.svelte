@@ -1,0 +1,147 @@
+<script lang='ts'>
+
+    import {onMount} from "svelte";
+    import { invoke } from "@tauri-apps/api/core";
+    import { currAuthStep } from "$lib/models/Auth/AuthStep.svelte";
+    import type { AuthStep } from '$lib/models/rustModels/AuthStep';
+
+    let IsPushed = $state(false);
+    let dialogRef = $state<HTMLDialogElement | null>(null);
+
+    let curr_nick = $state("");
+
+    // Функция открытия модального окна
+    function openAccountsModal() {
+        if (dialogRef) dialogRef.showModal();
+    }
+
+    // Функция закрытия модального окна
+    function closeAccountsModal() {
+        if (dialogRef) dialogRef.close();
+    }
+
+    async function call_nick_handle(selectedNick: string) {
+        if (IsPushed) return;
+        
+        IsPushed = true;
+        closeAccountsModal();
+        
+        try {
+            let nextStep = await invoke<AuthStep>('cmd_session_by_nick', { nick: selectedNick });
+            IsPushed = false;
+            currAuthStep.step = nextStep;
+        } catch (err) {
+            let nextStep: AuthStep = { 
+                TryLater: { text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"} 
+            };
+            console.error("ОШИБКА В call_nick_handle:", err);
+            IsPushed = false; 
+            currAuthStep.step = nextStep;
+        }
+    }
+
+    onMount(async() => {
+        try {
+            currAuthStep.nick_names = await invoke<string []>('cmd_get_nick_names');
+            if (currAuthStep.nick_names.length == 0) {
+                let nextStep: AuthStep = {Password: {text: "Пользователь не найден на устройстве, требуется авторизоваться по паролю или пройти регистрацию"}};
+                currAuthStep.step = nextStep;
+            }
+        } catch(err) {
+            console.error("NicnName page FAILED BY 'cmd_get_nick_names, err = ", err);
+            const nextStep: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
+            currAuthStep.step = nextStep;
+        }
+    });
+
+</script>
+
+
+
+<div class="selector-wrapper">
+    <button
+        type="button"
+        class="green-button"
+        disabled={IsPushed}
+        
+        onclick={openAccountsModal}
+    >
+
+        <span class="green-button-span">
+             - {curr_nick ? "Текущий выбор" : "Нажмите для просмотра списка"}
+        </span>
+
+        <span class="wide-button-span">
+            {curr_nick || "Выбрать аккаунт на устройстве"} >
+        </span>
+    </button>
+</div>
+
+
+<dialog 
+    bind:this={dialogRef} 
+    class="selector-dialog"
+    onclick={(e) => { if (e.target === dialogRef) closeAccountsModal(); }}
+>
+
+    <h5>Выбор аккаунта</h5>
+
+
+    <div class="selector-dialog-content">
+        {#if currAuthStep.nick_names.length > 0}
+            <ul class="dialog-list">
+                {#each currAuthStep.nick_names as name (name)}
+                    <li>
+						<button 
+							type="button" 
+							class="yellow-button"
+							onclick={() => {
+								curr_nick = name;
+								closeAccountsModal();}    
+							}
+						>
+							<span class="yellow-button-span">{name}</span>
+						</button>
+		
+                    </li>
+                {/each}
+            </ul>
+
+
+			<button class="green-button"
+				type="button"
+				onclick={closeAccountsModal}
+				>
+				
+				<span class="wide-button-span">
+					Отмена
+				</span>
+
+
+			</button>
+
+
+        {:else}
+            <p>На этом устройстве еще нет сохраненных аккаунтов</p>
+        {/if}
+    </div>
+
+</dialog>
+
+{#if curr_nick}
+    <div class="group-one">
+        <button 
+            type="button" 
+            class="green-button" 
+            disabled={IsPushed}
+            onclick={() => call_nick_handle(curr_nick)}
+        >
+            {#if IsPushed}
+                <span class="green-button-span">Проверка...</span>
+            {:else}
+                <span class="green-button-span">Войти как {curr_nick}</span>
+            {/if}
+        </button>
+    </div>
+{/if}
+

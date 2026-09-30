@@ -1,0 +1,52 @@
+/* ==========================================================================
+   SELECTOR (Кнопка выбора аккаунта)
+   ========================================================================== */
+
+.selector-wrapper {
+  margin: 16px 0;
+  width: 100%;
+}
+
+/* ==========================================================================
+   DIALOG (Модальное окно выбора аккаунта)
+   ========================================================================== */
+
+.selector-dialog {
+  border: none;
+  border-radius: 16px;
+  padding: 24px;
+  width: 90%;
+  max-width: 400px;
+  background-color: #37a13320;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 
+              0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Стилизация стандартного бэкдропа (затемнения фона) */
+.selector-dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px); /* Легкое размытие заднего плана */
+}
+
+/* Контентная область */
+.selector-dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Список аккаунтов */
+.dialog-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 260px; /* Ограничение по высоте, если аккаунтов много */
+  overflow-y: auto;  /* Прокрутка внутри списка */
+}
+
+
+
