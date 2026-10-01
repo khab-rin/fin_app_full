@@ -41,10 +41,8 @@ class SvelteAuthStep {
 	}
 
     reset() {
-		console.error("AuthStep reset activated");
         const nextStep: AuthStep = {Loading: {text: 'Страница загружается, подождите пожалуйста. В случае зависания попробуйте обновить или перезагрузить приложение'}}
-        this.step = nextStep;
-		pageManager.Page = PageType.Auth; 
+        this.step = nextStep; 
     }
 
     get isAuthorized() {

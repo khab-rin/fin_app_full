@@ -15,7 +15,11 @@
 	}
 </script>
 
-<p class="text-small">{operStep.currentText}</p>
+<div class='group-two'>
+	<p class="text-small">{operStep.currentText}</p>
+</div>
+
+
 
 {#if operStep.getPage}
     <svelte:component this={operStep.getPage} />
@@ -24,7 +28,7 @@
 {/if}
 
 
-<div class='group-one'>
+<div class='group-two'>
 	<div>
 		<button
 			type='button'

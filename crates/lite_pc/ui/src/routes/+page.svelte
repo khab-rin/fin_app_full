@@ -1,4 +1,9 @@
-<script lang="ts">
+
+
+
+
+
+<!-- <script lang="ts">
   import {pageManager} from '$lib/models/MainManager/MainManager.svelte';
   import { PageType } from "$lib/models/MainManager/PageValues";
 
@@ -74,4 +79,4 @@
 	</div>
 
 
-</section>
+</section> -->

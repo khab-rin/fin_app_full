@@ -1,6 +1,7 @@
 <script lang='ts'>
     import {open as openFileDialog} from '@tauri-apps/plugin-dialog';
     import {invoke} from '@tauri-apps/api/core';
+	import {pageManager} from '$lib/models/MainManager/MainManager.svelte';
     import {currAuthStep} from '$lib/models/Auth/AuthStep.svelte';
 
     import type {AuthStep} from '$lib/models/rustModels/AuthStep';
@@ -89,7 +90,7 @@
             const nextStep: AuthStep = await invoke<AuthStep>("cmd_register_step2", {
                 data: data
             });
-
+			pageManager.compName = await invoke<string>('cmd_get_comp_name', {});
             isPushedRegister = false;
             currAuthStep.step = nextStep;
         } catch (err) {

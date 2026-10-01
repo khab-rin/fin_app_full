@@ -1,7 +1,8 @@
 <script lang='ts'>
     import {onMount} from "svelte";
 	import { invoke } from "@tauri-apps/api/core";
-    
+	
+	import { pageManager } from "$lib/models/MainManager/MainManager.svelte";
     import {currAuthStep} from "$lib/models/Auth/AuthStep.svelte";
     import type {AuthStep} from "$lib/models/rustModels/AuthStep";
 

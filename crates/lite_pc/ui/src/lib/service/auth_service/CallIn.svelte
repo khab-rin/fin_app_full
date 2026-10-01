@@ -5,6 +5,7 @@
 
     import {AuthStepType} from "$lib/models/Auth/AuthValues";
     import type {AuthStep} from "$lib/models/rustModels/AuthStep";
+	import { pageManager } from "$lib/models/MainManager/MainManager.svelte";
     
     let isPolling = $state(false);
     
@@ -28,17 +29,18 @@
                     currAuthStep.step.CallIn.text = "Звонок по указанному номеру не был осуществлен, позвоните по этому номеру"; 
                 }
             } else {
-                currAuthStep.add(next_step);
+				pageManager.compName = await invoke<string>("cmd_get_comp_name", {});
+                currAuthStep.step = next_step;
             }
         } catch (err) {
             console.error("Error:", err);
-            currAuthStep.add(err_step);
+            currAuthStep.step = err_step;
         }
     }
 
     onMount(() => {
         if (!externalId) {
-            currAuthStep.add(err_step);
+            currAuthStep.step = err_step;
             return;
         }
 

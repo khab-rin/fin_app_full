@@ -5,13 +5,21 @@ use shared_lib::service::auth_service::implements::{
 
 use shared_lib::primitives::frozen::text::BoxUuid;
 
-use shared_lib::client::auth_service::helper::get_device_id;
+use shared_lib::client::auth_service::helper::{get_device_id, get_comp_name};
 use shared_lib::client::auth_service::restore_by_nick::restore_session_by_nick;
 use shared_lib::client::auth_service::restore_by_password::restore_by_password;
 use shared_lib::client::auth_service::nick_data::get_nick_names;
 use shared_lib::client::auth_service::register_step1::register_step1;
 use shared_lib::client::auth_service::register_step2::register_step2;
 use shared_lib::client::auth_service::make_session_by_tell_call::make_session_by_tel_call;
+
+#[tauri::command]
+pub async fn cmd_get_comp_name(
+	state: tauri::State<'_, ClientState>
+) -> Result<String, Status> {
+	get_comp_name(&state).await
+}
+
 
 #[tauri::command]
 pub fn cmd_get_device_id() -> Result<BoxUuid, Status> {
