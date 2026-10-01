@@ -32,7 +32,7 @@
 </script>
 
 
-<div class='group-one'>
+<div class='group-two'>
 	<button
 		type='button'
 		class='green-button'
@@ -43,7 +43,9 @@
 			Загрзить проводки из банковской выписки
 		</span>
 	</button>
+</div>
 
+<div class='group-two'>
 	<button
 		type='button'
 		class='green-button'
@@ -54,7 +56,9 @@
 			Создать проводки вручную
 		</span>
 	</button>
+</div>
 
+<div class='group-two'>
 	<button
 		type='button'
 		class='green-button'

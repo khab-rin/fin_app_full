@@ -1,5 +1,5 @@
 use crate::{ProcessError, Status};
-use crate::primitives::frozen::text::BoxUuid;
+use crate::primitives::frozen::text::{BoxUuid, MidName};
 use crate::service::auth_service::implements::SessionUserToken;
 use crate::service::auth_service::client_state::NickData;
 
@@ -58,5 +58,39 @@ pub fn write_new_user_info_to_device(
 
 
     Ok(())
+}
+
+pub async fn get_comp_name(
+	state: &ClientState
+) -> Result<String, Status> {
+	let failed_res = Ok("".to_string());
+
+	let session = match state.get_session().await {
+		Ok(s) => s,
+		Err(err) => {
+			err.process_err(err,"");
+			return failed_res;
+		}
+	};
+
+	let fio = &session.session_user.person.metadata.fio;
+	let name = format!("{} {} {}", 
+		&fio.sur_name,
+		&fio.first_name,
+		&fio.mid_name.clone().unwrap_or(MidName::unchecked(""))
+	);
+
+	let comp_name = match &session.session_user.company.metadata.comp_name {
+		Some(c) => {
+			match &c.short_egrul_name {
+				Some(n) => n.clone(),
+				None => return failed_res
+			}
+		},
+		None => return failed_res
+	};
+
+	Ok(format!("Компания - {}, пользователь - {}", comp_name, name))
+
 }
 

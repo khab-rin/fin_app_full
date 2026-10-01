@@ -2,6 +2,8 @@
 
     import {onMount} from "svelte";
     import { invoke } from "@tauri-apps/api/core";
+
+	import { pageManager } from "$lib/models/MainManager/MainManager.svelte";
     import { currAuthStep } from "$lib/models/Auth/AuthStep.svelte";
     import type { AuthStep } from '$lib/models/rustModels/AuthStep';
 
@@ -28,7 +30,9 @@
         
         try {
             let nextStep = await invoke<AuthStep>('cmd_session_by_nick', { nick: selectedNick });
+			pageManager.compName = await invoke<string>("cmd_get_comp_name", {});
             IsPushed = false;
+	
             currAuthStep.step = nextStep;
         } catch (err) {
             let nextStep: AuthStep = { 

@@ -1,6 +1,137 @@
 <script lang="ts">
 	import '$lib/style/global.css'
 
+	let { children } = $props<{ children: import('svelte').Snippet }>();
+
+	import {pageManager} from '$lib/models/MainManager/MainManager.svelte'
+	import { PageType } from "$lib/models/MainManager/PageValues";
+
+	function goToOperation() {
+		pageManager.Page = PageType.Operation;
+	}
+
+	function goToMchd() {
+		pageManager.Page = PageType.Mchd;
+	}
+
+	function goToReports() {
+		pageManager.Page = PageType.Report;
+	}
+
+	async function logOut() {
+		await pageManager.logOut();
+	}
+
+</script>
+
+
+
+
+
+<div class='zone-global'>
+
+	<header class='zone-top'>
+		<div>
+			<span>{pageManager.compName}</span>
+		</div>
+
+		<button 
+			class="zone-top-button" 
+			onclick={logOut}
+			disabled={pageManager.totalOff}> выход
+		</button>
+	</header>
+
+	<aside class='zone-left'>
+		{#if !pageManager.totalOff}
+			<div class='group-five'>
+				<div>
+					<label
+						class='blue-field-label'
+						for='mainOperationButton'
+					>
+						Раздел операций
+					</label>
+					<button
+						type='button'
+						class='purple-button'
+						id='mainOperationButton'
+						disabled={pageManager.totalOff}
+						onclick={goToOperation}
+					>
+						Операции
+					</button>
+				</div>
+			</div>
+
+			<div class='group-five'>
+
+				<div>
+					<label
+						class='blue-field-label'
+						for='mainReportsButton'
+					>
+						Раздел отчетов
+					</label>
+					<button
+						type='button'
+						class='purple-button'
+						id='mainReportsButton'
+						disabled={pageManager.totalOff}
+						onclick={goToReports}
+					>
+						Отчеты
+					</button>
+				</div>
+			</div>
+
+			<div class='group-five'>
+				<div>
+					<label
+						class='blue-field-label'
+						for='mainMchdButton'
+					>
+						Раздел доверенностей
+					</label>
+					<button
+						type='button'
+						class='purple-button'
+						id='mainMchdButton'
+						disabled={pageManager.totalOff}
+						onclick={goToMchd}
+					>
+						Доверенности
+					</button>
+				</div>
+			</div>
+		{/if}
+	</aside>
+
+	<main class='zone-main'>
+
+		{#if pageManager.getPage}
+			<pageManager.getPage />
+		{:else}
+			{@render children()}
+		{/if}
+
+	</main>
+
+	<footer class="zone-footer">
+		<span>footer</span>
+	</footer>
+
+
+</div>
+
+
+
+
+
+
+<!-- <script lang="ts">
+	import '$lib/style/global.css'
+
 	import { page } from '$app/state';
     import favicon from '$lib/assets/favicon.svg';
 	import { goTo } from '$lib/rules/navigation';
@@ -94,4 +225,4 @@
 	</footer>
 
 
-</div>
+</div> -->

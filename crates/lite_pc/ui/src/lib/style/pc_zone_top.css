@@ -1,0 +1,42 @@
+.zone-top { 
+  grid-area: header; 
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #e0f2fe;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  z-index: 50;
+  height: 40px; 
+}
+
+.zone-top-button {
+		font-family: system-ui, -apple-system, sans-serif;
+		font-size: 0.9rem;
+		font-weight: 500;
+		padding: 6px 16px;
+		border-radius: 6px;
+		cursor: pointer;
+		border: 1px solid #cbd5e1;
+		background-color: #ffffff !important; /* Белый фон, чтобы кнопка выделялась */
+		color: #1e293b !important;            /* Темный читаемый текст */
+		transition: all 0.15s ease-in-out;
+	}
+
+	/* Эффект при наведении на кнопку выхода */
+	.zone-top-button:hover:not(:disabled) {
+		background-color: #fef2f2 !important; /* Нежно-красный фон */
+		border-color: #fca5a5 !important;
+		color: #991b1b !important;            /* Красный текст */
+	}
+
+	/* Стиль для заблокированной кнопки */
+	.zone-top-button:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+		background-color: #f1f5f9 !important;
+		border-color: #e2e8f0 !important;
+		color: #94a3b8 !important;
+	}

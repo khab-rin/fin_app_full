@@ -1,4 +1,7 @@
+import {invoke} from '@tauri-apps/api/core';
+
 import {PageType} from "$lib/models/MainManager/PageValues";
+import { currAuthStep } from '$lib/models/Auth/AuthStep.svelte';
 
 import AuthManager from "$lib/service/auth_service/AuthManager.svelte";
 import MchdManager from "$lib/service/mchd/MchdManager.svelte";
@@ -22,6 +25,26 @@ class PageManager {
     }
 
     totalOff = $derived(this.Page == PageType.Auth);
+
+	private _compName = $state("");
+	get compName() {
+		return this._compName
+	}
+	set compName(value: string) {
+		this._compName = value;
+	}
+
+	async logOut() {
+		try {
+			currAuthStep.reset();
+			await invoke('cmd_logout', {});
+			this.Page = PageType.Auth;
+		} catch(err) {
+			console.error("cmd_logout failed, err = ", err);
+			currAuthStep.reset();	
+			this.Page = PageType.Auth;			
+		}
+	}
 }
 
 export const pageManager = new PageManager();
