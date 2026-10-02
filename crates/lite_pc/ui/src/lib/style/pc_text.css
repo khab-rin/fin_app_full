@@ -1,0 +1,38 @@
+.text-base {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.2;
+    margin: 0;
+    padding: 0;
+    transition: color 0.2s ease-in-out;
+}
+
+
+/* Вариант 1: Прижимается налево */
+.text-l {
+    text-align: left;
+}
+
+/* Вариант 2: Строго по центру */
+.text-c {
+    text-align: center;
+}
+
+/* Вариант 3: Прижимается направо */
+.text-r {
+    text-align: right;
+}
+
+
+/* ОБРЕЗАТЬ: Строка жестко в один ряд, излишек превращается в троеточие (...) */
+.text-cut {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block; /* Гарантируем блочное поведение */
+}
+
+/* ЗАПОЛНЯТЬ / РАСТЯГИВАТЬ: Текст переносится на новые строки, заполняя блок вниз */
+.text-fill {
+    white-space: normal;
+    word-break: break-word; /* Если слово слишком длинное, оно не сломает верстку, а перенесется */
+}

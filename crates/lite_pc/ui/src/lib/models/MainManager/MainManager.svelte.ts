@@ -38,6 +38,7 @@ class PageManager {
 		try {
 			currAuthStep.reset();
 			await invoke('cmd_logout', {});
+			this.compName = "";
 			this.Page = PageType.Auth;
 		} catch(err) {
 			console.error("cmd_logout failed, err = ", err);

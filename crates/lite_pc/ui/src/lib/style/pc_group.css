@@ -1,150 +1,28 @@
-.group-one,
-.group-two,
-.group-three,
-.group-four,
-.group-five {
-    /* Включаем Flexbox */
+/* Базовый каркас для всех групп */
+.group-1, .group-2, .group-3, .group-4, .group-5 {
     display: flex;
-    
-    /* Элементы внутри идут строго слева направо в один ряд */
     flex-direction: row; 
-    
-    /* КАТЕГОРИЧЕСКИ ЗАПРЕЩАЕМ ПЕРЕНОС элементов на новую строку */
     flex-wrap: nowrap; 
-    
-    /* Выравниваем элементы внутри ряда по центру вертикали */
     align-items: center; 
-    
-    /* Расстояние между кнопками/инпутами внутри ряда */
     gap: 12px; 
-
-    /* Ваши базовые стили оформления (ободок и матовый фон) */
+    
     background-color: rgba(255, 255, 255, 0.03); 
     border: 1px solid rgba(255, 255, 255, 0.08); 
     border-radius: 12px;
-    padding: 1.5rem;
+    padding: 1rem;
     box-sizing: border-box;
     transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
 }
 
-.group-one > *, 
-.group-two > *, 
-.group-three > *, 
-.group-four > *, 
-.group-five > * {
-    flex: 1; /* <-- Вот это свойство растяжения применяется автоматически! */
-    min-width: 0;
+/* Автоматическое растягивание элементов внутри любой группы */
+.group-1 > *, .group-2 > *, .group-3 > *, .group-4 > *, .group-5 > * {
+    flex: 1;
+    min-width: 0; /* Оставляем этот min-width: 0, он нужен flexbox-у, чтобы текст внутри кнопок не распирал блоки */
 }
 
-/* Уникальная ширина для каждой группы отдельно */
-
-.group-one {
-    /* Занимает 20% от ширины основного экрана */
-    width: 20%; 
-    min-width: 200px; /* Защита: группа не сожмется меньше 200px на мелких мониторах */
-}
-
-.group-two {
-    width: 40%;
-    min-width: 350px; 
-}
-
-.group-three {
-    width: 60%;
-    min-width: 500px;
-}
-
-.group-four {
-    width: 80%;
-    min-width: 650px;
-}
-
-.group-five {
-    width: 100%;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-/* 
-
-
-
-
-
-.text-check-box {
-    background-color: rgba(0, 0, 0, 0.1); 
-    border: 1px solid rgba(0, 0, 0, 0.15); 
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-sizing: border-box;
-    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
-}
-
-.group-one,
-.group-two,
-.group-three {
-    width: 100%;
-    margin: 2rem 0;
-}
-
-
-.group-one:hover,
-.group-two:hover,
-.group-three:hover,
-.text-check-box:hover {
-    background-color: rgba(0, 0, 0, 0.15); 
-    border-color: rgba(0, 0, 0, 0.25); 
-}
-
-
-.group-one, .group-two, .group-three {
-    display: grid;
-    gap: 1rem;
-}
-.group-one   { grid-template-columns: repeat(1, 1fr); }
-.group-two   { grid-template-columns: repeat(2, 1fr); }
-.group-three { grid-template-columns: repeat(3, 1fr); }
-
-
-.text-check-box {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    gap: 16px;
-}
-
-
-.group-one ul {
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.group-one li {
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-
-.group-one > * {
-    min-width: 0; 
-    max-width: 100%;
-    box-sizing: border-box;
-} */
+/* Чистое относительное управление шириной от родителя */
+.group-1   { width: 20%; }
+.group-2   { width: 40%; }
+.group-3 { width: 60%; }
+.group-4  { width: 80%; }
+.group-5  { width: 100%; }

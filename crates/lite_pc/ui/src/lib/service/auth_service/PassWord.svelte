@@ -43,13 +43,12 @@
 
 </script>
 
-<div class="group-one">
-
+<div class="group-1">
 	<div>
-		<label class='green-field-label' for="persInn">ИНН физического лица</label>
+		<label class='close-label' for="authPassPersInn">ИНН физического лица</label>
 		<input 
-			id="persInn"
-			class="green-field"
+			id="authPassPersInn"
+			class="input-gr"
 			type="text" 
 			bind:value={currAuthStep.data.persInn.value} 
 			disabled={isPushed}
@@ -60,13 +59,14 @@
 			<span class="input-error">Некорректный инн физического лица</span>
 		{/if}
 	</div>
+</div>
 	
 
-
+<div class="group-2">
 	<div>
-		<label class='green-field-label' for="compInn">ИНН организации</label>
+		<label class='close-label' for="compInn">ИНН организации</label>
 		<input 
-			class="green-field"
+			class="input-gr"
 			id="innOrg" 
 			type="text" 
 			bind:value={currAuthStep.data.compInn.value}
@@ -81,12 +81,12 @@
 
 	<div>
 		<label 
-			class='green-field-label' 
+			class='close-label' 
 			for="kpp">
 			КПП организации
 		</label>
 		<input 
-			class="green-field"
+			class="input-gr"
 			id="kppOrg" 
 			type="text" 
 			bind:value={currAuthStep.data.kpp.value}
@@ -97,13 +97,14 @@
 			<span class="input-error">Некорректный кпп</span>
 		{/if}
 	</div>
+</div>
 
-
+<div class="group-2">
 	<div>
-		<label class='green-field-label' for="password">Пароль</label>
+		<label class='close-label' for="password">Пароль</label>
 		<input 
 			id="password" 
-			class="green-field"
+			class="input-gr"
 			type="password" 
 			bind:value={currAuthStep.data.password.value}
 			disabled={isPushed} 
@@ -130,10 +131,10 @@
 		
 		id="auth-submit-button"
 	>
-		<span class="navi-buttons.button-icon">
+		<span class="span-cut">
 			{#if isPushed}⏳{:else}🔑{/if}
 		</span>
-		<span class="button-label">
+		<span class="span-cut">
 			{#if isPushed}Вход...{:else}Отправить{/if}
 		</span>
 	</button>

@@ -31,9 +31,15 @@
     }
 </script>
 
-<p class="text-small">
-    {currAuthStep.currentText}
-</p>
+
+<div class="group-5">
+	<p 
+		class="text-c text-base text-fill"
+	>
+		{currAuthStep.currentText}
+	</p>
+</div>
+
 
 {#if currAuthStep.getPage}
     {@const ChosenPage = currAuthStep.getPage}
@@ -42,12 +48,19 @@
     <p>Загрузка или ошибка...</p>
 {/if}
 
-<h6> Навигация по авторизации </h6>
-<section class="group-two">
 
+<div class='group-2'>
+	<h5
+		class='text-base text-c text-fill'
+	> Навигация по авторизации </h5>
+</div>
+
+
+
+<section class="group-2">
 	<div>
 		<button
-			class="purple-button"
+			class="but-pu"
 			type="button"
 			hidden={isPassword}
 			onclick={goToPassword}
@@ -58,7 +71,7 @@
 	
 	<div>
 		<button
-			class="purple-button"
+			class="but-pu"
 			type="button"
 			hidden={isRegistrerStep1}
 			onclick={goToRegisterStep1}
@@ -66,10 +79,12 @@
 			Регистрация шаг 1
 		</button>
 	</div>
-	
+</section>
+
+<section class="group-2">
 	<div>
 		<button
-			class="purple-button"
+			class="but-pu"
 			type="button"
 			hidden={isRegistrerStep2}
 			onclick={goToRegisterStep2}
@@ -80,7 +95,7 @@
 	
 	<div>
 		<button
-			class="purple-button"
+			class="but-pu"
 			type="button"
 			hidden={isNickName}
 			onclick={goToNickName}
