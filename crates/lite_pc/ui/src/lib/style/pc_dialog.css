@@ -1,0 +1,40 @@
+/* Общие стили для всех диалоговых окон */
+.dialog-top-l,
+.dialog-top,
+.dialog-top-r {
+	position: fixed;
+	top: 16px;
+	margin: 0;
+	
+	/* Размеры */
+	width: 280px;
+	max-height: 45vh;
+	
+	/* Оформление: светло-розовый фон с размытием и рамка */
+	background-color: rgba(255, 240, 245, 0.2); /* LavenderBlush с прозрачностью */
+	backdrop-filter: blur(2px);
+	border: 2px solid #ffb6c1;  /* Светло-розовый периметр */
+	border-radius: 12px;
+	padding: 12px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+	overflow: hidden;
+}
+
+/* 1. Позиционирование вверху слева */
+.dialog-top-l {
+	left: 16px;
+	right: auto; /* Сбрасываем дефолтное поведение */
+}
+
+/* 2. Позиционирование вверху по центру */
+.dialog-top {
+	left: 50%;
+	right: auto;
+	transform: translateX(-50%);
+}
+
+/* 3. Позиционирование вверху справа (ИСПРАВЛЕНО) */
+.dialog-top-r {
+	right: 16px;
+	left: auto; /* ОБЯЗАТЕЛЬНО: отключаем левую привязку браузера */
+}
