@@ -30,6 +30,7 @@ pub(crate) async fn restore_session_by_token(
         None => {
             if let Err(err) = delete_warn_token_device(state, payload).await {
                 err.process_err(err, "");
+				return Ok(AuthStep::TryLater { text: AuthInfo::BackApiError });
             }
             return Ok(AuthStep::TokenDevicePairMiss { 
                 text: AuthInfo::IllegalAccess 

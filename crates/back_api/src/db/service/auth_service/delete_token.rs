@@ -12,6 +12,8 @@ pub(crate) async  fn delete_warn_token_device(
     payload: &TokenDeviceData
 ) -> Result<Status, Status> {
 
+	tracing::info!(info = "delete_warn_token_device start");
+
     let warn_vec: Vec<WarnEmailData> = delete_session_by_token(state, payload).await
         .map_err(|err| err.process_err(err, ""))?;
 

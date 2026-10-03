@@ -25,3 +25,31 @@
     text-align: center;
     word-break: break-word;
 }
+
+
+.span-l {
+    justify-content: flex-start !important;
+    text-align: left !important;
+}
+
+.span-r {
+    justify-content: flex-end !important;
+    text-align: right !important;
+}
+
+.span-gc {
+    justify-content: center !important;
+    text-align: center !important;
+}
+
+.span-u {
+    align-items: flex-start !important;
+}
+
+.span-d {
+    align-items: flex-end !important;
+}
+
+.span-vc {
+    align-items: center !important;
+}

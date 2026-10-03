@@ -106,20 +106,22 @@
 
 
 <div class='group-2'>
-	<button
-        type="button"
-        class="but-gr"
-        disabled={IsPushed}
-        
-        onclick={()=> {openAccountsModal('AuthNickNames')}}
-    >
+	<div class='row-50'>
+		<button
+			type="button"
+			class="but-gr"
+			disabled={IsPushed}
+			
+			onclick={()=> {openAccountsModal('AuthNickNames')}}
+		>
 
-        <span class="span-fill">
-            - {currNick ? currNick : "Выберите из доступных пользователей" } -
-        </span>
-    </button>
+			<span class="span-fill">
+				- {currNick ? currNick : "Выберите из доступных пользователей" } -
+			</span>
+		</button>
+	</div>
 	
-	<div>
+	<div class='row-50'>
 		{#if currNick}
 			<button 
 				type="button" 
@@ -130,7 +132,7 @@
 				{#if IsPushed}
 					<span class="span-cut">Проверка...</span>
 				{:else}
-					<span class="span-cut">Войти как {currNick}</span>
+					<span class="span-fill">Войти как {currNick}</span>
 				{/if}
 			</button>
 		{/if}

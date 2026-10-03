@@ -3,12 +3,12 @@
     import {currAuthStep} from '$lib/models/Auth/AuthStep.svelte';
     import {AuthStepType} from '$lib/models/Auth/AuthValues';
 
-    let sur_name = "";
-    let first_name = "";
-    let mid_name = "";
-    let pers_inn = "";
+    let surName = "";
+    let firstName = "";
+    let midName = "";
+    let persInn = "";
     let snils = "";
-    let comp_inn = "";
+    let compInn = "";
     let kpp = "";
     let phone = "";
     let email = "";
@@ -16,12 +16,12 @@
     onMount(async() => {
         if (AuthStepType.RegisterStep1Duplicate in currAuthStep.step) {
             const data = currAuthStep.step.RegisterStep1Duplicate;
-            sur_name = data.sur_name;
-            first_name = data.first_name;
-            mid_name = data.mid_name;
-            pers_inn = data.pers_inn;
+            surName = data.sur_name;
+            firstName = data.first_name;
+            midName = data.mid_name;
+            persInn = data.pers_inn;
             snils = data.snils;
-            comp_inn = data.comp_inn;
+            compInn = data.comp_inn;
             kpp = data.kpp;
             phone = data.phone;
             email = data.email;
@@ -33,53 +33,132 @@
 
 </script>
 
-<div class="info-section">
-    <h3>Данные дубликата</h3>
-    
-    <dl class="info-list">
-        <div class="info-row">
-            <dt>Фамилия</dt>
-            <dd>{sur_name || '—'}</dd>
-        </div>
+<div class='group-3'>
+	<h3 class='text-cut text-c text-base text-box'>Данные дубликата</h3>
+</div>
 
-        <div class="info-row">
-            <dt>Имя</dt>
-            <dd>{first_name || '—'}</dd>
-        </div>
+<div class="group-3">
+	<div>
+		<label class='label-close' for='AuthDuplSurName'>
+			Фамилия
+		</label>
+		<input
+			class='input-ye'
+			disabled={true}
+			bind:value={surName}
+			type='text'
+			id='AuthDuplSurName'
+		>
+	</div>
 
-        <div class="info-row">
-            <dt>Отчество</dt>
-            <dd>{mid_name || '—'}</dd>
-        </div>
+	<div>
+		<label class='label-close' for='AuthDuplName'>
+			Имя
+		</label>
+		<input
+			class='input-ye'
+			disabled={true}
+			bind:value={firstName}
+			type='text'
+			id='AuthDuplName'
+		>
+	</div>
 
-        <div class="info-row">
-            <dt>ИНН физлица</dt>
-            <dd>{pers_inn || '—'}</dd>
-        </div>
+	<div>
+		<label class='label-close' for='AuthDuplMidName'>
+			Отчество
+		</label>
+		<input
+			class='input-ye'
+			disabled={true}
+			bind:value={midName}
+			type='text'
+			id='AuthDuplMidName'
+		>
+	</div>
+</div>
 
-        <div class="info-row">
-            <dt>СНИЛС</dt>
-            <dd>{snils || '—'}</dd>
-        </div>
+<div class='group-2'>
+	<div>
+		<label class='label-close' for='AuthDuplPersInn'>
+			ИНН физлица
+		</label>
+		<input
+			class='input-ye'
+			disabled={true}
+			bind:value={persInn}
+			type='text'
+			id='AuthDuplPersInn'
+		>
+	</div>
 
-        <div class="info-row">
-            <dt>ИНН организации</dt>
-            <dd>{comp_inn || '—'}</dd>
-        </div>
+	<div>
+		<label class='label-close' for='AuthDuplSnils'>
+			СНИЛС
+		</label>
+		<input
+			class='input-ye'
+			disabled={true}
+			bind:value={snils}
+			type='text'
+			id='AuthDuplSnils'
+		>
+	</div>
+</div>
 
-        <div class="info-row">
-            <dt>КПП</dt>
-            <dd>{kpp || '—'}</dd>
-        </div>
 
-        <div class="info-row">
-            <dt>Телефон</dt>
-            <dd>{phone || '—'}</dd>
-        </div>
+<div class='group-2'>
+	<div>
+		<label class='label-close' for='AuthDupCompInn'>
+			ИНН организации
+		</label>
+		<input
+			class='input-ye'
+			disabled={true}
+			bind:value={compInn}
+			type='text'
+			id='AuthDupCompInn'
+		>
+	</div>
 
-        <div class="info-row">
-            <dt>Email</dt>
-            <dd>{email || '—'}</dd>
-        </div>
-    </dl>
+	<div>
+		<label class='label-close' for='AuthDupKpp'>
+			КПП
+		</label>
+		<input
+			class='input-ye'
+			disabled={true}
+			bind:value={kpp}
+			type='text'
+			id='AuthDupKpp'
+		>
+	</div>
+</div>
+
+<div class="group-2">
+	<div>
+		<label class='label-close' for='AuthDupPhone'>
+			Телефон
+		</label>
+		<input
+			class='input-ye'
+			disabled={true}
+			bind:value={phone}
+			type='text'
+			id='AuthDupPhone'
+		>
+	</div>
+
+	<div>
+		<label class='label-close' for='AuthDupEmail'>
+			Email
+		</label>
+		<input
+			class='input-ye'
+			disabled={true}
+			bind:value={email}
+			type='text'
+			id='AuthDupEmail'
+		>
+	</div>
 </div>

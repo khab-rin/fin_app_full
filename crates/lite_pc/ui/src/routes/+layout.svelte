@@ -44,17 +44,17 @@
 
 	<aside class='zone-left'>
 		{#if !pageManager.totalOff}
-			<div class='group-five'>
-				<div>
+			<div class='group-5'>
+				<div class='row-100'>
 					<label
-						class='blue-field-label'
+						class='label-close'
 						for='mainOperationButton'
 					>
 						Раздел операций
 					</label>
 					<button
 						type='button'
-						class='purple-button'
+						class='but-pu'
 						id='mainOperationButton'
 						disabled={pageManager.totalOff}
 						onclick={goToOperation}
@@ -64,18 +64,18 @@
 				</div>
 			</div>
 
-			<div class='group-five'>
+			<div class='group-5'>
 
-				<div>
+				<div class='row-100'>
 					<label
-						class='blue-field-label'
+						class='label-close'
 						for='mainReportsButton'
 					>
 						Раздел отчетов
 					</label>
 					<button
 						type='button'
-						class='purple-button'
+						class='but-pu'
 						id='mainReportsButton'
 						disabled={pageManager.totalOff}
 						onclick={goToReports}
@@ -85,17 +85,17 @@
 				</div>
 			</div>
 
-			<div class='group-five'>
-				<div>
+			<div class='group-5'>
+				<div class='row-100'>
 					<label
-						class='blue-field-label'
+						class='label-close'
 						for='mainMchdButton'
 					>
 						Раздел доверенностей
 					</label>
 					<button
 						type='button'
-						class='purple-button'
+						class='but-pu'
 						id='mainMchdButton'
 						disabled={pageManager.totalOff}
 						onclick={goToMchd}

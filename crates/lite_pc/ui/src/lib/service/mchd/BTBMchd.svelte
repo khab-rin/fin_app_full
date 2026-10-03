@@ -44,43 +44,43 @@
 
     let allDone = $derived(firstDone || secondDone || thirdDone || forthDone)
 
-    let firstStep = $state(false);
-    let secondStep = $state(true);
-    let thirdStep = $state(true);
-    let forthStep = $state(true);
+    let firstStep = $state(true);
+    let secondStep = $state(false);
+    let thirdStep = $state(false);
+    let forthStep = $state(false);
     let allPowersSelected = $state(false);
 
     let isMainPushed = $state(false);
 
     function switchFirstStep() {
-        firstStep = false;
-        secondStep = true;
-        thirdStep = true;
-        forthStep = true;
+        firstStep = true;
+        secondStep = false;
+        thirdStep = false;
+        forthStep = false;
     }
 
     function switchSecondStep() {
         if ( firstDone ) {return;}
-        firstStep = true;
-        secondStep = false;
-        thirdStep = true;
-        forthStep = true;
+        firstStep = false;
+        secondStep = true;
+        thirdStep = false;
+        forthStep = false;
     }
 
     function switchThirdStep() {
         if (firstDone || secondDone) {return;}
-        firstStep = true;
-        secondStep = true;
-        thirdStep = false;
-        forthStep = true;
+        firstStep = false;
+        secondStep = false;
+        thirdStep = true;
+        forthStep = false;
     }
 
     function switchForthStep() {
         if (firstDone || secondDone || thirdDone) {return;}
-        firstStep = true;
-        secondStep = true;
-        thirdStep = true;
-        forthStep = false;
+        firstStep = false;
+        secondStep = false;
+        thirdStep = false;
+        forthStep = true;
     }
 
     async function loadPowers() {
@@ -157,460 +157,498 @@
     
 </script>
 
+{#if firstStep}
+	<section class="group-2">
+		<div>
+			<label class="label-close" for="MchdBtbPoaNumber">Внутренний номер доверенности организации</label>
+			<input
+				id="MchdBtbPoaNumber"
+				type="text"
+				bind:value={currentMchdStep.data.PoaNumber.value}
+				disabled={isMainPushed}
+				placeholder="строка до 50 знаков"
+				class="input-gr"
+				class:input-error={!currentMchdStep.data.PoaNumber.isValid}
+			/>
+			{#if !currentMchdStep.data.PoaNumber.isValid}
+				<span class="green-error-span">Некоректный номер доверенности</span>
+			{/if}
+		</div>
 
-<section class="group-one" hidden={firstStep}>
-    <div>
-        <label class="green-field-label" for="PoaNumber">Внутренний номер доверенности организации</label>
-        <input
-            id="PoaNumber"
-            type="text"
-            bind:value={currentMchdStep.data.PoaNumber.value}
-            disabled={isMainPushed}
-            placeholder="строка до 50 знаков"
-            class="green-field"
-            class:input-error={!currentMchdStep.data.PoaNumber.isValid}
-        />
-        {#if !currentMchdStep.data.PoaNumber.isValid}
-            <span class="green-error-span">Некоректный номер доверенности</span>
-        {/if}
-    </div>
+		<div>
+			<label class="label-close" for="MchdBtbPoaEndDate">Дата до которой действует доверенность</label>
+			<input
+				id="MchdBtbPoaEndDate"
+				type="text"
+				bind:value={currentMchdStep.data.PoaEndDate.value}
+				disabled={isMainPushed}
+				placeholder="Введите дату в формаде дд.мм.гггг"
+				class="input-gr"
+				class:input-error={!currentMchdStep.data.PoaNumber.isValid}
+			/>
+			{#if !currentMchdStep.data.PoaEndDate.isValid}
+				<span class="span-fill">Некорректная дата</span>
+			{/if}
+		</div>
+	</section>
 
-    <div>
-        <label class="green-field-label" for="PoaEndDate">Дата до которой действует доверенность</label>
-        <input
-            id="PoaEndDate"
-            type="text"
-            bind:value={currentMchdStep.data.PoaEndDate.value}
-            disabled={isMainPushed}
-            placeholder="Введите дату в формаде дд.мм.гггг"
-            class="green-field"
-            class:input-error={!currentMchdStep.data.PoaNumber.isValid}
-        />
-        {#if !currentMchdStep.data.PoaEndDate.isValid}
-            <span class="input-error-span">Некорректная дата</span>
-        {/if}
-    </div>
-</section>
+	<div class='group-2'>
+		<button
+			type="button"
+			onclick={switchSecondStep}
+			disabled={isMainPushed || firstDone}
+			class="but-gr"
+			id="MchdBtbmchd-tax-firstStep-button"
+			
+		>
+			<span class="span-fill">
+				Завершить 1 этап
+			</span>
 
-
-<button
-	type="button"
-	hidden={firstStep}
-	onclick={switchSecondStep}
-	disabled={isMainPushed || firstDone}
-	class="green-button"
-	id="mchd-tax-firstStep-button"
-	
->
-	<span class="green-button-span">
-		Завершить 1 этап
-	</span>
-
-</button>
-
-
-
-<section class="group-one" hidden={secondStep}>
-    <div>
-        <label class="green-field-label" for="managerTitle">Должность лица действующего без доверенности (руководителя организации)</label>
-        <input
-            id="managerTitle"
-            type="text"
-            bind:value={currentMchdStep.data.managerTitle.value}
-            disabled={isMainPushed}
-            placeholder="Например: Директор"
-            class="green-field"
-            class:input-error={!currentMchdStep.data.managerTitle.isValid}
-        />
-        {#if !currentMchdStep.data.managerTitle.isValid}
-            <span class="input-error-span">Введите должность</span>
-        {/if}
-    </div>
-
-    <div>
-        <label class="green-field-label" for="mamagerSurName">Фамилия лица действующего без доверенности (руководителя организации)</label>
-        <input
-            id="mamagerSurName"
-            type="text"
-            bind:value={currentMchdStep.data.managerSurName.value}
-            disabled={isMainPushed}
-            placeholder="Иванов"
-            class="green-field"
-            class:input-error={!currentMchdStep.data.managerSurName.isValid}
-        />
-        {#if !currentMchdStep.data.managerSurName.isValid}
-            <span class="input-error-span">Введите фамилию</span>
-        {/if}
-    </div>
-
-    <div>
-        <label class="green-field-label" for="mamagerFirstName">Имя лица действующего без доверенности (руководителя организации)</label>
-        <input
-            id="mamagerFirstName"
-            type="text"
-            bind:value={currentMchdStep.data.managerFirstName.value}
-            disabled={isMainPushed}
-            placeholder="Иван"
-            class="green-field"
-            class:input-error={!currentMchdStep.data.managerFirstName.isValid}
-        />
-        {#if !currentMchdStep.data.managerFirstName.isValid}
-            <span class="input-error-span">Введите имя</span>
-        {/if}
-    </div>
-
-    <div>
-        <label class="green-field-label" for="managerMidName">Отчество  лица действующего без доверенности (руководителя организации)</label>
-        <input
-            id="managerMidName"
-            type="text"
-            bind:value={currentMchdStep.data.managerMidName.value}
-            disabled={isMainPushed}
-            placeholder="Иванович"
-            class="green-field"
-            class:input-error={!currentMchdStep.data.managerMidName.isValid}
-        />
-        {#if !currentMchdStep.data.managerMidName.isValid}
-            <span class="input-error-span">Введите отчество</span>
-        {/if}
-    </div>
-
-    <div>
-        <label class="green-field-label" for="managerBirthDay">Дата рождения лица действующего без доверенности (руководителя организации)</label>
-        <input
-            id="managerBirthDay"
-            type="text"
-            bind:value={currentMchdStep.data.managerBirthDay.value}
-            disabled={isMainPushed}
-            placeholder="дд.мм.гггг"
-            class="green-field"
-            class:input-error={!currentMchdStep.data.managerBirthDay.isValid}
-        />
-        {#if !currentMchdStep.data.managerBirthDay.isValid}
-            <span class="input-error-span">Некорректная дата</span>
-        {/if}
-    </div>
-
-    <div>
-        <label class="green-field-label" for="managerSnils">СНИЛС лица действующего без доверенности (руководителя организации)</label>
-        <input
-            id="managerSnils"
-            type="text"
-            bind:value={currentMchdStep.data.managerSnils.value}
-            disabled={isMainPushed}
-            placeholder="000-000-000 00"
-            class="green-field"
-            class:input-error={!currentMchdStep.data.managerSnils.isValid}
-        />
-        {#if !currentMchdStep.data.managerSnils.isValid}
-            <span class="input-error-span">Некорректный СНИЛС</span>
-        {/if}
-    </div>
-
-    <div>
-        <label class="green-field-label" for="managerInn">ИНН физического лица действующего без доверенности (руководителя организации)</label>
-        <input
-            id="managerInn"
-            type="text"
-            bind:value={currentMchdStep.data.managerInn.value}
-            disabled={isMainPushed}
-            placeholder="12 цифр"
-            class="green-field"
-            class:input-error={!currentMchdStep.data.managerInn.isValid}
-        />
-        {#if !currentMchdStep.data.managerInn.isValid}
-            <span class="input-error-span">Некорректный ИНН</span>
-        {/if}
-    </div>
-
-    <div class="green-field-select">
-        <label class="green-field-label" for="userIsCitizen">Гражданство</label>
-        <select
-            id="userIsCitizen"
-            bind:value={currentMchdStep.data.userIsCitizen.value}
-            disabled={isMainPushed}
-            class="green-field"
-            class:input-error={!currentMchdStep.data.userIsCitizen.isValid}
-        >
-            <option value="" disabled selected>Выберите статус гражданства</option>
-            <option value="1">1 — Гражданин РФ</option>
-            <option value="2">2 — Иностранный гражданин</option>
-            <option value="3">3 — Лицо без гражданства</option>
-        </select>
-        {#if !currentMchdStep.data.userIsCitizen.isValid}
-            <span class="input-select-error-span">Выберите статус из списка</span>
-        {/if}
-    </div>
-</section>
+		</button>
+	</div>
+{/if}
 
 
-<button
-	type="button"
-	hidden={secondStep}
-	onclick={switchThirdStep}
-	disabled={isMainPushed || secondDone}
-	class="green-button"
-	id="mchd-tax-secondStep-button"
->
-	<span class="green-button-span">
-		Завершить 2 этап
-	</span>
-</button>
+{#if secondStep}
+	<section class="group-2">
+		<div>
+			<label class="label-close" for="MchdBtbmanagerTitle">Должность лица действующего без доверенности (руководителя организации)</label>
+			<input
+				id="MchdBtbmanagerTitle"
+				type="text"
+				bind:value={currentMchdStep.data.managerTitle.value}
+				disabled={isMainPushed}
+				placeholder="Например: Директор"
+				class="input-gr"
+				class:input-error={!currentMchdStep.data.managerTitle.isValid}
+			/>
+			{#if !currentMchdStep.data.managerTitle.isValid}
+				<span class="span-fill">Введите должность</span>
+			{/if}
+		</div>
+	</section>
+
+	<section class='group-3'>
+		<div>
+			<label class="label-close" for="MchdBtbmamagerSurName">Фамилия лица действующего без доверенности (руководителя организации)</label>
+			<input
+				id="MchdBtbmamagerSurName"
+				type="text"
+				bind:value={currentMchdStep.data.managerSurName.value}
+				disabled={isMainPushed}
+				placeholder="Иванов"
+				class="input-gr"
+				class:input-error={!currentMchdStep.data.managerSurName.isValid}
+			/>
+			{#if !currentMchdStep.data.managerSurName.isValid}
+				<span class="span-fill">Введите фамилию</span>
+			{/if}
+		</div>
+
+		<div>
+			<label class="label-close" for="MchdBtbmamagerFirstName">Имя лица действующего без доверенности (руководителя организации)</label>
+			<input
+				id="MchdBtbmamagerFirstName"
+				type="text"
+				bind:value={currentMchdStep.data.managerFirstName.value}
+				disabled={isMainPushed}
+				placeholder="Иван"
+				class="input-gr"
+				class:input-error={!currentMchdStep.data.managerFirstName.isValid}
+			/>
+			{#if !currentMchdStep.data.managerFirstName.isValid}
+				<span class="span-fill">Введите имя</span>
+			{/if}
+		</div>
+
+		<div>
+			<label 
+				class="label-close" for="MchdBtbmanagerMidName"
+			>Отчество  лица действующего без доверенности (руководителя организации)</label>
+			<input
+				id="MchdBtbmanagerMidName"
+				type="text"
+				bind:value={currentMchdStep.data.managerMidName.value}
+				disabled={isMainPushed}
+				placeholder="Иванович"
+				class="input-gr"
+				class:input-error={!currentMchdStep.data.managerMidName.isValid}
+			/>
+			{#if !currentMchdStep.data.managerMidName.isValid}
+				<span class="span-fill">Введите отчество</span>
+			{/if}
+		</div>
+	</section>
+
+	<section class='group-3'>
+		<div>
+			<label class="label-close" for="MchdBtbmanagerBirthDay">Дата рождения лица действующего без доверенности (руководителя организации)</label>
+			<input
+				id="MchdBtbmanagerBirthDay"
+				type="text"
+				bind:value={currentMchdStep.data.managerBirthDay.value}
+				disabled={isMainPushed}
+				placeholder="дд.мм.гггг"
+				class="input-gr"
+				class:input-error={!currentMchdStep.data.managerBirthDay.isValid}
+			/>
+			{#if !currentMchdStep.data.managerBirthDay.isValid}
+				<span class="span-fill">Некорректная дата</span>
+			{/if}
+		</div>
+
+		<div>
+			<label class="label-close" for="MchdBtbmanagerSnils">СНИЛС лица действующего без доверенности (руководителя организации)</label>
+			<input
+				id="MchdBtbmanagerSnils"
+				type="text"
+				bind:value={currentMchdStep.data.managerSnils.value}
+				disabled={isMainPushed}
+				placeholder="000-000-000 00"
+				class="input-gr"
+				class:input-error={!currentMchdStep.data.managerSnils.isValid}
+			/>
+			{#if !currentMchdStep.data.managerSnils.isValid}
+				<span class="span-fill">Некорректный СНИЛС</span>
+			{/if}
+		</div>
+
+		<div>
+			<label class="label-close" for="MchdBtbmanagerInn">ИНН физического лица действующего без доверенности (руководителя организации)</label>
+			<input
+				id="MchdBtbmanagerInn"
+				type="text"
+				bind:value={currentMchdStep.data.managerInn.value}
+				disabled={isMainPushed}
+				placeholder="12 цифр"
+				class="input-gr"
+				class:input-error={!currentMchdStep.data.managerInn.isValid}
+			/>
+			{#if !currentMchdStep.data.managerInn.isValid}
+				<span class="span-fill">Некорректный ИНН</span>
+			{/if}
+		</div>
+	</section>
+
+	<section class='group-2'>
+
+		<div class="input-gr-select">
+			<label class="label-close" for="MchdBtbuserIsCitizen">Гражданство</label>
+			<select
+				id="MchdBtbuserIsCitizen"
+				bind:value={currentMchdStep.data.userIsCitizen.value}
+				disabled={isMainPushed}
+				class="input-gr"
+				class:input-error={!currentMchdStep.data.userIsCitizen.isValid}
+			>
+				<option value="" disabled selected>Выберите статус гражданства</option>
+				<option value="1">1 — Гражданин РФ</option>
+				<option value="2">2 — Иностранный гражданин</option>
+				<option value="3">3 — Лицо без гражданства</option>
+			</select>
+			{#if !currentMchdStep.data.userIsCitizen.isValid}
+				<span class="span-fill">Выберите статус из списка</span>
+			{/if}
+		</div>
+	</section>
+
+	<section class='group-2'>
+		<button
+			type="button"
+			onclick={switchThirdStep}
+			disabled={isMainPushed || secondDone}
+			class="but-gr"
+			id="MchdBtbmchd-tax-secondStep-button"
+		>
+			<span class="span-fill">
+				Завершить 2 этап
+			</span>
+		</button>
+	</section>
+{/if}
 
 
-<section class="group-one" hidden={thirdStep}>
-    <div>
-        <label class="green-field-label" for="userSurName">Фамилия пользователя</label>
-        <input
-            id="userSurName"
-            type="text"
-            bind:value={currentMchdStep.data.userSurName.value}
-            disabled={isMainPushed}
-            placeholder="Иванов"
-            class="green-field"
-            class:input-error={!currentMchdStep.data.userSurName.isValid}
-        />
-        {#if !currentMchdStep.data.userSurName.isValid}
-            <span class="input-error-span">Введите фамилию</span>
-        {/if}
-    </div>
+{#if thirdStep}
+	<section class="group-3">
+		<div>
+			<label class="label-close" for="MchdBtbuserSurName">Фамилия пользователя</label>
+			<input
+				id="MchdBtbuserSurName"
+				type="text"
+				bind:value={currentMchdStep.data.userSurName.value}
+				disabled={isMainPushed}
+				placeholder="Иванов"
+				class="input-gr"
+				class:input-error={!currentMchdStep.data.userSurName.isValid}
+			/>
+			{#if !currentMchdStep.data.userSurName.isValid}
+				<span class="span-fill">Введите фамилию</span>
+			{/if}
+		</div>
 
-    <div>
-        <label class="green-field-label" for="userFirstName">Имя пользователя</label>
-        <input
-            id="userFirstName"
-            type="text"
-            bind:value={currentMchdStep.data.userFirstName.value}
-            disabled={isMainPushed}
-            placeholder="Иван"
-            class="green-field"
-            class:input-error={!currentMchdStep.data.userFirstName.isValid}
-        />
-        {#if !currentMchdStep.data.userFirstName.isValid}
-            <span class="input-error-span">Введите имя</span>
-        {/if}
-    </div>
+		<div>
+			<label class="label-close" for="MchdBtbuserFirstName">Имя пользователя</label>
+			<input
+				id="MchdBtbuserFirstName"
+				type="text"
+				bind:value={currentMchdStep.data.userFirstName.value}
+				disabled={isMainPushed}
+				placeholder="Иван"
+				class="input-gr"
+				class:input-error={!currentMchdStep.data.userFirstName.isValid}
+			/>
+			{#if !currentMchdStep.data.userFirstName.isValid}
+				<span class="span-fill">Введите имя</span>
+			{/if}
+		</div>
 
-    <div>
-        <label class="green-field-label" for="userMidName">Отчество пользователя</label>
-        <input
-            id="userMidName"
-            type="text"
-            bind:value={currentMchdStep.data.userMidName.value}
-            disabled={isMainPushed}
-            placeholder="Иванович"
-            class="green-field"
-            class:input-error={!currentMchdStep.data.userMidName.isValid}
-        />
-        {#if !currentMchdStep.data.userMidName.isValid}
-            <span class="input-error-span">Введите отчество</span>
-        {/if}
-    </div>
+		<div>
+			<label class="label-close" for="MchdBtbuserMidName">Отчество пользователя</label>
+			<input
+				id="MchdBtbuserMidName"
+				type="text"
+				bind:value={currentMchdStep.data.userMidName.value}
+				disabled={isMainPushed}
+				placeholder="Иванович"
+				class="input-gr"
+				class:input-error={!currentMchdStep.data.userMidName.isValid}
+			/>
+			{#if !currentMchdStep.data.userMidName.isValid}
+				<span class="span-fill">Введите отчество</span>
+			{/if}
+		</div>
+	</section>
 
-    <div>
-        <label class="green-field-label" for="userBirthDay">Дата рождения пользователя</label>
-        <input
-            id="userBirthDay"
-            type="text"
-            bind:value={currentMchdStep.data.userBirthDay.value}
-            disabled={isMainPushed}
-            placeholder="дд.мм.гггг"
-            class="green-field"
-            class:input-error={!currentMchdStep.data.userBirthDay.isValid}
-        />
-        {#if !currentMchdStep.data.userBirthDay.isValid}
-            <span class="input-error-span">Некорректная дата</span>
-        {/if}
-    </div>
+	<section class='group-3'>
+		<div>
+			<label class="label-close" for="MchdBtbuserBirthDay">Дата рождения пользователя</label>
+			<input
+				id="MchdBtbuserBirthDay"
+				type="text"
+				bind:value={currentMchdStep.data.userBirthDay.value}
+				disabled={isMainPushed}
+				placeholder="дд.мм.гггг"
+				class="input-gr"
+				class:input-error={!currentMchdStep.data.userBirthDay.isValid}
+			/>
+			{#if !currentMchdStep.data.userBirthDay.isValid}
+				<span class="span-fill">Некорректная дата</span>
+			{/if}
+		</div>
 
-    <div class="green-field-select">
-        <label class="green-field-label" for="userGender">Пол пользователя</label>
-        <select 
-            id="userGender"
-            bind:value={currentMchdStep.data.userGender.value}
-            disabled={isMainPushed}
-            class="green-field"
-            class:input-error={!currentMchdStep.data.userGender.isValid}
-        >
-            <option value="" disabled selected>Выберите пол</option>
-            <option value="1">1 — Мужской</option>
-            <option value="2">2 — Женский</option>
-        </select>
-    </div>
+		<div>
+			<label class="label-close" for="MchdBtbuserGender">Пол пользователя</label>
+			<select 
+				id="MchdBtbuserGender"
+				bind:value={currentMchdStep.data.userGender.value}
+				disabled={isMainPushed}
+				class="input-gr"
+				class:input-error={!currentMchdStep.data.userGender.isValid}
+			>
+				<option value="" disabled selected>Выберите пол</option>
+				<option value="1">1 — Мужской</option>
+				<option value="2">2 — Женский</option>
+			</select>
+		</div>
 
-    <div>
-        <label class="green-field-label" for="userSnils">СНИЛС пользователя</label>
-        <input
-            id="userSnils"
-            type="text"
-            bind:value={currentMchdStep.data.userSnils.value}
-            disabled={isMainPushed}
-            placeholder="000-000-000 00"
-            class="green-field"
-            class:input-error={!currentMchdStep.data.userSnils.isValid}
-        />
-        {#if !currentMchdStep.data.userSnils.isValid}
-            <span class="input-error-span">Некорректный СНИЛС</span>
-        {/if}
-    </div>
+		<div>
+			<label class="label-close" for="MchdBtbuserIsCitizen">Гражданство</label>
+			<select
+				id="MchdBtbuserIsCitizen"
+				bind:value={currentMchdStep.data.userIsCitizen.value}
+				disabled={isMainPushed}
+				class="input-gr"
+				class:input-error={!currentMchdStep.data.userIsCitizen.isValid}
+			>
+				<option value="" disabled selected>Выберите статус гражданства</option>
+				<option value="1">1 — Гражданин РФ</option>
+				<option value="2">2 — Иностранный гражданин</option>
+				<option value="3">3 — Лицо без гражданства</option>
+			</select>
+			{#if !currentMchdStep.data.userIsCitizen.isValid}
+				<span class="span-fill">Выберите статус из списка</span>
+			{/if}
+		</div>
+	</section>
 
-    <div>
-        <label class="green-field-label" for="userInn">ИНН пользователя</label>
-        <input
-            id="userInn"
-            type="text"
-            bind:value={currentMchdStep.data.userInn.value}
-            disabled={isMainPushed}
-            placeholder="12 цифр"
-            class="green-field"
-            class:input-error={!currentMchdStep.data.userInn.isValid}
-        />
-        {#if !currentMchdStep.data.userInn.isValid}
-            <span class="input-error-span">Некорректный ИНН</span>
-        {/if}
-    </div>
+	<section class=group-2>
+		<div>
+			<label class="label-close" for="MchdBtbuserSnils">СНИЛС пользователя</label>
+			<input
+				id="MchdBtbuserSnils"
+				type="text"
+				bind:value={currentMchdStep.data.userSnils.value}
+				disabled={isMainPushed}
+				placeholder="000-000-000 00"
+				class="input-gr"
+				class:input-error={!currentMchdStep.data.userSnils.isValid}
+			/>
+			{#if !currentMchdStep.data.userSnils.isValid}
+				<span class="span-fill">Некорректный СНИЛС</span>
+			{/if}
+		</div>
 
-    <div>
-        <label class="green-field-label" for="userPassportNumber">Серия и номер паспорта</label>
-        <input
-            id="userPassportNumber"
-            type="text"
-            bind:value={currentMchdStep.data.userPassportNumber.value}
-            disabled={isMainPushed}
-            placeholder="00 00 000000"
-            class="green-field"
-            class:input-error={!currentMchdStep.data.userPassportNumber.isValid}
-        />
-    </div>
+		<div>
+			<label class="label-close" for="MchdBtbuserInn">ИНН пользователя</label>
+			<input
+				id="MchdBtbuserInn"
+				type="text"
+				bind:value={currentMchdStep.data.userInn.value}
+				disabled={isMainPushed}
+				placeholder="12 цифр"
+				class="input-gr"
+				class:input-error={!currentMchdStep.data.userInn.isValid}
+			/>
+			{#if !currentMchdStep.data.userInn.isValid}
+				<span class="span-fill">Некорректный ИНН</span>
+			{/if}
+		</div>
+	</section>
 
-    <div>
-        <label class="green-field-label" for="userPassportNumber">Дата выдачи пасспорта</label>
-        <input
-            id="userPassportNumber"
-            type="text"
-            bind:value={currentMchdStep.data.userPassportIssueDate.value}
-            disabled={isMainPushed}
-            placeholder="00.00.0000"
-            class="green-field"
-            class:input-error={!currentMchdStep.data.userPassportIssueDate.isValid}
-        />
-    </div>
+	<section class='group-3'>
+		<div>
+			<label class="label-close" for="MchdBtbuserPassportNumber">Серия и номер паспорта</label>
+			<input
+				id="MchdBtbuserPassportNumber"
+				type="text"
+				bind:value={currentMchdStep.data.userPassportNumber.value}
+				disabled={isMainPushed}
+				placeholder="00 00 000000"
+				class="input-gr"
+				class:input-error={!currentMchdStep.data.userPassportNumber.isValid}
+			/>
+		</div>
 
-    <div>
-        <label class="green-field-label" for="userPassportIssueer">Кем выдан пасорт  пользователя</label>
-        <input
-            id="userPassportIssueer"
-            type="text"
-            bind:value={currentMchdStep.data.userPassportIssueer.value}
-            disabled={isMainPushed}
-            placeholder="Наименование органа"
-            class="green-field"
-            class:input-error={!currentMchdStep.data.userPassportIssueer.isValid}
-        />
-    </div>
+		<div>
+			<label class="label-close" for="MchdBtbuserPassportNumber">Дата выдачи пасспорта</label>
+			<input
+				id="MchdBtbuserPassportNumber"
+				type="text"
+				bind:value={currentMchdStep.data.userPassportIssueDate.value}
+				disabled={isMainPushed}
+				placeholder="00.00.0000"
+				class="input-gr"
+				class:input-error={!currentMchdStep.data.userPassportIssueDate.isValid}
+			/>
+		</div>
+		<div>
+			<label class="label-close" for="MchdBtbuserPassportUssuerCode">Код подразделения</label>
+			<input
+				id="MchdBtbuserPassportUssuerCode"
+				type="text"
+				bind:value={currentMchdStep.data.userPassportUssuerCode.value}
+				disabled={isMainPushed}
+				placeholder="000-000"
+				class="input-gr"
+				class:input-error={!currentMchdStep.data.userPassportUssuerCode.isValid}
+			/>
+		</div>
+	</section>
 
-    <div>
-        <label class="green-field-label" for="userPassportUssuerCode">Код подразделения</label>
-        <input
-            id="userPassportUssuerCode"
-            type="text"
-            bind:value={currentMchdStep.data.userPassportUssuerCode.value}
-            disabled={isMainPushed}
-            placeholder="000-000"
-            class="green-field"
-            class:input-error={!currentMchdStep.data.userPassportUssuerCode.isValid}
-        />
-    </div>
+	<section class='group-3'>
+		<div>
+			<label class="label-close" for="MchdBtbuserPassportIssueer">Кем выдан пасорт  пользователя</label>
+			<input
+				id="MchdBtbuserPassportIssueer"
+				type="text"
+				bind:value={currentMchdStep.data.userPassportIssueer.value}
+				disabled={isMainPushed}
+				placeholder="Наименование органа"
+				class="input-gr"
+				class:input-error={!currentMchdStep.data.userPassportIssueer.isValid}
+			/>
+		</div>
 
-    <div class="green-field-select">
-        <label class="green-field-label" for="userIsCitizen">Гражданство</label>
-        <select
-            id="userIsCitizen"
-            bind:value={currentMchdStep.data.userIsCitizen.value}
-            disabled={isMainPushed}
-            class="green-field"
-            class:input-error={!currentMchdStep.data.userIsCitizen.isValid}
-        >
-            <option value="" disabled selected>Выберите статус гражданства</option>
-            <option value="1">1 — Гражданин РФ</option>
-            <option value="2">2 — Иностранный гражданин</option>
-            <option value="3">3 — Лицо без гражданства</option>
-        </select>
-        {#if !currentMchdStep.data.userIsCitizen.isValid}
-            <span class="input-select-error-span">Выберите статус из списка</span>
-        {/if}
-    </div>
-</section>
+	</section>
 
-
-<button
-	type="button"
-	hidden={thirdStep}
-	onclick={ switchForthStep }
-	disabled={isMainPushed || thirdDone}
-	class="green-button"
->
-	<span class="green-button-span">
-		Завершить 3 этап
-	</span>
-</button>
+	<section class='group-2'>
+		<button
+			type="button"
+			onclick={ switchForthStep }
+			disabled={isMainPushed || thirdDone}
+			class="but-gr"
+		>
+			<span class="span-fill">
+				Завершить 3 этап
+			</span>
+		</button>
+	</section>
+{/if}
 
 
-<section class="group-one" hidden={forthStep}>
-    <h3 class="h3">Выберите полномочия</h3>
 
-    <label class="check-box-label">
-        <input
-            type="checkbox"
-            checked={allPowersSelected}
-            onchange={() => selectAllPowers()}
-        />
-        <span class="check-box-span">Выбрать все машинописные полномочия для взаимодействия с ФНС РФ</span>
-    </label>
+{#if forthStep}
+	<h3 class="h3">Выберите полномочия</h3>
 
-	<ui class='group-one'>
+	<div class='group-5'>
+		<input
+			class='row-5'
+			type="checkbox"
+			checked={allPowersSelected}
+			onchange={() => selectAllPowers()}
+		/>
+
+		<div class='row-95'>
+			<button
+				class='but-gr'
+				onclick={() => selectAllPowers()}
+			>
+				<span class='span-fill span-l'>
+					Выбрать все машинописные полномочия для взаимодействия с ФНС РФ
+				</span>
+			</button>
+		</div>
+	</div>
+
+
+	<ui>
 		{#each allPowers as power (power)}
 			<li>
-				<label
-					class='green-field-label'
-					for={power}
-				>
-					{power}
-				</label>
-				<div 
-					class='text-check-box'
-					id={power}
-				>
-					<span> 
-						{#await currentMchdStep.get_power_info(power)}
-							Загрузка
-						{:then info} 
-							{info?.name}
-						{:catch error}
-							Ошибка
-						{/await}
-					</span>	
-					<input
-						type="checkbox"
-						checked={selectedPowers.has(power)}
-						onchange={() => togglePower(power)}
-						disabled={allPowersSelected}
-					/>
+				<div class="group-5">
+					<label
+						class='label-close'
+						for={power}
+					>
+						{power}
+					</label>
+					<div 
+						class='text-check-box'
+						id={power}
+					>
+						<span> 
+							{#await currentMchdStep.get_power_info(power)}
+								Загрузка
+							{:then info} 
+								{info?.name}
+							{:catch error}
+								Ошибка
+							{/await}
+						</span>	
+						<input
+							type="checkbox"
+							checked={selectedPowers.has(power)}
+							onchange={() => togglePower(power)}
+							disabled={allPowersSelected}
+						/>
+					</div>
 				</div>
 			</li>
 		{/each}
 	</ui>
-</section>
+{/if}
 
-<section class='group-two'>
+
+
+<section class='group-2'>
     <div>
         <button
-            class="purple-button"
+            class="but-pu"
             type="button"
-            hidden={!firstStep}
+            hidden={firstStep}
             onclick={switchFirstStep}
         >
-            <span class="purple-button-span">
+            <span class="span-cut">
                 Этап 1
             </span>
         </button>
@@ -618,25 +656,27 @@
 
     <div>
         <button
-            class="purple-button"
+            class="but-pu"
             type="button"
-            hidden={!secondStep}
+            hidden={secondStep}
             onclick={switchSecondStep}
         >
-            <span class="purple-button-span">
+            <span class="span-cut">
                 Этап 2
             </span>
         </button>
     </div>
+</section>
 
+<section class='group-2'>
     <div>
         <button
-            class="purple-button"
+            class="but-pu"
             type="button"
-            hidden={!thirdStep}
+            hidden={thirdStep}
             onclick={switchThirdStep}
         >
-            <span class="purple-button-span">
+            <span class="span-cut">
                 Этап 3
             </span>
         </button>
@@ -644,12 +684,12 @@
 
     <div>
         <button
-            class="purple-button"
+            class="but-pu"
             type="button"
-            hidden={!forthStep}
+            hidden={forthStep}
             onclick={switchForthStep}
         >
-            <span class="purple-button-span">
+            <span class="span-cut">
                 Этап 4
             </span>
         </button>
@@ -657,14 +697,15 @@
 </section>
 
 
-
-<button
-	type="button"
-	id="lend-mchd"
-	class="blue-button"
-	onclick={lendMchd}
-	disabled={allDone}>
-	<span class=main-batton-span>
-		Зарегистрировать
-	</span>
-</button>
+<section class='group-2'>
+	<button
+		type="button"
+		id="MchdBtbMchdBtbLendBut"
+		class="but-bl"
+		onclick={lendMchd}
+		disabled={allDone}>
+		<span class=main-batton-span>
+			Зарегистрировать
+		</span>
+	</button>
+</section>

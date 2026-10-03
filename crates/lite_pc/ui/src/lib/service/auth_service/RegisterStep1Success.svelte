@@ -78,42 +78,42 @@
 
 </script>
 
-<section class='group-one'>
+<section class='group-2'>
     <div>
-        <label class='green-field-label' for='docFile'>
+        <label class='label-close' for='AuthStep2docFile'>
             Сохранить файл в формате doc
         </label>
         <input
-            id='docFile'
+            id='AuthStep2docFile'
             type='text'
             value={filePath.doc}
-            class='green-field'
+            class='input-gr'
         >
-
         <button
             type='button'
-            class='green-button'
+            class='but-gr'
             onclick={() => saveDoc(docFileBytesArray, 'doc')}
             disabled={isSaved['doc']}
         >
             Сохранить
         </button>
     </div>
+</section>
 
+<section class='group-2'>
     <div>
-        <label class='green-field-label' for='jsonFile'>
+        <label class='label-close' for='AuthStep2jsonFile'>
             Сохранить файл в формате json
         </label>
         <input
-			class='green-field'
-            id='jsonFile'
+			class='input-gr'
+            id='AuthStep2jsonFile'
             type='text'
             value={filePath.json}
         >
-
         <button
             type='button'
-            class='green-button'
+            class='but-gr'
             onclick={() => saveDoc(jsonFileByteArray, 'json')}
             disabled={isSaved['json']}
         >

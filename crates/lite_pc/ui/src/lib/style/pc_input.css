@@ -130,9 +130,9 @@
     box-shadow: 0 0 0 3px color-mix(in srgb, red 20%, transparent) !important;
 }
 
-.input-gr-select,
-.input-ye-select,
-.input-bl-select {
+select.input-gr,
+select.input-ye,
+select.input-bl {
 		-webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -144,7 +144,6 @@
     color: #000000 !important;
     transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
-		background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://w3.org' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
     background-repeat: no-repeat;
     background-position: right 0.75rem center;
     background-size: 1rem;
