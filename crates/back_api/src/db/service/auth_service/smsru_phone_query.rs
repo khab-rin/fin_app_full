@@ -27,16 +27,22 @@ pub(crate) async fn smsru_get_phone(
         .query(&query_params)
         .send()
         .await
-        .map_err(|err| err.process_err(Status::QueryGetRequestErr, ""))?;
+        .map_err(|err| err.process_err(Status::QueryGetRequestErr, url))?;
+
+	let text_body = response
+		.text()
+		.await
+		.map_err(|err| err.process_err(Status::MappingError, "Не удалось прочитать тело ответа"))?;
 
 
-    let data: SmsruCallResponse = response
-        .json()
-        .await
-        .map_err(|err| err.process_err(Status::MappingError, ""))?;
+	let data: SmsruCallResponse = serde_json::from_str(&text_body)
+		.map_err(|err| {
+			// Если JSON невалидный, передаем текст ответа в ошибку
+			err.process_err(Status::MappingError, &text_body)
+		})?;
 
 
-    if data.status == "OK" && *data.status_code.as_ref() == 100 {
+    if data.status == "OK" && data.status_code == 100 {
         
         let check_id = data
             .check_id

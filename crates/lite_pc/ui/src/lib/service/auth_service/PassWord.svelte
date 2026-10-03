@@ -45,7 +45,7 @@
 
 <div class="group-1">
 	<div>
-		<label class='close-label' for="authPassPersInn">ИНН физического лица</label>
+		<label class='label-close' for="authPassPersInn">ИНН физического лица</label>
 		<input 
 			id="authPassPersInn"
 			class="input-gr"
@@ -64,7 +64,7 @@
 
 <div class="group-2">
 	<div>
-		<label class='close-label' for="compInn">ИНН организации</label>
+		<label class='label-close' for="compInn">ИНН организации</label>
 		<input 
 			class="input-gr"
 			id="innOrg" 
@@ -81,7 +81,7 @@
 
 	<div>
 		<label 
-			class='close-label' 
+			class='label-close' 
 			for="kpp">
 			КПП организации
 		</label>
@@ -101,7 +101,7 @@
 
 <div class="group-2">
 	<div>
-		<label class='close-label' for="password">Пароль</label>
+		<label class='label-close' for="password">Пароль</label>
 		<input 
 			id="password" 
 			class="input-gr"
@@ -116,27 +116,32 @@
 		{/if}
 	</div>
 	
-
-	<button 
-		type="button" 
-		class="green-button"
-		onclick={handleAuthSubmit}
-		disabled={
-			isPushed || 
-			!currAuthStep.data.persInn.isValid || 
-			!currAuthStep.data.compInn.isValid || 
-			!currAuthStep.data.kpp.isValid || 
-			!currAuthStep.data.password.isValid
-		}
-		
-		id="auth-submit-button"
-	>
-		<span class="span-cut">
-			{#if isPushed}⏳{:else}🔑{/if}
-		</span>
-		<span class="span-cut">
-			{#if isPushed}Вход...{:else}Отправить{/if}
-		</span>
-	</button>
+	<div>
+		<label class='label-close' for='authEnterBut'>
+			
+		</label>
+		<button 
+			type="button" 
+			class="but-gr"
+			onclick={handleAuthSubmit}
+			disabled={
+				isPushed || 
+				!currAuthStep.data.persInn.isValid || 
+				!currAuthStep.data.compInn.isValid || 
+				!currAuthStep.data.kpp.isValid || 
+				!currAuthStep.data.password.isValid
+			}
+			
+			id="authEnterBut"
+		>
+			<span class="span-cut">
+				{#if isPushed}⏳{:else}🔑{/if}
+			</span>
+			<span class="span-cut">
+				{#if isPushed}Вход...{:else}Отправить{/if}
+			</span>
+		</button>
+	</div>
+	
 
 </div>

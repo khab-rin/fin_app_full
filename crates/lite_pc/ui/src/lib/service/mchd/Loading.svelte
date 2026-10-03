@@ -56,69 +56,75 @@
 </script>
 
 
-<section class="group-one">
+<section class="group-2">
     <div>
         <button
             type="button"
-            class="green-button"
+            class="but-gr"
             onclick={goToBTBMchd}
             disabled={isBTBPushed}
         >
-            <span class="green-button-span">
+            <span class="span-fill">
                 Создать B2B МЧД
             </span>
         </button>
     </div>
+</section>
 
+<section class="group-2">
     <div>
         <button
             type="button"
-            class="green-button"
+            class="but-gr"
             onclick={goToFnsMchd}
             disabled={isFnsPushed}
         >
-            <span class="green-button-span">
+            <span class="span-fill">
                 Создать МЧД для отчетности
             </span>
         </button>
     </div>
-
+</section>
+<section class="group-2">
     <div>
         <button
             type="button"
-            class="green-button"
+            class="but-gr"
             onclick={goToHomeMchd}
             disabled={isHomePushed}
         >
-            <span class="green-button-span">
+            <span class="span-fill">
                 Создать МЧД для работы в системе
             </span>
         </button>
     </div>
+</section>
 
-
+<section class="group-2">
     <div>
         <button
             type="button"
-            class="green-button"
+            class="but-gr"
             onclick={goToLendMchd}
             disabled={isLendPushed}
 
             >
-            <span class='green-button-span'>
+            <span class='span-fill'>
                 Отправить подписанный МЧД
             </span>
         </button>
     </div>
+</section>
 
+<section class="group-2">
     <div>
         <button
             type="button"
-            class="green-button"
+            class="but-gr"
             disabled={isShowPowersPushed}
             onclick={goToShowPowers}
             >
-            <span class='green-button-span'>
+            <span class='span-fill'>
                 Посмотреть текущие полномочия
             </span>
         </button>

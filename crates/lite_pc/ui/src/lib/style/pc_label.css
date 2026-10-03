@@ -1,8 +1,8 @@
-.close-label {
+.label-close {
     font-size: 11px;           
     color: #000000 !important; 
     font-weight: 600;          
-    text-transform: uppercase; 
+    text-transform: uppercase !important; 
     letter-spacing: 0.5px;     
     margin-bottom: 4px;
     display: block;     

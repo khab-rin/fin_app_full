@@ -34,7 +34,7 @@
 
 <div class="group-5">
 	<p 
-		class="text-c text-base text-fill"
+		class="text-c text-base text-fill text-box"
 	>
 		{currAuthStep.currentText}
 	</p>
@@ -58,7 +58,7 @@
 
 
 <section class="group-2">
-	<div>
+	<div class='row-50'>
 		<button
 			class="but-pu"
 			type="button"
@@ -69,7 +69,7 @@
 		</button>
 	</div>
 	
-	<div>
+	<div class='row-50'>
 		<button
 			class="but-pu"
 			type="button"
@@ -82,7 +82,7 @@
 </section>
 
 <section class="group-2">
-	<div>
+	<div class='row-50'>
 		<button
 			class="but-pu"
 			type="button"
@@ -93,7 +93,7 @@
 		</button>
 	</div>
 	
-	<div>
+	<div class='row-50'>
 		<button
 			class="but-pu"
 			type="button"
@@ -105,3 +105,89 @@
 	</div>
 	
 </section>
+
+<!-- <section class='group-5'>
+	<div class='row-50'>
+		<div class='row-20'>
+			<button 
+				class='but-gr'
+				type='button'
+			>
+				<span class='span-fill span-l span-u'>
+					example
+				</span>
+
+			</button>
+		</div>
+		<div class='row-20'>
+			<button 
+				class='but-gr'
+				type='button'
+			>
+				<span class='span-fill span-l span-u'>
+					example
+				</span>
+
+			</button>
+		</div>
+		<div class='row-20'>
+			<button 
+				class='but-gr'
+				type='button'
+			>
+				<span class='span-fill span-l span-u'>
+					example
+				</span>
+
+			</button>
+		</div>
+		<div class='row-20'>
+			<button 
+				class='but-gr'
+				type='button'
+			>
+				<span class='span-fill span-l span-u'>
+					example
+				</span>
+
+			</button>
+		</div>
+		<div class='row-20'>
+			<button 
+				class='but-gr'
+				type='button'
+			>
+				<span class='span-fill span-l span-u'>
+					example
+				</span>
+
+			</button>
+		</div>
+	</div>
+
+	<div class='row-50'>
+		<div class='row-50'>
+			<button 
+				class='but-gr'
+				type='button'
+			>
+				<span class='span-fill span-l span-u'>
+					example
+				</span>
+
+			</button>
+		</div>
+		<div class='row-50'>
+			<button 
+				class='but-gr'
+				type='button'
+			>
+				<span class='span-fill span-l span-u'>
+					example
+				</span>
+
+			</button>
+		</div>
+	
+	</div>
+</section> -->

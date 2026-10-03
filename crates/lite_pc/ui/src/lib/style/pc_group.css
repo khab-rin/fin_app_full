@@ -14,11 +14,6 @@
     transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
 }
 
-/* Автоматическое растягивание элементов внутри любой группы */
-.group-1 > *, .group-2 > *, .group-3 > *, .group-4 > *, .group-5 > * {
-    flex: 1;
-    min-width: 0; /* Оставляем этот min-width: 0, он нужен flexbox-у, чтобы текст внутри кнопок не распирал блоки */
-}
 
 /* Чистое относительное управление шириной от родителя */
 .group-1   { width: 20%; }
@@ -26,3 +21,38 @@
 .group-3 { width: 60%; }
 .group-4  { width: 80%; }
 .group-5  { width: 100%; }
+
+
+.row-5   { flex: 0 1 5%; }
+.row-10  { flex: 0 1 10%; }
+.row-15  { flex: 0 1 15%; }
+.row-20  { flex: 0 1 20%; }
+.row-25  { flex: 0 1 25%; }
+.row-30  { flex: 0 1 30%; }
+.row-35  { flex: 0 1 35%; }
+.row-40  { flex: 0 1 40%; }
+.row-45  { flex: 0 1 45%; }
+.row-50  { flex: 0 1 50%; }
+.row-55  { flex: 0 1 55%; }
+.row-60  { flex: 0 1 60%; }
+.row-65  { flex: 0 1 65%; }
+.row-70  { flex: 0 1 70%; }
+.row-75  { flex: 0 1 75%; }
+.row-80  { flex: 0 1 80%; }
+.row-85  { flex: 0 1 85%; }
+.row-90  { flex: 0 1 90%; }
+.row-95  { flex: 0 1 95%; }
+.row-100 { flex: 0 1 100%; }
+
+.row-5, .row-10, .row-15, .row-20, .row-25, .row-30, .row-35, .row-40, .row-45, .row-50,
+.row-55, .row-60, .row-65, .row-70, .row-75, .row-80, .row-85, .row-90, .row-95, .row-100 {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 12px; 
+    
+    /* --- ЗАЩИТА ОТ ГОРИЗОНТАЛЬНОГО СКРОЛЛА --- */
+    box-sizing: border-box !important; /* Включаем рамки и паддинги ВНУТРЬ ширины */
+    min-width: 0 !important;           /* Запрещаем тексту и кнопкам распирать блоки наружу */
+    width: 100% !important;            /* Заставляем флекс-доли рассчитываться строго в пределах родителя */
+}

@@ -16,8 +16,13 @@
     }
 </script>
 
+<div class='group-5'>
+	<p class="text-base text-c text-fill text-box">{currentMchdStep.currentText}</p>
+</div>
 
-<p class="text-small">{currentMchdStep.currentText}</p>
+
+
+
 {#if currentMchdStep.getPage}
     <svelte:component this={currentMchdStep.getPage} />
 {:else}
@@ -25,27 +30,16 @@
 {/if}
 
 
-<section class="group-two">
+<section class="group-2">
 
 	<button
 		type="button"
-		class="blue-button"
+		class="but-bl"
 		onclick={goToLoading}
 		>
-		<span class="blue-button-span">
+		<span class="span-fill">
 			Меню доверенностей
 		</span>
 	</button>
-
-	<button
-		type="button"
-		class="blue-button"
-		onclick={closeMchd}
-		>
-		<span class="blue-button-span">
-			Основной экран
-		</span>
-	</button>
-
 </section>
 

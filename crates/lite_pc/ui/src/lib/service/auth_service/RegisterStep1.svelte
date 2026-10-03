@@ -76,17 +76,16 @@
 
 </script>
 
-<section class='group-one'>
-
+<section class='group-3'>
     <div>
-        <label class='green-field-label' for="surName">Фамилия</label>
+        <label class='label-close' for="surName">Фамилия</label>
         <input 
             id="surName" 
             type="text" 
             bind:value={currAuthStep.data.surName.value} 
             disabled={isPushedMakeDocs}
             placeholder="Только русские буквы"
-            class="green-field"
+            class="input-gr"
             class:input-error={!currAuthStep.data.surName.isValid}
         />
         {#if !currAuthStep.data.surName.isValid}
@@ -95,14 +94,14 @@
     </div>
 
     <div>
-        <label class='green-field-label' for="firstName">Имя</label>
+        <label class='label-close' for="firstName">Имя</label>
         <input 
             id="firstName" 
             type="text" 
             bind:value={currAuthStep.data.firstName.value} 
             disabled={isPushedMakeDocs}
             placeholder="Только русские буквы"
-            class="green-field"
+            class="input-gr"
             class:input-error={!currAuthStep.data.firstName.isValid}
         />
         {#if !currAuthStep.data.firstName.isValid}
@@ -111,30 +110,32 @@
     </div>
 
     <div>
-        <label class='green-field-label' for="midName">Отчество (при наличии)</label>
+        <label class='label-close' for="midName">Отчество (при наличии)</label>
         <input 
             id="midName" 
             type="text" 
             bind:value={currAuthStep.data.midName.value} 
             disabled={isPushedMakeDocs}
             placeholder="Только русские буквы"
-            class="green-field"
+            class="input-gr"
             class:input-error={!currAuthStep.data.midName.isValid}
         />
         {#if !currAuthStep.data.midName.isValid}
             <span class="input-error">Некорректное отчество</span>
         {/if}
     </div>
+</section>
 
+<section class='group-2'>
     <div>
-        <label class='green-field-label' for="persInn">Личный ИНН</label>
+        <label class='label-close' for="persInn">Личный ИНН</label>
         <input 
             id="persInn" 
             type="text" 
             bind:value={currAuthStep.data.persInn.value} 
             disabled={isPushedMakeDocs}
             placeholder="12 цифр"
-            class="green-field"
+            class="input-gr"
             class:input-error={!currAuthStep.data.persInn.isValid}
         />
         {#if !currAuthStep.data.persInn.isValid}
@@ -143,30 +144,33 @@
     </div>
 
     <div>
-        <label class='green-field-label' for="snils">СНИЛС</label>
+        <label class='label-close' for="snils">СНИЛС</label>
         <input 
             id="snils" 
             type="text" 
             bind:value={currAuthStep.data.snils.value} 
             disabled={isPushedMakeDocs}
             placeholder="Формат: 000-000-000 00"
-            class="green-field"
+            class="input-gr"
             class:input-error={!currAuthStep.data.snils.isValid}
         />
         {#if !currAuthStep.data.snils.isValid}
             <span class="input-error">Некорректный СНИЛС</span>
         {/if}
     </div>
+</section>
+
+<section class='group-2'>
 
     <div>
-        <label class='green-field-label' for="compInn">ИНН Организации</label>
+        <label class='label-close' for="compInn">ИНН Организации</label>
         <input 
             id="compInn" 
             type="text" 
             bind:value={currAuthStep.data.compInn.value} 
             disabled={isPushedMakeDocs}
             placeholder="10 цифр"
-            class="green-field"
+            class="input-gr"
             class:input-error={!currAuthStep.data.compInn.isValid}
         />
         {#if !currAuthStep.data.compInn.isValid}
@@ -175,30 +179,32 @@
     </div>
 
     <div>
-        <label class='green-field-label' for="kpp">КПП</label>
+        <label class='label-close' for="kpp">КПП</label>
         <input 
             id="kpp" 
             type="text" 
             bind:value={currAuthStep.data.kpp.value} 
             disabled={isPushedMakeDocs}
             placeholder="9 цифр"
-            class="green-field"
+            class="input-gr"
             class:input-error={!currAuthStep.data.kpp.isValid}
         />
         {#if !currAuthStep.data.kpp.isValid}
             <span class="input-error">Некорректный КПП (должно быть 9 цифр)</span>
         {/if}
     </div>
+</section>
 
+<section class='group-2'>
     <div>
-        <label class='green-field-label' for="phone">Номер телефона</label>
+        <label class='label-close' for="phone">Номер телефона</label>
         <input 
             id="phone" 
             type="tel" 
             bind:value={currAuthStep.data.phone.value} 
             disabled={isPushedMakeDocs}
             placeholder="+7 (900) 000-00-00"
-            class="green-field"
+            class="input-gr"
             class:input-error={!currAuthStep.data.phone.isValid}
         />
         {#if !currAuthStep.data.phone.isValid}
@@ -207,30 +213,33 @@
     </div>
 
     <div>
-        <label class='green-field-label' for="email">Электронная почта</label>
+        <label class='label-close' for="email">Электронная почта</label>
         <input 
             id="email" 
             type="email" 
             bind:value={currAuthStep.data.email.value} 
             disabled={isPushedMakeDocs}
             placeholder="example@mail.ru"
-            class="green-field"
+            class="input-gr"
             class:input-error={!currAuthStep.data.email.isValid}
         />
         {#if !currAuthStep.data.email.isValid}
             <span class="input-error">Некорректный email</span>
         {/if}
     </div>
+</section>
+
+<section class='group-2'>
 
     <div>
-        <label class='green-field-label' for="password">Придумайте пароль приложения</label>
+        <label class='label-close' for="password">Придумайте пароль приложения</label>
         <input 
             id="password" 
             type="password" 
             bind:value={currAuthStep.data.password.value} 
             disabled={isPushedMakeDocs}
             placeholder="Минимум 6 символов"
-            class="green-field"
+            class="input-gr"
             class:input-error={!currAuthStep.data.password.isValid}
         />
         {#if !currAuthStep.data.password.isValid}
@@ -239,27 +248,29 @@
     </div>
 
     <div>
-        <label class='green-field-label' for="passwordRepeat">Повторите пароль</label>
+        <label class='label-close' for="passwordRepeat">Повторите пароль</label>
         <input 
             id="passwordRepeat" 
             type="password" 
             bind:value={passwordRepeat} 
             disabled={isPushedMakeDocs}
             placeholder="Введите пароль еще раз"
-            class="green-field"
+            class="input-gr"
             class:input-error={currAuthStep.data.password.value !== passwordRepeat && passwordRepeat !== ''}
         />
         {#if currAuthStep.data.password.value !== passwordRepeat || passwordRepeat == ''}
             <span class="input-error">Пароли не совпадают</span>
         {/if}
     </div>
+</section>
 
+<section class='group-2'>
 	<div>
 		<button 
 			type="button" 
 			onclick={finishStep1}
 			disabled={isPushedMakeDocs || isDataValid}
-			class="green-button"
+			class="but-gr"
 			id="auth-make-doc-button"
 		>
 			<span class="green-button-span">

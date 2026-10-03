@@ -105,46 +105,50 @@
 
 
 
-<section class="group-one">
+<section class="group-2">
     <div>
-        <label class="green-field-label" for="jsonFilePath">
+        <label class="label-close" for="AuthStep2jsonFilePath">
             Загрузите путь до json файла
         </label>
         <input
             type="text"
-            id="jsonFilePath"
+            id="AuthStep2jsonFilePath"
             value={jsonFilePath}
-            class="green-field"
+            class="input-gr"
 			disabled={true}
         />
         <button
             type="button"
-            id="xmlFileButton"
-            class="green-button"
+            id="AuthStep2xmlFileButton"
+            class="but-gr"
             onclick={getJsonFilePath}
             disabled={isLoadJsonFile}
         >
-            Загрузите xml файл
+            Загрузите json файл
         </button>
 
     </div>
+</section>
+
+<section class='group-2'>
+
 
     <div>
-        <label class="green-field-label" for="signFilePath">
+        <label class="label-close" for="AuthStep2signFilePath">
             Загрузите путь до файла ЭЦП
         </label>
   
         <input
             type="text"
-            id="signFilePath"
+            id="AuthStep2signFilePath"
             value={signFilePath}
-            class="green-field"
+            class="input-gr"
 			disabled={true}
         />
         <button
             type="button"
-            id="sigFileButton"
-            class="green-button"
+            id="AuthStep2sigFileButton"
+            class="but-gr"
             onclick={getSignFilePath}
             disabled={isLoadSignFile}
         >
@@ -152,17 +156,19 @@
         </button>
 
     </div>
+</section>
 
+<section class='group-2'>
 	<div>
 		<button
 			type="button"
-			id='Register'
-			class='green-button'
+			id='AuthButRegister'
+			class='but-gr'
 			disabled={isPushedRegister || IsDataReady}
 			onclick={register}
 
 		>
-			<span class='green-button-span'>Отправить файлы на регистрацию</span>
+			<span class='span-fill'>Отправить файлы на регистрацию</span>
 		</button>
 	</div>
 </section>
