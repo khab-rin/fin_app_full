@@ -16,10 +16,12 @@
     }
 </script>
 
-<div class='group-5'>
-	<p class="text-base text-c text-fill text-box">{currentMchdStep.currentText}</p>
-</div>
 
+<div class="w-100">
+	<h4 class='w-g100 x-self-c x-ce t-fill'>
+		{currentMchdStep.currentText}
+	</h4>
+</div>
 
 
 
@@ -30,7 +32,7 @@
 {/if}
 
 
-<section class="group-2">
+<section class="w-40">
 
 	<button
 		type="button"

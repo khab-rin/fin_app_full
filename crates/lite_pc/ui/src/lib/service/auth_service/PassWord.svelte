@@ -43,11 +43,11 @@
 
 </script>
 
-<div class="group-1">
-	<div>
-		<label class='label-close' for="authPassPersInn">ИНН физического лица</label>
+<div class="w-40 x-self-l">
+	<div class='w-v100'>
+		<label class='label-close' for="AuthPassPersInn">ИНН физического лица</label>
 		<input 
-			id="authPassPersInn"
+			id="AuthPassPersInn"
 			class="input-gr"
 			type="text" 
 			bind:value={currAuthStep.data.persInn.value} 
@@ -62,32 +62,31 @@
 </div>
 	
 
-<div class="group-2">
-	<div>
-		<label class='label-close' for="compInn">ИНН организации</label>
+<div class="w-40 x-self-l">
+	<div class='w-v50'>
+		<label class='label-close' for="AuthPasscompInn">ИНН организации</label>
 		<input 
 			class="input-gr"
-			id="innOrg" 
+			id="AuthPasswcompInn" 
 			type="text" 
 			bind:value={currAuthStep.data.compInn.value}
 			disabled={isPushed}
 			placeholder="10 цифр ИНН ЮЛ"
-			
 			class:input-error={!currAuthStep.data.compInn.isValid}/>
 		{#if !currAuthStep.data.compInn.isValid}
 			<span class="input-error">Некорректный инн юридического лица</span>
 		{/if}
 	</div>
 
-	<div>
+	<div class='w-v50'>
 		<label 
 			class='label-close' 
-			for="kpp">
+			for="AuthPasswkpp">
 			КПП организации
 		</label>
 		<input 
 			class="input-gr"
-			id="kppOrg" 
+			id="AuthPasswkpp" 
 			type="text" 
 			bind:value={currAuthStep.data.kpp.value}
 			disabled={isPushed} 
@@ -99,11 +98,11 @@
 	</div>
 </div>
 
-<div class="group-2">
-	<div>
-		<label class='label-close' for="password">Пароль</label>
+<div class="w-40 x-self-l">
+	<div class='w-v50'>
+		<label class='label-close' for="AuthPasswpassword">Пароль</label>
 		<input 
-			id="password" 
+			id="AuthPasswpassword" 
 			class="input-gr"
 			type="password" 
 			bind:value={currAuthStep.data.password.value}
@@ -116,13 +115,13 @@
 		{/if}
 	</div>
 	
-	<div>
-		<label class='label-close' for='authEnterBut'>
-			
+	<div class='w-v50'>
+		<label class='label-close' for='AuthPassEnterBut'>
+			&nbsp;
 		</label>
 		<button 
 			type="button" 
-			class="but-gr"
+			class="but-gr x-self-c"
 			onclick={handleAuthSubmit}
 			disabled={
 				isPushed || 
@@ -131,17 +130,11 @@
 				!currAuthStep.data.kpp.isValid || 
 				!currAuthStep.data.password.isValid
 			}
-			
-			id="authEnterBut"
+			id="AuthPassEnterBut"
 		>
-			<span class="span-cut">
-				{#if isPushed}⏳{:else}🔑{/if}
-			</span>
 			<span class="span-cut">
 				{#if isPushed}Вход...{:else}Отправить{/if}
 			</span>
 		</button>
 	</div>
-	
-
 </div>

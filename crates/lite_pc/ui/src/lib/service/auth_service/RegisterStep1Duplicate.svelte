@@ -33,12 +33,12 @@
 
 </script>
 
-<div class='group-3'>
-	<h3 class='text-cut text-c text-base text-box'>Данные дубликата</h3>
+<div class='w-60 x-self-l'>
+	<h4 class='w-v100 x-ce'>Данные дубликата</h4>
 </div>
 
-<div class="group-3">
-	<div>
+<div class="w-60 x-self-l">
+	<div class='w-v33 x-self-c'>
 		<label class='label-close' for='AuthDuplSurName'>
 			Фамилия
 		</label>
@@ -51,7 +51,7 @@
 		>
 	</div>
 
-	<div>
+	<div class='w-v33 x-self-c'>
 		<label class='label-close' for='AuthDuplName'>
 			Имя
 		</label>
@@ -64,7 +64,7 @@
 		>
 	</div>
 
-	<div>
+	<div class='w-v33 x-self-c'>
 		<label class='label-close' for='AuthDuplMidName'>
 			Отчество
 		</label>
@@ -78,8 +78,8 @@
 	</div>
 </div>
 
-<div class='group-2'>
-	<div>
+<div class='w-50 x-self-l'>
+	<div class='w-v50 x-self-l'>
 		<label class='label-close' for='AuthDuplPersInn'>
 			ИНН физлица
 		</label>
@@ -92,7 +92,7 @@
 		>
 	</div>
 
-	<div>
+	<div class='w-v50 x-self-l'>
 		<label class='label-close' for='AuthDuplSnils'>
 			СНИЛС
 		</label>
@@ -107,8 +107,8 @@
 </div>
 
 
-<div class='group-2'>
-	<div>
+<div class='w-50 x-self-l'>
+	<div class='w-v50 x-self-l'>
 		<label class='label-close' for='AuthDupCompInn'>
 			ИНН организации
 		</label>
@@ -121,7 +121,7 @@
 		>
 	</div>
 
-	<div>
+	<div class='w-v50 x-self-l'>
 		<label class='label-close' for='AuthDupKpp'>
 			КПП
 		</label>
@@ -135,8 +135,8 @@
 	</div>
 </div>
 
-<div class="group-2">
-	<div>
+<div class="w-50 x-self-l">
+	<div class='w-v50 x-self-l'>
 		<label class='label-close' for='AuthDupPhone'>
 			Телефон
 		</label>
@@ -149,7 +149,7 @@
 		>
 	</div>
 
-	<div>
+	<div class='w-v50 x-self-l'>
 		<label class='label-close' for='AuthDupEmail'>
 			Email
 		</label>

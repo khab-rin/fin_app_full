@@ -78,8 +78,8 @@
 
 </script>
 
-<section class='group-2'>
-    <div>
+<section class='w-40 s-self-l'>
+    <div class='w-v100'>
         <label class='label-close' for='AuthStep2docFile'>
             Сохранить файл в формате doc
         </label>
@@ -95,13 +95,15 @@
             onclick={() => saveDoc(docFileBytesArray, 'doc')}
             disabled={isSaved['doc']}
         >
-            Сохранить
+            <span class='x-self-c'>
+				 Сохранить
+			</span>
         </button>
     </div>
 </section>
 
-<section class='group-2'>
-    <div>
+<section class='w-40 s-self-l'>
+    <div class='w-v100'>
         <label class='label-close' for='AuthStep2jsonFile'>
             Сохранить файл в формате json
         </label>
@@ -117,7 +119,10 @@
             onclick={() => saveDoc(jsonFileByteArray, 'json')}
             disabled={isSaved['json']}
         >
-            Сохранить
+			<span class='x-self-c'>
+				 Сохранить
+			</span>
+           
         </button>
     </div>
 

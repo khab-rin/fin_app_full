@@ -16,24 +16,24 @@
 
 </script>
 
-<section class='group-one'>
-
+<section class='w-40'>
 	<button
-		class='green-button'
+		class='but-gr'
 		type='button'
 		disabled={false}
 		onclick={goToFnsReports}
 	>
 		Отчеты для налоговой
 	</button>
+</section>
 
+<section class='w-40'>
 	<button
-		class='green-button'
+		class='but-gr'
 		type='button'
 		disabled={false}
 		onclick={goToHomeReports}
 	>
 		Внутренние управленческие отчеты
 	</button>
-
 </section>

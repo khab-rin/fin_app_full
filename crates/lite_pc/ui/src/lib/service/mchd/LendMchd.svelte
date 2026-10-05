@@ -68,31 +68,32 @@
 
 </script>
 
-<section class="group-one">
-    <div>
-        <label class="green-field-label" for="xmlFileInput">
+<section class="w-40">
+    <div class='w-v100'>
+        <label class="label-close" for="xmlFileInput">
             Загрузите путь до XML файла доверенности
         </label>
         <input
             type="text"
             id="xmlFileInput"
             value={xmlFilePath}
-            class="green-field"
+            class="input-gr"
         />
         <button
             type="button"
             id="xmlFileButton"
-            class="green-button"
+            class="but-gr"
             onclick={getXmlFilePath}
             disabled={isLoadXmlFilePushed}
             >
             Загрузите xml файл
         </button>
-
     </div>
+</section>
 
-    <div>
-        <label class="green-field-label" for="sigFileInput">
+<section class='w-40'>
+    <div class='w-v100'>
+        <label class="label-close" for="sigFileInput">
             Загрузите путь до файла ЭЦП
         </label>
   
@@ -100,12 +101,12 @@
             type="text"
             id="sigFileInput"
             value={sigFilePath}
-            class="green-field"
+            class="input-gr"
         />
         <button
             type="button"
             id="sigFileButton"
-            class="green-button"
+            class="but-gr"
             onclick={getSigFilePath}
             disabled={isLoadSigFilePushed}
             >
@@ -115,17 +116,14 @@
     </div>
 </section>
 
-<div class="blue-group">
+<div class="w-40">
     <button
         type="button"
         id='lendMchdButton'
-        class='blue-button'
+        class='but-bl'
         disabled={isLendMchdPushed || isDataReady}
         onclick={LendMchd}
-
         >
-        <span class='blue-button-span'>Отправить файлы на регистрацию</span>
+        <span class='span-close'>Отправить файлы на регистрацию</span>
     </button>
-
-
 </div>

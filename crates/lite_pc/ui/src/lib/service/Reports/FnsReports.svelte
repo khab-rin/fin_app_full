@@ -78,9 +78,8 @@
 	});
 </script>
 
-
 <dialog
-	class='dialog-top-left'
+	class='dialog-top-l'
 	id='reportsFnsAllTypes'
 	onclick={dialogBackdrop}
 >
@@ -101,7 +100,7 @@
 </dialog>
 
 <dialog
-	class='dialog-top-left'
+	class='dialog-top-l'
 	id='reportsFnsAllQuats'
 	onclick={dialogBackdrop}
 >

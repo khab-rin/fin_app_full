@@ -22,30 +22,16 @@
 <svelte:component this={reportManager.getPage}/>
 
 
-<section class='group-two'>
+<section class='w-40'>
 	<button
 		type="button"
-		class="blue-button"
+		class="but-bl"
 		onclick={goToLoading}
 		>
-		<span class="blue-button-span">
+		<span>
 			Меню отчетов
 		</span>
 	</button>
-
-
-
-	<button
-		type="button"
-		class="blue-button"
-		onclick={closeReport}
-		>
-		<span class="blue-button-span">
-			Основной экран
-		</span>
-	</button>
-
-
 </section>
 
 

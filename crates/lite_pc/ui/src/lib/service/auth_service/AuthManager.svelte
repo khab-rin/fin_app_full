@@ -4,7 +4,6 @@
 
     import type { AuthStep } from "$lib/models/rustModels/AuthStep";
 
-
     let isPassword = $derived(AuthStepType.Password in currAuthStep.step);
     let isRegistrerStep1 = $derived(AuthStepType.RegisterStep1 in currAuthStep.step);
     let isRegistrerStep2 = $derived(AuthStepType.RegisterStep2 in currAuthStep.step);
@@ -32,13 +31,12 @@
 </script>
 
 
-<div class="group-5">
-	<p 
-		class="text-c text-base text-fill text-box"
-	>
+<div class="w-100">
+	<h4 class='w-g100 x-self-c x-ce t-fill'>
 		{currAuthStep.currentText}
-	</p>
+	</h4>
 </div>
+
 
 
 {#if currAuthStep.getPage}
@@ -49,65 +47,74 @@
 {/if}
 
 
-<div class='group-2'>
-	<h5
-		class='text-base text-c text-fill'
-	> Навигация по авторизации </h5>
+<div class='w-40 x-self-l'>
+	<h5 class='w-g100 t-fill x-ce'>
+		Навигация по авторизации 
+	</h5>
 </div>
 
 
 
-<section class="group-2">
-	<div class='row-50'>
+<section class="w-40">
+	<div  class='w-g50'>
 		<button
 			class="but-pu"
 			type="button"
 			hidden={isPassword}
 			onclick={goToPassword}
-		>
-			Вход по паролю
+		>	
+			<span class='w-g100 x-ce'>
+				Вход по паролю
+			</span>
+			
 		</button>
 	</div>
 	
-	<div class='row-50'>
+	<div  class='w-g50'>
 		<button
 			class="but-pu"
 			type="button"
 			hidden={isRegistrerStep1}
 			onclick={goToRegisterStep1}
-		>
-			Регистрация шаг 1
+		>	
+			<span class='w-g100 x-ce'>
+				Регистрация шаг 1
+			</span>
 		</button>
 	</div>
 </section>
 
-<section class="group-2">
-	<div class='row-50'>
+<section class="w-40">
+	<div class='w-v50'>
 		<button
 			class="but-pu"
 			type="button"
 			hidden={isRegistrerStep2}
 			onclick={goToRegisterStep2}
 		>
-			Регистрация шаг 2
+			<span class='w-g100 x-ce'>
+				Регистрация шаг 2
+			</span>
 		</button>
 	</div>
 	
-	<div class='row-50'>
+	<div class='w-v50'>
 		<button
 			class="but-pu"
 			type="button"
 			hidden={isNickName}
 			onclick={goToNickName}
 		>
-			Войти как
+			<span class='w-g100 x-ce'>
+				Войти как
+			</span>
 		</button>
 	</div>
 	
 </section>
 
-<!-- <section class='group-5'>
-	<div class='row-50'>
+<!-- <section class='w-g100'>
+	<div class='w-v50'>
 		<div class='row-20'>
 			<button 
 				class='but-gr'
@@ -165,8 +172,8 @@
 		</div>
 	</div>
 
-	<div class='row-50'>
-		<div class='row-50'>
+	<div class='w-v50'>
+		<div class='w-v50'>
 			<button 
 				class='but-gr'
 				type='button'
@@ -177,7 +184,7 @@
 
 			</button>
 		</div>
-		<div class='row-50'>
+		<div class='w-v50'>
 			<button 
 				class='but-gr'
 				type='button'
