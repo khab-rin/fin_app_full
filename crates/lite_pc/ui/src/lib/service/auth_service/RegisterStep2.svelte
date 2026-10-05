@@ -105,8 +105,8 @@
 
 
 
-<section class="group-2">
-    <div>
+<section class="w-40 x-self-l">
+    <div class='w-v100'>
         <label class="label-close" for="AuthStep2jsonFilePath">
             Загрузите путь до json файла
         </label>
@@ -124,16 +124,17 @@
             onclick={getJsonFilePath}
             disabled={isLoadJsonFile}
         >
-            Загрузите json файл
+			<span class="x-self-c">
+				Загрузите json файл
+			</span>
+            
         </button>
 
     </div>
 </section>
 
-<section class='group-2'>
-
-
-    <div>
+<section class='w-40 x-self-l'>
+    <div class='w-v100'>
         <label class="label-close" for="AuthStep2signFilePath">
             Загрузите путь до файла ЭЦП
         </label>
@@ -152,14 +153,16 @@
             onclick={getSignFilePath}
             disabled={isLoadSignFile}
         >
-            Загрузите файл подписи
+			<span class="x-self-c">
+				Загрузите файл подписи
+			</span> 
         </button>
 
     </div>
 </section>
 
-<section class='group-2'>
-	<div>
+<section class='w-40 x-self-l'>
+	<div class='w-v100'>
 		<button
 			type="button"
 			id='AuthButRegister'
@@ -168,7 +171,7 @@
 			onclick={register}
 
 		>
-			<span class='span-fill'>Отправить файлы на регистрацию</span>
+			<span class='x-self-c'>Отправить файлы на регистрацию</span>
 		</button>
 	</div>
 </section>

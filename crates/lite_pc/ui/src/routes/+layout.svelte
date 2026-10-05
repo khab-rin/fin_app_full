@@ -32,7 +32,7 @@
 
 	<header class='zone-top'>
 		<div>
-			<span>{pageManager.compName}</span>
+			<span class='t-base t-italic'>{pageManager.compName}</span>
 		</div>
 
 		<button 
@@ -44,63 +44,69 @@
 
 	<aside class='zone-left'>
 		{#if !pageManager.totalOff}
-			<div class='group-5'>
-				<div class='row-100'>
+			<div class='w-100'>
+				<div class='w-v100'>
 					<label
-						class='label-close'
+						class='label-close x-self-l'
 						for='mainOperationButton'
 					>
 						Раздел операций
 					</label>
 					<button
 						type='button'
-						class='but-pu'
+						class='but-bl'
 						id='mainOperationButton'
 						disabled={pageManager.totalOff}
 						onclick={goToOperation}
 					>
-						Операции
+						<span class='t-base x-self-c  t-bold'>
+							Операции
+						</span>
 					</button>
 				</div>
 			</div>
 
-			<div class='group-5'>
+			<div class='w-100'>
 
-				<div class='row-100'>
+				<div class='w-v100'>
 					<label
-						class='label-close'
+						class='label-close x-self-l'
 						for='mainReportsButton'
 					>
 						Раздел отчетов
 					</label>
 					<button
 						type='button'
-						class='but-pu'
+						class='but-bl'
 						id='mainReportsButton'
 						disabled={pageManager.totalOff}
 						onclick={goToReports}
 					>
-						Отчеты
+						<span class='t-base x-self-c t-bold'>
+							Отчеты
+						</span>
 					</button>
 				</div>
 			</div>
 
-			<div class='group-5'>
-				<div class='row-100'>
+			<div class='w-100'>
+				<div class='w-v100'>
 					<label
-						class='label-close'
+						class='label-close x-self-l'
 						for='mainMchdButton'
 					>
 						Раздел доверенностей
 					</label>
 					<button
 						type='button'
-						class='but-pu'
+						class='but-bl'
 						id='mainMchdButton'
 						disabled={pageManager.totalOff}
 						onclick={goToMchd}
 					>
-						Доверенности
+						<span class='t-base x-self-c t-bold'>
+							Доверенности
+						</span>
 					</button>
 				</div>
 			</div>

@@ -67,7 +67,7 @@
 		<ul class='list-ver'>
 			{#each currAuthStep.nick_names as nick}
 				<li>
-					<div class='group-5'>
+					<div class='w-100'>
 						<button
 							type='button'
 							class='but-ye'
@@ -84,7 +84,7 @@
 			{/each}
 		</ul>
 	{:else}
-		<div class='group-5'>
+		<div class='w-100'>
 			<p>На этом устройстве еще нет сохраненных аккаунтов</p>
 		</div>
 	{/if}
@@ -105,8 +105,8 @@
 
 
 
-<div class='group-2'>
-	<div class='row-50'>
+<div class='w-40 x-self-l'>
+	<div class='w-g50'>
 		<button
 			type="button"
 			class="but-gr"
@@ -115,13 +115,13 @@
 			onclick={()=> {openAccountsModal('AuthNickNames')}}
 		>
 
-			<span class="span-fill">
+			<span class="text-fill">
 				- {currNick ? currNick : "Выберите из доступных пользователей" } -
 			</span>
 		</button>
 	</div>
 	
-	<div class='row-50'>
+	<div class='w-g50'>
 		{#if currNick}
 			<button 
 				type="button" 
@@ -130,9 +130,9 @@
 				onclick={() => call_nick_handle(currNick)}
 			>
 				{#if IsPushed}
-					<span class="span-cut">Проверка...</span>
+					<span class="text-cut">Проверка...</span>
 				{:else}
-					<span class="span-fill">Войти как {currNick}</span>
+					<span class="text-fill">Войти как {currNick}</span>
 				{/if}
 			</button>
 		{/if}

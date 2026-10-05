@@ -45,7 +45,7 @@ class MchdManager {
 
         userSurName: new FieldValidator("SurName", "Хабипов"),
         userFirstName: new FieldValidator("FirstName", "Радик"),
-        userMidName: new FieldValidator("MidName", "Ринатович"),
+        userMidName: new FieldValidator("MidName", "Ришатович"),
         userBirthDay: new FieldValidator("Date", "17.08.1988"),
         userGender: new FieldValidator("Gender", "1"),
         userSnils: new FieldValidator("Snils", "12233162502"),

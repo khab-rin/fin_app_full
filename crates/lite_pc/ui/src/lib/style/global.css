@@ -1,3 +1,4 @@
+@import './pc_aligns';
 @import './pc_auth_pooling.css';
 @import './pc_buttons.css';
 @import './pc_dialog.css';
@@ -5,7 +6,6 @@
 @import './pc_input.css';
 @import './pc_label.css';
 @import './pc_lists.css';
-@import './pc_span.css';
 @import './pc_text.css';
 @import "./pc_zones.css";
 @import './pc_zone_top.css';

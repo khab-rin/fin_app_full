@@ -158,8 +158,8 @@
 </script>
 
 {#if firstStep}
-	<section class="group-2">
-		<div>
+	<section class="w-40">
+		<div class='w-v50'>
 			<label class="label-close" for="MchdBtbPoaNumber">Внутренний номер доверенности организации</label>
 			<input
 				id="MchdBtbPoaNumber"
@@ -175,7 +175,7 @@
 			{/if}
 		</div>
 
-		<div>
+		<div class='w-v50'>
 			<label class="label-close" for="MchdBtbPoaEndDate">Дата до которой действует доверенность</label>
 			<input
 				id="MchdBtbPoaEndDate"
@@ -187,12 +187,12 @@
 				class:input-error={!currentMchdStep.data.PoaNumber.isValid}
 			/>
 			{#if !currentMchdStep.data.PoaEndDate.isValid}
-				<span class="span-fill">Некорректная дата</span>
+				<span class="text-fill">Некорректная дата</span>
 			{/if}
 		</div>
 	</section>
 
-	<div class='group-2'>
+	<div class='w-40'>
 		<button
 			type="button"
 			onclick={switchSecondStep}
@@ -201,7 +201,7 @@
 			id="MchdBtbmchd-tax-firstStep-button"
 			
 		>
-			<span class="span-fill">
+			<span class="text-fill">
 				Завершить 1 этап
 			</span>
 
@@ -211,9 +211,15 @@
 
 
 {#if secondStep}
-	<section class="group-2">
-		<div>
-			<label class="label-close" for="MchdBtbmanagerTitle">Должность лица действующего без доверенности (руководителя организации)</label>
+	<section class='w-66 x-self-l'>
+		<h5 class='w-v100 x-self-c x-ce t-fill'>
+			Заполните данные лица с правом действия без доверенности
+		</h5>
+	</section>
+
+	<section class="w-40">
+		<div class='w-v50'>
+			<label class="label-close t-fill" for="MchdBtbmanagerTitle">Должность лица действующего без доверенности (руководителя организации)</label>
 			<input
 				id="MchdBtbmanagerTitle"
 				type="text"
@@ -224,13 +230,31 @@
 				class:input-error={!currentMchdStep.data.managerTitle.isValid}
 			/>
 			{#if !currentMchdStep.data.managerTitle.isValid}
-				<span class="span-fill">Введите должность</span>
+				<span class="text-fill">Введите должность</span>
+			{/if}
+		</div>
+		<div class='w-v50'>
+			<label class="label-close t-fill" for="MchdBtbuserIsCitizen">Гражданство</label>
+			<select
+				id="MchdBtbuserIsCitizen"
+				bind:value={currentMchdStep.data.userIsCitizen.value}
+				disabled={isMainPushed}
+				class="input-gr"
+				class:input-error={!currentMchdStep.data.userIsCitizen.isValid}
+			>
+				<option value="" disabled selected>Выберите статус гражданства</option>
+				<option value="1">1 — Гражданин РФ</option>
+				<option value="2">2 — Иностранный гражданин</option>
+				<option value="3">3 — Лицо без гражданства</option>
+			</select>
+			{#if !currentMchdStep.data.userIsCitizen.isValid}
+				<span class="text-fill">Выберите статус из списка</span>
 			{/if}
 		</div>
 	</section>
 
-	<section class='group-3'>
-		<div>
+	<section class='w-60'>
+		<div  class='w-v33'>
 			<label class="label-close" for="MchdBtbmamagerSurName">Фамилия лица действующего без доверенности (руководителя организации)</label>
 			<input
 				id="MchdBtbmamagerSurName"
@@ -242,11 +266,11 @@
 				class:input-error={!currentMchdStep.data.managerSurName.isValid}
 			/>
 			{#if !currentMchdStep.data.managerSurName.isValid}
-				<span class="span-fill">Введите фамилию</span>
+				<span class="text-fill">Введите фамилию</span>
 			{/if}
 		</div>
 
-		<div>
+		<div  class='w-v33'>
 			<label class="label-close" for="MchdBtbmamagerFirstName">Имя лица действующего без доверенности (руководителя организации)</label>
 			<input
 				id="MchdBtbmamagerFirstName"
@@ -258,11 +282,11 @@
 				class:input-error={!currentMchdStep.data.managerFirstName.isValid}
 			/>
 			{#if !currentMchdStep.data.managerFirstName.isValid}
-				<span class="span-fill">Введите имя</span>
+				<span class="text-fill">Введите имя</span>
 			{/if}
 		</div>
 
-		<div>
+		<div  class='w-v33'>
 			<label 
 				class="label-close" for="MchdBtbmanagerMidName"
 			>Отчество  лица действующего без доверенности (руководителя организации)</label>
@@ -276,12 +300,12 @@
 				class:input-error={!currentMchdStep.data.managerMidName.isValid}
 			/>
 			{#if !currentMchdStep.data.managerMidName.isValid}
-				<span class="span-fill">Введите отчество</span>
+				<span class="text-fill">Введите отчество</span>
 			{/if}
 		</div>
 	</section>
 
-	<section class='group-3'>
+	<section class='w-60'>
 		<div>
 			<label class="label-close" for="MchdBtbmanagerBirthDay">Дата рождения лица действующего без доверенности (руководителя организации)</label>
 			<input
@@ -294,7 +318,7 @@
 				class:input-error={!currentMchdStep.data.managerBirthDay.isValid}
 			/>
 			{#if !currentMchdStep.data.managerBirthDay.isValid}
-				<span class="span-fill">Некорректная дата</span>
+				<span class="text-fill">Некорректная дата</span>
 			{/if}
 		</div>
 
@@ -310,7 +334,7 @@
 				class:input-error={!currentMchdStep.data.managerSnils.isValid}
 			/>
 			{#if !currentMchdStep.data.managerSnils.isValid}
-				<span class="span-fill">Некорректный СНИЛС</span>
+				<span class="text-fill">Некорректный СНИЛС</span>
 			{/if}
 		</div>
 
@@ -326,34 +350,12 @@
 				class:input-error={!currentMchdStep.data.managerInn.isValid}
 			/>
 			{#if !currentMchdStep.data.managerInn.isValid}
-				<span class="span-fill">Некорректный ИНН</span>
+				<span class="text-fill">Некорректный ИНН</span>
 			{/if}
 		</div>
 	</section>
 
-	<section class='group-2'>
-
-		<div class="input-gr-select">
-			<label class="label-close" for="MchdBtbuserIsCitizen">Гражданство</label>
-			<select
-				id="MchdBtbuserIsCitizen"
-				bind:value={currentMchdStep.data.userIsCitizen.value}
-				disabled={isMainPushed}
-				class="input-gr"
-				class:input-error={!currentMchdStep.data.userIsCitizen.isValid}
-			>
-				<option value="" disabled selected>Выберите статус гражданства</option>
-				<option value="1">1 — Гражданин РФ</option>
-				<option value="2">2 — Иностранный гражданин</option>
-				<option value="3">3 — Лицо без гражданства</option>
-			</select>
-			{#if !currentMchdStep.data.userIsCitizen.isValid}
-				<span class="span-fill">Выберите статус из списка</span>
-			{/if}
-		</div>
-	</section>
-
-	<section class='group-2'>
+	<section class='w-40'>
 		<button
 			type="button"
 			onclick={switchThirdStep}
@@ -361,7 +363,7 @@
 			class="but-gr"
 			id="MchdBtbmchd-tax-secondStep-button"
 		>
-			<span class="span-fill">
+			<span class="text-fill">
 				Завершить 2 этап
 			</span>
 		</button>
@@ -370,8 +372,14 @@
 
 
 {#if thirdStep}
-	<section class="group-3">
-		<div>
+	<section class='w-60 s-self-l'>
+		<h4 class='t-fill x-self-c x-ce'>
+			Заполните данные доверителя
+		</h4>
+	</section>
+
+	<section class="w-66">
+		<div class='w-v33'>
 			<label class="label-close" for="MchdBtbuserSurName">Фамилия пользователя</label>
 			<input
 				id="MchdBtbuserSurName"
@@ -383,11 +391,11 @@
 				class:input-error={!currentMchdStep.data.userSurName.isValid}
 			/>
 			{#if !currentMchdStep.data.userSurName.isValid}
-				<span class="span-fill">Введите фамилию</span>
+				<span class="text-fill">Введите фамилию</span>
 			{/if}
 		</div>
 
-		<div>
+		<div class='w-v33'>
 			<label class="label-close" for="MchdBtbuserFirstName">Имя пользователя</label>
 			<input
 				id="MchdBtbuserFirstName"
@@ -399,11 +407,11 @@
 				class:input-error={!currentMchdStep.data.userFirstName.isValid}
 			/>
 			{#if !currentMchdStep.data.userFirstName.isValid}
-				<span class="span-fill">Введите имя</span>
+				<span class="text-fill">Введите имя</span>
 			{/if}
 		</div>
 
-		<div>
+		<div class='w-v33'>
 			<label class="label-close" for="MchdBtbuserMidName">Отчество пользователя</label>
 			<input
 				id="MchdBtbuserMidName"
@@ -415,13 +423,13 @@
 				class:input-error={!currentMchdStep.data.userMidName.isValid}
 			/>
 			{#if !currentMchdStep.data.userMidName.isValid}
-				<span class="span-fill">Введите отчество</span>
+				<span class="text-fill">Введите отчество</span>
 			{/if}
 		</div>
 	</section>
 
-	<section class='group-3'>
-		<div>
+	<section class='w-66'>
+		<div class='w-v33'>
 			<label class="label-close" for="MchdBtbuserBirthDay">Дата рождения пользователя</label>
 			<input
 				id="MchdBtbuserBirthDay"
@@ -433,11 +441,11 @@
 				class:input-error={!currentMchdStep.data.userBirthDay.isValid}
 			/>
 			{#if !currentMchdStep.data.userBirthDay.isValid}
-				<span class="span-fill">Некорректная дата</span>
+				<span class="text-fill">Некорректная дата</span>
 			{/if}
 		</div>
 
-		<div>
+		<div class='w-v33'>
 			<label class="label-close" for="MchdBtbuserGender">Пол пользователя</label>
 			<select 
 				id="MchdBtbuserGender"
@@ -452,7 +460,7 @@
 			</select>
 		</div>
 
-		<div>
+		<div class='w-v33'>
 			<label class="label-close" for="MchdBtbuserIsCitizen">Гражданство</label>
 			<select
 				id="MchdBtbuserIsCitizen"
@@ -467,13 +475,13 @@
 				<option value="3">3 — Лицо без гражданства</option>
 			</select>
 			{#if !currentMchdStep.data.userIsCitizen.isValid}
-				<span class="span-fill">Выберите статус из списка</span>
+				<span class="text-fill">Выберите статус из списка</span>
 			{/if}
 		</div>
 	</section>
 
-	<section class=group-2>
-		<div>
+	<section class=w-40>
+		<div class='w-v50'>
 			<label class="label-close" for="MchdBtbuserSnils">СНИЛС пользователя</label>
 			<input
 				id="MchdBtbuserSnils"
@@ -485,11 +493,11 @@
 				class:input-error={!currentMchdStep.data.userSnils.isValid}
 			/>
 			{#if !currentMchdStep.data.userSnils.isValid}
-				<span class="span-fill">Некорректный СНИЛС</span>
+				<span class="text-fill">Некорректный СНИЛС</span>
 			{/if}
 		</div>
 
-		<div>
+		<div class='w-v50'>
 			<label class="label-close" for="MchdBtbuserInn">ИНН пользователя</label>
 			<input
 				id="MchdBtbuserInn"
@@ -501,13 +509,13 @@
 				class:input-error={!currentMchdStep.data.userInn.isValid}
 			/>
 			{#if !currentMchdStep.data.userInn.isValid}
-				<span class="span-fill">Некорректный ИНН</span>
+				<span class="text-fill">Некорректный ИНН</span>
 			{/if}
 		</div>
 	</section>
 
-	<section class='group-3'>
-		<div>
+	<section class='w-60'>
+		<div class='w-v33'>
 			<label class="label-close" for="MchdBtbuserPassportNumber">Серия и номер паспорта</label>
 			<input
 				id="MchdBtbuserPassportNumber"
@@ -520,7 +528,7 @@
 			/>
 		</div>
 
-		<div>
+		<div class='w-v33'>
 			<label class="label-close" for="MchdBtbuserPassportNumber">Дата выдачи пасспорта</label>
 			<input
 				id="MchdBtbuserPassportNumber"
@@ -532,7 +540,7 @@
 				class:input-error={!currentMchdStep.data.userPassportIssueDate.isValid}
 			/>
 		</div>
-		<div>
+		<div class='w-v33'>
 			<label class="label-close" for="MchdBtbuserPassportUssuerCode">Код подразделения</label>
 			<input
 				id="MchdBtbuserPassportUssuerCode"
@@ -546,8 +554,8 @@
 		</div>
 	</section>
 
-	<section class='group-3'>
-		<div>
+	<section class='w-60'>
+		<div class='w-v100'>
 			<label class="label-close" for="MchdBtbuserPassportIssueer">Кем выдан пасорт  пользователя</label>
 			<input
 				id="MchdBtbuserPassportIssueer"
@@ -562,14 +570,14 @@
 
 	</section>
 
-	<section class='group-2'>
+	<section class='w-40'>
 		<button
 			type="button"
 			onclick={ switchForthStep }
 			disabled={isMainPushed || thirdDone}
 			class="but-gr"
 		>
-			<span class="span-fill">
+			<span class="text-fill">
 				Завершить 3 этап
 			</span>
 		</button>
@@ -579,117 +587,123 @@
 
 
 {#if forthStep}
-	<h3 class="h3">Выберите полномочия</h3>
+	<section class='w-100'>
+		<h4 class='w-v100 t-fill x-self-c x-ce'>
+			Выберите полномочия
+		</h4>
+	</section>
 
-	<div class='group-5'>
+	<div class='w-100'>
 		<input
-			class='row-5'
+			class='w-g5 x-self-c y-self-c'
 			type="checkbox"
 			checked={allPowersSelected}
 			onchange={() => selectAllPowers()}
 		/>
 
-		<div class='row-95'>
+		<div class='w-g95'>
 			<button
-				class='but-gr'
+				class='but-bl'
+				type="button"
 				onclick={() => selectAllPowers()}
+				style={allPowersSelected 
+					? "background-color: #1d4ed8 !important; border-color: #1e40af !important; color: #ffffff !important;" 
+					: ""
+				}
 			>
-				<span class='span-fill span-l'>
-					Выбрать все машинописные полномочия для взаимодействия с ФНС РФ
+				<span class='t-fill x-self-l x-st'>
+					Выбрать все машинописные полномочия для взаимодействия с контрагентами
 				</span>
 			</button>
 		</div>
 	</div>
 
-
-	<ui>
-		{#each allPowers as power (power)}
-			<li>
-				<div class="group-5">
-					<label
-						class='label-close'
-						for={power}
-					>
-						{power}
-					</label>
-					<div 
-						class='text-check-box'
-						id={power}
-					>
-						<span> 
-							{#await currentMchdStep.get_power_info(power)}
-								Загрузка
-							{:then info} 
-								{info?.name}
-							{:catch error}
-								Ошибка
-							{/await}
-						</span>	
-						<input
-							type="checkbox"
-							checked={selectedPowers.has(power)}
-							onchange={() => togglePower(power)}
-							disabled={allPowersSelected}
-						/>
-					</div>
-				</div>
-			</li>
-		{/each}
-	</ui>
+	{#each allPowers as power (power)}
+		<section class='w-100'>
+			<input
+				class='w-g5 x-self-c y-self-c'
+				type='checkbox'
+				checked={selectedPowers.has(power)}
+				onchange={() => togglePower(power)}
+			>
+			<div class='w-g95'>
+				<button
+					class="but-gr"
+					type="button"
+					onclick={() => togglePower(power)}
+					style={selectedPowers.has(power) 
+						? "background-color: #15803d !important; border-color: #166534 !important; color: #ffffff !important;" 
+						: ""
+					}
+						
+				>
+					<span class='t-fill w-g100 x-st'>
+						{#await currentMchdStep.get_power_info(power)}
+							Загрузка
+						{:then info} 
+							{info?.code} - {info?.name}
+						{:catch error}
+							ошибка - {error}
+						{/await}
+					</span>	
+				</button>
+			</div>
+		</section>
+	{/each}
 {/if}
 
 
 
-<section class='group-2'>
-    <div>
+<section class='w-40'>
+    <div class='w-v50'>
         <button
             class="but-pu"
             type="button"
             hidden={firstStep}
             onclick={switchFirstStep}
         >
-            <span class="span-cut">
+            <span class="text-cut">
                 Этап 1
             </span>
         </button>
     </div>
 
-    <div>
+    <div class='w-v50'>
         <button
             class="but-pu"
             type="button"
             hidden={secondStep}
             onclick={switchSecondStep}
         >
-            <span class="span-cut">
+            <span class="text-cut">
                 Этап 2
             </span>
         </button>
     </div>
 </section>
 
-<section class='group-2'>
-    <div>
+<section class='w-40'>
+    <div class='w-v50'>
         <button
             class="but-pu"
             type="button"
             hidden={thirdStep}
             onclick={switchThirdStep}
         >
-            <span class="span-cut">
+            <span class="text-cut">
                 Этап 3
             </span>
         </button>
     </div>
 
-    <div>
+    <div class='w-v50'>
         <button
             class="but-pu"
             type="button"
             hidden={forthStep}
             onclick={switchForthStep}
         >
-            <span class="span-cut">
+            <span class="text-cut">
                 Этап 4
             </span>
         </button>
@@ -697,7 +711,7 @@
 </section>
 
 
-<section class='group-2'>
+<section class='w-40'>
 	<button
 		type="button"
 		id="MchdBtbMchdBtbLendBut"

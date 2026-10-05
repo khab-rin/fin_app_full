@@ -1,4 +1,117 @@
 /* Базовый каркас для всех групп */
+.w-5, .w-10, .w-15, .w-20, .w-25, .w-30, .w-33, .w-35, .w-40, .w-45, .w-50,
+.w-55, .w-60, .w-66, .w-65, .w-70, .w-75, .w-80, .w-85, .w-90, .w-95, .w-100 {
+    display: flex;
+    flex-direction: row; 
+    flex-wrap: nowrap; 
+    align-items: flex-end; 
+    gap: 12px; 
+		border: 1px solid rgba(255, 255, 255, 0.08);
+    background-color: rgba(255, 255, 255, 0.05);  
+    border-radius: 12px;
+    box-sizing: border-box;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+		margin: 5px;
+		padding: 5px;
+}
+
+
+.w-5   { width: calc(5% - 10px) !important; }
+.w-10  { width: calc(10% - 10px) !important; }
+.w-15  { width: calc(15% - 10px) !important; }
+.w-20  { width: calc(20% - 10px) !important; }
+.w-25  { width: calc(25% - 10px) !important; }
+.w-30  { width: calc(30% - 10px) !important; }
+.w-33  { width: calc(33% - 10px) !important; }
+.w-35  { width: calc(35% - 10px) !important; }
+.w-40  { width: calc(40% - 10px) !important; }
+.w-45  { width: calc(45% - 10px) !important; }
+.w-50  { width: calc(50% - 10px) !important; }
+.w-55  { width: calc(55% - 10px) !important; }
+.w-60  { width: calc(60% - 10px) !important; }
+.w-65  { width: calc(65% - 10px) !important; }
+.w-66  { width: calc(66% - 10px) !important; }
+.w-70  { width: calc(70% - 10px) !important; }
+.w-75  { width: calc(75% - 10px) !important; }
+.w-80  { width: calc(80% - 10px) !important; }
+.w-85  { width: calc(85% - 10px) !important; }
+.w-90  { width: calc(90% - 10px) !important; }
+.w-95  { width: calc(95% - 10px) !important; }
+.w-100 { width: calc(100% - 10px) !important; }
+
+.w-g5, .w-g10, .w-g15, .w-g20, .w-g25, .w-g30, .w-g33, .w-g35, .w-g40, .w-g45, .w-g50,
+.w-g55, .w-g60, .w-g65, .w-g66, .w-g70, .w-g75, .w-g80, .w-g85, .w-g90, .w-g95, .w-g100 {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 12px; 
+    box-sizing: border-box !important; 
+    min-width: 0 !important;  
+		margin: 0;
+		padding: 0;
+}
+
+.w-g5   { flex: 0 1 5% !important; }
+.w-g10  { flex: 0 1 10% !important; }
+.w-g15  { flex: 0 1 15% !important; }
+.w-g20  { flex: 0 1 20% !important; }
+.w-g25  { flex: 0 1 25% !important; }
+.w-g30  { flex: 0 1 30% !important; }
+.w-g33  { flex: 0 1 33% !important; }
+.w-g35  { flex: 0 1 35% !important; }
+.w-g40  { flex: 0 1 40% !important; }
+.w-g45  { flex: 0 1 45% !important; }
+.w-g50  { flex: 0 1 50% !important; }
+.w-g55  { flex: 0 1 55% !important; }
+.w-g60  { flex: 0 1 60% !important; }
+.w-g65  { flex: 0 1 65% !important; }
+.w-g66  { flex: 0 1 65% !important; }
+.w-g70  { flex: 0 1 70% !important; }
+.w-g75  { flex: 0 1 75% !important; }
+.w-g80  { flex: 0 1 80% !important; }
+.w-g85  { flex: 0 1 85% !important; }
+.w-g90  { flex: 0 1 90% !important; }
+.w-g95  { flex: 0 1 95% !important; }
+.w-g100 { flex: 0 1 100% !important; }
+
+.w-v5, .w-v10, .w-v15, .w-v20, .w-v25, .w-v30, .w-v33, .w-v35, .w-v40, .w-v45, .w-v50,
+.w-v55, .w-v60, .w-v65, .w-v66, .w-v70, .w-v75, .w-v80, .w-v85, .w-v90, .w-v95, .w-v100 {
+    display: flex;
+    flex-direction: column;
+		flex-wrap: nowrap !important;
+    gap: 1px; 
+    box-sizing: border-box !important; 
+    min-width: 0 !important;  
+		margin: 0;
+		padding: 0;
+}
+
+.w-v5   { flex: 0 1 5% !important; }
+.w-v10  { flex: 0 1 10% !important; }
+.w-v15  { flex: 0 1 15% !important; }
+.w-v20  { flex: 0 1 20% !important; }
+.w-v25  { flex: 0 1 25% !important; }
+.w-v30  { flex: 0 1 30% !important; }
+.w-v33  { flex: 0 1 33% !important; }
+.w-v35  { flex: 0 1 35% !important; }
+.w-v40  { flex: 0 1 40% !important; }
+.w-v45  { flex: 0 1 45% !important; }
+.w-v50  { flex: 0 1 50% !important; }
+.w-v55  { flex: 0 1 55% !important; }
+.w-v60  { flex: 0 1 60% !important; }
+.w-v65  { flex: 0 1 65% !important; }
+.w-v66  { flex: 0 1 65% !important; }
+.w-v70  { flex: 0 1 70% !important; }
+.w-v75  { flex: 0 1 75% !important; }
+.w-v80  { flex: 0 1 80% !important; }
+.w-v85  { flex: 0 1 85% !important; }
+.w-v90  { flex: 0 1 90% !important; }
+.w-v95  { flex: 0 1 95% !important; }
+.w-v100 { flex: 0 1 100% !important; }
+
+
+
+/* Базовый каркас для всех групп */
 .group-1, .group-2, .group-3, .group-4, .group-5 {
     display: flex;
     flex-direction: row; 
@@ -47,7 +160,7 @@
 .row-5, .row-10, .row-15, .row-20, .row-25, .row-30, .row-35, .row-40, .row-45, .row-50,
 .row-55, .row-60, .row-65, .row-70, .row-75, .row-80, .row-85, .row-90, .row-95, .row-100 {
     display: flex !important;
-    flex-direction: row !important;
+    flex-direction: column !important;
     flex-wrap: nowrap !important;
     gap: 12px; 
     

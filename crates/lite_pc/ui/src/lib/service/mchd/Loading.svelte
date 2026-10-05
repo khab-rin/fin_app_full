@@ -56,8 +56,8 @@
 </script>
 
 
-<section class="group-2">
-    <div>
+<section class="w-40">
+    <div class='w-v100'>
         <button
             type="button"
             class="but-gr"
@@ -71,8 +71,8 @@
     </div>
 </section>
 
-<section class="group-2">
-    <div>
+<section class="w-40">
+    <div class='w-v100'>
         <button
             type="button"
             class="but-gr"
@@ -85,8 +85,9 @@
         </button>
     </div>
 </section>
-<section class="group-2">
-    <div>
+
+<section class="w-40">
+    <div class='w-v100'>
         <button
             type="button"
             class="but-gr"
@@ -100,8 +101,8 @@
     </div>
 </section>
 
-<section class="group-2">
-    <div>
+<section class="w-40">
+    <div class='w-v100'>
         <button
             type="button"
             class="but-gr"
@@ -116,8 +117,8 @@
     </div>
 </section>
 
-<section class="group-2">
-    <div>
+<section class="w-40">
+    <div class='w-v100'>
         <button
             type="button"
             class="but-gr"

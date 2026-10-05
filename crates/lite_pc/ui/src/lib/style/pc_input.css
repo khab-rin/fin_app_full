@@ -67,7 +67,6 @@
 .input-bl {
     width: 100%;
     box-sizing: border-box;
-    padding: 0.75rem;
     border: 1px solid color-mix(in srgb, var(--field-color) 40%, transparent);
     border-radius: 8px;
     font-size: 1rem;
@@ -75,6 +74,9 @@
     color: #000000 !important; /* Текст пользователя всегда черный */
     transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     background-color: color-mix(in srgb, var(--field-color) 15%, transparent);
+		padding: 0.75rem;
+		margin: 0;
+		line-height: 1rem;
 }
 
 

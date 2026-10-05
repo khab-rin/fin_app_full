@@ -2,7 +2,6 @@
     import {onMount} from "svelte";
 	import { invoke } from "@tauri-apps/api/core";
 	
-	import { pageManager } from "$lib/models/MainManager/MainManager.svelte";
     import {currAuthStep} from "$lib/models/Auth/AuthStep.svelte";
     import type {AuthStep} from "$lib/models/rustModels/AuthStep";
 
@@ -76,8 +75,8 @@
 
 </script>
 
-<section class='group-3'>
-    <div>
+<section class='w-60 x-self-l'>
+    <div class='w-v33'>
         <label class='label-close' for="surName">Фамилия</label>
         <input 
             id="surName" 
@@ -93,7 +92,7 @@
         {/if}
     </div>
 
-    <div>
+    <div class='w-v33'>
         <label class='label-close' for="firstName">Имя</label>
         <input 
             id="firstName" 
@@ -109,7 +108,7 @@
         {/if}
     </div>
 
-    <div>
+    <div class='w-v33'>
         <label class='label-close' for="midName">Отчество (при наличии)</label>
         <input 
             id="midName" 
@@ -126,8 +125,8 @@
     </div>
 </section>
 
-<section class='group-2'>
-    <div>
+<section class='w-40 x-self-l'>
+    <div class='w-v50'>
         <label class='label-close' for="persInn">Личный ИНН</label>
         <input 
             id="persInn" 
@@ -143,7 +142,7 @@
         {/if}
     </div>
 
-    <div>
+    <div class='w-v50'>
         <label class='label-close' for="snils">СНИЛС</label>
         <input 
             id="snils" 
@@ -160,9 +159,8 @@
     </div>
 </section>
 
-<section class='group-2'>
-
-    <div>
+<section class='w-40 x-self-l'>
+    <div class='w-v50'>
         <label class='label-close' for="compInn">ИНН Организации</label>
         <input 
             id="compInn" 
@@ -178,7 +176,7 @@
         {/if}
     </div>
 
-    <div>
+    <div class='w-v50'>
         <label class='label-close' for="kpp">КПП</label>
         <input 
             id="kpp" 
@@ -195,8 +193,8 @@
     </div>
 </section>
 
-<section class='group-2'>
-    <div>
+<section class='w-40 x-self-l'>
+    <div class='w-v50'>
         <label class='label-close' for="phone">Номер телефона</label>
         <input 
             id="phone" 
@@ -212,7 +210,7 @@
         {/if}
     </div>
 
-    <div>
+    <div class='w-v50'>
         <label class='label-close' for="email">Электронная почта</label>
         <input 
             id="email" 
@@ -229,9 +227,9 @@
     </div>
 </section>
 
-<section class='group-2'>
+<section class='w-40 x-self-l'>
 
-    <div>
+    <div class='w-v50'>
         <label class='label-close' for="password">Придумайте пароль приложения</label>
         <input 
             id="password" 
@@ -247,7 +245,7 @@
         {/if}
     </div>
 
-    <div>
+    <div class='w-v50'>
         <label class='label-close' for="passwordRepeat">Повторите пароль</label>
         <input 
             id="passwordRepeat" 
@@ -256,16 +254,16 @@
             disabled={isPushedMakeDocs}
             placeholder="Введите пароль еще раз"
             class="input-gr"
-            class:input-error={currAuthStep.data.password.value !== passwordRepeat && passwordRepeat !== ''}
+            class:input-error={currAuthStep.data.password.value !== passwordRepeat || passwordRepeat == ""}
         />
-        {#if currAuthStep.data.password.value !== passwordRepeat || passwordRepeat == ''}
+        {#if currAuthStep.data.password.value !== passwordRepeat || passwordRepeat == ""}
             <span class="input-error">Пароли не совпадают</span>
         {/if}
     </div>
 </section>
 
-<section class='group-2'>
-	<div>
+<section class='w-40 x-self-l'>
+	<div  class='w-g100'>
 		<button 
 			type="button" 
 			onclick={finishStep1}
@@ -273,7 +271,7 @@
 			class="but-gr"
 			id="auth-make-doc-button"
 		>
-			<span class="green-button-span">
+			<span class="x-self-c">
 				{#if isPushedMakeDocs}Формирование файлов...{:else}Сформировать файлы{/if}
 			</span>
 		</button>
