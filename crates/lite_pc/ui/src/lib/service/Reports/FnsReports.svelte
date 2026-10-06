@@ -24,11 +24,22 @@
     );
 
 	let selectedQuat = $state<number | null>(null);
-	const quats: number[] = [1, 2, 3, 4];
+
+
+	let quats = $derived.by<number[]>(() => {
+		if (!curType) return [];
+		switch (curType) {
+			case "Декларация УСН (Доходы 6%)":
+			case "Декларация УСН (Доходы - Расходы 15%)":
+				return [4];
+			default:
+				return [1,2,3];
+		}
+	});
 
 	function selectQuat(numb: number) {
 		selectedQuat = numb;
-		(document.getElementById('reportsFnsAllQuats') as HTMLDialogElement)?.close()
+		(document.getElementById('reportsFnsQuates') as HTMLDialogElement)?.close()
 	}
 
 	
@@ -37,7 +48,7 @@
 	let fnsCode = new FieldValidator("Digits4_4", "");
 
 	let isValid = $derived(
-		isYearValid && curType != null && selectQuat != null && fnsCode.isValid
+		isYearValid && curType != null && selectedQuat != null && fnsCode.isValid
 	);
 
 	async function cmdMakeFnsReportFiles() {
@@ -82,113 +93,106 @@
 	class='dialog-top-l'
 	id='reportsFnsAllTypes'
 	onclick={dialogBackdrop}
->
-	<section class='group-one'>
-		<span class='yellow-field-span'>
-			Выберите отчет в налоговую
-		</span>
-		{#each allTypes as repType}
+>	
+	<h4 class='t-bl t-fill w-g100 x-ce'>
+		Выберите отчет в налоговую
+	</h4>
+
+
+	{#each allTypes as repType}
+		<div class='w-100'>
 			<button
 				type='button'
-				class='yellow-button'
+				class='but-ye'
 				onclick={() => selectType(repType)}
 			>
 				{repType}
 			</button>
-		{/each}
-	</section>
+		</div>
+	{/each}
+
 </dialog>
 
 <dialog
-	class='dialog-top-l'
-	id='reportsFnsAllQuats'
+	class="dial-gor"
+	id='reportsFnsQuates'
 	onclick={dialogBackdrop}
 >
-	<section class='group-one'>
-		<span class='yellow-field-span'>
-			Выберите квартал
-		</span>
-		{#each quats as quat}
+	{#each quats as quat}
+		<div>
 			<button
 				type='button'
-				class='yellow-button'
-				onclick={() => selectQuat(quat)}
-			>
+				class='but-ye'
+				onclick={()=>selectQuat(quat)}
+			>	
 				{quat}
 			</button>
-		{/each}
-	</section>
+		</div>
+	{/each}
 </dialog>
 
-<section class='group-one'>
-	<div>
-		<label class='green-field-label' for='ReportFnsSelectedType'>
+
+<section class='w-40'>
+	<div class=w-v100>
+		<label class='label-close' for='ReportFnsSelectedType'>
 			Выбранные тип отчета
 		</label>
 		<input
 			type='text'
-			class='green-field'
+			class='input-gr'
 			id='ReportFnsSelectedType'
 			disabled={true}
 			bind:value={curType}
 			placeholder='Тип отчета не выбран'
 		/>
+		<button
+			type='button'
+			class='but-gr'
+			disabled={false}
+			onclick={()=>(document.getElementById('reportsFnsAllTypes') as HTMLDialogElement)?.showModal()}
+		>
+			Открыть список
+		</button>
 	</div>
-	
-	<button
-		type='button'
-		class='green-button'
-		disabled={false}
-		onclick={()=>(document.getElementById('reportsFnsAllTypes') as HTMLDialogElement)?.showModal()}
-	>
-		Открыть список
-	</button>
 </section>
 
-<section class='group-one'>
-	<div>
-		<label class='green-field-label' for='ReportFnsYear'>
+<section class='w-40'>
+	<div class='w-v33'>
+		<label class='label-close' for='ReportFnsYear'>
 			Введите год
 		</label>
 		<input
 			type='number'
-			class='green-field'
+			class='input-gr'
 			id='ReportFnsYear'
 			bind:value={selectedYear}
 			placeholder='0000'
 			class:input-error={!isYearValid}
 		/>
 	</div>
-</section>
 
-
-<section class='group-one'>
-	<div>
-		<label class='green-field-label' for='ReportFnsSelectedQuat'>
+	<div class='w-v33'>
+		<label class='label-close' for='ReportFnsSelectedQuat'>
 			Выберите квартал
 		</label>
-		<input
-			type='text'
-			class='green-field'
+		<select
 			id='ReportFnsSelectedQuat'
-			disabled={true}
+			class='input-gr'
 			bind:value={selectedQuat}
-			placeholder='0'
-		/>
+			disabled={false}
+			class:input-error={selectedQuat==null}
+		>
+			<option value={null} disabled selected>Выберите период</option>
+			{#each quats as quat}
+				<option value={quat}>
+					{quat}
+				</option>
+			{/each}
+		
+		</select>
 	</div>
-	
-	<button
-		type='button'
-		class='green-button'
-		disabled={false}
-		onclick={()=>(document.getElementById('reportsFnsAllQuats') as HTMLDialogElement)?.showModal()}
-	>
-		Открыть список
-	</button>
-</section>
-
-	<div>
-        <label class="green-field-label" for="taxOrgIdent">
+	<div class='w-v33'>
+		<label class="label-close" for="taxOrgIdent">
             4-значный номер налоговой
             <span class='input-tool' data-input-tool="если вы уверены что не меняли место регистрации организации и в вашей налоговой не происходило слияний\разделений с момента регистрации вашей организации (ип), то это первые 4 цифры инн. В противном случае посмотрите этот код в сданной отчетности">?</span>
         </label>
@@ -198,22 +202,17 @@
             bind:value={fnsCode.value}
             disabled={false}
             placeholder="Введите 4-значный номер налоговой в которой Вы подаете отчетность"
-            class="green-field"
+            class="input-gr"
             class:input-error={!fnsCode.isValid}
         />
-        {#if !fnsCode.isValid}
-            <span class="input-error-span">Некорректный номер</span>
-        {/if}
-    </div>
+	</div>
+</section>
 
-<section class='group-one'>
-	<div>
-		<label class='green-field-label' for='ReportFnsYear'>
-			Формирование отчета
-		</label>
+<section class='w-40'>
+	<div class='w-v100'>
 		<button
 			type='button'
-			class='blue-button'
+			class='but-bl'
 			disabled={!isValid}
 			onclick={cmdMakeFnsReportFiles}
 		>

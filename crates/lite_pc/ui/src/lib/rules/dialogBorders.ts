@@ -13,3 +13,16 @@ export function dialogBackdrop(e: MouseEvent): void {
 		dialog.close();
 	}
 }
+
+export function openDialogRight(e: MouseEvent, dialogID: string) {
+	e.stopPropagation;
+	const button = e.currentTarget as HTMLBRElement;
+	const dialog = document.getElementById(dialogID) as HTMLDialogElement;
+	if(!dialog || !button) {
+		return;
+	}
+	const rect = button.getBoundingClientRect();
+
+	dialog.style.position = 'absolute'
+	
+}

@@ -5,36 +5,63 @@
 	position: fixed;
 	top: 16px;
 	margin: 0;
-	
-	/* Размеры */
 	width: 280px;
 	max-height: 45vh;
-	
-	/* Оформление: светло-розовый фон с размытием и рамка */
-	background-color: rgba(255, 240, 245, 0.2); /* LavenderBlush с прозрачностью */
+	background-color: rgba(255, 240, 245, 0.2);
 	backdrop-filter: blur(2px);
-	border: 2px solid #ffb6c1;  /* Светло-розовый периметр */
+	border: 2px solid #ffb6c1;
 	border-radius: 12px;
-	padding: 12px;
+	padding: 6px;
 	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 	overflow: hidden;
 }
 
-/* 1. Позиционирование вверху слева */
-.dialog-top-l {
-	left: 16px;
-	right: auto; /* Сбрасываем дефолтное поведение */
+.dialog-top-l[open],
+.dialog-top[open],
+.dialog-top-r[open] {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
 }
 
-/* 2. Позиционирование вверху по центру */
+.dialog-top-l {
+	left: 16px;
+	right: auto;
+}
+
 .dialog-top {
 	left: 50%;
 	right: auto;
 	transform: translateX(-50%);
 }
 
-/* 3. Позиционирование вверху справа (ИСПРАВЛЕНО) */
 .dialog-top-r {
 	right: 16px;
-	left: auto; /* ОБЯЗАТЕЛЬНО: отключаем левую привязку браузера */
+	left: auto;
+}
+
+
+.dial-gor {
+	position: fixed;
+	top: 16px;
+	margin: 0;
+	width: 280px;
+	max-height: 45vh;
+	background-color: rgba(255, 240, 245, 0.2);
+	backdrop-filter: blur(2px);
+	border: 2px solid #ffb6c1;
+	border-radius: 12px;
+	padding: 6px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+	overflow: hidden;
+	gap: 12px
+}
+
+
+.dial-gor[open] {
+	display: flex;
+	flex-direction: row;
+	gap: 8px;
+	justify-content: center;
+	align-items: center;
 }

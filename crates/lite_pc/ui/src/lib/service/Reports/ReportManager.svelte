@@ -17,7 +17,12 @@
 
 </script>
 
-<p class="text-small">{reportManager.currentText}</p>
+<section class=w-100>
+	<h3 class='w-g100 x-ce'>
+		{reportManager.currentText}
+	</h3>
+</section>
+
 
 <svelte:component this={reportManager.getPage}/>
 

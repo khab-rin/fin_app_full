@@ -31,45 +31,58 @@
 	}
 </script>
 
-
-<div class='group-two'>
-	<button
-		type='button'
-		class='green-button'
-		onclick={goToStatementParser}
-		disabled={isPushedStatementParser}
-	>
-		<span class='green-button-span'>
-			Загрзить проводки из банковской выписки
-		</span>
-	</button>
+<div class='w-40'>
+	<div class='w-v100'>
+		<button
+			type='button'
+			class='but-gr'
+			onclick={goToStatementParser}
+			disabled={isPushedStatementParser}
+		>
+			<span>
+				Загрзить проводки из банковской выписки
+			</span>
+		</button>
+	</div>
 </div>
 
-<div class='group-two'>
-	<button
-		type='button'
-		class='green-button'
-		onclick={goToManualInput}
-		disabled={isPushedManualInput}
-	>
-		<span class='green-button-span'>
-			Создать проводки вручную
-		</span>
-	</button>
+<div class='w-40'>
+	<div class='w-v100'>
+		<button
+			type='button'
+			class='but-gr'
+			onclick={goToManualInput}
+			disabled={isPushedManualInput}
+		>
+			<span>
+				Создать проводки вручную
+			</span>
+		</button>
+	</div>
 </div>
 
-<div class='group-two'>
-	<button
-		type='button'
-		class='green-button'
-		onclick={goToNewBankAcc}
-		disabled={isPushedManualInput}
-	>
-		<span class='green-button-span'>
-			Добавить расчетный счет
-		</span>
-	</button>
+<div class='w-40'>
+	<div class='w-v100'>
+		<button
+			type='button'
+			class='but-gr'
+			onclick={goToNewBankAcc}
+			disabled={isPushedManualInput}
+		>
+			<span>
+				Добавить расчетный счет
+			</span>
+		</button>
+	</div>
 </div>
+
+
+	
+	
+
+
+	
+
 
 
 

@@ -110,9 +110,6 @@
 			placeholder="Введите пароль"
 			
 			class:input-error={!currAuthStep.data.password.isValid}/>
-		{#if !currAuthStep.data.password.isValid}
-			<span class="input-error">Пароль некоректен в рамках прилжоения</span>
-		{/if}
 	</div>
 	
 	<div class='w-v50'>
