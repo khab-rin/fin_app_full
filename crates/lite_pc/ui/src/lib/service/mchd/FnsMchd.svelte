@@ -49,7 +49,7 @@
     let secondStep = $state(false);
     let thirdStep = $state(false);
     let forthStep = $state(false);
-    let allPowersSelected = $state(false);
+    let allPowersSelected = $derived(allPowers.length == selectedPowers.size);
 
     let isMainPushed = $state(false);
 

@@ -15,10 +15,11 @@
 	}
 </script>
 
-<div class='group-two'>
-	<p class="text-small">{operStep.currentText}</p>
-</div>
-
+<section class='w-100'>
+	<h4 class="t-fill w-g100 x-ce">
+		{operStep.currentText}
+	</h4>
+</section>
 
 
 {#if operStep.getPage}
@@ -28,30 +29,16 @@
 {/if}
 
 
-<div class='group-two'>
-	<div>
+<div class='w-40'>
+	<div class='w-v100'>
 		<button
 			type='button'
-			class='blue-button'
+			class='but-bl'
 			onclick={goToLoading}
 		>
-			<span class="blue-button-span">
+			<span class="but-bl-span">
 				Меню операций
 			</span>
 		</button>
 	</div>
-
-	<div>
-		<button
-			type="button"
-			class="blue-button"
-			onclick={closeOper}
-			>
-			<span class="blue-button-span">
-				Основной экран
-			</span>
-		</button>
-	</div>
-
-
 </div>
