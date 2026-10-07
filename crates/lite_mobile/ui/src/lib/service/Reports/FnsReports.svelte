@@ -80,7 +80,7 @@
 
 
 <dialog
-	class='dialog-top-left'
+	class='dial-top-left'
 	id='reportsFnsAllTypes'
 	onclick={dialogBackdrop}
 >
@@ -101,7 +101,7 @@
 </dialog>
 
 <dialog
-	class='dialog-top-left'
+	class='dial-top-left'
 	id='reportsFnsAllQuats'
 	onclick={dialogBackdrop}
 >

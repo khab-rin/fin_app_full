@@ -59,7 +59,7 @@
 </script>
 
 <dialog 
-	class='dialog-top-r'
+	class='dial-top-r'
 	id='AuthNickNames'
 	onclick={dialogBackdrop}	
 >	

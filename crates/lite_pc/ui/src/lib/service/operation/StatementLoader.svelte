@@ -154,7 +154,7 @@
 
 <dialog 
     bind:this={dialogRef} 
-    class="dialog-top-l"
+    class="dial-top-l"
     onclick={(e) => { if (e.target === dialogRef) closeAccModal(); }}
 >
     <h5>Выбор счета</h5>
