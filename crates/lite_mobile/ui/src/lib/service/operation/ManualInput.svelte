@@ -352,7 +352,7 @@
 
 
 <dialog 
-	class='dialog-top-left'
+	class='dial-top-left'
 	id='operManualAllCompanys'
 	onclick={dialogBackdrop}
 >
@@ -389,7 +389,7 @@
 
 
 <dialog
-	class='dialog-top-left'
+	class='dial-top-left'
 	id='OperManualNewCtrptyDialog'
 	onclick={dialogBackdrop}
 >
@@ -439,7 +439,7 @@
 
 
 <dialog 
-	class='dialog-top-left'
+	class='dial-top-left'
 	id='OperManualAllContracts'
 	onclick={dialogBackdrop}
 >
@@ -458,7 +458,7 @@
 </dialog>
 
 <dialog
-	class='dialog-top-left'
+	class='dial-top-left'
 	id='OperManualNewContractDialgo'
 	onclick={dialogBackdrop}
 >

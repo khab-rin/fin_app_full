@@ -1,7 +1,7 @@
 /* Общие стили для всех диалоговых окон */
-.dialog-top-l,
-.dialog-top,
-.dialog-top-r {
+.dial-top-l,
+.dial-top,
+.dial-top-r {
 	position: fixed;
 	top: 16px;
 	margin: 0;
@@ -16,45 +16,28 @@
 	overflow: hidden;
 }
 
-.dialog-top-l[open],
-.dialog-top[open],
-.dialog-top-r[open] {
+.dial-top-l[open],
+.dial-top[open],
+.dial-top-r[open] {
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
 }
 
-.dialog-top-l {
+.dial-top-l {
 	left: 16px;
 	right: auto;
 }
 
-.dialog-top {
+.dial-top {
 	left: 50%;
 	right: auto;
 	transform: translateX(-50%);
 }
 
-.dialog-top-r {
+.dial-top-r {
 	right: 16px;
 	left: auto;
-}
-
-
-.dial-gor {
-	position: fixed;
-	top: 16px;
-	margin: 0;
-	width: 280px;
-	max-height: 45vh;
-	background-color: rgba(255, 240, 245, 0.2);
-	backdrop-filter: blur(2px);
-	border: 2px solid #ffb6c1;
-	border-radius: 12px;
-	padding: 6px;
-	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-	overflow: hidden;
-	gap: 12px
 }
 
 
@@ -64,4 +47,37 @@
 	gap: 8px;
 	justify-content: center;
 	align-items: center;
+}
+
+.dial-ver {
+	width: 280px;
+	max-height: 45vh;
+	background-color: rgba(255, 240, 245, 0.2);
+	backdrop-filter: blur(2px);
+	border: 2px solid #ffb6c1;
+	border-radius: 12px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+	overflow: hidden;
+	overflow-y: auto;
+}
+
+.dial-ver[open] {
+	display: flex;
+	flex-direction: column;
+}
+
+.dial-gor {
+	width: 50vw;
+	background-color: rgba(255, 240, 245, 0.2);
+	backdrop-filter: blur(2px);
+	border: 2px solid #ffb6c1;
+	border-radius: 12px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+	overflow: hidden;
+	overflow-x: auto;
+}
+
+.dial-gor[open] {
+	display: flex;
+	flex-direction: row;
 }

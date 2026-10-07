@@ -90,7 +90,7 @@
 </script>
 
 <dialog
-	class='dialog-top-l'
+	class='dial-top-l'
 	id='reportsFnsAllTypes'
 	onclick={dialogBackdrop}
 >	

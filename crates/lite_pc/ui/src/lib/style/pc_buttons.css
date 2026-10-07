@@ -8,7 +8,10 @@
     font-size: 1rem;
     font-weight: 500;
     width: 100%;
-    padding: 0.90rem;
+    padding: 0px;
+		min-height: 45px;
+		max-height: 45px;
+		margin: 0px;
     border-radius: 8px;
     cursor: pointer;
     border: 1px solid transparent;
@@ -19,6 +22,7 @@
 		line-height: 1rem;
     align-items: center;
     justify-content: center;
+		container-type: inline-size !important;
 }
 
 /* Эффект клика (когда нажали и держат) */

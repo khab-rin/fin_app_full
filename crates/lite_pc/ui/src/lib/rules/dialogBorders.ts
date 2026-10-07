@@ -15,14 +15,39 @@ export function dialogBackdrop(e: MouseEvent): void {
 }
 
 export function openDialogRight(e: MouseEvent, dialogID: string) {
-	e.stopPropagation;
-	const button = e.currentTarget as HTMLBRElement;
+	e.stopPropagation();
+	const button = e.currentTarget as HTMLElement;
 	const dialog = document.getElementById(dialogID) as HTMLDialogElement;
-	if(!dialog || !button) {
+	
+	if (!dialog || !button) {
 		return;
 	}
+
+	if (dialog.open) {
+		dialog.close();
+		return;
+	}
+	
 	const rect = button.getBoundingClientRect();
 
-	dialog.style.position = 'absolute'
-	
+	dialog.style.position = 'fixed';
+	dialog.style.margin = '0';
+
+	dialog.style.top = `${rect.top}px`;
+	dialog.style.left = `${rect.right + 8}px`; 
+
+	dialog.show();
+
+	const closeOnOutsideClick = (event: MouseEvent) => {
+		const target = event.target as Node;
+		
+		if (!dialog.contains(target) && !button.contains(target)) {
+			dialog.close();
+			document.removeEventListener('click', closeOnOutsideClick);
+		}
+	};
+
+	setTimeout(() => {
+		document.addEventListener('click', closeOnOutsideClick);
+	}, 1);
 }
