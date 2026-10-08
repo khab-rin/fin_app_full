@@ -1,4 +1,3 @@
-pub mod alias_types;
 pub mod err_models;
 pub mod primitives;
 pub mod static_data;
