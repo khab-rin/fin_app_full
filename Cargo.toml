@@ -59,11 +59,11 @@ sqlx = { version = "0.8", default-features = false, features = ["macros", "runti
 strum = { version = "0.28", features = ["derive"] }
 strum_macros = "0.28.0"
 
-tauri = { version = "2.10.3", features = [] }
-tauri-plugin-dialog = "2"
+tauri = { version = "=2.12.3", features = [] }
+tauri-plugin-dialog = "=2.8.2"
 tauri-plugin-shell = "2"
-tauri-plugin-fs = "2"
-tauri-plugin-log = "2"
+tauri-plugin-fs = "=2.7.0"
+tauri-plugin-log = "=2.10.1"
 
 tokio = { version = "1", features = ["full"] }
 
