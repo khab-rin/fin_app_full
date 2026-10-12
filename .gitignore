@@ -1,8 +1,6 @@
-# --- Rust & Workspace ---
-**/target/
-# Cargo.lock убран из списка игнорирования, чтобы фиксировать версии библиотек.
 
-# --- Дистрибутивы и тяжелые файлы ---
+**/target/
+
 *.tgz
 *.tar.gz
 *.zip
@@ -10,28 +8,23 @@
 *.exe
 *.deb
 
-# ИСКЛЮЧЕНИЕ: Разрешаем Git видеть дистрибутив КриптоПро, так как он нужен для Docker
 !/crates/crypto_service/linux-amd64_deb.tgz
 
-# --- Базы данных (Tauri и Backend) ---
 **/*.db
 **/*.db-shm
 **/*.db-wal
 **/*.sqlite
 
-# --- Frontend (Svelte/Vite/Node) ---
 **/node_modules/
 **/.svelte-kit/
 **/dist/
 **/.vite/
 .npm/
 
-# --- Логи и временные файлы ---
 **/logs/*.log*
 *.log
 **/.vscode/
 **/.idea/
 .DS_Store
 
-# --- Секреты ---
 .env*
