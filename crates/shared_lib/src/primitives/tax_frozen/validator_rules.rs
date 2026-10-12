@@ -20,9 +20,9 @@ pub(crate) fn init_nds_22_default() -> Decimal {
 pub(crate) fn init_usn6_from_str(tax: &str) -> Result<Decimal, Status> {
     let tax = tax.trim();
 	if tax == "0.06" || tax == "06" || tax == "6" {
-		return Ok(Decimal::from(6) / Decimal::from(100));
+		Ok(Decimal::from(6) / Decimal::from(100))
 	} else {
-		return Err(Status::ValidUsn6);
+		Err(Status::ValidUsn6)
 	}
 }
 
