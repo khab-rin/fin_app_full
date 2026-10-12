@@ -11,7 +11,7 @@ pub(crate) fn dto_to_company_vec(
     dtos: Vec<CompanyDto>
 ) -> Result<Vec<Company>, Status> {
 
-    let mut res:Vec<Company> = vec!();
+    let mut res:Vec<Company> = vec![];
 
     for dto in dtos {
         let company = dto

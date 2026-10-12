@@ -8,21 +8,21 @@ pub async fn add_operations_many(
 	state: &BackApiState,
 	operations: Vec<Operation>
 ) -> Result<(), Status> {
-	let mut oper_ids: Vec<uuid::Uuid> = vec!();
-	let mut user_ids: Vec<uuid::Uuid> = vec!();
-	let mut comp_ids: Vec<uuid::Uuid> = vec!();
-	let mut ctrpty_ids: Vec<uuid::Uuid> = vec!();
-	let mut contract_ids: Vec<uuid::Uuid> = vec!();
-	let mut debets: Vec<String> = vec!();
-	let mut credits: Vec<String> = vec!();
-	let mut amounts: Vec<rust_decimal::Decimal> = vec!();
-	let mut oper_dates: Vec<chrono::NaiveDate> = vec!();
-	let mut doc_types: Vec<String> = vec!();
-    let mut doc_nums: Vec<String> = vec!();
-    let mut doc_dates: Vec<chrono::NaiveDate> = vec!();
-    let mut is_stornos: Vec<bool> = vec!();
-    let mut is_dels: Vec<bool> = vec!();
-    let mut entr_dates: Vec<chrono::NaiveDate> = vec!();
+	let mut oper_ids: Vec<uuid::Uuid> = vec![];
+	let mut user_ids: Vec<uuid::Uuid> = vec![];
+	let mut comp_ids: Vec<uuid::Uuid> = vec![];
+	let mut ctrpty_ids: Vec<uuid::Uuid> = vec![];
+	let mut contract_ids: Vec<uuid::Uuid> = vec![];
+	let mut debets: Vec<String> = vec![];
+	let mut credits: Vec<String> = vec![];
+	let mut amounts: Vec<rust_decimal::Decimal> = vec![];
+	let mut oper_dates: Vec<chrono::NaiveDate> = vec![];
+	let mut doc_types: Vec<String> = vec![];
+    let mut doc_nums: Vec<String> = vec![];
+    let mut doc_dates: Vec<chrono::NaiveDate> = vec![];
+    let mut is_stornos: Vec<bool> = vec![];
+    let mut is_dels: Vec<bool> = vec![];
+    let mut entr_dates: Vec<chrono::NaiveDate> = vec![];
 
 	for oper in operations {
 		oper_ids.push(*oper.oper_id);

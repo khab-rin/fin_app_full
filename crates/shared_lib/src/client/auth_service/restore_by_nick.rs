@@ -13,7 +13,7 @@ use crate::service::auth_service::client_state::init_session;
 
 pub async fn restore_session_by_nick(
     state: &ClientState,
-    nick: &String
+    nick: &str
 ) -> Result<AuthStep, Status> {
 
     let failed_result = Ok(AuthStep::TryLater {text: AuthInfo::ClientApiSystemError});

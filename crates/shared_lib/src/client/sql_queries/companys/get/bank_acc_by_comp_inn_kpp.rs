@@ -32,7 +32,7 @@ pub async fn get_bank_accs_by_comp_id(
 
     let metadata_str = match metadata_str_option {
         Some(m) => m,
-        None => return Ok(vec!())
+        None => return Ok(vec![])
     };
 
     let metadata: CtrprtyMetadata = serde_json::from_str(&metadata_str)

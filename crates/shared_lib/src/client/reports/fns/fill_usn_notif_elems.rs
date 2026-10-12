@@ -7,6 +7,7 @@ use crate::service::reports::fns_xsd_shemas::usn_1110355_notif::UsnNotifFile;
 use crate::client::reports::fns::usn_decl_notif_elems::Elems;
 use crate::client::reports::fns::pdf_fill::custom_pdf_fill;
 
+#[allow(clippy::field_reassign_with_default)]
 pub fn fill_usn_notif_elems_make_pdf(
 	session: &ActiveSession,
 	notif: &UsnNotifFile,

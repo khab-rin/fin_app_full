@@ -18,7 +18,7 @@ pub(crate) async fn get_guids_by_user_id(
 
 	match record_option {
 		Some(rec) => Ok(rec.guids),
-		None => Ok(vec!())
+		None => Ok(vec![])
 	}
 
   

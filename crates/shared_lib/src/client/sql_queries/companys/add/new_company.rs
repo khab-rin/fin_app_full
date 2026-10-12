@@ -34,7 +34,7 @@ pub async fn add_company_by_inn_cpp_acc(
         bank_acc.insert(r.clone());
     }
 
-    let data: Vec<CompCrateData> = vec!(CompCrateData{comp_inn, kpp, bank_acc});
+    let data: Vec<CompCrateData> = vec![CompCrateData{comp_inn, kpp, bank_acc}];
 
     let companys = add_companys_by_inn_cpp_acc(state, &data).await
         .map_err(|err| err.process_err(err, ""))?; 

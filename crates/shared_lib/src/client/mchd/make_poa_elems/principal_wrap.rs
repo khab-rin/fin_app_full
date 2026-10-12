@@ -85,7 +85,7 @@ pub fn make_russ_org_principal(
         root_manager_person: Flag::TrueFlag,
         root_manager_ip: Flag::FalseFlag,
         organization: russ_organization,
-        root_managers: vec!(root_manager)
+        root_managers: vec![root_manager]
 
     };
 
@@ -149,7 +149,7 @@ pub fn make_address(
 
     PostalAddress {
         region,
-        fias_id: None,
+        fias_id,
         address
     }
 }

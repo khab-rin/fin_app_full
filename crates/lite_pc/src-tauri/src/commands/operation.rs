@@ -68,7 +68,6 @@ pub async fn cmd_is_operation_exist(
 
 #[tauri::command]
 pub fn cmd_get_acc_info(
-	state: tauri::State<'_, ClientState>,
 	account: Account
 ) -> Result<String, Status> {
 	Ok(account.info())
@@ -80,13 +79,13 @@ pub async  fn cmd_process_operations(
 	option_operations: Vec<Option<Operation>>
 ) -> Result<OperationStep, Status> {
 
-	match check_access(&state, vec!(
+	match check_access(&state, vec![
 		HomeMchdPower::H210,
 		HomeMchdPower::H110,
 		HomeMchdPower::H510,
 		HomeMchdPower::H810,
 
-	)).await {
+	]).await {
         Ok(true) => {},
         Ok(false) => {
             return Ok(OperationStep::TryLater { text: OperationInfo::AccessDenied })

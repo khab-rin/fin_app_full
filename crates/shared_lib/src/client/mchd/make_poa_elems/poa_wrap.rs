@@ -42,7 +42,7 @@ pub fn make_root_poa(
     today: &Date
 ) -> Result<RootPoa, Status> {
 
-    let poa_metadata = make_poametadata(session, data, mchd_num, today);
+    let poa_metadata = make_poametadata(data, mchd_num, today);
 
     let principal_wrap = make_principal_wrap(session, data)
         .map_err(|err| err.process_err(err, ""))?; 
@@ -55,8 +55,8 @@ pub fn make_root_poa(
 
     let root_poa = RootPoa {
         poa_metadata,
-        principal: vec!(principal_wrap),
-        delegate: vec!(delegate_wrap),
+        principal: vec![principal_wrap],
+        delegate: vec![delegate_wrap],
         delegate_powers,
         notarial_certification: None
     };

@@ -20,7 +20,7 @@ pub
         .map_err(|err| err.process_err(Status::SqLitePoolErr, ""))?; 
 
 
-    let mut res: Vec<Company> = vec!();
+    let mut res: Vec<Company> = vec![];
 
     
 
