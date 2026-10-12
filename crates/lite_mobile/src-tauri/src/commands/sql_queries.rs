@@ -37,7 +37,7 @@ pub async fn cmd_add_comp_bank_acc(
 
     match company_option {
         Some(c) => Ok(c.metadata.bank_acc),
-        None => Ok(vec!())
+        None => Ok(vec![])
     }
 
 }

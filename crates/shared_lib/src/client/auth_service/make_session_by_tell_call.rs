@@ -70,7 +70,7 @@ pub async fn make_session_by_tel_call(
         Ok(_) => Ok(AuthStep::SuccessShort {  }),
         Err(err) => {
             err.process_err(err, "");
-            return failed_result;
+            failed_result
         }
     }
 }

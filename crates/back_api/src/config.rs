@@ -59,11 +59,6 @@ pub struct NetWork {
     #[serde(deserialize_with = "time_parser::duration_from_f64")]
     pub std_request_interval: Duration,
     pub std_retries: u32,
-
-    #[serde(deserialize_with = "time_parser::duration_from_f64")]
-    pub inst_poll_intervals: Duration,
-    #[serde(deserialize_with = "time_parser::duration_from_f64")]
-    pub std_poll_intervals: Duration,
     }
 
 #[derive(Default, Debug)]

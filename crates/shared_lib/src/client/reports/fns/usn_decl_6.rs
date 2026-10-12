@@ -24,7 +24,6 @@ use crate::client::reports::fns::fill_usn_decl_elems::fill_usn_decl_elems_make_p
 pub async fn make_decl_6_files(
 	state: &ClientState,
 	year: i32,
-	qu: i32,
 	fns_branch: Digits4_4,
 
 ) -> Result<ReportStep, Status> {

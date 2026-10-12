@@ -23,7 +23,7 @@ pub fn make_delegate_powers(
     };
 
     let mchd_powers: Vec<MchdPower> = match data.mchd_type {
-        MchdType::HomeMchd => vec!(),
+        MchdType::HomeMchd => vec![],
         _ => data.powers.iter().map(|x| x.clone().make_mchd_power()).collect()
     };
 

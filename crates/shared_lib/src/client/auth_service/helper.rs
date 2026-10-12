@@ -75,9 +75,9 @@ pub async fn get_comp_name(
 
 	let fio = &session.session_user.person.metadata.fio;
 	let name = format!("{} {} {}", 
-		&fio.sur_name,
-		&fio.first_name,
-		&fio.mid_name.clone().unwrap_or(MidName::unchecked(""))
+		fio.sur_name,
+		fio.first_name,
+		fio.mid_name.clone().unwrap_or(MidName::unchecked(""))
 	);
 
 	let comp_name = match &session.session_user.company.metadata.comp_name {

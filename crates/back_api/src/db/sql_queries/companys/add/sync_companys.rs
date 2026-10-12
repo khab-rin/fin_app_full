@@ -40,17 +40,17 @@ pub(crate) async fn update_companys(
 
     fresh_bank_acc(&mut inn_kpp_acc_map, &mut prev_companys); 
 
-    let mut new_companys: Vec<Company> = vec!();
+    let mut new_companys: Vec<Company> = vec![];
 
-    let mut tasks_vec = vec!();
+    let mut tasks_vec = vec![];
 
-    for ((comp_inn, kpp), _) in inn_kpp_acc_map.iter() {
-        let comp_inn_clone = comp_inn.clone();
-        let kpp_clone = kpp.clone();
-        tasks_vec.push(async move {
-            parse_company_by_inn_kpp(state, &comp_inn_clone, &kpp_clone).await
-        });
-    };
+    for (comp_inn, kpp) in inn_kpp_acc_map.keys() {
+		let comp_inn_clone = comp_inn.clone();
+		let kpp_clone = kpp.clone();
+		tasks_vec.push(async move {
+			parse_company_by_inn_kpp(state, &comp_inn_clone, &kpp_clone).await
+		});
+	}
 
     let mut dadata_stream = stream::iter(tasks_vec).buffer_unordered(4);
 
@@ -85,12 +85,12 @@ pub(crate) async fn update_companys(
         }
     };
    
-    let mut comp_id: Vec<uuid::Uuid> = vec!();
-    let mut comp_inn: Vec<String> = vec!();
-    let mut kpp: Vec<String> = vec!();
-    let mut comp_type: Vec<String> = vec!();
-    let mut comp_status: Vec<String> = vec!();
-    let mut metadata: Vec<serde_json::Value> = vec!();
+    let mut comp_id: Vec<uuid::Uuid> = vec![];
+    let mut comp_inn: Vec<String> = vec![];
+    let mut kpp: Vec<String> = vec![];
+    let mut comp_type: Vec<String> = vec![];
+    let mut comp_status: Vec<String> = vec![];
+    let mut metadata: Vec<serde_json::Value> = vec![];
 
     for comp in all_companys.values() {
         comp_id.push(*comp.comp_id.as_ref());

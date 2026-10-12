@@ -189,9 +189,9 @@ fn recursive_collect_fields(
 fn to_pdf_utf16_bom(
 	text: &str
 ) -> Vec<u8> {
-	let mut bytes = vec!(0xFE, 0xFF);
+	let mut bytes = vec![0xFE, 0xFF];
 
-	for mut ch in text.encode_utf16() {
+	for ch in text.encode_utf16() {
 		bytes.push((ch >> 8) as u8);
 		bytes.push((ch & 0xFF) as u8);
 	}

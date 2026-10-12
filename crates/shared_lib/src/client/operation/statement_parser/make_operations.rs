@@ -89,7 +89,7 @@ pub async fn make_statement_pay_operation_raw(
         ).await
         .map_err(|err| err.process_err(err, ""))?
     } else {
-        vec!()
+        vec![]
     };
 
 
@@ -209,7 +209,7 @@ pub async fn make_statement_rec_operation_raw(
         ).await
         .map_err(|err| err.process_err(err, ""))?
     } else {
-        vec!()
+        vec![]
     };
 
     let mut contrac_option = ContractOption {
@@ -315,7 +315,7 @@ pub async fn make_statement_home_operation_raw(
 
     let contract = ContractOption {
         current: None,
-        contracts: vec!()
+        contracts: vec![]
     };
 
     let (debet, credit) = if parsed_block.comment_data.is_cred_loan {

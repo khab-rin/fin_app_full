@@ -35,7 +35,7 @@ pub async fn parse_statement(
 
     let mut new_companys: InnKppMapAcc = HashMap::new();
 
-    let mut parsed_blocks: Vec<ParsedBlock> = vec!();
+    let mut parsed_blocks: Vec<ParsedBlock> = vec![];
 
     let bytes = match tokio::fs::read(path).await {
         Ok(b) => b,
@@ -144,7 +144,7 @@ pub async fn parse_statement(
 
     }
 
-    let mut data: Vec<CompCrateData> = vec!();
+    let mut data: Vec<CompCrateData> = vec![];
 
     for ((comp_inn, kpp), bank_acc) in new_companys {
         data.push(CompCrateData{comp_inn, kpp, bank_acc});
@@ -158,9 +158,9 @@ pub async fn parse_statement(
         }
     }
 
-    let mut operations: Vec<OperationRaw> = vec!();   
+    let mut operations: Vec<OperationRaw> = vec![];   
 
-    let mut tasks_vec = vec!();
+    let mut tasks_vec = vec![];
 
 
     for block in &parsed_blocks {

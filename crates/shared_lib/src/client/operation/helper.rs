@@ -38,6 +38,6 @@ pub async fn add_bank_acc_by_inn_kpp(
 
     match company_option {
         Some(c) => Ok(c.metadata.bank_acc),
-        None => Ok(vec!())
+        None => Ok(vec![])
     }
 }

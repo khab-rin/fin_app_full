@@ -45,7 +45,7 @@ pub fn make_file_id(
 
 	let file_id_str = format!("{}_{}_{}{}{}_{}_NO_{:04}{:02}{:02}_{}",
 		"ON_UT",
-		knd.to_string(),
+		knd,
 		fns_code, comp_inn, kpp,
 		fns_code,
 		year, month, day,

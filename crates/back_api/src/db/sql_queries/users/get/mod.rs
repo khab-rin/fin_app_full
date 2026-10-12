@@ -3,7 +3,5 @@ pub(crate) mod by_inn_pers_comp_kpp;
 pub(crate) mod by_pers_comp_id;
 pub(crate) mod by_user_id;
 pub(crate) mod guides_by_id;
-pub(crate) mod exists_user_by_pers_comp;
-pub(crate) mod passw_tel_mail_by_pers_comp_id;
 pub(crate) mod session_user_by_device_token;
 pub(crate) mod tel_mail_by_id;

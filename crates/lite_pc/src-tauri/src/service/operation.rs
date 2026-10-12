@@ -16,13 +16,13 @@ pub async fn make_bank_statement_operations(
 
     let failed_result = Ok(OperationStep::TryLater { text: OperationInfo::ClientApiSystemError });
 
-	match check_access(state, vec!(
+	match check_access(state, vec![
 		HomeMchdPower::H210,
 		HomeMchdPower::H110,
 		HomeMchdPower::H510,
 		HomeMchdPower::H810,
 
-	)).await {
+	]).await {
         Ok(true) => {},
         Ok(false) => {
             return Ok(OperationStep::TryLater { text: OperationInfo::AccessDenied })
@@ -45,7 +45,7 @@ pub async fn make_bank_statement_operations(
         }
     };
 
-    let mut in_operations: Vec<OperationRaw> = vec!();
+    let mut in_operations: Vec<OperationRaw> = vec![];
 
     for opr in all_operations {
 		

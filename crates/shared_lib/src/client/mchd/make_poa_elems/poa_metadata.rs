@@ -1,5 +1,3 @@
-use crate::service::auth_service::general::ActiveSession;
-
 use crate::service::mchd::implements::{
     PoaMetadata,
     PoaTypeRevocable,
@@ -13,13 +11,10 @@ use crate::primitives::frozen::text::{
     BoxUuid, Date
 };
 use crate::static_data::mchd_powers::document_propertys::MCHD_SYSTEM_INFO;
-use crate::primitives::frozen::text_base::{
-    Digits4_4, String1_1000
-};
+use crate::primitives::frozen::text_base::String1_1000;
 
 
 pub fn make_poametadata(
-    session: &ActiveSession,
     data: &NewMchdData,
     mchd_num: &BoxUuid,
     today: &Date
@@ -47,7 +42,7 @@ pub fn make_poametadata(
         issue_date: today.clone(), 
         life_date: data.poa_end_date.clone(), 
         tax_org_ident, 
-        tax_org_idents: vec!(), 
+        tax_org_idents: vec![], 
         mchd_system_info, 
         irrevocable_poa: None,  
     };
