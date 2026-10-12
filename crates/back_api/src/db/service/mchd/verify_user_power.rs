@@ -1,6 +1,6 @@
 use shared_lib::primitives::frozen::text::BoxUuid;
 use shared_lib::service::mchd::home_mchd_power::HomeMchdPower;
-use shared_lib::service::mchd::implements::{RootPoa, PoaRootKind};
+use shared_lib::service::mchd::implements::PoaRootKind;
 use shared_lib::{Status, ProcessError};
 use shared_lib::service::reports::service::VerifyPowersResult;
 

@@ -1,6 +1,8 @@
 target/
 crates/back-api/logs/
 crates/client-desktop/src-tauri/target/
-crates/client-desktop/ui/node_modules/
-crates/client-desktop/ui/build/
+crates/lite_pc/ui/node_modules/
+crates/lite_pc/ui/build/
+crates/lite_mobile/ui/node_modules/
+crates/lite_mobile/ui/build/
 .git/

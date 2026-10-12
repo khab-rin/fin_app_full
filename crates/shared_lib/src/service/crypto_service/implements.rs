@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::primitives::frozen::text::{CompInn, Kpp, PersInn, Snils};
+use crate::primitives::frozen::text::{CompInn, PersInn, Snils};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct CheckSignDocData {

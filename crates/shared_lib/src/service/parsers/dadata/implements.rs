@@ -1,6 +1,3 @@
-use std::collections::HashSet;
-
-use quick_xml::se;
 use serde::{Serialize, Deserialize};
 
 use crate::primitives::frozen::text::*;

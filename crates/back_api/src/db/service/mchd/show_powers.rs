@@ -53,7 +53,7 @@ pub(crate) async fn show_powers(
         }
     };
 
-    let mut del_guids: Vec<BoxUuid> = vec!();
+    let mut del_guids: Vec<BoxUuid> = vec![];
 
     let today = Date::unchecked(chrono::Local::now().date_naive());
 
