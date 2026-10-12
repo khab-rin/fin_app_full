@@ -1,10 +1,7 @@
 use shared_lib::{ProcessError, Status};
 use shared_lib::service::auth_service::implements::{AuthInfo, AuthStep, RegInitData};
 
-use crate::config::BackApiState;
-
 pub(crate) async fn make_init_files(
-    state: &BackApiState,
     data: &RegInitData,
 ) -> Result<AuthStep, Status> {
     let failed_result = AuthStep::TryLater { text: AuthInfo::BackApiError};

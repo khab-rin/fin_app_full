@@ -1,6 +1,5 @@
 use serde::{Serialize, Deserialize};
 
-use crate::make_xls_enum;
 use crate::primitives::composite::implements::Fio;
 use crate::primitives::frozen::text::{CompInn, Kpp, Oktmo, Date};
 use crate::primitives::calculated::implements::RubC;

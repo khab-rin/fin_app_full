@@ -243,11 +243,11 @@ impl HomeMchdPower {
         let data = self.get_power_info();
         let code = String6_255::unchecked(data.code);
         let name = String1_255::unchecked(data.name);
-        MchdPower { powers_mnemonic: None, powers_code: code, powers_name: name, poa_limitations: vec!() }
+        MchdPower { powers_mnemonic: None, powers_code: code, powers_name: name, poa_limitations: vec![] }
     }
 
     pub fn make_text_power(powers: &HashSet<HomeMchdPower>) -> String1_10000 {
-        let mut powers_str: Vec<String> = vec!();
+        let mut powers_str: Vec<String> = vec![];
         for power in powers {
             let data = power.get_power_info();
             powers_str.push(data.name.to_string());

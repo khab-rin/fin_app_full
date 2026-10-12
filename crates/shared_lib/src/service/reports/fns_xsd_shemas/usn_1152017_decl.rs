@@ -1,4 +1,3 @@
-use rust_decimal::Decimal;
 use serde::{Serialize, Deserialize};
 use vec1::Vec1;
 

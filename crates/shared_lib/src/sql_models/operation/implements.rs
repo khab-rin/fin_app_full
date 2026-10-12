@@ -203,6 +203,7 @@ pub fn make_oper_id(
 }
 
 
+#[allow(dead_code)]
 #[derive(ts_rs::TS)]
 pub struct OperationTSTS {
     operation_raw: OperationRaw,

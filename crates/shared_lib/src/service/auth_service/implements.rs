@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::primitives::frozen::text::{Integ, BoxUuid, CompInn, Email, FirstName, Kpp, MidName, Password, PersInn, Phone, Snils, SurName};
+use crate::primitives::frozen::text::{BoxUuid, CompInn, Email, FirstName, Kpp, MidName, Password, PersInn, Phone, Snils, SurName};
 use crate::service::auth_service::general::SessionUser;
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
@@ -213,7 +213,7 @@ pub struct RegFilesPathData {
     pub sign_path: String, 
 }
 
-
+#[allow(dead_code)]
 #[derive(ts_rs::TS)]
 pub struct AuthTSRS {
     auth_step: AuthStep,

@@ -958,6 +958,7 @@ make_xls_enum!(PoaReqElemsFlag, {
 });
 
 
+#[allow(dead_code)]
 #[derive(ts_rs::TS)]
 pub struct MchdTSRS {
     mchd_step: MchdStep,

@@ -80,6 +80,6 @@ pub(crate) async fn register_step1(
         }
     };
 
-    make_init_files(state, data).await
+    make_init_files(data).await
 
 }

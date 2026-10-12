@@ -1,4 +1,3 @@
-use crate::Status::FileReadError;
 use crate::{Status, ClientState, ProcessError};
 use crate::service::mchd::service::{MchdInfo, MchdStep, RegisterMchdData};
 use crate::service::api_routes::implements::ApiRoutes;

@@ -1,7 +1,6 @@
 use chrono::{NaiveDate};
 use rust_decimal::Decimal;
 use serde::{Serialize, Deserialize};
-use sqlx;
 
 use crate::primitives::frozen::validators::*;
 use crate::primitives::frozen::formatters::*;
