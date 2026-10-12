@@ -2,13 +2,12 @@ use std::str::FromStr;
 
 use serde::{Serialize, Deserialize};
 use crate::Status;
-// Импортируем все ваши примитивы из соответствующего модуля
+
 use crate::primitives::frozen::text::*;
 use crate::primitives::frozen::text_base::*;
 use crate::service::mchd::implements::*;
 use crate::sql_models::operation::account::Account;
 use crate::sql_models::operation::implements::DocType;
-use crate::service::reports::service::FnsReportType;
 
 #[derive(Serialize, Deserialize, ts_rs::TS, Debug)]
 pub enum SvelteValidator {

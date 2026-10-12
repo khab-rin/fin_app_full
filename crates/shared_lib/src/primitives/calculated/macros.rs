@@ -9,6 +9,7 @@ macro_rules! calculated_primitives {
         impl $name {
             pub(crate) const LABEL: &'static str = $label;
 
+			#[allow(dead_code)]
             pub(crate) fn new() -> Self {
                 Self { data: rust_decimal::Decimal::ZERO }
             }
