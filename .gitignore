@@ -29,3 +29,6 @@
 
 .env*
 !*.env.example
+
+
+**/ui/src/lib/models/rustModels/
