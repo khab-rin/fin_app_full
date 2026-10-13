@@ -129,6 +129,9 @@ sqlx migrate run
 echo "server database created"
 cd -
 
+cargo test -p shared_lib
+echo "✅ Rust data export to TypeScript: DONE"
+
 
 
 
