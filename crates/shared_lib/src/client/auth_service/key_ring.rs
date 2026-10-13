@@ -35,16 +35,20 @@ pub fn write_keyring_token (
     token: &BoxUuid
 ) -> Result<(), Status> {
 
+	debug_keyring_backends();
+
     let app_name = state.app_handle.package_info().name.as_str();
 
     let token_string = token.to_string();
 
+	let ext_info = format!("key_ = {}, app_name = {}", key_, app_name);
+
     let entry = keyring::Entry::new(app_name, key_)
-        .map_err(|err| err.process_err(Status::SystemLogicErr, ""))?; 
+        .map_err(|err| err.process_err(Status::SystemLogicErr, &ext_info))?; 
 
     entry
         .set_password(&token_string)
-        .map_err(|err| err.process_err(Status::SystemLogicErr, ""))?;
+        .map_err(|err| err.process_err(Status::SystemLogicErr, &ext_info))?;
 
     Ok(())
 
@@ -68,4 +72,25 @@ pub fn delete_keyring_token(
             Err(err.process_err(Status::SystemErr, ""))
         }
     }
+}
+
+
+pub fn debug_keyring_backends() {
+    println!("=========================================");
+    println!("🔍 ТЕХНИЧЕСКАЯ ОТЛАДКА KEYRING:");
+    
+
+    if let Ok(entry) = keyring::Entry::new("test_app_debug", "test_key_debug") {
+
+        if let Err(err) = entry.get_password() {
+            println!("▶ Внутренний тип ошибки (Debug): {:?}", err);
+            println!("▶ Описание ошибки (Display): {}", err);
+        } else {
+            println!("▶ Тестовое хранилище доступно и работает!");
+        }
+    } else {
+        println!("❌ Не удалось даже инициализировать структуру Entry");
+    }
+    
+    println!("=========================================");
 }
