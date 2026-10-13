@@ -103,8 +103,11 @@ if ! command -v sqlx &> /dev/null; then
     echo "⏳ Installing sqlx-cli (Postgres + SQLite)..."
     cargo install sqlx-cli --no-default-features --features "postgres,sqlite,native-tls"
     echo "✅ sqlx-cli installed successfully."
+else
+    echo "✅ sqlx-cli  is already installed."
 fi
 
+set -x
 
 
 cp .env.example .env
@@ -112,16 +115,20 @@ export $(grep -v '^#' .env | xargs)
 sqlx database create
 sleep 1
 sqlx migrate run --source "crates//shared_lib/migrations"
+echo "local database created"
 sleep 1
+
 
 
 cd crates/back_api
 cp .env.example .env
 export $(grep -v '^#' .env | xargs)
 docker compose up -d
-sleep 2
+sleep 3
 sqlx migrate run
+echo "server database created"
 cd -
+
 
 
 
