@@ -22,6 +22,9 @@ mod ts_tests {
 
     #[test]
     fn generate_types_for_svelte() {
+		
+		use ts_rs::TS;
+		
         let output_dirs = [
             "../lite_mobile/ui/src/lib/models/rustModels",
             "../lite_pc/ui/src/lib/models/rustModels",
