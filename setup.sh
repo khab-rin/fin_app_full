@@ -15,12 +15,15 @@ echo "  🐳 Infrastructure containers, local databases, and migrations"
 echo "----------------------------------------------------------------"
 read -r -p "🤔 Do you have Docker installed and want to proceed? (y/n): " main_choice
 
+
 if [[ ! "$main_choice" =~ ^[Yy]$ ]]; then
     echo "❌ Setup aborted by user."
     exit 0
 fi
 
+
 echo "🚀 Setup statrting..."
+
 
 if ! command -v docker &> /dev/null; then
     echo "❌ Error: Docker is missing! It is strictly required for this setup."
@@ -48,7 +51,9 @@ sudo apt-get update && sudo apt-get install -y \
     libatk1.0-dev \
     libgdk-pixbuf-2.0-dev
 
+
 source "$HOME/.cargo/env" 2>/dev/null || true
+
 
 if ! command -v cargo &> /dev/null; then
     echo "⏳ Rust/Cargo is missing. Installing Rust toolchain automatically..."
@@ -62,7 +67,6 @@ if ! command -v cargo &> /dev/null; then
 else
     echo "✅ Rust and Cargo are already installed."
 fi
-
 
 
 if ! command -v bun &> /dev/null; then
@@ -81,13 +85,14 @@ cd crates/lite_mobile/ui
 bun add @tauri-apps/api@latest @tauri-apps/plugin-log@latest @tauri-apps/plugin-dialog@latest @tauri-apps/plugin-fs@latest
 cd ../../../
 
+
 echo "📦 Installing and syncing frontend dependencies for lite_pc..."
 cd crates/lite_pc/ui
 bun add @tauri-apps/api@latest @tauri-apps/plugin-log@latest @tauri-apps/plugin-dialog@latest @tauri-apps/plugin-fs@latest
 cd ../../../
 
-echo "✅ Frontend dependencies installed and synced with Rust toolchain successfully."
 
+echo "✅ Frontend dependencies installed and synced with Rust toolchain successfully."
 
 
 if ! command -v cargo-tauri &> /dev/null && ! cargo --list | grep -q "tauri"; then
@@ -124,20 +129,19 @@ cd crates/back_api
 cp .env.example .env
 export $(grep -v '^#' .env | xargs)
 docker compose up -d
-sleep 3
-sqlx migrate run
-echo "server database created"
+
+echo "⏳ Waiting for Postgres..."
+for i in {1..5}; do sqlx migrate run && break || sleep 3; done
+
+echo "✅ Server database created"
 cd -
+
+
 
 cargo test -p shared_lib
 echo "✅ Rust data export to TypeScript: DONE"
 
 
-
-
-# ==============================================================================
-# 🎉 FINISH & REBOOT RECOMMENDATION
-# ==============================================================================
 echo "----------------------------------------------------------------"
 echo "🎉 [SUCCESS] All databases and tools initialized successfully!"
 echo "----------------------------------------------------------------"
