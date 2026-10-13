@@ -49,7 +49,9 @@ sudo apt-get update && sudo apt-get install -y \
     librsvg2-dev \
     libpango1.0-dev \
     libatk1.0-dev \
-    libgdk-pixbuf-2.0-dev
+    libgdk-pixbuf-2.0-dev \
+    gnome-keyring \
+	libsecret-tools
 
 
 source "$HOME/.cargo/env" 2>/dev/null || true
@@ -112,18 +114,16 @@ else
     echo "✅ sqlx-cli  is already installed."
 fi
 
-set -x
-
-
 cp .env.example .env
 export $(grep -v '^#' .env | xargs)
+
+
+
 sqlx database create
 sleep 1
 sqlx migrate run --source "crates//shared_lib/migrations"
 echo "local database created"
 sleep 1
-
-
 
 cd crates/back_api
 cp .env.example .env
@@ -137,13 +137,34 @@ echo "✅ Server database created"
 cd -
 
 
+echo "--------------------------------------------------"
+echo "🔐 INITIALIZING SECURE STORAGE..."
+echo "--------------------------------------------------"
+echo "⚠️  NOTE FOR PASSWORD PROMPTS:"
+echo "1. If Keyring is NOT configured yet: You will be asked"
+echo "   to create a password TWICE to initialize the storage."
+echo "2. If Keyring IS already configured: You will be asked"
+echo "   to enter your password ONCE to unlock the test entry."
+echo "*(You can also leave it empty and press Enter to bypass)*"
+echo "--------------------------------------------------"
 
-cargo test -p shared_lib
-echo "✅ Rust data export to TypeScript: DONE"
+
+if [ -z "$DBUS_SESSION_BUS_ADDRESS" ] && [ -f /run/user/$(id -u)/bus ]; then
+    export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$(id -u)/bus"
+fi
 
 
-echo "----------------------------------------------------------------"
-echo "🎉 [SUCCESS] All databases and tools initialized successfully!"
+eval $(gnome-keyring-daemon --start --components=secrets)
+
+
+secret-tool store --label="Tauri Auth Example" application "rust-keyring" service "example_app" username "example_user_id"
+
+echo "--------------------------------------------------"
+echo "✅ Secure storage verification step passed!"
+echo "--------------------------------------------------"
+
+
+
 echo "----------------------------------------------------------------"
 echo "⚠️  RECOMMENDATION:"
 echo "   It is highly recommended to restart your system (or WSL session)"
