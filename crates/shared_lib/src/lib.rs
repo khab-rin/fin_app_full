@@ -18,6 +18,7 @@ pub use crate::service::auth_service::client_state::ClientState;
 #[cfg(test)]
 mod ts_tests {
     use super::*;
+    use std::path::Path; // Подключаем Path для работы с файловой системой
 
     #[test]
     fn generate_types_for_svelte() {
@@ -27,19 +28,22 @@ mod ts_tests {
         ];
 
         for dir in &output_dirs {
-            primitives::svelte_validate::SvelteValidator::export_all_to(dir)
+
+            let path = Path::new(dir);
+
+            primitives::svelte_validate::SvelteValidator::export_all_to(path)
                 .expect("Не удалось экспортировать SvelteValidator");
 
-            sql_models::operation::implements::OperationTSTS::export_all_to(dir)
+            sql_models::operation::implements::OperationTSTS::export_all_to(path)
                 .expect("Не удалось экспортировать OperationTSTS");
 
-            service::auth_service::implements::AuthTSRS::export_all_to(dir)
+            service::auth_service::implements::AuthTSRS::export_all_to(path)
                 .expect("Не удалось экспортировать AuthTSRS");
 
-            service::mchd::implements::MchdTSRS::export_all_to(dir)
+            service::mchd::implements::MchdTSRS::export_all_to(path)
                 .expect("Не удалось экспортировать MchdTSRS");
 
-            service::reports::service::ReportTSTS::export_all_to(dir)
+            service::reports::service::ReportTSTS::export_all_to(path)
                 .expect("Не удалось экспортировать ReportTSTS");
         }
     }
