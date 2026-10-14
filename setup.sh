@@ -21,7 +21,6 @@ if [[ ! "$main_choice" =~ ^[Yy]$ ]]; then
     exit 0
 fi
 
-
 echo "🚀 Setup statrting..."
 
 
@@ -32,6 +31,45 @@ if ! command -v docker &> /dev/null; then
 else
     echo "✅ Docker detected and available."
 fi
+
+
+sudo apt-get update || {
+    echo "ERROR: Failed to update package lists."
+    exit 1
+}
+
+sudo apt-get install -y \
+    gnome-keyring \
+    libsecret-tools \
+    dbus-user-session \
+    libdbus-1-dev || {
+    echo "ERROR: Failed to install dependencies."
+    exit 1
+}
+
+
+echo "--------------------------------------------------"
+echo "🔐 INITIALIZING SECURE STORAGE..."
+echo "--------------------------------------------------"
+echo "⚠️  NOTE FOR PASSWORD PROMPTS:"
+echo "1. If Keyring is NOT configured yet: You will be asked"
+echo "   to create a password TWICE to initialize the storage."
+echo "2. If Keyring IS already configured: You will be asked"
+echo "   to enter your password ONCE to unlock the test entry."
+echo "--------------------------------------------------"
+
+printf '%s' 'test-secret-123' | secret-tool store \
+    --label="Keyring test" \
+    app test-app key test-token
+
+
+secret-tool lookup app test-app key test-token
+
+secret-tool clear app test-app key test-token
+
+echo "--------------------------------------------------"
+echo "✅ Secure storage verification step passed!"
+echo "--------------------------------------------------"
 
 
 echo "📦 Installing basic Linux system dependencies (requires sudo)..."
@@ -49,9 +87,7 @@ sudo apt-get update && sudo apt-get install -y \
     librsvg2-dev \
     libpango1.0-dev \
     libatk1.0-dev \
-    libgdk-pixbuf-2.0-dev \
-    gnome-keyring \
-	libsecret-tools
+    libgdk-pixbuf-2.0-dev
 
 
 source "$HOME/.cargo/env" 2>/dev/null || true
@@ -71,30 +107,25 @@ else
 fi
 
 
-if ! command -v bun &> /dev/null; then
-    echo "⏳ Bun is missing. Installing Node.js and NPM via system package manager..."
-    sudo apt-get install -y nodejs npm
-    CURRENT_USER=$(whoami)
-    sudo npm install -g bun --user=$CURRENT_USER --unsafe-perm
-    echo "✅ Bun installed successfully."
-else
-    echo "✅ Bun is already installed."
+export NVM_DIR="$HOME/.nvm"
+if [[ ! -s "$NVM_DIR/nvm.sh" ]]; then
+    sudo apt-get install -y curl
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+fi
+source "$NVM_DIR/nvm.sh"
+nvm install 22
+nvm use 22
+nvm alias default 22
+
+# Install Bun if missing.
+if ! command -v bun &>/dev/null; then
+    curl -fsSL https://bun.sh/install | bash
+    export PATH="$HOME/.bun/bin:$PATH"
 fi
 
-
-echo "📦 Installing and syncing frontend dependencies for lite_mobile..."
-cd crates/lite_mobile/ui
-bun add @tauri-apps/api@latest @tauri-apps/plugin-log@latest @tauri-apps/plugin-dialog@latest @tauri-apps/plugin-fs@latest
-cd ../../../
+echo "✅ Node.js: $(node -v), Bun: $(bun --version)"
 
 
-echo "📦 Installing and syncing frontend dependencies for lite_pc..."
-cd crates/lite_pc/ui
-bun add @tauri-apps/api@latest @tauri-apps/plugin-log@latest @tauri-apps/plugin-dialog@latest @tauri-apps/plugin-fs@latest
-cd ../../../
-
-
-echo "✅ Frontend dependencies installed and synced with Rust toolchain successfully."
 
 
 if ! command -v cargo-tauri &> /dev/null && ! cargo --list | grep -q "tauri"; then
@@ -117,8 +148,6 @@ fi
 cp .env.example .env
 export $(grep -v '^#' .env | xargs)
 
-
-
 sqlx database create
 sleep 1
 sqlx migrate run --source "crates//shared_lib/migrations"
@@ -136,37 +165,12 @@ for i in {1..5}; do sqlx migrate run && break || sleep 3; done
 echo "✅ Server database created"
 cd -
 
+cargo test -p shared_lib
 
-echo "--------------------------------------------------"
-echo "🔐 INITIALIZING SECURE STORAGE..."
-echo "--------------------------------------------------"
-echo "⚠️  NOTE FOR PASSWORD PROMPTS:"
-echo "1. If Keyring is NOT configured yet: You will be asked"
-echo "   to create a password TWICE to initialize the storage."
-echo "2. If Keyring IS already configured: You will be asked"
-echo "   to enter your password ONCE to unlock the test entry."
-echo "*(You can also leave it empty and press Enter to bypass)*"
-echo "--------------------------------------------------"
-
-
-if [ -z "$DBUS_SESSION_BUS_ADDRESS" ] && [ -f /run/user/$(id -u)/bus ]; then
-    export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$(id -u)/bus"
-fi
-
-
-eval $(gnome-keyring-daemon --start --components=secrets)
-
-
-secret-tool store --label="Tauri Auth Example" application "rust-keyring" service "example_app" username "example_user_id"
-
-echo "--------------------------------------------------"
-echo "✅ Secure storage verification step passed!"
-echo "--------------------------------------------------"
-
-
+echo "✅ Rust model export TypeScript - DONE"
 
 echo "----------------------------------------------------------------"
 echo "⚠️  RECOMMENDATION:"
-echo "   It is highly recommended to restart your system (or WSL session)"
+echo "   It is highly recommended to restart your system"
 echo "   before you start development to apply all environment changes properly."
 echo "----------------------------------------------------------------"
