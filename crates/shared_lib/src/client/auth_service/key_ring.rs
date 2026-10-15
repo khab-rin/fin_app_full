@@ -11,6 +11,8 @@ pub fn get_keyring_token(
 
     let app_name = state.app_handle.package_info().name.as_str();
 
+	log::debug!("KEYRING READ: app_name={:?}, key_={:?}", app_name, key_);
+
     let entry = keyring::Entry::new(app_name, key_)
         .map_err(|err| err.process_err(Status::SystemErr, ""))?; 
 
@@ -25,6 +27,11 @@ pub fn get_keyring_token(
     let token = BoxUuid::new(&token_str)
         .map_err(|err| err.process_err(Status::SystemLogicErr, ""))?;
 
+	log::debug!(
+		"KEYRING WRITE: entry={:?}",
+		entry
+	);
+
     Ok(Some(token))
 } 
 
@@ -37,6 +44,8 @@ pub fn write_keyring_token (
 
     let app_name = state.app_handle.package_info().name.as_str();
 
+	log::debug!("KEYRING WRITE: app_name={:?}, key_={:?}",app_name,key_);
+
     let token_string = token.to_string();
 
 	let ext_info = format!("key_ = {}, app_name = {}", key_, app_name);
@@ -47,6 +56,8 @@ pub fn write_keyring_token (
     entry
         .set_password(&token_string)
         .map_err(|err| err.process_err(Status::SystemLogicErr, &ext_info))?;
+
+	log::debug!("KEYRING WRITE: entry={:?}",entry);
 
     Ok(())
 

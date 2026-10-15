@@ -28,7 +28,7 @@ dotenvy = "0.15.7"
 
 futures = "0.3"
 
-keyring = { version = "3.6.3", features = ["sync-secret-service", "crypto-rust"] }
+keyring = { version = "3.6.3", features = ["sync-secret-service", "crypto-rust", "windows-native"] }
 
 log = "0.4"
 

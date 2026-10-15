@@ -13,20 +13,25 @@ pub fn run_lib() {
         .plugin(tauri_plugin_log::Builder::new()
             .format(|out, message, record| {
                 out.finish(format_args!(
-                    "[{file}:{line}] {level}: {message}",
-                    file = record.file().unwrap_or("unknown"),
-                    line = record.line().unwrap_or(0),
-                    level = record.level(),
-                    message = message
-                ))
+					"[{date}] [{file}:{line}] {level}: {message}",
+					date = chrono::Local::now().format("%Y-%m-%d %H:%M:%S"),
+					file = record.file().unwrap_or("unknown"),
+					line = record.line().unwrap_or(0),
+					level = record.level(),
+					message = message
+				))
             })
+			.max_file_size(5_000_000)
             .targets([
                 Target::new(TargetKind::Stdout),
                 Target::new(TargetKind::LogDir { file_name: Some("app_logs".to_string()) }),
                 Target::new(TargetKind::Webview),
             ])
-            .level(log::LevelFilter::Info)
-            .level_for("rustls_platform_verifier", log::LevelFilter::Warn)
+            .level(log::LevelFilter::Warn)
+			.level_for("lite_pc", log::LevelFilter::Debug)
+			.level_for("lite_mobile", log::LevelFilter::Debug)
+			.level_for("shared_lib", log::LevelFilter::Debug)
+			.level_for("back_api", log::LevelFilter::Debug)
             .build())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
