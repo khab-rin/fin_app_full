@@ -29,16 +29,16 @@ where
             Ok(r) => r,
             Err(err) => {
                 log::error!(
-                    "FUN post_query_back_api FILED, tech_err = {}", err
+                    "FUN post_query_back_api FILED, tech_err = {}, url = {}", err, back_api_url
                 );
                 match err {
                     reqwest_middleware::Error::Reqwest(reqwest_err) => {
                         if reqwest_err.is_timeout() {
-                            log::error!("Back API request timeout, local_err = {}", Status::BackApiError);
+                            log::error!("Back API request timeout, local_err = {}, url = {}", Status::BackApiError, back_api_url);
                             return Err(Status::BackApiError);
                         }
                         if reqwest_err.is_connect() {
-                            log::error!("Back API connection failed (server is offline)");
+                            log::error!("Back API connection failed (server is offline), url = {}", back_api_url);
                             return Err(Status::QueryConnectErr);
                         }
                         
@@ -46,7 +46,7 @@ where
                     },
 
                     reqwest_middleware::Error::Middleware(_) => {
-                        log::error!("Request blocked or failed inside middleware layer");
+                        log::error!("Request blocked or failed inside middleware layer, url = {}", back_api_url);
                         return Err(Status::SystemErr); // 400
                     }
                 }

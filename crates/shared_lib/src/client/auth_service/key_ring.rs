@@ -35,8 +35,6 @@ pub fn write_keyring_token (
     token: &BoxUuid
 ) -> Result<(), Status> {
 
-	debug_keyring_backends();
-
     let app_name = state.app_handle.package_info().name.as_str();
 
     let token_string = token.to_string();
