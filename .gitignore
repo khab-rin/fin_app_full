@@ -34,3 +34,5 @@
 **/ui/src/lib/models/rustModels/
 
 crates/back_api/mock_storage/mchd/storage.json
+
+/crypto_service.tar
