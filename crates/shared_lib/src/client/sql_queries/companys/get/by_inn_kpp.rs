@@ -1,7 +1,7 @@
 use crate::{Status, ClientState, ProcessError};
 use crate::primitives::frozen::text::{Kpp, CompInn, BoxUuid, CompStatus, CompType, DateTime};
 use crate::sql_models::company::implements::{Company, CompanyDto};
-use crate::client::sql_queries::companys::add::new_company::add_company_by_inn_cpp_acc;
+use crate::client::sql_queries::companys::add::by_inn_kpp::add_company_by_inn_cpp_acc;
 
 pub async fn get_company_by_inn_kpp(
     state: &ClientState,

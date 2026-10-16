@@ -16,6 +16,8 @@ pub fn get_keyring_token(
     let entry = keyring::Entry::new(app_name, key_)
         .map_err(|err| err.process_err(Status::SystemErr, ""))?; 
 
+	log::debug!("KEYRING READ: entry={:?}", entry);
+
     let token_str = match entry.get_password() {
         Ok(d) => d,
         Err(keyring::Error::NoEntry) => return Ok(None),
@@ -28,7 +30,7 @@ pub fn get_keyring_token(
         .map_err(|err| err.process_err(Status::SystemLogicErr, ""))?;
 
 	log::debug!(
-		"KEYRING WRITE: entry={:?}",
+		"KEYRING READ: entry={:?}",
 		entry
 	);
 

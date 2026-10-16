@@ -6,7 +6,7 @@ use crate::primitives::frozen::text::{CompInn, Kpp};
 use crate::sql_models::company::implements::{CompCrateData};
 use crate::sql_models::company::implements::Company;
 
-use crate::client::sql_queries::companys::add::new_companys::add_companys_by_inn_cpp_acc;
+use crate::client::sql_queries::companys::add::by_inn_kpp_vec::add_companys_by_inn_cpp_acc;
 
 pub async fn add_company_by_inn_cpp_acc(
     state: &ClientState,

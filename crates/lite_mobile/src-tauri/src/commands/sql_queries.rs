@@ -7,7 +7,7 @@ use shared_lib::primitives::composite::implements::RasBicAcc;
 use shared_lib::primitives::frozen::text::{RasAcc, Bic, CompInn, Kpp, BoxUuid};
 
 use shared_lib::client::sql_queries::companys::get::bank_acc_by_comp_inn_kpp::get_bank_accs_by_comp_id;
-use shared_lib::client::sql_queries::companys::add::new_company::add_company_by_inn_cpp_acc;
+use shared_lib::client::sql_queries::companys::add::by_inn_kpp::add_company_by_inn_cpp_acc;
 use shared_lib::client::sql_queries::companys::get::by_inn_kpp::get_company_by_inn_kpp;
 use shared_lib::client::sql_queries::contracts::add::new_contract::make_new_contract;
 use shared_lib::client::sql_queries::companys::get::all::get_all_companys;

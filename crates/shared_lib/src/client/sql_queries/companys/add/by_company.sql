@@ -1,0 +1,18 @@
+INSERT OR REPLACE INTO companys(
+    comp_id,
+    comp_inn,
+    kpp,
+    comp_type,
+    comp_status,
+    metadata,
+    last_update
+)
+VALUES(?1, ?2, ?3, ?4, ?5, ?6, ?7)
+RETURNING
+    comp_id AS "comp_id!: BoxUuid",
+    comp_inn AS "comp_inn!: CompInn",
+    kpp AS "kpp!: Kpp",
+    comp_type AS "comp_type!: CompType",
+    comp_status AS "comp_status!: CompStatus",
+    metadata,
+    last_update AS "last_update!: DateTime";

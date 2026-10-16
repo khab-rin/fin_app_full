@@ -19,7 +19,7 @@ use crate::sql_models::company::implements::{InnKppMapAcc, CompCrateData};
 use crate::client::operation::helper::make_statement_block_map;
 use crate::client::operation::statement_parser::comment::parse_comment;
 use crate::client::operation::statement_parser::make_operations::make_statement_operation_raw;
-use crate::client::sql_queries::companys::add::new_companys::add_companys_by_inn_cpp_acc;
+use crate::client::sql_queries::companys::add::by_inn_kpp_vec::add_companys_by_inn_cpp_acc;
 use crate::client::sql_queries::operations::get::exist_ids_by_operations::get_exist_ids_by_ids;
 
 

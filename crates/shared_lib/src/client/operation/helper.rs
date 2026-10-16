@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use crate::{ClientState, ProcessError, Status};
 use crate::primitives::composite::implements::RasBicAcc;
 use crate::primitives::frozen::text::{CompInn, Kpp};
-use crate::client::sql_queries::companys::add::new_company::add_company_by_inn_cpp_acc;
+use crate::client::sql_queries::companys::add::by_inn_kpp::add_company_by_inn_cpp_acc;
 
 
 
