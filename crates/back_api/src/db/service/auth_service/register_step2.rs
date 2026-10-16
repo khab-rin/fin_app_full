@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use argon2::{
     password_hash::{
         rand_core::OsRng,
@@ -6,7 +8,9 @@ use argon2::{
     Argon2
 };
 
-use shared_lib::{Status, ProcessError};
+use shared_lib::{ProcessError, Status, primitives::frozen::text::DateTime};
+use shared_lib::primitives::frozen::text::BoxUuid;
+use shared_lib::primitives::composite::implements::Fio;
 use shared_lib::service::auth_service::implements::{
     RegInitData, 
     AuthInfo, 
@@ -16,8 +20,10 @@ use shared_lib::service::crypto_service::implements::{
     CheckSignDocData,
     PersonSignCheckResult
 };
+
 use shared_lib::service::api_routes::implements::CryptoApiRoutes;
 use shared_lib::sql_models::user::implements::UserSetData;
+use shared_lib::sql_models::person::implements::{Person, PersonMetadata};
 use shared_lib::service::auth_service::implements::SessionUserToken;
 use shared_lib::service::auth_service::general::SessionUser;
 
@@ -25,7 +31,7 @@ use shared_lib::service::auth_service::general::SessionUser;
 use crate::config::BackApiState;
 use crate::db::service::auth_service::helper::{mask_email, mask_string};
 use crate::db::service::mchd::mchd_storage::add_new_manager;
-use crate::db::sql_queries::persons::get::person_by_inn::get_person_by_inn;
+use crate::db::sql_queries::persons::add::by_person::add_person;
 use crate::db::sql_queries::companys::get::company_by_inn_kpp::get_company_by_inn_kpp;
 use crate::db::sql_queries::users::get::by_inn_pers_comp_kpp::get_user_by_inn_pers_comp_kpp;
 use crate::db::sql_queries::users::get::tel_mail_by_id::get_user_phone_mail_by_id;
@@ -44,6 +50,7 @@ pub(crate) async fn register_step2(
 ) -> Result<AuthStep, Status> {
 
     let failed_result = AuthStep::TryLater { text: AuthInfo::BackApiError };
+
 
     let CheckSignDocData { 
         init_file, 
@@ -80,18 +87,31 @@ pub(crate) async fn register_step2(
         device_id
     } = json_data.clone();
 
-    let person_option = match get_person_by_inn(state, &pers_inn).await {
-        Ok(o) => o,
+
+	let mut person =  Person {
+		pers_id: BoxUuid::unchecked(uuid::Uuid::new_v4()),
+		pers_inn: pers_inn.clone(),
+		metadata : PersonMetadata {
+			snils: snils.clone(),
+			fio: Fio {
+				sur_name: sur_name.clone(),
+				first_name: first_name.clone(),
+				mid_name: mid_name.clone(),
+			},
+			passport: None,
+			address: None,
+			gender: None,
+			birth_day: None,
+			phone: HashSet::from([phone.clone()]),
+			email: HashSet::from([email.clone()])
+		},
+		last_update: DateTime::unchecked(chrono::Utc::now())
+	};
+
+    person = match add_person(state, &person).await {
+        Ok(p) => p,
         Err(err) => {
             err.process_err(err, "");
-            return Ok(failed_result);
-        }
-    };
-
-    let person = match person_option {
-        Some(p) => p,
-        None => {
-            Status::Tech.process_err(Status::SystemLogicErr, "USER MUST BE IN SYSTEM ALREADY");
             return Ok(failed_result);
         }
     };

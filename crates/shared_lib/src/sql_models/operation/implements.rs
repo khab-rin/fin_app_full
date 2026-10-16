@@ -80,69 +80,67 @@ pub struct Operation {
 make_enum_frozen! {
     DocType, {
         BankOrder, "банковский ордер", {
-            "BANK_ORDER", "bank_order", "bankorder", "мемориальный ордер"
+            "BANK_ORDER", "бо", "bo"
         },
         PaymentOrder, "платежное поручение", {
-            "PAYMENT_ORDER", "payment_order", "paymentorder", "платежка", "пп"
+            "PAYMENT_ORDER", "пп", "po"
         },
         PaymentClaim, "платежное требование", {
-            "PAYMENT_CLAIM", "payment_claim"
+            "PAYMENT_CLAIM", "пт", "pc"
         },
         CollectionOrder, "инкассовое поручение", {
-            "COLLECTION_ORDER", "collection_order"
+            "COLLECTION_ORDER", "ип", "co"
         },
         BankStatement, "банковская выписка", {
-            "BANK_STATEMENT", "bank_statement", "выписка банка", "выписка"
+            "BANK_STATEMENT", "бв", "bs"
         },
         CashReceipt, "приходный кассовый ордер", {
-            "CASH_RECEIPT", "cash_receipt", "пко"
+            "CASH_RECEIPT", "пко", "cr"
         },
         CashVoucher, "расходный кассовый ордер", {
-            "CASH_VOUCHER", "cash_voucher", "рко"
+            "CASH_VOUCHER", "рко", "cv"
         },
         CashCheck, "кассовый чек", {
-            "CASH_CHECK", "cash_check", "чек", "бсо"
+            "CASH_CHECK", "кч", "cc"
         },
         WaybillTorg12, "товарная накладная", {
-            "WAYBILL_TORG12", "torg12", "waybill_torg12", "торг-12", "торг 12", "накладная"
+            "WAYBILL_TORG12", "тн", "wt"
         },
         Upd, "универсальный передаточный документ", {
-            "UPD", "upd", "упд"
+            "UPD", "упд", "upd"
         },
         TransportWaybill, "транспортная накладная", {
-            "TRANSPORT_WAYBILL", "transport_waybill", "тн", "ттн"
+            "TRANSPORT_WAYBILL", "ттр", "tw"
         },
         AcceptanceAct, "акт приема-передачи", {
-            "ACCEPTANCE_ACT", "acceptance_act", "акт приема передачи"
+            "ACCEPTANCE_ACT", "ап", "aa"
         },
         ServiceAct, "акт оказанных услуг", {
-            "SERVICE_ACT", "service_act", "акт выполненных работ", "акт"
+            "SERVICE_ACT", "ау", "sa"
         },
         VatInvoice, "счет-фактура", {
-            "VAT_INVOICE", "vat_invoice", "счет фактура", "сф"
+            "VAT_INVOICE", "сф", "vi"
         },
         PaymentInvoice, "счет на оплату", {
-            "PAYMENT_INVOICE", "payment_invoice", "invoice", "счет"
+            "PAYMENT_INVOICE", "со", "pi"
         },
         ReconciliationAct, "акт сверки", {
-            "RECONCILIATION_ACT", "reconciliation_act", "акт сверки взаиморасчетов"
+            "RECONCILIATION_ACT", "ас", "ra"
         },
         AccountingNote, "бухгалтерская справка", {
-            "ACCOUNTING_NOTE", "accounting_note", "справка"
+            "ACCOUNTING_NOTE", "бс", "an"
         },
-        WriteOffAct, "акт sписания", {
-            "WRITE_OFF_ACT", "write_off_act", "списание"
+        WriteOffAct, "акт списания", {
+            "WRITE_OFF_ACT", "асн", "wa"
         },
         CorrectionAct, "корректировочный акт", {
-            "CORRECTION_ACT", "correction_act", "ксф", "корректировочная счет-фактура"
+            "CORRECTION_ACT", "ка", "ca"
         },
         Other, "прочее", {
-            "OTHER", "other"
+            "OTHER", "пр", "ot"
         },
     }
 }
-
-
 
 
 impl ParseFromStrMapValue for DocType {

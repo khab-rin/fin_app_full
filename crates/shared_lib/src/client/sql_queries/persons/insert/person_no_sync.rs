@@ -9,6 +9,8 @@ pub async fn insert_person_no_sync(
     person: &Person
 ) -> Result<Person, Status> {
 
+	log::debug!("insert_person_no_sync function started!");
+
     let session = state.get_session().await
         .map_err(|err| err.process_err(err, ""))?;
 
@@ -36,6 +38,8 @@ pub async fn insert_person_no_sync(
         ).fetch_optional(&session.local_db)
         .await
         .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+	
+	log::debug!("insert_person_no_sync function finished!");
 
     Ok(prev_person)
 

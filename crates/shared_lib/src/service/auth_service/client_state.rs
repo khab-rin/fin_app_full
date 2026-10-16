@@ -10,12 +10,16 @@ use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions};
 
 use crate::primitives::frozen::text::{PersInn, CompInn, Kpp};
 use crate::sql_models::person::implements::Person;
+use crate::sql_models::company::implements::Company;
 use crate::service::auth_service::general::time_parser;
 use crate::{Status, ProcessError};
-use crate::make_header;
 use crate::service::auth_service::general::*;
 use crate::service::auth_service::implements::SessionUserToken;
+
+use crate::make_header;
 use crate::client::sql_queries::null_elems::make_null_postgress_elements;
+use crate::client::sql_queries::companys::add::by_company::add_company;
+use crate::client::sql_queries::persons::insert::person_no_sync::insert_person_no_sync;
 
 
 
@@ -218,9 +222,15 @@ pub(crate) async fn init_session(
 
     let mut db_url = format!("sqlite://{}", path_str);
 
-    if let Ok(env_db_url) = std::env::var("DATABASE_URL") {
-        db_url = env_db_url;
-    }
+    if cfg!(debug_assertions) {
+		let project_root = env!("CARGO_MANIFEST_DIR");
+		log::debug!("project_root = {:?}", project_root);
+		let db_path = std::path::Path::new(project_root)
+			.join("../../data_base.db");
+		log::debug!("db_path = {:?}", db_path);
+		db_url = format!("sqlite://{}", db_path.display());
+		log::debug!("db_url = {:?}", db_url);
+	}
 
     let connect_options = SqliteConnectOptions::from_str(&db_url)
         .map_err(|err| err.process_err(Status::SystemErr, ""))?
@@ -246,11 +256,21 @@ pub(crate) async fn init_session(
         token: user_data.token.clone(),
     });
 
+	let company: &Company = &user_data.user.company;
+	let person: &Person = &user_data.user.person;
+
 	make_null_postgress_elements(&session).await
 		.map_err(|err| err.process_err(err, ""))?;
 
-    let mut session_ref = state.session.lock().await;
-    *session_ref = Some(session);
+	{
+		let mut session_ref = state.session.lock().await;
+		*session_ref = Some(session);
+	}
+
+	insert_person_no_sync(state, person).await.map_err(|err| err.process_err(err, ""))?;
+	add_company(state, company).await.map_err(|err| err.process_err(err, ""))?;
+
+	log::debug!("init_session finished");
 
     Ok(Status::Success)
 
