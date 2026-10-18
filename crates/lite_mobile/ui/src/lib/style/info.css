@@ -79,7 +79,7 @@
 }
 
 /* Текст в состоянии загрузки */
-.info-value-span:has(+ :not(*)):contains("Загрузка...") {
+.info-value-span.loading {
     color: #94a3b8;
     font-style: italic;
     animation: pulse 1.5s infinite;

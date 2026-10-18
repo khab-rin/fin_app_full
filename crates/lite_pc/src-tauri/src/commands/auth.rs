@@ -22,11 +22,13 @@ pub async fn cmd_get_comp_name(
 
 
 #[tauri::command]
-pub fn cmd_get_device_id() -> Result<BoxUuid, Status> {
+pub fn cmd_get_device_id(
+	state: tauri::State<'_, ClientState>
+) -> Result<BoxUuid, Status> {
 
     log::debug!("cmd_get_device_id running");
 
-    get_device_id()
+    get_device_id(&state)
 }
 
 

@@ -20,7 +20,8 @@ client = [
     "dep:tauri-plugin-dialog",
     "dep:tauri-plugin-shell",
     "dep:tauri-plugin-log",
-    "dep:tauri-plugin-fs"
+    "dep:tauri-plugin-fs",
+	"dep:tauri-plugin-machine-uid"
 ]
 
 [dependencies]
@@ -43,8 +44,6 @@ keyring = { workspace = true, optional = true }
 log = { workspace = true}
 
 lopdf = { workspace = true}
-
-machine-uid = { workspace = true }
 
 quick-xml = { workspace = true }
 
@@ -70,6 +69,7 @@ tauri-plugin-dialog = { workspace = true, optional = true }
 tauri-plugin-shell = { workspace = true, optional = true }
 tauri-plugin-log = { workspace = true, optional = true }
 tauri-plugin-fs = { workspace = true, optional = true}
+tauri-plugin-machine-uid = { workspace = true, optional = true}
 
 tokio = { workspace = true, features = ["sync"] }
 

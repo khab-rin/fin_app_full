@@ -1,0 +1,30 @@
+[package]
+name = "tauri-plugin-machine-uid"
+version = "0.1.3"
+authors = ["Florian Stasse <f.stasse@skipperndt.com>"]
+description = "A Tauri plugin for retrieving machine UID"
+license = "MIT"
+edition = "2024"
+rust-version = "1.85"
+exclude = ["/examples", "/webview-dist", "/webview-src", "/node_modules"]
+links = "tauri-plugin-machine-uid"
+repository = "https://github.com/SkipperNDT/tauri-plugin-machine-uid"
+homepage = "https://github.com/SkipperNDT/tauri-plugin-machine-uid"
+documentation = "https://docs.rs/tauri-plugin-machine-uid"
+readme = "README.md"
+
+[dependencies]
+tauri = { version = "2" }
+serde = "1"
+thiserror = "2"
+specta = "2.0.0-rc.22"
+tauri-specta = { version = "2.0.0-rc.21", features = ["typescript"] }
+
+[target."cfg(any(target_os = \"macos\", windows, target_os = \"linux\"))".dependencies]
+machine-uid = { version = "0.5.3" }
+
+[dev-dependencies]
+specta-typescript = "0.0.9"
+
+[build-dependencies]
+tauri-plugin = { version = "2", features = ["build"] }

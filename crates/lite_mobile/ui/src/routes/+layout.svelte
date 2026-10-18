@@ -9,7 +9,7 @@
 	import SettingsMainMenu from "$lib/service/Settings/SettingsMainMenu.svelte";
 	import {pageManager} from "$lib/models/MainManager/MainManager.svelte";
 	
-	let { children } = $props<{ children: import('svelte').Snippet }>();
+	let { children }: { children: import('svelte').Snippet } = $props();
 
 	let menuRef: HTMLElement | null = $state(null);
 

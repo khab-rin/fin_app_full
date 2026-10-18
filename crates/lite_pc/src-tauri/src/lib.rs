@@ -1,4 +1,3 @@
-#[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub mod commands;
 pub mod service;
 
@@ -36,6 +35,7 @@ pub fn run_lib() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_fs::init())
+		.plugin(tauri_plugin_machine_uid::init())
         .invoke_handler(tauri::generate_handler![
 			commands::auth::cmd_get_comp_name,
             commands::auth::cmd_get_nick_names,

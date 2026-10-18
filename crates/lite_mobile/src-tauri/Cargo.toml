@@ -11,7 +11,7 @@ rust-version = "1.77.2"
 
 [lib]
 name = "mobile"
-crate-type = ["rlib"]
+crate-type = ["staticlib", "cdylib", "rlib"]
 path = "src/lib.rs"
 
 [build-dependencies]
@@ -36,15 +36,11 @@ keyring = { workspace = true }
 
 log = { workspace = true }
 
-machine-uid = { workspace = true }
-
 quick-xml = { workspace = true }
 
 reqwest = { workspace = true, features = ["json", "rustls", "query", "cookies", "form"] }
 reqwest-middleware = { workspace = true, features = ["json", "query"]  }
 reqwest-retry = { workspace = true }
-
-
 
 serde = { workspace = true }
 serde_json = { workspace = true }
@@ -56,6 +52,7 @@ tauri-plugin-dialog = { workspace = true }
 tauri-plugin-shell = { workspace = true }
 tauri-plugin-log = { workspace = true }
 tauri-plugin-fs = { workspace = true}
+tauri-plugin-machine-uid = { workspace = true}
 
 tokio = { workspace = true }
 

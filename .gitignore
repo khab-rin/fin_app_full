@@ -1,38 +1,47 @@
-
+# Rust
 **/target/
 
+# Archives and binaries
 *.tgz
 *.tar.gz
 *.zip
 *.7z
 *.exe
 *.deb
+/crypto_service.tar
 
 !/crates/crypto_service/linux-amd64_deb.tgz
 
+# Android
+**/app-release.apk
+**/app-release.apk.idsig
+
+# Databases
 **/*.db
 **/*.db-shm
 **/*.db-wal
 **/*.sqlite
+crates/back_api/mock_storage/mchd/storage.json
 
+# Frontend dependencies and build artifacts
 **/node_modules/
 **/.svelte-kit/
 **/dist/
 **/.vite/
 .npm/
 
+# Logs
 **/logs/*.log*
 *.log
+
+# IDE and OS files
 **/.vscode/
 **/.idea/
 .DS_Store
 
+# Environment configuration
 .env*
 !*.env.example
 
-
+# Generated Rust models
 **/ui/src/lib/models/rustModels/
-
-crates/back_api/mock_storage/mchd/storage.json
-
-/crypto_service.tar

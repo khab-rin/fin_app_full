@@ -20,7 +20,7 @@ pub async fn make_session_by_tel_call(
 
     let failed_result = Ok(AuthStep::TryLater { text: AuthInfo::ClientApiSystemError });
 
-    let device_id = match get_device_id() {
+    let device_id = match get_device_id(state) {
         Ok(d) => d,
         Err(err) => {
             err.process_err(err, "");

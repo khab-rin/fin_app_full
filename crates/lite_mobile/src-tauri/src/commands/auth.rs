@@ -14,11 +14,13 @@ use shared_lib::client::auth_service::register_step2::register_step2;
 use shared_lib::client::auth_service::make_session_by_tell_call::make_session_by_tel_call;
 
 #[tauri::command]
-pub fn cmd_get_device_id() -> Result<BoxUuid, Status> {
+pub fn cmd_get_device_id(
+	state: tauri::State<'_, ClientState>
+) -> Result<BoxUuid, Status> {
 
     log::debug!("cmd_get_device_id running");
 
-    get_device_id()
+    get_device_id(&state)
 }
 
 
