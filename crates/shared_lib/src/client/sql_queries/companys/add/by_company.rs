@@ -21,7 +21,7 @@ pub async fn add_company(
 		Some(mut c) => {
 			c.comp_status = company.comp_status.clone();
             c.comp_type = company.comp_type.clone();
-            c.metadata.bank_acc.extend(company.metadata.bank_acc.clone());
+			c.merge_acc(company);
             c
 		},
 		None => company.clone()

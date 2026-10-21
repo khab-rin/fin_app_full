@@ -75,14 +75,14 @@ pub struct CompCrateData {
 pub type InnKppMapAcc = HashMap<(CompInn, Kpp), HashSet<RasBicAcc>>;
 
 impl Company {
-    pub fn merge_acc(&mut self, other: Self) {
+    pub fn merge_acc(&mut self, other: &Self) {
         if self.comp_type == CompType::Bank {
             self.metadata.bank_acc = vec![];
             return;
         }
         let mut new_acc: HashSet<RasBicAcc> = self.metadata.bank_acc.clone().into_iter().collect();
-        for acc in other.metadata.bank_acc {
-            new_acc.insert(acc);
+        for acc in &other.metadata.bank_acc {
+            new_acc.insert(acc.clone());
         }
 
         self.metadata.bank_acc = new_acc.into_iter().collect(); 

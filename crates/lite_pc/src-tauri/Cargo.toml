@@ -18,34 +18,11 @@ path = "src/lib.rs"
 tauri-build = { version = "2.5.6", features = [] }
 
 [dependencies]
-shared_lib = { workspace = true, features= ['client'] }
-
-blake3 = { workspace = true }
+shared_lib = { workspace = true, features= ['lite_pc'] }
 
 chrono = { workspace = true }
 
-directories = { workspace = true }
-
-dotenvy = { workspace = true }
-
-encoding_rs = { workspace = true }
-
-futures = { workspace = true }
-
-keyring = { workspace = true }
-
 log = { workspace = true }
-
-quick-xml = { workspace = true }
-
-reqwest = { workspace = true, features = ["json", "rustls", "query", "cookies", "form"] }
-reqwest-middleware = { workspace = true, features = ["json", "query"]  }
-reqwest-retry = { workspace = true }
-
-serde = { workspace = true }
-serde_json = { workspace = true }
-
-sqlx = { workspace = true, features = ["sqlite"] }
 
 tauri = { workspace = true, features = [] }
 tauri-plugin-dialog = { workspace = true }
@@ -55,10 +32,3 @@ tauri-plugin-fs = { workspace = true}
 tauri-plugin-machine-uid = { workspace = true}
 
 tokio = { workspace = true }
-
-toml = { workspace = true }
-
-ts-rs = { workspace = true }
-
-uuid = { workspace = true, features = ["v5"] }
-

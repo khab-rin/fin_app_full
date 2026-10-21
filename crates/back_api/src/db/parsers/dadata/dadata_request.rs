@@ -36,10 +36,23 @@ pub async fn dadata_reqwest_func(
     }
 
     let raw_body = response
-        .text()
-        .await
-        .map_err(|err| err.process_err(Status::MappingError, &ext_info))?;
+		.text()
+		.await
+		.map_err(|err| {
+			tracing::error!(
+				error = ?err,
+				error_display = %err,
+				is_decode = err.is_decode(),
+				is_body = err.is_body(),
+				is_timeout = err.is_timeout(),
+				is_connect = err.is_connect(),
+				"Failed to read DaData response body"
+			);
+        	err.process_err(Status::MappingError, &ext_info)
+    })?;
 
+
+	tracing::debug!(status = %status);
 
     let resp_wrap: DadaRespWrap = serde_json::from_str(&raw_body)
         .map_err(|err| {
@@ -47,10 +60,18 @@ pub async fn dadata_reqwest_func(
             err.process_err(Status::MappingError, &info)
         })?;
 
+	tracing::debug!(suggestions_len = %resp_wrap.suggestions.len());
+
+	if let Some(s) = &resp_wrap.suggestions.first() {
+		tracing::debug!(comp = ?s.short_name_dadata);
+	} else {
+		tracing::debug!(result = "company not found");
+	}
+
 
     let mut iterator = resp_wrap.suggestions.into_iter();
 
-    let mut  main_metadata = match iterator.next() {
+    let mut main_metadata = match iterator.next() {
         Some(elem) => elem.data
             .ok_or_else(|| 
                 Status::Tech.process_err(Status::QueryResponseFormatErr, ""))?,

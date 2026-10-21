@@ -78,7 +78,7 @@ pub(crate) async fn update_companys(
     for comp in new_companys {
         let key = (comp.comp_inn.clone(), comp.kpp.clone());
         if let Some(mut seen_comp) = all_companys.remove(&key) {
-            seen_comp.merge_acc(comp);
+            seen_comp.merge_acc(&comp);
             all_companys.insert(key, seen_comp);
         } else {
             all_companys.insert(key, comp);

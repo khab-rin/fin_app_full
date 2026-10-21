@@ -1,6 +1,5 @@
 <script lang='ts'>
 	import {invoke} from '@tauri-apps/api/core';
-	import {dialogBackdrop} from '$lib/rules/dialogBorders';
 	import {openDialogRight} from '$lib/rules/dialogBorders';
 	import {fitText} from '$lib/rules/text';
 	import { FieldValidator } from '$lib/models/Auth/FieldValidator.svelte';
@@ -27,6 +26,7 @@
 		try {
 			await curOper.cmdChangeCtrPty(compInn.value, kpp.value);
 			(document.getElementById('OperManualNewCtrptyDialog') as HTMLDialogElement)?.close();
+			isChangeCtrPtyPushed = false;
 
 		} catch(err) {
 			const next_step: OperationStep = {
@@ -52,11 +52,16 @@
 
 	async function cmdAddNewContract() {
 		if (isNewContractPushed) {return;}
+		if (!curOper.ctrPty) {
+			operStep.currentText = "Выберите контрагента для добавления договора";
+			return;
+		}
+		isNewContractPushed = true;
 		try {
-			isNewContractPushed = true;
 			await curOper.cmdAddNewContract();
 			isNewContractPushed = false;
 			(document.getElementById('OperManualNewContractDialgo') as HTMLDialogElement)?.close();
+			isNewContractPushed = false;
 		} catch(err) {
 			const nextStep: OperationStep = {
 				TryLater: {text:'Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение'}
@@ -216,7 +221,7 @@
 			id='operManualAmnt'
 			bind:value={curOper.data.amount.value}
 			disabled={false}
-			placeholder='Номер счета'
+			placeholder='Сумма операции'
 			class:input-error={!curOper.data.amount.isValid}
 		/>
 	</div>
@@ -350,7 +355,7 @@
 		<button
 			type='button'
 			class='but-bl'
-			disabled={curOper.isValid || isAddOperationPushed}	
+			disabled={!curOper.isValid || isAddOperationPushed}	
 			onclick={addOperation}
 		>
 			сформировать операцию
@@ -603,22 +608,6 @@
 	<div class='w-100'>
 		<div class='w-v100'>
 			<label class='label-close' for='OperManualNewContrDeffDays'>
-				Рассрочка в
-			</label>
-			<input
-				type='text'
-				class='input-ye'
-				id='OperManualNewContrDeffDays'
-				bind:value={curOper.newContrData.contractDefDays.value}
-				placeholder='Сумма в валюте договора'
-				class:input-error={!curOper.newContrData.contractDefDays.isValid}
-			/>
-		</div>
-	</div>
-
-	<div class='w-100'>
-		<div class='w-v100'>
-			<label class='label-close' for='OperManualNewContrDeffDays'>
 				Рассрочка в днях
 			</label>
 			<input
@@ -654,7 +643,7 @@
 				class='but-ye'
 				type='button'
 				onclick={cmdAddNewContract}
-				disabled={curOper.isNewContractValid || isNewContractPushed}
+				disabled={!curOper.isNewContractValid || isNewContractPushed}
 			>
 				Добавить договор
 			</button>

@@ -47,7 +47,7 @@ export class StateProcessor {
 		if (
 			this.curOper == null || 
 			this._curIndex == null ||
-			this.curOper.isValid ||
+			!this.curOper.isValid ||
 			this.unProcceed == 0
 
 		) { 

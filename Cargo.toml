@@ -16,6 +16,8 @@ argon2 = "0.5"
 
 axum = { version = "0.7", default-features = false, features = ["tokio", "json", "http1"] }
 
+base64 = "0.22.1"
+
 blake3 = "1.8.5"
 
 directories = "6.0.0"
@@ -28,7 +30,9 @@ dotenvy = "0.15.7"
 
 futures = "0.3"
 
-keyring = { version = "3.6.3", features = ["sync-secret-service", "crypto-rust", "windows-native"] }
+home = "0.5.12"
+
+keyring = { version = "4.2.0", features = ["android-native-keyring-store"] }
 
 log = "0.4"
 
@@ -80,3 +84,9 @@ ts-rs = { version = "10.1", features = ["serde-compat", "no-serde-warnings"] }
 uuid = { version = "1.21.0", features = ["v4", "serde"] }
 
 vec1 = {version = "1.12", features = ["serde"]}
+
+
+
+android-native-keyring-store = "1.0.0"
+keyring-core = "1.0.1"
+ndk-context = "0.1.1"

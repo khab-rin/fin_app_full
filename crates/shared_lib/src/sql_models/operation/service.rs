@@ -37,6 +37,9 @@ pub enum OperationInfo {
     #[serde(rename = "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение")]
     ClientApiSystemError,
 
+	#[serde(rename  = "Контрагент с указанными реквизитами не найден")]
+	CtrPtyNotFound,
+
     #[serde(rename = "Выберите функционал работы с проводками")]
     InitInfo,
 
@@ -45,6 +48,9 @@ pub enum OperationInfo {
 
     #[serde(rename = "Введите данные для проводок вручную")]
     ManualInput,
+
+	#[serde(rename = "Выберите контрагента для добавления договора")]
+	MissCtrptyForContract,
 
     #[serde(rename = "При необходимости отредактируйте или удалите проводки")]
     SuccessRaw,

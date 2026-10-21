@@ -11,7 +11,7 @@
 	let bic = new FieldValidator('Bic', '');
 	let rasAcc = new FieldValidator('RasAcc', '');
 
-	async function name() {
+	async function addAcc() {
 		if (!bic.isValid || !rasAcc.isValid || isNewAccPushed) {
 			return;
 		}
@@ -26,10 +26,12 @@
 			await invoke(
 				"cmd_add_comp_bank_acc", data
 			);
+			isNewAccPushed = false;
 		} catch(err) {
 			let next_step: OperationStep = {TryLater: {text: 'Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение'}};
 			console.error("isNewAccPushed FAILED, err = ",err);
 			operStep.step = next_step;
+			isNewAccPushed = false;
 		}
 	}
 </script>
@@ -67,6 +69,19 @@
 		/>
 	</div>
 
+</div>
+
+<div class="w-40">
+	<div class='w-v100'>
+		<button
+			type='button'
+			class='but-gr'
+			disabled={!bic.isValid || !rasAcc.isValid || isNewAccPushed}
+			onclick ={addAcc}
+		>
+			Добавить расчетный счет
+		</button>
+	</div>
 </div>
 
 

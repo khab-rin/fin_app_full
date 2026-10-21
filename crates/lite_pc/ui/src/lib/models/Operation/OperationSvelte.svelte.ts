@@ -11,6 +11,7 @@ import type { Currency } from "../rustModels/Currency";
 import type { NewContrData } from "../rustModels/NewContrData";
 import type { BoxUuid } from "../rustModels/BoxUuid";
 import type {Date} from '$lib/models/rustModels/Date';
+import { operStep } from "./OperationManager.svelte";
 
 export class OperationSvelte {
 	
@@ -55,16 +56,16 @@ export class OperationSvelte {
 
 
 	private _isNewContractValid = $derived(
-		!this.newContrData.ctrPtyId.isValid ||
-		!this.newContrData.contractNum.isValid ||
-		!this.newContrData.contractDate.isValid ||
-		!this.newContrData.contractTitle.isValid ||
-		!this.newContrData.contractStDate.isValid ||
-		!this.newContrData.contractEndDate.isValid ||
-		!this.newContrData.contractCurrency.isValid ||
-		!this.newContrData.contractTotAmnt.isValid ||
-		!this.newContrData.contractDefDays.isValid ||
-		!this.newContrData.contractDescr.isValid 
+		this.newContrData.ctrPtyId.isValid &&
+		this.newContrData.contractNum.isValid &&
+		this.newContrData.contractDate.isValid &&
+		this.newContrData.contractTitle.isValid &&
+		this.newContrData.contractStDate.isValid &&
+		this.newContrData.contractEndDate.isValid &&
+		this.newContrData.contractCurrency.isValid &&
+		this.newContrData.contractTotAmnt.isValid &&
+		this.newContrData.contractDefDays.isValid &&
+		this.newContrData.contractDescr.isValid 
 	)
 
 	get isNewContractValid() {
@@ -72,18 +73,18 @@ export class OperationSvelte {
 	}
 
 	private _isValid = $derived(
-		!this.data.operId.isValid ||
-		!this.data.userId.isValid ||
-		!this.data.compId.isValid ||
-		!this.data.ctrptyId.isValid ||
-		!this.data.debet.isValid ||
-		!this.data.credit.isValid ||
-		!this.data.amount.isValid ||
-		!this.data.operDate.isValid ||
-		!this.data.docType.isValid ||
-		!this.data.docNum.isValid ||
-		!this.data.docDate.isValid ||
-		!this.data.entrDate.isValid
+		this.data.operId.isValid &&
+		this.data.userId.isValid &&
+		this.data.compId.isValid &&
+		this.data.ctrptyId.isValid &&
+		this.data.debet.isValid &&
+		this.data.credit.isValid &&
+		this.data.amount.isValid &&
+		this.data.operDate.isValid &&
+		this.data.docType.isValid &&
+		this.data.docNum.isValid &&
+		this.data.docDate.isValid &&
+		this.data.entrDate.isValid
 	)
 
 	get isValid() {return this._isValid;}
@@ -138,7 +139,7 @@ export class OperationSvelte {
 	}
 
 	async cmdAddNewContract() {
-		if (this.isNewContractValid) {
+		if (!this.isNewContractValid) {
 			return;
 		}
 		const data: NewContrData = {
@@ -164,6 +165,9 @@ export class OperationSvelte {
 
 	private _allCtrPtys = $state<Company[]>([]);
 	get allCtrPtys() {return this._allCtrPtys};
+	set allCtrPtys(allCtrPtys: Company[]) {
+		this._allCtrPtys = allCtrPtys;
+	}
 	async cmdGetAllCompanys() {
 		let companys: Company[] = await invoke(
 			'cmd_get_all_companys',
@@ -336,6 +340,9 @@ export class OperationSvelte {
 		const newCompany = await invoke<Company|null> (
 			'cmd_get_comp_by_inn_kpp', data
 		);
+		if (newCompany == null) {
+			operStep.currentText = "Контрагент с указанными реквизитами не найден"
+		}
 		
 		await this.selectCtrPty(newCompany);
 	}
@@ -379,7 +386,7 @@ export class OperationSvelte {
 
 	
 	makeRust(): Operation | null {
-		if (this.isValid) {
+		if (!this.isValid) {
 			return null
 		}
 		if (this.isDuplicate) {

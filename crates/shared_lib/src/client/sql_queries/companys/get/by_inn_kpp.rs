@@ -9,6 +9,8 @@ pub async fn get_company_by_inn_kpp(
     kpp: &Kpp
 ) -> Result<Option<Company>, Status> {
 
+	log::debug!("get_company_by_inn_kpp function started");
+
     let session = state.get_session().await
         .map_err(|err| err.process_err(err, ""))?; 
 

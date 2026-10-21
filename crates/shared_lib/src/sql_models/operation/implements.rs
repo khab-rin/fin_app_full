@@ -85,6 +85,9 @@ make_enum_frozen! {
         PaymentOrder, "платежное поручение", {
             "PAYMENT_ORDER", "пп", "po"
         },
+		PaymentOrderDoc, "платежный ордер", {
+			"PAYMENT_ORDER_DOC", "по", "pod"
+		},
         PaymentClaim, "платежное требование", {
             "PAYMENT_CLAIM", "пт", "pc"
         },

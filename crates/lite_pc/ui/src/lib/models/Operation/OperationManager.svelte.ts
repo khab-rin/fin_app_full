@@ -1,5 +1,6 @@
 import {OperationType} from '$lib/models/Operation/OperationValues';
 import type {OperationStep} from '$lib/models/rustModels/OperationStep';
+import type { OperationInfo } from '../rustModels/OperationInfo';
 
 
 import AccInput from '$lib/service/operation/AccInput.svelte';
@@ -25,25 +26,13 @@ class OperationManager {
 		this._step = next_step;
 	}
 
+	get currentText(): string {
+		return Object.values(this._step)[0].text;
+	}
 
-    get currentText(): string {
-        if (!this._step || typeof this._step !== 'object') {
-            return '';
-        }
-
-        const currentStepObj = Object.values(this._step)[0];
-
-        if (
-            currentStepObj && 
-            typeof currentStepObj === 'object' && 
-            'text' in currentStepObj && 
-            typeof (currentStepObj as { text: unknown }).text === 'string'
-        ) {
-            return (currentStepObj as { text: string }).text;
-        }
-        
-        return '';
-    }
+	set currentText(value: OperationInfo) {
+		Object.values(this._step)[0].text = value
+	}
 
     get getPage() {
 

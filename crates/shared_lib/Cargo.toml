@@ -13,9 +13,10 @@ server = [
     "dep:tracing-subscriber"
 ]
 
-client = [
+lite_pc = [
     "dep:dotenvy",
     "dep:keyring",
+	"dep:keyring-core",
     "dep:tauri",
     "dep:tauri-plugin-dialog",
     "dep:tauri-plugin-shell",
@@ -24,7 +25,23 @@ client = [
 	"dep:tauri-plugin-machine-uid"
 ]
 
+lite_mobile = [
+	"dep:android-native-keyring-store",
+    "dep:dotenvy",
+    "dep:keyring",
+	"dep:keyring-core",
+	"dep:ndk-context",
+    "dep:tauri",
+    "dep:tauri-plugin-dialog",
+    "dep:tauri-plugin-shell",
+    "dep:tauri-plugin-log",
+    "dep:tauri-plugin-fs",
+	"dep:tauri-plugin-machine-uid",
+]
+
 [dependencies]
+android-native-keyring-store = { workspace = true, optional = true}
+
 anyhow = { workspace = true }
 
 axum = { workspace = true, default-features = false, optional = true }
@@ -40,10 +57,13 @@ encoding_rs = { workspace = true }
 futures = { workspace = true }
 
 keyring = { workspace = true, optional = true }
+keyring-core = { workspace = true, optional = true}
 
 log = { workspace = true}
 
 lopdf = { workspace = true}
+
+ndk-context = { workspace = true, optional = true}
 
 quick-xml = { workspace = true }
 
@@ -86,4 +106,7 @@ ts-rs = { workspace = true }
 uuid = { workspace = true, features = ["v5"] }
 
 vec1 =  {workspace = true, features = ["serde"] }
+
+
+
 

@@ -77,8 +77,8 @@
 				await curOper.reset();
 				compInn.asyncSet('');
 				kpp.asyncSet('');
-				isAddOperationPushed = false;
 			}
+			isAddOperationPushed = false;
 		} catch(err) {
 			console.error("addOperation FAILED, err = ", err);
 			let nextStep: OperationStep = {TryLater :{text: 'Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение'}}
@@ -316,7 +316,7 @@
 
 	<div>
 		<label class='green-field-label' for='OperManualIsDupl'>
-			Признак дуприката
+			Признак дупликата
 		</label>
 		<input
 			class='green-field'
@@ -333,7 +333,7 @@
 	<button
 		type='button'
 		class='blue-button'
-		disabled={curOper.isValid || isAddOperationPushed}	
+		disabled={!curOper.isValid || isAddOperationPushed}	
 		onclick={addOperation}
 	>
 		сформировать операцию

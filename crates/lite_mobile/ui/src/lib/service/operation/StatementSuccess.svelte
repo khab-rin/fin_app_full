@@ -405,7 +405,7 @@
 					<button class='yellow-button'
 						type='button'
 						onclick={cmdAddNewContract}
-						disabled={processor.curOper.isNewContractValid || isNewContractPushed}
+						disabled={!processor.curOper.isNewContractValid || isNewContractPushed}
 					>
 						Добавить договор
 					</button>
@@ -457,7 +457,7 @@
 			class='blue-button'
 			id='StateSuccProcessBut'
 			onclick={() => processor.makeRust()}
-			disabled={processor.curOper.isValid}
+			disabled={!processor.curOper.isValid}
 		>
 			Обработать
 		</button>

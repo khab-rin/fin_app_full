@@ -222,7 +222,7 @@ pub(crate) async fn init_session(
 
     let mut db_url = format!("sqlite://{}", path_str);
 
-    if cfg!(debug_assertions) {
+    #[cfg(all(debug_assertions, not(target_os = "android")))] {
 		let project_root = env!("CARGO_MANIFEST_DIR");
 		log::debug!("project_root = {:?}", project_root);
 		let db_path = std::path::Path::new(project_root)

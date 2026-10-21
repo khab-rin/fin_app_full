@@ -6,10 +6,11 @@ use tauri::Manager;
 
 use shared_lib::service::auth_service::client_state::*;
 
+#[cfg(target_os = "android")]
+use shared_lib::client::auth_service::key_ring::init_android_keyring;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run_lib() {
-
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_log::Builder::new()
             .format(|out, message, record| {
@@ -29,10 +30,8 @@ pub fn run_lib() {
                 Target::new(TargetKind::Webview),
             ])
             .level(log::LevelFilter::Warn)
-			.level_for("lite_pc", log::LevelFilter::Debug)
 			.level_for("lite_mobile", log::LevelFilter::Debug)
 			.level_for("shared_lib", log::LevelFilter::Debug)
-			.level_for("back_api", log::LevelFilter::Debug)
             .build())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
@@ -85,8 +84,13 @@ pub fn run_lib() {
 
         app.manage(state);
 
-        app.run(|_app_handle, _event| {});
+		#[cfg(target_os = "android")]
+    	init_android_keyring()
+        	.expect("Failed to initialize Android keyring");
 
-        
+        app.run(|_app_handle, _event| {});
 }
+
+
+
 

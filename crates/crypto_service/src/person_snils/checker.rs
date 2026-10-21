@@ -74,7 +74,7 @@ pub async fn verify_signature_handler(
             stderr_err
         );
 
-        tracing::warn!(
+        tracing::debug!(
             wrong_data = %detailed_error,
             "Signature verification failed via cryptcp"
         );

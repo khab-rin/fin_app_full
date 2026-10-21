@@ -114,6 +114,7 @@ pub enum Status {
     ClientSessionMissError = 403,
     ResponseMappingError = 404,
     UserWrongData = 405,
+	KeyRingError = 406,
 
     // ==========================================
     // 500-я группа: Ошибки интеграции с внешними API и сервисами

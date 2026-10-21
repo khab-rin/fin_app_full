@@ -4,21 +4,20 @@ pub mod static_data;
 pub mod sql_models;
 pub mod service;
 
-#[cfg(feature = "client")]
+#[cfg(any(feature = "lite_pc", feature = "lite_mobile"))]
 pub mod client;
 
 pub use crate::err_models::implements::Status;
 pub use crate::err_models::api_status::ProcessError;
 
-#[cfg(feature = "client")]
+#[cfg(any(feature = "lite_pc", feature = "lite_mobile"))]
 pub use crate::service::auth_service::client_state::ClientState;
-
 
 
 #[cfg(test)]
 mod ts_tests {
     use super::*;
-    use std::path::Path; // Подключаем Path для работы с файловой системой
+    use std::path::Path;
 
     #[test]
     fn generate_types_for_svelte() {

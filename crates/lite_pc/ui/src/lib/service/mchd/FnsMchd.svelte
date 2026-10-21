@@ -393,7 +393,7 @@
 
 {#if thirdStep}
 	<section class='w-60 s-self-l'>
-		<h4 class='t-fill x-self-c x-ce'>
+		<h4 class='w-v100 t-fill x-self-c x-ce'>
 			Заполните данные доверителя
 		</h4>
 	</section>

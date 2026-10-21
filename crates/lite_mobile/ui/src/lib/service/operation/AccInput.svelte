@@ -11,7 +11,7 @@
 	let bic = new FieldValidator('Bic', '');
 	let rasAcc = new FieldValidator('RasAcc', '');
 
-	async function name() {
+	async function addAcc() {
 		if (!bic.isValid || !rasAcc.isValid || isNewAccPushed) {
 			return;
 		}
@@ -61,7 +61,18 @@
 		placeholder="20 цифр"
 		class:input-error={!rasAcc.isValid}
 	/>
+
+	<button
+        type='button'
+        class='green-button'
+        disabled={!bic.isValid || !rasAcc.isValid || isNewAccPushed}
+        onclick ={addAcc}
+    >
+        Добавить расчетный счет
+    </button>
 </div>
+
+
 
 
 

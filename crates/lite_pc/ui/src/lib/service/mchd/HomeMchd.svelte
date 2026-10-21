@@ -212,6 +212,12 @@
 {/if}
 
 {#if secondStep}
+	<section class='w-66 x-self-l'>
+		<h5 class='w-v100 x-self-c x-ce t-fill'>
+			Заполните данные лица с правом действия без доверенности
+		</h5>
+	</section>
+
 	<section class='w-60'>
 		<div class='v-v33'>
 			<label class="label-close" for="mamagerSurName">Фамилия лица действующего без доверенности (руководителя организации)</label>
@@ -364,6 +370,11 @@
 {/if}
 
 {#if thirdStep}
+	<section class='w-60 s-self-l'>
+		<h4 class='w-v100 t-fill x-self-c x-ce'>
+			Заполните данные доверителя
+		</h4>
+	</section>
 
 	<section class="w-60">
 		<div class='w-v33'>

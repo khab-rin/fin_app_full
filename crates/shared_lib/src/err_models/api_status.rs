@@ -37,7 +37,7 @@ where
             );
         }
         
-        #[cfg(feature = "client")]
+        #[cfg(any(feature = "lite_pc", feature = "lite_mobile"))]
         {
             log::error!(
                 "tech_err = {:?}, local_err = {:?}, ext_info = {}", tech_err, local_err, ext_info

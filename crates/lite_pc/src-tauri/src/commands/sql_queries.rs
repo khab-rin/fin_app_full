@@ -63,7 +63,7 @@ pub async fn cmd_get_comp_by_inn_kpp(
 ) -> Result<Option<Company>, Status> {
 
 
-    log::info!("cmd_get_comp_by_inn_kpp running");
+    log::debug!("cmd_get_comp_by_inn_kpp running");
     
     get_company_by_inn_kpp(&state, &comp_inn, &kpp).await
 }

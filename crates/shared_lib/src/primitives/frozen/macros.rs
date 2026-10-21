@@ -211,16 +211,20 @@ macro_rules! make_enum_frozen {
             type Err = $crate::err_models::implements::Status;
 
             fn from_str(val: &str) -> Result<Self, Self::Err> {
-                match val {
-                    $(
-                        $r_name => Ok(Self::$l_name),
-                        $(
-                            $alias => Ok(Self::$l_name),
-                        )*
-                    )*
-                    _ => Err($crate::err_models::implements::Status::ValidEnum)
-                }
-            }
+				let val = val.trim().to_lowercase();
+				$(
+					if val == $r_name.to_lowercase() {
+						return Ok(Self::$l_name);
+					}
+
+					$(
+						if val == $alias.to_lowercase() {
+							return Ok(Self::$l_name);
+						}
+					)*
+				)*
+				Err($crate::err_models::implements::Status::ValidEnum)
+			}
         }
 
         impl $crate::primitives::frozen::macros::RussEnumName for $name {

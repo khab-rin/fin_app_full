@@ -59,6 +59,7 @@
 		try {
 			await processor.curOper.cmdChangeCtrPty(compInn.value, kpp.value);
 			(document.getElementById('OperStatSuccNewCtrptyDialog') as HTMLDialogElement)?.close();
+			changeCtrptyPushed = false;
 
 		} catch(err) {
 			const next_step: OperationStep = {
@@ -302,12 +303,159 @@
 				class='but-bl'
 				id='StateSuccProcessBut'
 				onclick={() => processor.makeRust()}
-				disabled={processor.curOper.isValid}
+				disabled={!processor.curOper.isValid}
 			>
 				Обработать
 			</button>
 		</div>
 	</section>
+
+	<section class='w-40'>
+		<div class='w-v100'>
+			<input
+				id='1'
+				class='input-bl'
+				type='text'
+				bind:value={processor.curOper.data.operId.value}
+				class:input-error={!processor.curOper.data.operId.isValid}
+			>
+		</div>
+	</section>
+
+	<section class='w-40'>
+		<div class='w-v100'>
+			<input
+				id='2'
+				class='input-bl'
+				type='text'
+				bind:value={processor.curOper.data.userId.value}
+				class:input-error={!processor.curOper.data.userId.isValid}
+			>
+		</div>
+	</section>
+
+	<section class='w-40'>
+		<div class='w-v100'>
+			<input
+				id='3'
+				class='input-bl'
+				type='text'
+				bind:value={processor.curOper.data.compId.value}
+				class:input-error={!processor.curOper.data.compId.isValid}
+			>
+		</div>
+	</section>
+
+	<section class='w-40'>
+		<div class='w-v100'>
+			<input
+				id='4'
+				class='input-bl'
+				type='text'
+				bind:value={processor.curOper.data.ctrptyId.value}
+				class:input-error={!processor.curOper.data.ctrptyId.isValid}
+			>
+		</div>
+	</section>
+
+	<section class='w-40'>
+		<div class='w-v100'>
+			<input
+				id='5'
+				class='input-bl'
+				type='text'
+				bind:value={processor.curOper.data.debet.value}
+				class:input-error={!processor.curOper.data.debet.isValid}
+			>
+		</div>
+	</section>
+
+	<section class='w-40'>
+		<div class='w-v100'>
+			<input
+				id='6'
+				class='input-bl'
+				type='text'
+				bind:value={processor.curOper.data.credit.value}
+				class:input-error={!processor.curOper.data.credit.isValid}
+			>
+		</div>
+	</section>
+
+	<section class='w-40'>
+		<div class='w-v100'>
+			<input
+				id='7'
+				class='input-bl'
+				type='text'
+				bind:value={processor.curOper.data.amount.value}
+				class:input-error={!processor.curOper.data.amount.isValid}
+			>
+		</div>
+	</section>
+
+	<section class='w-40'>
+		<div class='w-v100'>
+			<input
+				id='8'
+				class='input-bl'
+				type='text'
+				bind:value={processor.curOper.data.operDate.value}
+				class:input-error={!processor.curOper.data.operDate.isValid}
+			>
+		</div>
+	</section>
+
+	<section class='w-40'>
+		<div class='w-v100'>
+			<input
+				id='9'
+				class='input-bl'
+				type='text'
+				bind:value={processor.curOper.data.docType.value}
+				class:input-error={!processor.curOper.data.docType.isValid}
+			>
+		</div>
+	</section>
+
+	<section class='w-40'>
+		<div class='w-v100'>
+			<input
+				id='10'
+				class='input-bl'
+				type='text'
+				bind:value={processor.curOper.data.docNum.value}
+				class:input-error={!processor.curOper.data.docNum.isValid}
+			>
+		</div>
+	</section>
+
+	<section class='w-40'>
+		<div class='w-v100'>
+			<input
+				id='11'
+				class='input-bl'
+				type='text'
+				bind:value={processor.curOper.data.docDate.value}
+				class:input-error={!processor.curOper.data.docDate.isValid}
+			>
+		</div>
+	</section>
+
+	<section class='w-40'>
+		<div class='w-v100'>
+			<input
+				id='12'
+				class='input-bl'
+				type='text'
+				bind:value={processor.curOper.data.entrDate.value}
+				class:input-error={!processor.curOper.data.entrDate.isValid}
+			>
+		</div>
+	</section>
+
+
+
 		
 	<section class='w-40'>
 		<div class='w-v50'>
@@ -497,21 +645,6 @@
 		<div class='w-100'>
 			<div class='w-v100'>
 				<label class='label-close' for='OperManualNewContrDeffDays'>
-					Рассрочка в
-				</label>
-				<input
-					type='text'
-					class='input-ye'
-					id='OperManualNewContrDeffDays'
-					bind:value={processor.curOper.newContrData.contractDefDays.value}
-					placeholder='Сумма в валюте договора'
-					class:input-error={!processor.curOper.newContrData.contractDefDays.isValid}
-				/>
-			</div>
-		</div>
-		<div class='w-100'>
-			<div class='w-v100'>
-				<label class='label-close' for='OperManualNewContrDeffDays'>
 					Рассрочка в днях
 				</label>
 				<input
@@ -534,7 +667,7 @@
 					class='input-ye'
 					id='OperManualNewContrDescr'
 					bind:value={processor.curOper.newContrData.contractDescr.value}
-					placeholder='Количество дней'
+					placeholder='Краткое описание'
 					class:input-error={!processor.curOper.newContrData.contractDescr.isValid}
 				/>
 			</div>
@@ -545,7 +678,7 @@
 					class='but-ye'
 					type='button'
 					onclick={cmdAddNewContract}
-					disabled={processor.curOper.isNewContractValid || isNewContractPushed}
+					disabled={!processor.curOper.isNewContractValid || isNewContractPushed}
 				>
 					Добавить договор
 				</button>

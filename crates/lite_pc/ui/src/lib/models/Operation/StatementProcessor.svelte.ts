@@ -7,6 +7,7 @@ export class StateProcessor {
 	private _rustOperations: (Operation | null)[] = [];
 	get rustOperations() { return this._rustOperations; }
 	private _curIndex: number | null = null;
+	get curIndex() {return this._curIndex;}
 	private _totalOperations: number = 0;
 	private _unProcceed = $state<number>(0);
 	get unProcceed() {return this._unProcceed;}
@@ -47,18 +48,23 @@ export class StateProcessor {
 		if (
 			this.curOper == null || 
 			this._curIndex == null ||
-			this.curOper.isValid ||
+			!this.curOper.isValid ||
 			this.unProcceed == 0
 
 		) { 
 			return;
 		}
 
+		const allCtrPtys = this.curOper.allCtrPtys;
+
 		const operation: Operation | null = this.curOper.makeRust();
 		
 		this._rustOperations[this._curIndex] = operation;
 		this._unProcceed -= 1;
 		this.next();
+		if (this.curOper) {
+			this.curOper.allCtrPtys = allCtrPtys
+		}
 	}
 
 	next() {
