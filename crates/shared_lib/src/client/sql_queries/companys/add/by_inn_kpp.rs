@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::{Status, ClientState, ProcessError};
+use crate::{Status, ClientState, ProcessError, LL};
 use crate::primitives::composite::implements::RasBicAcc;
 use crate::primitives::frozen::text::{CompInn, Kpp};
 use crate::sql_models::company::implements::{CompCrateData};
@@ -15,7 +15,7 @@ pub async fn add_company_by_inn_cpp_acc(
     ras_bic_acc: &Option<RasBicAcc>
 ) -> Result<Option<Company>, Status> {
 
-	log::debug!("add_company_by_inn_cpp_acc function started");
+	Status::log(LL::Debug, "add_company_by_inn_cpp_acc function started");
 
     let session = state.get_session().await
         .map_err(|err| err.process_err(err, ""))?; 

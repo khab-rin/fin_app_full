@@ -1,6 +1,6 @@
 use tauri_plugin_machine_uid::MachineUidExt;
 
-use crate::{ProcessError, Status};
+use crate::{ProcessError, Status, LL};
 use crate::primitives::frozen::text::{BoxUuid, MidName};
 use crate::service::auth_service::implements::SessionUserToken;
 use crate::service::auth_service::client_state::NickData;
@@ -18,21 +18,18 @@ pub fn get_device_id(state: &ClientState) -> Result<BoxUuid, Status> {
         .machine_uid()
         .get_machine_uid()
         .map_err(|err| {
-            log::error!("Failed to get machine UID: {:?}", err);
+            Status::log(LL::Error, &format!("Failed to get machine UID: {:?}", err));
             Status::SystemErr
         })?
         .id
         .ok_or_else(|| {
-            log::error!("Machine UID is empty");
+            Status::log(LL::Error, "Machine UID is empty");
             Status::SystemErr
         })?; 
 
-    let id_uuid_str = uuid::Uuid::new_v5(
-        &uuid::Uuid::NAMESPACE_OID,
-        id_string.as_bytes()
-    );
+    let device_id = BoxUuid::new_v5(&id_string);
 
-    Ok(BoxUuid::unchecked(id_uuid_str))
+    Ok(device_id)
 }
 
 pub fn write_new_user_info_to_device(

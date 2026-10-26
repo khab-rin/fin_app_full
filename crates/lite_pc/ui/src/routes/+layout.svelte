@@ -1,20 +1,27 @@
 <script lang="ts">
 	import '$lib/style/global.css'
 
-	let { children } = $props<{ children: import('svelte').Snippet }>();
-
 	import {pageManager} from '$lib/models/MainManager/MainManager.svelte'
 	import { PageType } from "$lib/models/MainManager/PageValues";
-
+	import { operStep } from '$lib/models/Operation/OperationManager.svelte';
+	import {currentMchdStep} from '$lib/models/Mchd/mchdManager.svelte';
+	import {reportManager} from '$lib/models/Reports/ReportsManager.svelte';
+	import Loading from '$lib/service/mchd/Loading.svelte';
+	
+	
+	
 	function goToOperation() {
+		operStep.reload();
 		pageManager.Page = PageType.Operation;
 	}
 
 	function goToMchd() {
+		currentMchdStep.reload()
 		pageManager.Page = PageType.Mchd;
 	}
 
 	function goToReports() {
+		reportManager.reload()
 		pageManager.Page = PageType.Report;
 	}
 
@@ -116,9 +123,8 @@
 	<main class='zone-main'>
 
 		{#if pageManager.getPage}
-			<pageManager.getPage />
-		{:else}
-			{@render children()}
+			{@const CurrentPage = pageManager.getPage}
+			<CurrentPage />
 		{/if}
 
 	</main>

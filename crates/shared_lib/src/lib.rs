@@ -9,6 +9,7 @@ pub mod client;
 
 pub use crate::err_models::implements::Status;
 pub use crate::err_models::api_status::ProcessError;
+pub use crate::err_models::api_status::StatusLogLevel as LL;
 
 #[cfg(any(feature = "lite_pc", feature = "lite_mobile"))]
 pub use crate::service::auth_service::client_state::ClientState;

@@ -1,10 +1,10 @@
 [package]
-name = "crypto_service"
+name = "cryp_serv"
 version = "0.1.0"
 edition = "2021"
 
 [[bin]]
-name = "crypto_service_bin"
+name = "cryp_serv_bin"
 path = "src/main.rs"
 
 [dependencies]

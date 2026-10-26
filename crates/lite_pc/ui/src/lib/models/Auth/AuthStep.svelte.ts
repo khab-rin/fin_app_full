@@ -16,7 +16,6 @@ import RegisterStep2 from "$lib/service/auth_service/RegisterStep2.svelte";
 import TryLater from "$lib/service/auth_service/TryLater.svelte";
 
 import { invoke } from '@tauri-apps/api/core';
-import { PageType } from '../MainManager/PageValues';
 
 
 class SvelteAuthStep {

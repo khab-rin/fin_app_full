@@ -1,4 +1,4 @@
-use shared_lib::{Status, ProcessError};
+use shared_lib::{Status, ProcessError, LL};
 use shared_lib::sql_models::company::implements::Company;
 use shared_lib::primitives::frozen::text::{CompInn, Kpp, CompType, Date, BoxUuid, DateTime};
 
@@ -99,7 +99,11 @@ pub(crate) async fn parse_company_by_inn_kpp(
         }
     }
 
-    let comp_id = BoxUuid::unchecked(uuid::Uuid::new_v4());
+	let uuid_str = format!("{}-{}", comp_inn, kpp);
+
+	Status::log(LL::Debug, &uuid_str);
+
+    let comp_id = BoxUuid::new_v5(&uuid_str);
 
 
     Ok(Some(Company {

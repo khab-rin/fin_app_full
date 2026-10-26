@@ -1,7 +1,7 @@
 use sqlx::Row;
 use std::collections::HashSet;
 
-use shared_lib::{Status, ProcessError};
+use shared_lib::{Status, ProcessError, LL};
 use shared_lib::primitives::frozen::text::BoxUuid;
 
 
@@ -59,7 +59,7 @@ pub(crate) async fn del_guids_by_user_id(
     };
 
     if row.is_none() {
-        tracing::warn!(user_id = ?user_id, "UPDATE executed, but user_id not found!");
+        Status::log(LL::Warn, &format!("user_id = {:?}, UPDATE executed, but user_id not found!", user_id));
     }
 
     Ok(())

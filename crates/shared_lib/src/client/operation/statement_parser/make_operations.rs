@@ -71,7 +71,7 @@ pub async fn make_statement_pay_operation_raw(
 
     let comp_id = session.session_user.company.comp_id.clone();
 
-    let ctrpty_option = if let Some(c_inn) = block_fields.rec_inn.clone() {
+    let mut ctrpty_option = if let Some(c_inn) = block_fields.rec_inn.clone() {
         get_company_by_inn_kpp(
                 state, 
                 &c_inn, 
@@ -113,6 +113,12 @@ pub async fn make_statement_pay_operation_raw(
         Account::Payroll
     } else if comment_data.is_komis || comment_data.is_depos_persent {
         Account::OtherIncome
+	} else if comment_data.is_founder {
+		if ctrpty_option.is_none() {
+			ctrpty_option = Some(session.session_user.company.clone());
+		}
+		Account::OtherPayables
+		
     } else {
         Account::Vendors
     };

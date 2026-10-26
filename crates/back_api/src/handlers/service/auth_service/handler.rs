@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use axum::{Json, extract::State};
 
-use shared_lib::Status;
+use shared_lib::{Status, LL};
 use shared_lib::service::auth_service::implements::{
     TokenDeviceData,
     AuthStep,
@@ -10,7 +10,7 @@ use shared_lib::service::auth_service::implements::{
     ExternalDeviceData, 
     RegInitData,
 };
-use shared_lib::service::crypto_service::implements::CheckSignDocData;
+use shared_lib::service::cryp_serv::implements::CheckSignDocData;
 
 use crate::config::BackApiState;
 use crate::db::service::auth_service::by_device_token::restore_session_by_token;
@@ -25,7 +25,7 @@ pub async fn register_step1_handler(
     Json(payload) : Json<RegInitData>
 ) -> Result<Json<AuthStep>, Status> {
 
-    tracing::info!("register_step1_handler running!!");
+    Status::log(LL::Debug, "register_step1_handler running!!");
 
     let res = register_step1(&state, &payload).await?;
 
@@ -38,7 +38,7 @@ pub async fn register_step2_handler(
 ) -> Result<Json<AuthStep>, Status> {
 
 
-    tracing::info!("register_step2_handler running!!");
+    Status::log(LL::Debug, "register_step2_handler running!!");
 
     let res = register_step2(&state, &payload).await?;
 

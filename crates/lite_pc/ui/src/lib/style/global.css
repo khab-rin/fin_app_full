@@ -10,43 +10,28 @@
 @import "./pc_zones.css";
 @import './pc_zone_top.css';
 
-:global(html, body) {
-  /* Убираем внешние отступы браузера */
+html, body {
   margin: 0;
-  
-  /* Убираем внутренние отступы тега body */
+
   padding: 0;
-  
-  /* Границы и отступы не увеличивают размер элементов */
+
   box-sizing: border-box;
-  
-  /* Растягиваем на весь экран ПК */
+
   height: 100vh;
   width: 100vw;
-  
-  /* Прячем глобальный скролл приложения */
+
   overflow: hidden; 
-  
-  /* ДЕЛАЕМ ФОН ПРОЗРАЧНЫМ: теперь цвет будет браться из самих зон */
+
   background: transparent; 
+
+  color: #000000;
   
-  /* Белый цвет текста по умолчанию */
-  color: #ffffff;
-  
-  /* Стандартный системный шрифт */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* 
-  Глобальное правило безопасности: 
-  делаем так, чтобы абсолютно все элементы в проекте по умолчанию 
-  использовали относительное позиционирование (relative) вместо статического.
-  Это позволит вам внутри любой страницы легко двигать элементы.
-*/
-/* global.css */
-:global(*) {
+* {
   box-sizing: border-box;
-  position: relative; /* <-- ВОЗВРАЩАЕМ относительное позиционирование на весь проект */
+  position: relative;
   margin: 0;          
   padding: 0;
 }

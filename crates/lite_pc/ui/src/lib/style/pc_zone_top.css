@@ -20,19 +20,17 @@
 		border-radius: 6px;
 		cursor: pointer;
 		border: 1px solid #cbd5e1;
-		background-color: #ffffff !important; /* Белый фон, чтобы кнопка выделялась */
-		color: #1e293b !important;            /* Темный читаемый текст */
+		background-color: #ffffff !important;
+		color: #1e293b !important;
 		transition: all 0.15s ease-in-out;
 	}
 
-	/* Эффект при наведении на кнопку выхода */
 	.zone-top-button:hover:not(:disabled) {
-		background-color: #fef2f2 !important; /* Нежно-красный фон */
+		background-color: #fef2f2 !important;
 		border-color: #fca5a5 !important;
-		color: #991b1b !important;            /* Красный текст */
+		color: #991b1b !important;
 	}
 
-	/* Стиль для заблокированной кнопки */
 	.zone-top-button:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;

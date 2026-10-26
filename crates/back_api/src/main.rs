@@ -9,6 +9,7 @@ use tracing_subscriber::{fmt, prelude::*, EnvFilter};
 
 use shared_lib::service::api_routes::implements::ApiRoutes;
 use shared_lib::static_data::init_re;
+use shared_lib::{Status, LL};
 
 use crate::handlers::sql::handlers::sql_new_companys_handler;
 
@@ -145,8 +146,7 @@ async fn main() {
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.expect("msd");
 
     if let Ok(addr) = listener.local_addr() {
-        tracing::info!(
-    	"Сервер запущен на 0.0.0.0:{}", addr.port());
+		Status::log(LL::Info, &format!("Сервер запущен на 0.0.0.0:{}", addr.port()));
     }
 
     axum::serve(listener, app).await.expect("msg");

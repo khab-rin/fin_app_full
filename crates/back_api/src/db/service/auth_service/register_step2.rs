@@ -8,15 +8,15 @@ use argon2::{
     Argon2
 };
 
-use shared_lib::{ProcessError, Status, primitives::frozen::text::DateTime};
-use shared_lib::primitives::frozen::text::BoxUuid;
+use shared_lib::{ProcessError, Status, LL};
+use shared_lib::primitives::frozen::text::{DateTime, BoxUuid};
 use shared_lib::primitives::composite::implements::Fio;
 use shared_lib::service::auth_service::implements::{
     RegInitData, 
     AuthInfo, 
     AuthStep,
 };
-use shared_lib::service::crypto_service::implements::{
+use shared_lib::service::cryp_serv::implements::{
     CheckSignDocData,
     PersonSignCheckResult
 };
@@ -87,9 +87,12 @@ pub(crate) async fn register_step2(
         device_id
     } = json_data.clone();
 
+	let uuid_str = format!("{}-{}", pers_inn, snils);
+	let pers_id = BoxUuid::new_v5(&uuid_str);
+
 
 	let mut person =  Person {
-		pers_id: BoxUuid::unchecked(uuid::Uuid::new_v4()),
+		pers_id,
 		pers_inn: pers_inn.clone(),
 		metadata : PersonMetadata {
 			snils: snils.clone(),
@@ -216,7 +219,7 @@ pub(crate) async fn register_step2(
         }
     };
 
-	tracing::info!(check = check_result.text);
+	// Status::log(LL::Info, &format!("check = {}", check_result.text));
 
     if !check_result.is_signed {
         return Ok(AuthStep::RegisterStep1 {text: AuthInfo::WrongSignFile});
@@ -230,7 +233,7 @@ pub(crate) async fn register_step2(
         }
     };
 
-	tracing::info!(check = ?sign_fields);
+	// Status::log(LL::Info, &format!("check = {:?}", sign_fields));
 
 
     if !check_auth_person(&json_data, &sign_fields) {

@@ -3,7 +3,7 @@ members = [
     "crates/back_api",
     "crates/lite_mobile/src-tauri",
 	"crates/lite_pc/src-tauri", 
-    "crates/crypto_service",
+    "crates/cryp_serv",
     "crates/shared_lib"]
 resolver = "2"
 

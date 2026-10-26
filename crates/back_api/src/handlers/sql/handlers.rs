@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use axum::{extract::State, Json};
 
-use shared_lib::{ProcessError, Status};
+use shared_lib::{ProcessError, Status, LL};
 use shared_lib::primitives::frozen::text::PersInn;
 use shared_lib::sql_models::operation::implements::Operation;
 use shared_lib::sql_models::person::implements::Person;
@@ -21,7 +21,7 @@ pub(crate) async fn get_person_by_inn_handler(
     Json(pers_inn): Json<PersInn>
 ) -> Result<Json<Option<Person>>, Status> {
     
-    tracing::info!("get_person_by_inn_handler running!");
+    Status::log(LL::Debug, "get_person_by_inn_handler running!");
 
     let res = get_person_by_inn(&state, &pers_inn).await?;
 

@@ -1,4 +1,3 @@
-/* Базовый каркас для всех групп */
 .w-5, .w-10, .w-15, .w-20, .w-25, .w-30, .w-33, .w-35, .w-40, .w-45, .w-50,
 .w-55, .w-60, .w-66, .w-65, .w-70, .w-75, .w-80, .w-85, .w-90, .w-95, .w-100 {
     display: flex;
@@ -109,9 +108,6 @@
 .w-v95  { flex: 0 1 95% !important; }
 .w-v100 { flex: 0 1 100% !important; }
 
-
-
-/* Базовый каркас для всех групп */
 .group-1, .group-2, .group-3, .group-4, .group-5 {
     display: flex;
     flex-direction: row; 
@@ -127,8 +123,6 @@
     transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
 }
 
-
-/* Чистое относительное управление шириной от родителя */
 .group-1   { width: 20%; }
 .group-2   { width: 40%; }
 .group-3 { width: 60%; }
@@ -163,9 +157,7 @@
     flex-direction: column !important;
     flex-wrap: nowrap !important;
     gap: 12px; 
-    
-    /* --- ЗАЩИТА ОТ ГОРИЗОНТАЛЬНОГО СКРОЛЛА --- */
-    box-sizing: border-box !important; /* Включаем рамки и паддинги ВНУТРЬ ширины */
-    min-width: 0 !important;           /* Запрещаем тексту и кнопкам распирать блоки наружу */
-    width: 100% !important;            /* Заставляем флекс-доли рассчитываться строго в пределах родителя */
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+    width: 100% !important;
 }

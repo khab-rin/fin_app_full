@@ -31,9 +31,12 @@ pub(crate) async fn register_step1(
         ..
     } = data;
 
+	let uuid_str = format!("{}-{}", pers_inn, snils);
+	let pers_id = BoxUuid::new_v5(&uuid_str);
+
 
     let new_person = Person {
-        pers_id: BoxUuid::unchecked(uuid::Uuid::new_v4()),
+        pers_id,
         pers_inn: pers_inn.clone(),
         metadata: PersonMetadata {
             snils: snils.clone(),

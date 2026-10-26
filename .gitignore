@@ -4,13 +4,13 @@
 # Archives and binaries
 *.tgz
 *.tar.gz
+*.tar
 *.zip
 *.7z
 *.exe
 *.deb
-/crypto_service.tar
 
-!/crates/crypto_service/linux-amd64_deb.tgz
+!/crates/cryp_serv/linux-amd64_deb.tgz
 
 # Android
 **/app-release.apk

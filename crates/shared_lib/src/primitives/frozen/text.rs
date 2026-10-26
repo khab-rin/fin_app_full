@@ -4,7 +4,7 @@ use serde::{Serialize, Deserialize};
 
 use crate::primitives::frozen::validators::*;
 use crate::primitives::frozen::formatters::*;
-use crate::Status;
+use crate::{Status, LL};
 use crate::sql_models::operation::macros::ParseFromStrMapValue;
 
 frozen_primitives!(
@@ -185,6 +185,13 @@ frozen_primitives!(
     uuid::Uuid,
     "код Uuid",
     default_fmt);
+
+impl BoxUuid {
+	pub fn new_v5(val: &str) -> Self{
+		Status::log(LL::Debug, &format!("uuid_str = {}", val));
+		BoxUuid::unchecked(uuid::Uuid::new_v5(&uuid::Uuid::NAMESPACE_OID, val.as_bytes()))
+	}
+}
 
 frozen_primitives!(
     DateTime,

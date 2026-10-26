@@ -179,7 +179,6 @@ pub fn make_oper_id(
         if s.contains('.') {
             let trimmed = s.trim_end_matches('0');
             if trimmed.ends_with('.') {
-                // Если после удаления нулей осталась только точка (например, 12.0 -> 12.)
                 trimmed.trim_end_matches('.').to_string()
             } else {
                 trimmed.to_string()
@@ -190,7 +189,6 @@ pub fn make_oper_id(
     });
     let ctrpty_str = ctrpty_id.as_ref().map_or("".to_string(), |v| v.to_string());
 
-    // 2. Теперь макрос format! спокойно принимает эти строки, так как они "живы"
     let text_id = format!(
         "{}-{}-{}-{}",
         num_str,
@@ -199,7 +197,7 @@ pub fn make_oper_id(
         ctrpty_str
     );
 
-    BoxUuid::unchecked(uuid::Uuid::new_v5(&uuid::Uuid::NAMESPACE_OID, text_id.as_bytes()))
+	BoxUuid::new_v5(&text_id)
 
 }
 

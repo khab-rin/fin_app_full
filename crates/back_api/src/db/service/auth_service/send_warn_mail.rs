@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use shared_lib::{ProcessError, Status};
+use shared_lib::{ProcessError, Status, LL};
 use shared_lib::service::auth_service::implements::WarnEmailData;
 
 use crate::config::BackApiState;
@@ -10,7 +10,7 @@ pub(crate) async fn send_warn_mail(
     warn_data: WarnEmailData
 ) -> Result<Status, Status> {
 
-	tracing::info!(info = "send_warn_mail started!");
+	Status::log(LL::Warn, "info = send_warn_mail started!");
 
     let WarnEmailData { 
         email, 
@@ -51,7 +51,7 @@ pub(crate) async fn send_warn_mail(
 
     if !response.status().is_success() {
         let err = response.text().await.unwrap_or_default();
-        tracing::warn!("Resend API вернул ошибку: {}", err);
+        Status::log(LL::Warn, &format!("Resend API вернул ошибку: {}", err));
     }
 
     Ok(Status::Success)

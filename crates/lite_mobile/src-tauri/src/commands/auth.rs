@@ -1,4 +1,4 @@
-use shared_lib::{Status, ClientState, ProcessError};
+use shared_lib::{Status, ClientState, ProcessError, LL};
 use shared_lib::service::auth_service::implements::{
     AuthInfo, AuthStep, PasswordDataClientShort, RegFilesPathData, RegInitData
 };
@@ -18,7 +18,7 @@ pub fn cmd_get_device_id(
 	state: tauri::State<'_, ClientState>
 ) -> Result<BoxUuid, Status> {
 
-    log::debug!("cmd_get_device_id running");
+	Status::log(LL::Debug, "cmd_get_device_id running");
 
     get_device_id(&state)
 }
@@ -29,7 +29,7 @@ pub fn cmd_get_nick_names(
     state: tauri::State<'_, ClientState>
 ) -> Result<Vec<String>, Status> {
 
-    log::debug!("cmd_get_nick_names running");
+    Status::log(LL::Debug, "cmd_get_nick_names running");
 
     get_nick_names(&state)
 }
@@ -40,7 +40,7 @@ pub async  fn cmd_is_state_active_fast(
     state: tauri::State<'_, ClientState>
 ) -> Result<bool, Status> {
 
-    log::debug!("cmd_is_state_active_fast running!!!!");
+    Status::log(LL::Debug, "cmd_is_state_active_fast running!!!!");
 
     let session = state.session.lock().await;
     Ok(session.is_some())
@@ -72,7 +72,7 @@ pub async fn cmd_logout(
     state: tauri::State<'_, ClientState>
 ) -> Result<(), Status> {
 	
-    log::info!("cmd_logout running!!!!");
+    Status::log(LL::Info, "cmd_logout running!!!!");
 
     let mut session_ref = state.session.lock().await;
     *session_ref = None;
@@ -86,7 +86,7 @@ pub async  fn cmd_register_step1(
     data: RegInitData
 ) -> Result<AuthStep, Status> {
 
-    log::debug!("cmd_register_step1 running");
+    Status::log(LL::Debug, "cmd_register_step1 running");
 
     let res = register_step1(&state, &data).await;
 
@@ -99,7 +99,7 @@ pub async  fn cmd_register_step2(
     data: RegFilesPathData
 ) -> Result<AuthStep, Status> {
 
-    log::debug!("cmd_register_step2 running");
+    Status::log(LL::Debug, "cmd_register_step2 running");
 
     let res = register_step2(&state, &data).await;
 
@@ -126,7 +126,7 @@ pub async fn cmd_session_by_password(
     data: PasswordDataClientShort
 ) -> Result<AuthStep, Status> {
 
-    log::debug!("cmd_session_by_password running!!!!");
+    Status::log(LL::Debug, "cmd_session_by_password running!!!!");
 
     restore_by_password(&state, &data).await
 }

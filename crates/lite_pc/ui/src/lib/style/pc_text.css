@@ -11,7 +11,6 @@
     font-weight: 700 !important;
 }
 
-/* Прямое жесткое переопределение */
 .t-italic {
     font-style: italic !important;
 }
@@ -21,13 +20,13 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    display: block; /* Гарантируем блочное поведение */
+    display: block;
 }
 
 
 .t-fill {
     white-space: normal;
-    word-break: break-word; /* Если слово слишком длинное, оно не сломает верстку, а перенесется */
+    word-break: break-word;
 }
 
 

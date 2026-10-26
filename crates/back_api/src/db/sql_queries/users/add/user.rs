@@ -28,8 +28,9 @@ pub(crate) async fn add_user(
     if exist_user_dto_option.is_some() {
         return Err(Status::Tech.process_err(Status::SystemLogicErr, ""));
     };
-	
-	let user_id = BoxUuid::unchecked(uuid::Uuid::new_v4());
+
+	let uuid_str = format!("{}-{}", pers_id, comp_id);
+	let user_id = BoxUuid::new_v5(&uuid_str);
 
     let user_dto = sqlx::query_file_as!(
             UserDto,

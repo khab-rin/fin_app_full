@@ -62,7 +62,6 @@
 
 
 <div class="pooling-section">
-    <!-- Блок статуса -->
     <div class="pooling-active">
         <span class="pooling-dot"></span>
         Автоматический мониторинг: Активен

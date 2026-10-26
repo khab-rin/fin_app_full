@@ -5,7 +5,7 @@ use tokio::io::AsyncWriteExt;
 use crate::AppState;
 
 use shared_lib::{Status, ProcessError};
-use shared_lib::service::crypto_service::implements::{
+use shared_lib::service::cryp_serv::implements::{
     CheckSignDocData,
     PersonSignCheckResult
 };
@@ -18,14 +18,12 @@ pub async fn verify_signature_handler(
     let run_id = uuid::Uuid::new_v4().to_string();
     let temp_dir = std::env::temp_dir();
 
-    // Формируем короткие имена файлов для рабочей директории
     let init_filename = format!("{}.dat", run_id);
     let sig_filename = format!("{}.dat.sig", run_id);
 
     let init_path = temp_dir.join(&init_filename);
     let sig_path = temp_dir.join(&sig_filename);
-    
-    // 1. Записываем файл данных
+
     let mut init_file = tokio::fs::File::create(&init_path)
         .await
         .map_err(|err| err.process_err(Status::FileCreateError, ""))?;
@@ -34,8 +32,6 @@ pub async fn verify_signature_handler(
         .await
         .map_err(|err| err.process_err(Status::FileWriteError, ""))?;
 
-
-    // 2. Записываем файл подписи
     let mut sig_file = tokio::fs::File::create(&sig_path)
         .await
         .map_err(|err| err.process_err(Status::FileCreateError, ""))?;
@@ -45,8 +41,6 @@ pub async fn verify_signature_handler(
         .await
         .map_err(|err| err.process_err(Status::FileWriteError, ""))?;
 
-
-    // 3. Шаг 1: Проверяем подпись через cryptcp (с фиксированной рабочей директорией)
     let cryptcp_output = tokio::process::Command::new(&state.cryptcp_path)
         .current_dir(&temp_dir) // Переходим в /tmp, чтобы избегать ошибки 0x20000065
         .arg("-vsignf")
@@ -61,8 +55,6 @@ pub async fn verify_signature_handler(
         .await
         .map_err(|err| err.process_err(Status::CryptoServerError, ""))?;
 
-
-    // 4. Проверяем статус работы cryptcp
     if !cryptcp_output.status.success() {
         let stdout_err = String::from_utf8_lossy(&cryptcp_output.stdout);
         let stderr_err = String::from_utf8_lossy(&cryptcp_output.stderr);
@@ -74,12 +66,11 @@ pub async fn verify_signature_handler(
             stderr_err
         );
 
-        tracing::debug!(
-            wrong_data = %detailed_error,
-            "Signature verification failed via cryptcp"
-        );
+        // Status::log(LL::Debug, &format!(
+		// 	"wrong_data = {}, Signature verification failed via cryptcp",
+		// 	detailed_error
+		// ));
 
-        // Удаляем временные файлы перед возвратом
         let _ = tokio::fs::remove_file(&init_path).await;
         let _ = tokio::fs::remove_file(&sig_path).await;
 
@@ -89,7 +80,6 @@ pub async fn verify_signature_handler(
         }));
     }
 
-    // 5. Шаг 2: Вызываем certmgr для извлечения понятных полей Subject (ИНН, СНИЛС, ОГРН и т.д.)
     let certmgr_path = state.cryptcp_path.replace("cryptcp", "certmgr"); // или возьми из state.certmgr_path
     
     let cert_out = tokio::process::Command::new(&certmgr_path)
@@ -101,11 +91,9 @@ pub async fn verify_signature_handler(
         .await
         .map_err(|err| err.process_err(Status::CryptoServerError, ""))?;
 
-    // Удаляем временные файлы сразу после выполнения всех команд
     let _ = tokio::fs::remove_file(&init_path).await;
     let _ = tokio::fs::remove_file(&sig_path).await;
 
-    // Формируем итоговый результат
     let mut result_text = String::from_utf8_lossy(&cryptcp_output.stdout).into_owned();
 
     if cert_out.status.success() {
@@ -118,8 +106,7 @@ pub async fn verify_signature_handler(
         }
     }
     
-
-    tracing::info!(info = %result_text);
+    // Status::log(LL::Debug, &format!("info = {}", result_text));
 
     Ok(Json(PersonSignCheckResult { 
         is_signed: true, 

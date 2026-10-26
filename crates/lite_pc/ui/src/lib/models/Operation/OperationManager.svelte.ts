@@ -52,6 +52,10 @@ class OperationManager {
             return TryLater
         }
     }
+
+	reload() {
+		this.step = {Loading: {text: "Выберите функционал работы с проводками"}};
+	}
 }
 
 export const operStep = new OperationManager;

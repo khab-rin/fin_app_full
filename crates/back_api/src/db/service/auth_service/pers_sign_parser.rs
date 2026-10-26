@@ -1,9 +1,9 @@
 use regex::Regex;
 use std::sync::OnceLock;
 
-use shared_lib::{Status, ProcessError};
+use shared_lib::{Status, ProcessError, LL};
 use shared_lib::primitives::frozen::text::{CompInn, Snils, PersInn};
-use shared_lib::service::crypto_service::implements::CryptoSignFields;
+use shared_lib::service::cryp_serv::implements::CryptoSignFields;
 use shared_lib::service::auth_service::implements::RegInitData;
 
 pub(crate) fn parse_crypto_fields_org(text: &str) -> Result<CryptoSignFields, Status> {
@@ -96,9 +96,9 @@ pub fn check_auth_manager(
     fields: &CryptoSignFields
 ) -> bool {
 
-    tracing::info!("check_manager runing");
+    Status::log(LL::Debug, "check_manager runing");
 
-    tracing::info!(init_data = ?init_data, fields = ?fields);
+    // Status::log(LL::Debug, &format!("init_data = {:?}, fields = {:?}", init_data, fields));
 
     init_data.comp_inn == fields.comp_inn && init_data.pers_inn == fields.pers_inn
 

@@ -1,4 +1,4 @@
-use shared_lib::{ProcessError, Status};
+use shared_lib::{ProcessError, Status, LL};
 use shared_lib::primitives::frozen::text::{CompInn, Kpp};
 use shared_lib::service::parsers::dadata::implements::*;
 
@@ -10,7 +10,7 @@ pub async fn dadata_reqwest_func(
     kpp: &Kpp
 ) -> Result<Option<CtrprtyMetadata>, Status> {
 
-    tracing::debug!("dadata_reqwest_func started");
+	Status::log(LL::Debug, "dadata_reqwest_func started");
 
     let ext_info = format!("inn = {:?}, kpp = {:?}", comp_inn, kpp);
     
@@ -39,20 +39,27 @@ pub async fn dadata_reqwest_func(
 		.text()
 		.await
 		.map_err(|err| {
-			tracing::error!(
-				error = ?err,
-				error_display = %err,
-				is_decode = err.is_decode(),
-				is_body = err.is_body(),
-				is_timeout = err.is_timeout(),
-				is_connect = err.is_connect(),
-				"Failed to read DaData response body"
+			let mes = format!(
+				"error = {:?},
+				error_display = {},
+				is_decode = {},
+				is_body = {},
+				is_timeout = {},
+				is_connect = {},
+				Failed to read DaData response body",
+				err,
+				err,
+				err.is_decode(),
+				err.is_body(),
+				err.is_timeout(),
+				err.is_connect(),
 			);
+			Status::log(LL::Error, &mes);
         	err.process_err(Status::MappingError, &ext_info)
     })?;
 
 
-	tracing::debug!(status = %status);
+	Status::log(LL::Debug, &format!("status = {}", status));
 
     let resp_wrap: DadaRespWrap = serde_json::from_str(&raw_body)
         .map_err(|err| {
@@ -60,12 +67,12 @@ pub async fn dadata_reqwest_func(
             err.process_err(Status::MappingError, &info)
         })?;
 
-	tracing::debug!(suggestions_len = %resp_wrap.suggestions.len());
+	Status::log(LL::Debug, &format!("suggestions_len = {}", resp_wrap.suggestions.len()));
 
-	if let Some(s) = &resp_wrap.suggestions.first() {
-		tracing::debug!(comp = ?s.short_name_dadata);
+	if let Some(s) = resp_wrap.suggestions.first() {
+		Status::log(LL::Debug, &format!("comp = {:?}", s.short_name_dadata));
 	} else {
-		tracing::debug!(result = "company not found");
+		Status::log(LL::Debug, "result = company not found");
 	}
 
 

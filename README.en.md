@@ -64,7 +64,7 @@ The project is built on a modern asynchronous **Rust (Workspace)** stack.
 ### 🔹 Containerization and Infrastructure (Docker)
 For local deployment and service isolation, we use **two Docker containers** orchestrated via Docker Compose:
 * **PostgreSQL DBMS Container:** Storage for main system data, including company profiles, sessions, and RSBU journal entries.
-* **Crypto-service Container (`crypto_service`):** Isolated environment for sensitive crypto operations and EDS validation, protecting the main app from infrastructure risks.
+* **Crypto-service Container (`cryp_serv`):** Isolated environment for sensitive crypto operations and EDS validation, protecting the main app from infrastructure risks.
 ### 🔹 Specific Data Types
 * **Rust_Decimal:** High-precision financial calculations in the accounting core (avoids float-type rounding errors).
 * **Chrono:** Works with dates, time, and timezones (critical for MCHD and accounting periods).
@@ -111,7 +111,7 @@ Internal structure of the module:
 * **`service`:** Main service logic — processes client requests and builds response data structures. The structure mirrors the features (auth, MCHD creation, etc.).
 * **`sql_queries`:** Database query functions, neatly separated by table names.
 
-### 🔐 `crypto_service` (Cryptographic Microservice)
+### 🔐 `cryp_serv` (Cryptographic Microservice)
 An isolated service located on the same physical server as the backend, ensuring maximum data exchange speed. Its only job is to receive a crypto signature file, extract owner data (Full Name, SNILS), and validate authenticity. The central component is a Docker container with CryptoPro CSP installed.
 
 **Why it is separated into a microservice:**

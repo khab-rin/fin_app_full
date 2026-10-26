@@ -17,14 +17,14 @@ services:
       timeout: 5s
       retries: 5
 
-  crypto-service:
+  cryp_serv:
     build:
       context: .
-      dockerfile: crates/crypto_service/DockerFile
+      dockerfile: crates/cryp_serv/DockerFile
       args:
-        - CRATE_NAME=crypto_service
+        - CRATE_NAME=cryp_serv
 
-    container_name: crypto_service
+    container_name: cryp_serv
     restart: always
     ports:
       - "127.0.0.1:8081:8081"

@@ -2,7 +2,7 @@ use crate::primitives::frozen::text::{Date, RubF, TextInfo, DocNum};
 use crate::sql_models::operation::parser::BlockCommentData;
 use crate::static_data::primitives_re::*;
 
-
+use crate::{Status, LL};
 
 pub fn parse_comment(
     comment: &TextInfo
@@ -11,6 +11,10 @@ pub fn parse_comment(
     let low = comment.to_lowercase();
 
     let mut parse_data = BlockCommentData::default();
+
+	if (low.contains("личн") || low.contains("средст")) && (low.contains("учредит") || low.contains("предприним")) {
+		parse_data.is_founder = true;
+	}
     
     
     if low.contains("возвр") && (
@@ -83,7 +87,7 @@ pub fn parse_comment(
 
             match Date::new(&normalized) {
                 Ok(dd) => parse_data.dates.push(dd),
-                Err(err) => { parse_data.errors.insert(err); }
+                Err(_) => { Status::log(LL::Warn, &format!("wrong_date_str = {}", normalized)); }
             }
         }
     }
@@ -121,12 +125,13 @@ pub fn parse_comment(
             Some("18") => {parse_data.nds_rate = 18}
             _ => {}
         }
+
         if let Some(cap) = get_scan_nds_amount_reg()
             .captures(&low) {
                 let v = cap.get(1).unwrap().as_str();
                 match RubF::new(v) {
                     Ok(rubf) => { parse_data.nds_amount = Some(rubf); }
-                    Err(err) => { parse_data.errors.insert(err); }
+                    Err(_) => { Status::log(LL::Warn, &format!("wrong_amiunt_str = {}", v)); }
                 }
             }
     }

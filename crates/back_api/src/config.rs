@@ -4,6 +4,7 @@ use std::time::Duration;
 use reqwest::header::{HeaderMap, HeaderName, CONTENT_TYPE, ACCEPT, AUTHORIZATION};
 use serde::Deserialize;
 
+use shared_lib::{Status, LL};
 use shared_lib::service::auth_service::general::*;
 use shared_lib::service::auth_service::back_api_state::*;
 use shared_lib::make_header;
@@ -92,8 +93,8 @@ impl Config {
             config.email_sender.api = std::env::var("EMAIL_SENDER_API_KEY")
                 .expect("MISS_EMAIL_SENDER_API_KEY");
 
-            config.crypto_servise.url = std::env::var("CRYPTO_SERVICE_URL")
-                .expect("MISS_CRYPTO_SERVICE_API_URL");
+            config.crypto_servise.url = std::env::var("CRYP_SERV_URL")
+                .expect("MISS_CRYP_SERV_API_URL");
 
             let inst_client = make_client(
                 config.network.inst_conn_timeout, 
@@ -153,9 +154,9 @@ pub(crate) async fn create_pool(base_url: &str, max_conn: &u32, timeout: &Durati
         match pool_result {
             Ok(p) => return p,
             Err(er) => {
-                tracing::warn!("Попытка подключения к БД №{} не удалась", attempts);
+				Status::log(LL::Warn, &format!("Попытка подключения к БД №{} не удалась, attempts = ", attempts));
                 if attempts == 5 {
-                    tracing::error!("ФАТАЛЬНАЯ ОШИБКА: Не удалось подключиться к PostgreSQL.");
+					Status::log(LL::Warn, "ФАТАЛЬНАЯ ОШИБКА: Не удалось подключиться к PostgreSQL.");
                     panic!("Database connection failed: {}", er);
                 }
                 tokio::time::sleep(Duration::from_secs(5)).await;

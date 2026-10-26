@@ -1,4 +1,4 @@
-use crate::{ClientState, ProcessError, Status};
+use crate::{ClientState, ProcessError, Status, LL};
 use crate::primitives::frozen::text::{PersInn, BoxUuid, DateTime};
 use crate::sql_models::person::implements::Person;
 
@@ -9,7 +9,7 @@ pub async fn insert_person_no_sync(
     person: &Person
 ) -> Result<Person, Status> {
 
-	log::debug!("insert_person_no_sync function started!");
+	Status::log(LL::Debug, "insert_person_no_sync function started!");
 
     let session = state.get_session().await
         .map_err(|err| err.process_err(err, ""))?;
@@ -39,7 +39,7 @@ pub async fn insert_person_no_sync(
         .await
         .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
 	
-	log::debug!("insert_person_no_sync function finished!");
+	Status::log(LL::Debug, "insert_person_no_sync function finished!");
 
     Ok(prev_person)
 

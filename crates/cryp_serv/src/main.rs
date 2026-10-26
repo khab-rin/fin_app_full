@@ -2,6 +2,7 @@ use axum::{routing::post, Router};
 use std::sync::Arc;
 use tracing_subscriber::{fmt, prelude::*, EnvFilter};
 
+use shared_lib::{Status, LL};
 use shared_lib::service::api_routes::implements::CryptoApiRoutes;
 
 pub mod person_snils;
@@ -23,21 +24,21 @@ async fn main() {
         .with_writer(std::io::stdout)
         .pretty()
         .with_ansi(true)
-        .with_file(true)
-        .with_line_number(true)
-        .with_target(true);
+        .with_file(false)
+        .with_line_number(false)
+        .with_target(false);
 
     let file_formatter = fmt::layer()
         .with_writer(non_blocking)
         .pretty()
         .with_ansi(false)
-        .with_file(true)
-        .with_line_number(true)
-        .with_target(true);
+        .with_file(false)
+        .with_line_number(false)
+        .with_target(false);
 
     let log_filter = EnvFilter::try_from_default_env()
     .unwrap_or_else(|_| {
-        "crypto_service=debug,crypto_service_bin=debug,tower_http=debug,axum::rejection=trace".into()
+        "cryp_serv=debug,cryp_serv_bin=debug,tower_http=debug,axum::rejection=trace".into()
     });
 
     tracing_subscriber::registry()
@@ -67,16 +68,16 @@ async fn main() {
     let listener = match tokio::net::TcpListener::bind(&addr).await {
         Ok(l) => l,
         Err(err) => {
-            tracing::error!("Failed to bind to {}: {:?}", addr, err);
+            Status::log(LL::Error, &format!("Failed to bind to {}: {:?}", addr, err));
             return;
         }
     };
 
-    tracing::info!("Crypto service successfully started and listening on {}", addr);
+    Status::log(LL::Info, &format!("Crypto service successfully started and listening on {}", addr));
     
     
     if let Err(err) = axum::serve(listener, app).await {
-        tracing::error!("Server error: {:?}", err);
+        Status::log(LL::Error, &format!("Server error: {:?}", err));
     }
 
 }

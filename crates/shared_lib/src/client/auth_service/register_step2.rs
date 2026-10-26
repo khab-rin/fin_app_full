@@ -3,7 +3,7 @@
 use crate::service::auth_service::implements::{
     AuthStep, AuthInfo, RegFilesPathData
 };
-use crate::service::crypto_service::implements::CheckSignDocData;
+use crate::service::cryp_serv::implements::CheckSignDocData;
 use crate::service::api_routes::implements::ApiRoutes;
 use crate::{Status, ClientState, ProcessError};
 use crate::service::auth_service::client_state::init_session;

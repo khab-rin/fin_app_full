@@ -25,12 +25,12 @@
 		container-type: inline-size !important;
 }
 
-/* Эффект клика (когда нажали и держат) */
+
 .but-gr:active:not(:disabled),
 .but-bl:active:not(:disabled),
 .but-ye:active:not(:disabled),
 .but-pu:active:not(:disabled) {
-    transform: scale(0.98);    /* Визуальное уменьшение */
+    transform: scale(0.98);
 }
 
 .but-gr[hidden],
@@ -44,89 +44,81 @@
 }
 
 
-
-
-/* -------------------- GREEN BUTTON -------------------- */
 .but-gr {
     background-color: #dcfce7;
     border-color: #bbf7d0;
-    color: #000000;            /* Цвет задан один раз */
+    color: #000000;
 }
 .but-gr:hover:not(:disabled) {
-    background-color: #22c55e; /* Наведена: плотный, непрозрачный */
+    background-color: #22c55e;
     border-color: #16a34a;
 }
 .but-gr:active:not(:disabled) {
-    background-color: #15803d !important; /* Нажата: самый темный */
+    background-color: #15803d !important;
     border-color: #166534 !important;
 }
 .but-gr:disabled {
-    background-color: #f0fdf4; /* Неактивна: самый бледный */
+    background-color: #f0fdf4;
     border-color: #e6f4ea;
-    opacity: 0.4;              /* Делает кнопку и черный текст блеклыми */
+    opacity: 0.4; 
     cursor: not-allowed;
 }
 
-
-/* -------------------- BLUE BUTTON -------------------- */
 .but-bl {
-    background-color: #e0f2fe; /* Активна */
+    background-color: #e0f2fe;
     border-color: #bae6fd;
     color: #000000;
 }
 .but-bl:hover:not(:disabled) {
-    background-color: #3b82f6; /* Наведена */
+    background-color: #3b82f6;
     border-color: #2563eb;
 }
 .but-bl:active:not(:disabled) {
-    background-color: #1d4ed8 !important; /* Нажата */
+    background-color: #1d4ed8 !important;
     border-color: #1e40af !important;
 }
 .but-bl:disabled {
-    background-color: #f0f9ff; /* Неактивна */
+    background-color: #f0f9ff;
     border-color: #e0f2fe;
     opacity: 0.4;
     cursor: not-allowed;
 }
 
-
-/* -------------------- YELLOW BUTTON -------------------- */
 .but-ye {
-    background-color: #fef9c3; /* Активна */
+    background-color: #fef9c3;
     border-color: #fef08a;
     color: #000000;
 }
 .but-ye:hover:not(:disabled) {
-    background-color: #eab308; /* Наведена */
+    background-color: #eab308;
     border-color: #ca8a04;
 }
 .but-ye:active:not(:disabled) {
-    background-color: #a16207 !important; /* Нажата */
+    background-color: #a16207 !important;
     border-color: #854d0e !important;
 }
 .but-ye:disabled {
-    background-color: #fefce8; /* Неактивна */
+    background-color: #fefce8;
     border-color: #fef9c3;
     opacity: 0.4;
     cursor: not-allowed;
 }
 
-/* -------------------- PURPLE BUTTON -------------------- */
 .but-pu {
-    background-color: #f3e8ff; /* Активна */
+    background-color: #f3e8ff;
     border-color: #e9d5ff;
     color: #000000;
 }
 .but-pu:hover:not(:disabled) {
-    background-color: #a855f7; /* Наведена */
+    background-color: #a855f7;
     border-color: #9333ea;
 }
 .but-pu:active:not(:disabled) {
-    background-color: #7e22ce !important; /* Нажата */
+    background-color: #7e22ce !important;
     border-color: #6b21a8 !important;
 }
 .but-pu:disabled {
-    background-color: #faf5ff; /* Неактивна */
+    background-color: #faf5ff;
     border-color: #f3e8ff;
     opacity: 0.4;
     cursor: not-allowed;
@@ -142,7 +134,7 @@
      transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
 }
 
-/* При наведении область затемняется еще на 5% (суммарно 15% затемнения) */
+
 .shaded:hover {
     background-color: rgba(0, 0, 0, 0.15); 
     border-color: rgba(0, 0, 0, 0.25);     

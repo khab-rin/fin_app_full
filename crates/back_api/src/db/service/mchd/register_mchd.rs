@@ -1,6 +1,6 @@
 use shared_lib::{Status, ProcessError};
 use shared_lib::primitives::frozen::text::BoxUuid;
-use shared_lib::service::crypto_service::implements::{CheckSignDocData, PersonSignCheckResult};
+use shared_lib::service::cryp_serv::implements::{CheckSignDocData, PersonSignCheckResult};
 use shared_lib::service::api_routes::implements::CryptoApiRoutes;
 use shared_lib::service::mchd::service::{RegisterMchdData, MchdStep, MchdInfo};
 use shared_lib::service::mchd::poa::PoaMchd;

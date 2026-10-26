@@ -12,7 +12,7 @@ use crate::primitives::frozen::text::{PersInn, CompInn, Kpp};
 use crate::sql_models::person::implements::Person;
 use crate::sql_models::company::implements::Company;
 use crate::service::auth_service::general::time_parser;
-use crate::{Status, ProcessError};
+use crate::{Status, ProcessError, LL};
 use crate::service::auth_service::general::*;
 use crate::service::auth_service::implements::SessionUserToken;
 
@@ -222,15 +222,21 @@ pub(crate) async fn init_session(
 
     let mut db_url = format!("sqlite://{}", path_str);
 
-    #[cfg(all(debug_assertions, not(target_os = "android")))] {
+    #[cfg(all(debug_assertions, not(target_os = "android")))]
+
+	{
 		let project_root = env!("CARGO_MANIFEST_DIR");
-		log::debug!("project_root = {:?}", project_root);
+		Status::log(LL::Debug, &format!("project_root = {:?}", project_root));
+
 		let db_path = std::path::Path::new(project_root)
 			.join("../../data_base.db");
-		log::debug!("db_path = {:?}", db_path);
+		Status::log(LL::Debug, &format!("db_path = {:?}", db_path));
+
 		db_url = format!("sqlite://{}", db_path.display());
-		log::debug!("db_url = {:?}", db_url);
+		Status::log(LL::Debug, &format!("db_url = {:?}", db_url));
 	}
+
+	Status::log(LL::Debug, &format!("db_url = {}", db_url));
 
     let connect_options = SqliteConnectOptions::from_str(&db_url)
         .map_err(|err| err.process_err(Status::SystemErr, ""))?
@@ -270,7 +276,7 @@ pub(crate) async fn init_session(
 	insert_person_no_sync(state, person).await.map_err(|err| err.process_err(err, ""))?;
 	add_company(state, company).await.map_err(|err| err.process_err(err, ""))?;
 
-	log::debug!("init_session finished");
+	Status::log(LL::Debug, "init_session finished");
 
     Ok(Status::Success)
 
