@@ -1,0 +1,73 @@
+ .gitignore                                                                 |   4 [32m+[m[31m--[m
+ Cargo.lock                                                                 |  32 [32m++++++++++[m[31m-----------[m
+ Cargo.toml                                                                 |   2 [32m+[m[31m-[m
+ README.en.md                                                               |   4 [32m+[m[31m--[m
+ README.md                                                                  |   4 [32m+[m[31m--[m
+ crates/back_api/.env.example                                               |   2 [32m+[m[31m-[m
+ crates/back_api/src/config.rs                                              |   9 [32m+++[m[31m---[m
+ crates/back_api/src/db/parsers/dadata/dadata_request.rs                    |  37 [32m++++++++++++++[m[31m----------[m
+ crates/back_api/src/db/parsers/dadata/inn_kpp_query.rs                     |   8 [32m++++[m[31m--[m
+ crates/back_api/src/db/service/auth_service/delete_token.rs                |   4 [32m+[m[31m--[m
+ crates/back_api/src/db/service/auth_service/pers_sign_parser.rs            |   8 [32m+++[m[31m---[m
+ crates/back_api/src/db/service/auth_service/register_step1.rs              |   5 [32m+++[m[31m-[m
+ crates/back_api/src/db/service/auth_service/register_step2.rs              |  15 [32m++++++[m[31m----[m
+ crates/back_api/src/db/service/auth_service/send_warn_mail.rs              |   6 [32m++[m[31m--[m
+ crates/back_api/src/db/service/mchd/register_mchd.rs                       |   2 [32m+[m[31m-[m
+ crates/back_api/src/db/sql_queries/call_cf/set/new_cf.rs                   |   4 [32m+[m[31m--[m
+ crates/back_api/src/db/sql_queries/users/add/user.rs                       |   5 [32m++[m[31m--[m
+ crates/back_api/src/db/sql_queries/users/set/del_guids.rs                  |   4 [32m+[m[31m--[m
+ crates/back_api/src/handlers/service/auth_service/handler.rs               |   8 [32m+++[m[31m---[m
+ crates/back_api/src/handlers/sql/handlers.rs                               |   4 [32m+[m[31m--[m
+ crates/back_api/src/main.rs                                                |   4 [32m+[m[31m--[m
+ crates/{crypto_service => cryp_serv}/Cargo.toml                            |   4 [32m+[m[31m--[m
+ crates/cryp_serv/DockerFile                                                |  55 [32m++++++++++++++++++++++++++++++++++++[m
+ crates/{crypto_service => cryp_serv}/linux-amd64_deb.tgz                   | Bin
+ crates/{crypto_service => cryp_serv}/russian_trusted_root_ca.cer           | Bin
+ crates/{crypto_service => cryp_serv}/src/main.rs                           |  21 [32m+++++++[m[31m-------[m
+ crates/{crypto_service => cryp_serv}/src/person_snils/checker.rs           |  27 [32m+++++[m[31m-------------[m
+ crates/{crypto_service => cryp_serv}/src/person_snils/mod.rs               |   0
+ crates/crypto_service/DockerFile                                           |  63 [31m-----------------------------------------[m
+ crates/lite_mobile/src-tauri/src/commands/auth.rs                          |  16 [32m+++++[m[31m------[m
+ crates/lite_mobile/src-tauri/src/commands/sql_queries.rs                   |   4 [32m+[m[31m--[m
+ crates/lite_mobile/src-tauri/tauri.conf.json                               |   3 [32m+[m[31m-[m
+ crates/lite_pc/src-tauri/Cargo.toml                                        |   2 [32m+[m[31m-[m
+ crates/lite_pc/src-tauri/src/commands/auth.rs                              |  16 [32m+++++[m[31m------[m
+ crates/lite_pc/src-tauri/src/commands/sql_queries.rs                       |   4 [32m+[m[31m--[m
+ crates/lite_pc/src-tauri/tauri.conf.json                                   |   5 [32m++[m[31m--[m
+ crates/lite_pc/ui/src/lib/models/Auth/AuthStep.svelte.ts                   |   1 [31m-[m
+ crates/lite_pc/ui/src/lib/models/Mchd/mchdManager.svelte.ts                |   4 [32m+++[m
+ crates/lite_pc/ui/src/lib/models/Operation/OperationManager.svelte.ts      |   4 [32m+++[m
+ crates/lite_pc/ui/src/lib/models/Reports/ReportsManager.svelte.ts          |   4 [32m+++[m
+ crates/lite_pc/ui/src/lib/service/auth_service/CallIn.svelte               |   1 [31m-[m
+ crates/lite_pc/ui/src/lib/service/operation/StatementSuccess.svelte        | 147 [31m-----------------------------------------------------------------------------------------------[m
+ crates/lite_pc/ui/src/lib/style/global.css                                 |  35 [32m+++++++[m[31m----------------[m
+ crates/lite_pc/ui/src/lib/style/pc_auth_pooling.css                        |  30 [32m+++++++++[m[31m-----------[m
+ crates/lite_pc/ui/src/lib/style/pc_buttons.css                             |  48 [32m+++++++++++++[m[31m------------------[m
+ crates/lite_pc/ui/src/lib/style/pc_group.css                               |  14 [32m++[m[31m--------[m
+ crates/lite_pc/ui/src/lib/style/pc_text.css                                |   5 [32m++[m[31m--[m
+ crates/lite_pc/ui/src/lib/style/pc_zone_top.css                            |  10 [32m+++[m[31m----[m
+ crates/lite_pc/ui/src/routes/+layout.svelte                                |  18 [32m++++++++[m[31m----[m
+ crates/lite_pc/ui/src/routes/+page.svelte                                  |  82 [31m-----------------------------------------------------[m
+ crates/lite_pc/ui/src/routes/ingest/+page.svelte                           |  57 [31m-------------------------------------[m
+ crates/lite_pc/ui/src/routes/tax-reports/+page.svelte                      | 203 [31m------------------------------------------------------------------------------------------------------------------------------------[m
+ crates/shared_lib/Config.toml                                              |   2 [32m+[m[31m-[m
+ crates/shared_lib/src/client/auth_service/helper.rs                        |  13 [32m++++[m[31m-----[m
+ crates/shared_lib/src/client/auth_service/register_step2.rs                |   2 [32m+[m[31m-[m
+ crates/shared_lib/src/client/back_api/post_query.rs                        |  42 [32m+++++++++++++++[m[31m-------------[m
+ crates/shared_lib/src/client/operation/statement_parser/comment.rs         |  11 [32m++++++[m[31m--[m
+ crates/shared_lib/src/client/operation/statement_parser/make_operations.rs |   8 [32m+++++[m[31m-[m
+ crates/shared_lib/src/client/sql_queries/companys/add/by_company.rs        |   6 [32m++[m[31m--[m
+ crates/shared_lib/src/client/sql_queries/companys/add/by_inn_kpp.rs        |   4 [32m+[m[31m--[m
+ crates/shared_lib/src/client/sql_queries/companys/get/by_inn_kpp.rs        |   4 [32m+[m[31m--[m
+ crates/shared_lib/src/client/sql_queries/persons/insert/person_no_sync.rs  |   6 [32m++[m[31m--[m
+ crates/shared_lib/src/err_models/api_status.rs                             |  46 [32m++++++++++++++++++++++++++++++[m
+ crates/shared_lib/src/lib.rs                                               |   1 [32m+[m
+ crates/shared_lib/src/primitives/frozen/text.rs                            |   9 [32m+++++[m[31m-[m
+ crates/shared_lib/src/service/auth_service/client_state.rs                 |  18 [32m++++++++[m[31m----[m
+ crates/shared_lib/src/service/{crypto_service => cryp_serv}/implements.rs  |   0
+ crates/shared_lib/src/service/{crypto_service => cryp_serv}/mod.rs         |   0
+ crates/shared_lib/src/service/mod.rs                                       |   2 [32m+[m[31m-[m
+ crates/shared_lib/src/sql_models/operation/implements.rs                   |   4 [32m+[m[31m--[m
+ crates/shared_lib/src/sql_models/operation/parser.rs                       |   2 [32m+[m[31m-[m
+ docker-compose.yml                                                         |   8 [32m+++[m[31m---[m
+ 72 files changed, 401 insertions(+), 841 deletions(-)
