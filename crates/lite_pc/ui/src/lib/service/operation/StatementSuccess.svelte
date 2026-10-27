@@ -577,7 +577,7 @@
 				type='button'
 				class='but-bl'
 				disabled={false}
-				onclick={()=>(document.getElementById('operManualAllCompanys') as HTMLDialogElement)?.close()}
+				onclick={()=>(document.getElementById('operStateSuccAllCompanys') as HTMLDialogElement)?.close()}
 			>
 				Закрыть окно
 			</button>

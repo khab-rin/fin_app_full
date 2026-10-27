@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "XpInAt_PC",
+  "productName": "xpin_pc",
   "version": "0.1.0",
-  "identifier": "com.XpInAt.pc.app",
+  "identifier": "com.pxin.pc.app",
   "build": {
 	"beforeDevCommand": {
 		"script": "bun run dev",
@@ -33,7 +33,7 @@
   "bundle": {
     "active": true,
     "targets": ["deb"],
-	"publisher": "XpInAt",
+	"publisher": "xpinat",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",

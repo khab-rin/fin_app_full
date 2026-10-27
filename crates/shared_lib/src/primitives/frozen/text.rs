@@ -188,7 +188,6 @@ frozen_primitives!(
 
 impl BoxUuid {
 	pub fn new_v5(val: &str) -> Self{
-		Status::log(LL::Debug, &format!("uuid_str = {}", val));
 		BoxUuid::unchecked(uuid::Uuid::new_v5(&uuid::Uuid::NAMESPACE_OID, val.as_bytes()))
 	}
 }

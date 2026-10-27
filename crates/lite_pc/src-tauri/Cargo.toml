@@ -1,8 +1,8 @@
 [package]
-name = "lite_pc"
+name = "xpin_pc"
 version = "0.1.0"
 description = "fin_helper"
-authors = ["XpInAt Support oreolkazan@gmail.com"]
+authors = ["xpinat Support oreolkazan@gmail.com"]
 license = ""
 repository = ""
 edition = "2021"
@@ -10,7 +10,7 @@ rust-version = "1.77.2"
 
 
 [lib]
-name = "finance_lite_pc"
+name = "xpin_pc"
 crate-type = ["rlib"]
 path = "src/lib.rs"
 

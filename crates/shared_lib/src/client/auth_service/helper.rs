@@ -78,8 +78,8 @@ pub async fn get_comp_name(
 
 	let session = match state.get_session().await {
 		Ok(s) => s,
-		Err(err) => {
-			err.process_err(err,"");
+		Err(_) => {
+			Status::log(LL::Debug, "MISS SESSION");
 			return failed_res;
 		}
 	};

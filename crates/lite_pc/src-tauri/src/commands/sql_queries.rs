@@ -62,7 +62,6 @@ pub async fn cmd_get_comp_by_inn_kpp(
     kpp: Kpp
 ) -> Result<Option<Company>, Status> {
 
-
     Status::log(LL::Debug, "cmd_get_comp_by_inn_kpp running");
     
     get_company_by_inn_kpp(&state, &comp_inn, &kpp).await

@@ -6,6 +6,8 @@
 	import { operStep } from '$lib/models/Operation/OperationManager.svelte';
 	import {currentMchdStep} from '$lib/models/Mchd/mchdManager.svelte';
 	import {reportManager} from '$lib/models/Reports/ReportsManager.svelte';
+
+	let { children } = $props();
 	
 
 	function goToOperation() {
@@ -122,6 +124,8 @@
 			{#if pageManager.getPage}
 				{@const CurrentPage = pageManager.getPage}
 				<CurrentPage />
+			{:else}
+				{@render children()}
 			{/if}
 		{/key}
 	</main>

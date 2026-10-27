@@ -8,7 +8,7 @@ use argon2::{
     Argon2
 };
 
-use shared_lib::{ProcessError, Status, LL};
+use shared_lib::{ProcessError, Status};
 use shared_lib::primitives::frozen::text::{DateTime, BoxUuid};
 use shared_lib::primitives::composite::implements::Fio;
 use shared_lib::service::auth_service::implements::{
