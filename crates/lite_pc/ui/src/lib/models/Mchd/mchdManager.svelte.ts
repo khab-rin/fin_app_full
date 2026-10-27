@@ -112,7 +112,9 @@ class MchdManager {
     }
 
 	reload() {
+		console.error('[currentMchdStep reload] before');
 		this.step = {Loading: {text: "Выберите действие с машиночитаемыми доверенностями. Вы можете создать и зарегистрировать МЧД на любое физ. лицо от имени организации указанной при регистрации в приложении"}};
+		console.error('[currentMchdStep reload] after');
 	}
 
 }

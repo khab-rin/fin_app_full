@@ -53,6 +53,7 @@ class ReportManager {
 	reload() {
 		this.step = { Loading: {text: 'Выберите функционал для работы с отчетами'}};
 	}
+
 }
 
 export const reportManager = new ReportManager;

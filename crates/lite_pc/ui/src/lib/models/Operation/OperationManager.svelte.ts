@@ -54,7 +54,9 @@ class OperationManager {
     }
 
 	reload() {
+		console.error('[operStep reload] before');
 		this.step = {Loading: {text: "Выберите функционал работы с проводками"}};
+		console.error('[operStep reload] after');
 	}
 }
 
