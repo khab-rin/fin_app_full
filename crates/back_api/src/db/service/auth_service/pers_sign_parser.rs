@@ -96,7 +96,7 @@ pub fn check_auth_manager(
     fields: &CryptoSignFields
 ) -> bool {
 
-    Status::log(LL::Debug, "check_manager runing");
+    Status::log(LL::Debug, "check_auth_manager runing");
 
     // Status::log(LL::Debug, &format!("init_data = {:?}, fields = {:?}", init_data, fields));
 

@@ -11,14 +11,17 @@ pub(crate) async fn new_session(
     device_id: &BoxUuid
 ) -> Result<BoxUuid, Status> {
 
+	let session_id_str = format!("{}-{}", user_id, device_id);
+	let session_id = BoxUuid::new_v5(&session_id_str);
+
+
     let record = sqlx::query_file!(
             "src/db/sql_queries/sessions/set/new_session.sql",
+			session_id.as_ref(),
             user_id.as_ref(),
             device_id.as_ref(),
         ).fetch_one(&state.pool_fast)
         .await
         .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
-
     Ok(record.token) 
-
 }

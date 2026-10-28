@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS contracts (
-    contract_id TEXT PRIMARY KEY NOT NULL DEFAULT (lower(hex(randomblob(16)))),
+    contract_id TEXT PRIMARY KEY NOT NULL,
     
     user_id TEXT NOT NULL,
     comp_id TEXT NOT NULL REFERENCES companys(comp_id),

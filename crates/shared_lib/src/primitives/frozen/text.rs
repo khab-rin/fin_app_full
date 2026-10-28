@@ -2,9 +2,10 @@ use chrono::{NaiveDate};
 use rust_decimal::Decimal;
 use serde::{Serialize, Deserialize};
 
+use crate::LL;
 use crate::primitives::frozen::validators::*;
 use crate::primitives::frozen::formatters::*;
-use crate::{Status, LL};
+use crate::Status;
 use crate::sql_models::operation::macros::ParseFromStrMapValue;
 
 frozen_primitives!(
@@ -187,8 +188,10 @@ frozen_primitives!(
     default_fmt);
 
 impl BoxUuid {
-	pub fn new_v5(val: &str) -> Self{
-		BoxUuid::unchecked(uuid::Uuid::new_v5(&uuid::Uuid::NAMESPACE_OID, val.as_bytes()))
+	pub fn new_v5(val: &str) -> Self {
+		let u = uuid::Uuid::new_v5(&uuid::Uuid::NAMESPACE_OID, val.as_bytes());
+		Status::log(LL::Trace, &format!("val = {}, uuid = {}", val, u));
+		BoxUuid::unchecked(u)
 	}
 }
 

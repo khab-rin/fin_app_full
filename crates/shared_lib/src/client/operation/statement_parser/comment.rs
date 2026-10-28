@@ -87,7 +87,7 @@ pub fn parse_comment(
 
             match Date::new(&normalized) {
                 Ok(dd) => parse_data.dates.push(dd),
-                Err(_) => { Status::log(LL::Warn, &format!("wrong_date_str = {}", normalized)); }
+                Err(_) => { Status::log(LL::Debug, &format!("wrong_date_str = {}", normalized)); }
             }
         }
     }
@@ -131,7 +131,7 @@ pub fn parse_comment(
                 let v = cap.get(1).unwrap().as_str();
                 match RubF::new(v) {
                     Ok(rubf) => { parse_data.nds_amount = Some(rubf); }
-                    Err(_) => { Status::log(LL::Warn, &format!("wrong_amiunt_str = {}", v)); }
+                    Err(_) => { Status::log(LL::Debug, &format!("wrong_amiunt_str = {}", v)); }
                 }
             }
     }

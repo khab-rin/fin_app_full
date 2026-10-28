@@ -22,7 +22,7 @@ pub async fn make_new_contract(
         data.ctrpty_id
     );
 
-    let contract_id = BoxUuid::unchecked(uuid::Uuid::new_v5(&uuid::Uuid::NAMESPACE_OID, id_str.as_bytes()));
+	let contract_id = BoxUuid::new_v5(&id_str);
 
     let exist_contract_option = get_contract_by_contr_id(state, &contract_id).await
         .map_err(|err| err.process_err(err, ""))?;

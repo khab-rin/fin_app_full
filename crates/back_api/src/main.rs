@@ -66,7 +66,7 @@ async fn main() {
 
     // 4. Задаем фильтры для консоли и записи в файл с помощью строки
     let log_filter = EnvFilter::try_from_default_env()
-        .unwrap_or_else(|_| "back_api=debug,shared_lib=debug,tower_http=warn,axum=warn,sqlx=warn".into());
+        .unwrap_or_else(|_| "back_api=trace,shared_lib=trace,tower_http=warn,axum=warn,sqlx=warn".into());
 
     // 5. Регистрируем все вместе
     tracing_subscriber::registry()

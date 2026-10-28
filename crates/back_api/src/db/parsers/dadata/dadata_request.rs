@@ -67,10 +67,10 @@ pub async fn dadata_reqwest_func(
             err.process_err(Status::MappingError, &info)
         })?;
 
-	Status::log(LL::Debug, &format!("suggestions_len = {}", resp_wrap.suggestions.len()));
+	Status::log(LL::Trace, &format!("suggestions_len = {}", resp_wrap.suggestions.len()));
 
 	if let Some(s) = resp_wrap.suggestions.first() {
-		Status::log(LL::Debug, &format!("comp = {:?}", s.short_name_dadata));
+		Status::log(LL::Trace, &format!("comp = {:?}", s.short_name_dadata));
 	} else {
 		Status::log(LL::Debug, "result = company not found");
 	}

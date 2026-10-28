@@ -30,7 +30,6 @@ pub async fn get_exist_ids_by_ids(
         .await
         .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?
         .into_iter()
-        .flatten()
         .collect(); 
 
 

@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS persons (
-    pers_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    pers_id UUID PRIMARY KEY,
     pers_inn VARCHAR(12) NOT NULL UNIQUE,
     metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
     last_update TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,

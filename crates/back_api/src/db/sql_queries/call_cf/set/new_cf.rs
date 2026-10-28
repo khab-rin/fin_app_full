@@ -12,7 +12,7 @@ pub(crate) async fn new_cf(
     external_id: &String
 ) -> Result<bool, Status> {
 
-    Status::log(LL::Debug, &format!("external_id = {:?}", external_id));
+    Status::log(LL::Trace, &format!("external_id = {:?}", external_id));
 
     let insert_res = sqlx::query_file!(
             "src/db/sql_queries/call_cf/set/new_cf.sql",

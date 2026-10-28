@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS operations (
-    oper_id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+    oper_id TEXT PRIMARY KEY NOT NULL,
     
     user_id TEXT NOT NULL,
     comp_id TEXT NOT NULL REFERENCES companys(comp_id),

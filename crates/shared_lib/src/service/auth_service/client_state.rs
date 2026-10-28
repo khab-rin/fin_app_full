@@ -197,7 +197,6 @@ pub(crate) async fn init_session(
 ) -> Result<Status, Status> {
     dotenvy::dotenv().ok();
 
-    let pers_inn = &user_data.user.person.pers_inn;
     let comp_inn = &user_data.user.company.comp_inn;
     let kpp = &user_data.user.company.kpp;
 
@@ -209,7 +208,6 @@ pub(crate) async fn init_session(
         .map_err(|err| err.process_err(Status::SystemErr, ""))?;
 
     let user_path = app_path
-        .join(pers_inn.to_string())
         .join(comp_inn.to_string())
         .join(kpp.to_string());
 

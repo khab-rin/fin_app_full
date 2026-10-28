@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS contracts (
-    contract_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    contract_id UUID PRIMARY KEY,
     
     user_id UUID NOT NULL REFERENCES users(user_id),
     comp_id UUID NOT NULL REFERENCES companys(comp_id),
