@@ -45,3 +45,7 @@ crates/back_api/mock_storage/mchd/storage.json
 
 # Generated Rust models
 **/ui/src/lib/models/rustModels/
+
+# Windows NTFS alternate data stream metadata
+resourses/*:Zone.Identifier
+resourses/*\:Zone.Identifier
