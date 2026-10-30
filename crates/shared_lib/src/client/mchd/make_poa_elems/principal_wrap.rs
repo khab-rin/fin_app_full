@@ -172,8 +172,8 @@ pub fn make_root_manager_wrap_person(
     WrapPerson {
         principal_notarial_status: None,
         inn: Some(data.manager_inn.clone()),
-        snils: Some(data.manager_snils.clone()),
-        position: Some(data.manager_tittle.clone()),
+        snils: Some(Snils::unchecked(data.manager_snils.beat_string())),
+        position: Some(String1_255::unchecked(data.manager_tittle.beat_string())),
         direct_authority_doc: None,
         person: make_root_manager_person_mchd(data)
     }
@@ -257,7 +257,7 @@ pub fn make_ip_principal(
         name: None,
         ogrnip,
         inn: data.manager_inn.clone(),
-        snils: data.manager_snils.clone(),
+        snils: Snils::unchecked(data.manager_snils.beat_string()),
         direct_authority_doc: None,
         person
     };
