@@ -17,6 +17,7 @@ import TryLater from "$lib/service/auth_service/TryLater.svelte";
 
 import { invoke } from '@tauri-apps/api/core';
 import { PageType } from '../MainManager/PageValues';
+import type { OperationStep } from '../rustModels/OperationStep';
 
 
 class SvelteAuthStep {
@@ -52,16 +53,16 @@ class SvelteAuthStep {
     }
 
     data = $state({
-        surName: new FieldValidator("SurName", "Хабипов"),
-        firstName: new FieldValidator("FirstName", "Ринат"),
-        midName: new FieldValidator("MidName", "Ришатович"),
-        persInn: new FieldValidator("PersInn", "161101510882"),
-        snils: new FieldValidator("Snils", "11021217665"),
-        compInn: new FieldValidator("CompInn", "1655476106"),
-        kpp: new FieldValidator("Kpp", "165501001"),
-        password: new FieldValidator("Password", "asdfasdf"),
-        phone: new FieldValidator("Phone", "+79173949166"),
-        email: new FieldValidator("Email", "Oreolkazan@gmail.com"),
+        surName: new FieldValidator("SurName", ""),
+        firstName: new FieldValidator("FirstName", ""),
+        midName: new FieldValidator("MidName", ""),
+        persInn: new FieldValidator("PersInn", ""),
+        snils: new FieldValidator("Snils", ""),
+        compInn: new FieldValidator("CompInn", ""),
+        kpp: new FieldValidator("Kpp", ""),
+        password: new FieldValidator("Password", ""),
+        phone: new FieldValidator("Phone", ""),
+        email: new FieldValidator("Email", ""),
     })
 
     nick_names = $state<string[]>([]);
@@ -160,6 +161,45 @@ class SvelteAuthStep {
         }
     }
 
+	async loadUser1() {
+		try {
+			await Promise.all([
+				this.data.surName.asyncSet("Хабипов"),
+				this.data.firstName.asyncSet("Ринат"),
+				this.data.midName.asyncSet("Ришатович"),
+				this.data.persInn.asyncSet("161101510882"),
+				this.data.snils.asyncSet("11021217665"),
+				this.data.compInn.asyncSet("161101510882"),
+				this.data.kpp.asyncSet("0"),
+				this.data.phone.asyncSet("+79173949166"),
+				this.data.email.asyncSet("Oreolkazan@gmail.com"),
+			])
+		} catch(err) {
+			let err_step: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
+			console.error("operStep.loadUser1 FAILED, err = ", err);
+			currAuthStep.step = err_step;	
+		}
+	}
+
+	async loadUser2() {
+		try {
+			await Promise.all([
+				this.data.surName.asyncSet("Хабипов"),
+				this.data.firstName.asyncSet("Радик"),
+				this.data.midName.asyncSet("Ришатович"),
+				this.data.persInn.asyncSet("161101511050"),
+				this.data.snils.asyncSet("12233162502"),
+				this.data.compInn.asyncSet("161101510882"),
+				this.data.kpp.asyncSet("0"),
+				this.data.phone.asyncSet("+79173949166"),
+				this.data.email.asyncSet("Oreolkazan@gmail.com"),
+			])
+		} catch(err) {
+			let err_step: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
+			console.error("operStep.loadUser1 FAILED, err = ", err);
+			currAuthStep.step = err_step;	
+		}
+	}
 }
 
 export const currAuthStep = new SvelteAuthStep();

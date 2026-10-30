@@ -14,36 +14,17 @@ val tauriProperties = Properties().apply {
     }
 }
 
-val keystoreProperties = Properties().apply {
-    val propFile = rootProject.file("keystore.properties")
-    if (propFile.exists()) {
-        propFile.inputStream().use { load(it) }
-    }
-}
-
 android {
     compileSdk = 37
-    namespace = "com.XPinAT.app"
+    namespace = "com.xpin.mobile.app"
     defaultConfig {
         manifestPlaceholders["usesCleartextTraffic"] = "false"
-        applicationId = "com.XPinAT.app"
+        applicationId = "com.xpin.mobile.app"
         minSdk = 24
         targetSdk = 37
         versionCode = tauriProperties.getProperty("tauri.android.versionCode", "1").toInt()
         versionName = tauriProperties.getProperty("tauri.android.versionName", "1.0")
     }
-
-	signingConfigs {
-		create("release") {
-			val keystoreFile = keystoreProperties.getProperty("storeFile")
-			if (!keystoreFile.isNullOrBlank()) {
-				storeFile = file(keystoreFile)
-				storePassword = keystoreProperties.getProperty("storePassword")
-				keyAlias = keystoreProperties.getProperty("keyAlias")
-				keyPassword = keystoreProperties.getProperty("keyPassword")
-			}
-		}
-	}
     buildTypes {
         getByName("debug") {
             manifestPlaceholders["usesCleartextTraffic"] = "true"
@@ -67,7 +48,6 @@ android {
                   exclude("build/**")
                 }.files.toTypedArray()
             )
-			signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {

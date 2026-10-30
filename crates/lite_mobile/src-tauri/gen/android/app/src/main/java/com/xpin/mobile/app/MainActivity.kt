@@ -1,4 +1,4 @@
-package com.XPinAT.app
+package com.xpin.mobile.app
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge

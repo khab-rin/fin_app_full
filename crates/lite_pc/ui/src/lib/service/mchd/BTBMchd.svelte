@@ -712,14 +712,28 @@
 
 
 <section class='w-40'>
-	<button
-		type="button"
-		id="MchdBtbMchdBtbLendBut"
-		class="but-bl"
-		onclick={lendMchd}
-		disabled={allDone}>
-		<span class=main-batton-span>
-			Зарегистрировать
-		</span>
-	</button>
+	<div class='w-v50'>
+        <button
+            class="but-pu"
+            type="button"
+            onclick={()=>currentMchdStep.loadUser1()}
+        >
+            <span class="text-cut">
+                Автозаполнение
+            </span>
+        </button>
+    </div>
+
+	<div class='w-v50'>
+		<button
+			type="button"
+			id="MchdBtbMchdBtbLendBut"
+			class="but-bl"
+			onclick={lendMchd}
+			disabled={allDone}>
+			<span class=main-batton-span>
+				Зарегистрировать
+			</span>
+		</button>
+	</div>
 </section>

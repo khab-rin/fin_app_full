@@ -45,7 +45,14 @@
 
 <div class="w-40 x-self-l">
 	<div class='w-v100'>
-		<label class='label-close' for="AuthPassPersInn">ИНН физического лица</label>
+		<label class="label-close" for="taxOrgIdent">
+				4-значный номер налоговой
+				
+			</label>
+		<label class='label-close' for="AuthPassPersInn">
+			ИНН физического лица
+			<span class='input-tool' data-input-tool="Валидация по алгоритму ФНС">?</span>
+		</label>
 		<input 
 			id="AuthPassPersInn"
 			class="input-gr"
@@ -55,16 +62,16 @@
 			placeholder="12 цифр ИНН ФЛ"
 			class:input-error={!currAuthStep.data.persInn.isValid}
 		/>
-		{#if !currAuthStep.data.persInn.isValid}
-			<span class="input-error">Некорректный инн физического лица</span>
-		{/if}
 	</div>
 </div>
 	
 
 <div class="w-40 x-self-l">
 	<div class='w-v50'>
-		<label class='label-close' for="AuthPasscompInn">ИНН организации</label>
+		<label class='label-close' for="AuthPasscompInn">
+			ИНН организации
+			<span class='input-tool' data-input-tool="Валидация по алгоритму ФНС">?</span>
+		</label>
 		<input 
 			class="input-gr"
 			id="AuthPasswcompInn" 
@@ -73,16 +80,12 @@
 			disabled={isPushed}
 			placeholder="10 цифр ИНН ЮЛ"
 			class:input-error={!currAuthStep.data.compInn.isValid}/>
-		{#if !currAuthStep.data.compInn.isValid}
-			<span class="input-error">Некорректный инн юридического лица</span>
-		{/if}
 	</div>
 
 	<div class='w-v50'>
-		<label 
-			class='label-close' 
-			for="AuthPasswkpp">
+		<label class='label-close' for="AuthPasswkpp">
 			КПП организации
+			<span class='input-tool' data-input-tool="Валидация по алгоритму ФНС, для ип - [0, _]">?</span>
 		</label>
 		<input 
 			class="input-gr"
@@ -92,9 +95,6 @@
 			disabled={isPushed} 
 			placeholder="9 знаков КПП"
 			class:input-error={!currAuthStep.data.kpp.isValid}/>
-		{#if !currAuthStep.data.kpp.isValid}
-			<span class="input-error">Некорректный кпп</span>
-		{/if}
 	</div>
 </div>
 

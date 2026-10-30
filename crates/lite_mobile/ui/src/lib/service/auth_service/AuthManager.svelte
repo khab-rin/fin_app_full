@@ -1,6 +1,7 @@
 <script lang='ts'>
     import { currAuthStep } from "$lib/models/Auth/AuthStep.svelte";
     import {AuthStepType} from "$lib/models/Auth/AuthValues";
+	import { operStep } from "$lib/models/Operation/OperationManager.svelte";
 
     import type { AuthStep } from "$lib/models/rustModels/AuthStep";
 
@@ -44,7 +45,6 @@
 
 <h6> Навигация по авторизации </h6>
 <section class="group-two">
-
 	<div>
 		<button
 			class="purple-button"
@@ -89,4 +89,29 @@
 		</button>
 	</div>
 	
+</section>
+
+
+<section class="group-two">
+	<div>
+		<button
+			class="purple-button"
+			type="button"
+			hidden={isPassword}
+			onclick={()=>currAuthStep.loadUser1()}
+		>
+			Заполнить данные руководителя
+		</button>
+	</div>
+	
+	<div>
+		<button
+			class="purple-button"
+			type="button"
+			hidden={isRegistrerStep1}
+			onclick={()=>currAuthStep.loadUser2()}
+		>
+			Заполнить данные сотрудника
+		</button>
+	</div>
 </section>

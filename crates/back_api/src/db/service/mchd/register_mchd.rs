@@ -1,4 +1,5 @@
-use shared_lib::{Status, ProcessError};
+use shared_lib::service::mchd::implements::PoaRootKind;
+use shared_lib::{Status, ProcessError, LL};
 use shared_lib::primitives::frozen::text::BoxUuid;
 use shared_lib::service::cryp_serv::implements::{CheckSignDocData, PersonSignCheckResult};
 use shared_lib::service::api_routes::implements::CryptoApiRoutes;
@@ -6,8 +7,10 @@ use shared_lib::service::mchd::service::{RegisterMchdData, MchdStep, MchdInfo};
 use shared_lib::service::mchd::poa::PoaMchd;
 
 use crate::config::BackApiState;
+use crate::db::service::auth_service::pers_sign_parser::parse_crypto_fields_org;
 use crate::db::sql_queries::users::set::guid_by_user_id::set_guid_by_user_id;
 use crate::db::service::mchd::mchd_storage::add_new_poa;
+use crate::db::sql_queries::users::get::by_user_id::get_user_by_user_id;
 
 pub(crate) async fn register_mchd(
     state: &BackApiState,
@@ -68,6 +71,14 @@ pub(crate) async fn register_mchd(
         return Ok(MchdStep::WrongData { text: MchdInfo::WrongSignFile})
     }
 
+	let sign_fields = match parse_crypto_fields_org(&check_result.text) {
+		Ok(r) => r,
+		Err(err) => {
+			err.process_err(err, "");
+			return Ok(failed_result);
+		}
+	};
+
     let xml_content = match String::from_utf8(xml_file.clone()) {
         Ok(c) => c,
         Err(err) => {
@@ -83,6 +94,52 @@ pub(crate) async fn register_mchd(
             return Ok(failed_result);
         }
     };
+
+	let session_user_option = get_user_by_user_id(state, user_id)
+		.await
+		.map_err(|err| err.process_err(err, ""))?;
+
+	let session_user = match session_user_option {
+		Some(s) => s,
+		None => {return Ok(failed_result)}
+	};
+
+	let docum = match &poa.poa.poa_doc {
+		PoaRootKind::RootPoa(doc) => doc,
+		_ => return Ok(MchdStep::WrongData { text: MchdInfo::WrongSignFile })
+	};
+
+	let principal = match docum.principal.first() {
+		Some(p) => &p.principal,
+		_ => return Ok(MchdStep::WrongData { text: MchdInfo::WrongSignFile })
+	};
+
+	let manager_inn = if let Some(ip) = &principal.ip {
+		&ip.inn
+	} else if let Some(company) = &principal.russian_org {
+		let manager = match company.root_managers.first() {
+			Some(m) => m,
+			_ => {return Ok(MchdStep::WrongData { text: MchdInfo::WrongSignFile })}
+		};
+
+		let pers_inn_option = match &manager.prime_manager_person {
+			Some(p) => &p.inn,
+			_ => {return Ok(MchdStep::WrongData { text: MchdInfo::WrongSignFile })}
+		};
+		match pers_inn_option {
+			Some(p_i) => p_i,
+			_ => {return Ok(MchdStep::WrongData { text: MchdInfo::WrongSignFile })}
+		}
+	} else {
+		return Ok(MchdStep::WrongData { text: MchdInfo::WrongSignFile });
+	};
+
+	let comp_inn = &session_user.company.comp_inn;
+
+	if sign_fields.comp_inn != comp_inn || sign_fields.pers_inn != manager_inn {
+		Status::log(LL::Debug, &format!("comp_inn = {:?}, manager_inn = {:?}, sign_fields = {:?}", comp_inn, manager_inn, sign_fields));
+		return Ok(MchdStep::WrongData { text: MchdInfo::WrongSignFile });
+	}
 
     let identificator: Vec<char> = poa.flie_identificator.to_string().chars().collect();
 

@@ -82,7 +82,7 @@ pub fn new_entry(
 
 
 #[cfg(target_os = "android")]
-fn init_android_keyring() -> Result<(), Status> {
+pub fn init_android_keyring() -> Result<(), Status> {
     use android_native_keyring_store::Store;
     use keyring_core::set_default_store;
 

@@ -28,33 +28,29 @@
                     currAuthStep.step.CallIn.text = "Звонок по указанному номеру не был осуществлен, позвоните по этому номеру"; 
                 }
             } else {
-                currAuthStep.add(next_step);
+				currAuthStep.step = next_step;
+    
             }
         } catch (err) {
             console.error("Error:", err);
-            currAuthStep.add(err_step);
+            currAuthStep.step = err_step;
         }
     }
 
     onMount(() => {
         if (!externalId) {
-            currAuthStep.add(err_step);
+            currAuthStep.step = err_step;
             return;
         }
 
         isPolling = true;
 
-        // 2. Интервал теперь срабатывает каждую 1 секунду вместо 4
         const interval = setInterval(() => {
             if (!isPolling) return;
-
-            // Уменьшаем секундомер на единицу
             countdown -= 1;
-
-            // Когда счетчик дошел до 0 — пришло время стучаться на бэкенд
             if (countdown <= 0) {
-                countdown = 4; // Сбрасываем визуальный счетчик обратно на 4
-                poll_back_api(); // Перенаправляем запрос в Tauri
+                countdown = 4;
+                poll_back_api();
             }
         }, 1000);
 
@@ -66,7 +62,6 @@
 
 
 <div class="pooling-section">
-    <!-- Блок статуса -->
     <div class="pooling-active">
         <span class="pooling-dot"></span>
         Автоматический мониторинг: Активен
@@ -78,8 +73,6 @@
             {phone}
         </span>
     </div>
-
-    <!-- Блок времени -->
     <div class="pooling-timestamp">
         Следующая проверка через: <strong>{countdown} сек</strong>
     </div>

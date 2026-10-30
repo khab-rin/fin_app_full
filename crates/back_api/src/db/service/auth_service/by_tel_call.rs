@@ -65,7 +65,7 @@ pub(crate) async fn make_session_by_tel_call(
         }
     };
 
-    let session_user = match get_user_by_user_id(state, &user_id).await {
+    let session_user_option = match get_user_by_user_id(state, &user_id).await {
         Ok(u) => u,
         Err(err) => {
             err.process_err(err, "");
@@ -73,8 +73,11 @@ pub(crate) async fn make_session_by_tel_call(
         }
     };
 
-    let session_user_token = SessionUserToken {user: session_user, token};
-
-    Ok(AuthStep::SuccessFull { session_user_token: Box::new(session_user_token)})
+	if let Some(session_user) = session_user_option {
+		let session_user_token = SessionUserToken {user: session_user, token};
+		return Ok(AuthStep::SuccessFull { session_user_token: Box::new(session_user_token)});
+	} else {
+		return failed_result;
+	}
 
 }

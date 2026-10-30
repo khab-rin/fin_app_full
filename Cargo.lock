@@ -7594,11 +7594,15 @@ dependencies = [
 ]
 
 [[package]]
-name = "xpin_pc"
+name = "xpin_mobile"
 version = "0.1.0"
 dependencies = [
+ "android-native-keyring-store",
  "chrono",
+ "keyring",
+ "keyring-core",
  "log",
+ "ndk-context",
  "shared_lib",
  "tauri",
  "tauri-build",
@@ -7611,15 +7615,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "xpinat_lite_mobile"
+name = "xpin_pc"
 version = "0.1.0"
 dependencies = [
- "android-native-keyring-store",
  "chrono",
- "keyring",
- "keyring-core",
  "log",
- "ndk-context",
  "shared_lib",
  "tauri",
  "tauri-build",

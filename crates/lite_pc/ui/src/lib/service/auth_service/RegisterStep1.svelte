@@ -13,11 +13,8 @@
 
     let passwordRepeat = $state("");
 
-    
-
     let deviceId = "";
     
-
     let isDataValid = $derived(
         !currAuthStep.data.surName.isValid ||
         !currAuthStep.data.firstName.isValid ||
@@ -77,7 +74,9 @@
 
 <section class='w-60 x-self-l'>
     <div class='w-v33'>
-        <label class='label-close' for="surName">Фамилия</label>
+        <label class='label-close' for="surName">
+			Фамилия
+		</label>
         <input 
             id="surName" 
             type="text" 
@@ -87,13 +86,12 @@
             class="input-gr"
             class:input-error={!currAuthStep.data.surName.isValid}
         />
-        {#if !currAuthStep.data.surName.isValid}
-            <span class="input-error">Некорректная фамилия</span>
-        {/if}
     </div>
 
     <div class='w-v33'>
-        <label class='label-close' for="firstName">Имя</label>
+        <label class='label-close' for="firstName">
+			Имя
+		</label>
         <input 
             id="firstName" 
             type="text" 
@@ -103,13 +101,12 @@
             class="input-gr"
             class:input-error={!currAuthStep.data.firstName.isValid}
         />
-        {#if !currAuthStep.data.firstName.isValid}
-            <span class="input-error">Некорректное имя</span>
-        {/if}
     </div>
 
     <div class='w-v33'>
-        <label class='label-close' for="midName">Отчество (при наличии)</label>
+        <label class='label-close' for="midName">
+			Отчество (при наличии)
+		</label>
         <input 
             id="midName" 
             type="text" 
@@ -119,15 +116,15 @@
             class="input-gr"
             class:input-error={!currAuthStep.data.midName.isValid}
         />
-        {#if !currAuthStep.data.midName.isValid}
-            <span class="input-error">Некорректное отчество</span>
-        {/if}
     </div>
 </section>
 
 <section class='w-40 x-self-l'>
     <div class='w-v50'>
-        <label class='label-close' for="persInn">Личный ИНН</label>
+        <label class='label-close' for="persInn">
+			Личный ИНН
+			<span class='input-tool' data-input-tool="Валидация по алгоритму ФНС">?</span>
+		</label>
         <input 
             id="persInn" 
             type="text" 
@@ -137,13 +134,13 @@
             class="input-gr"
             class:input-error={!currAuthStep.data.persInn.isValid}
         />
-        {#if !currAuthStep.data.persInn.isValid}
-            <span class="input-error">Некорректный ИНН (должно быть 12 цифр)</span>
-        {/if}
     </div>
 
     <div class='w-v50'>
-        <label class='label-close' for="snils">СНИЛС</label>
+        <label class='label-close' for="snils">
+			СНИЛС
+			<span class='input-tool' data-input-tool="Валидация по алгоритму ФНС">?</span>
+		</label>
         <input 
             id="snils" 
             type="text" 
@@ -153,15 +150,15 @@
             class="input-gr"
             class:input-error={!currAuthStep.data.snils.isValid}
         />
-        {#if !currAuthStep.data.snils.isValid}
-            <span class="input-error">Некорректный СНИЛС</span>
-        {/if}
     </div>
 </section>
 
 <section class='w-40 x-self-l'>
     <div class='w-v50'>
-        <label class='label-close' for="compInn">ИНН Организации</label>
+        <label class='label-close' for="compInn">
+			ИНН Организации
+			<span class='input-tool' data-input-tool="Валидация по алгоритму ФНС">?</span>
+		</label>
         <input 
             id="compInn" 
             type="text" 
@@ -171,13 +168,13 @@
             class="input-gr"
             class:input-error={!currAuthStep.data.compInn.isValid}
         />
-        {#if !currAuthStep.data.compInn.isValid}
-            <span class="input-error">Некорректный ИНН организации (должно быть 10 цифр)</span>
-        {/if}
     </div>
 
     <div class='w-v50'>
-        <label class='label-close' for="kpp">КПП</label>
+        <label class='label-close' for="kpp">
+			КПП
+			<span class='input-tool' data-input-tool="Валидация по алгоритму ФНС, для ип - [0, _]">?</span>
+		</label>
         <input 
             id="kpp" 
             type="text" 
@@ -187,9 +184,6 @@
             class="input-gr"
             class:input-error={!currAuthStep.data.kpp.isValid}
         />
-        {#if !currAuthStep.data.kpp.isValid}
-            <span class="input-error">Некорректный КПП (должно быть 9 цифр)</span>
-        {/if}
     </div>
 </section>
 
@@ -205,9 +199,6 @@
             class="input-gr"
             class:input-error={!currAuthStep.data.phone.isValid}
         />
-        {#if !currAuthStep.data.phone.isValid}
-            <span class="input-error">Некорректный номер телефона</span>
-        {/if}
     </div>
 
     <div class='w-v50'>
@@ -221,16 +212,16 @@
             class="input-gr"
             class:input-error={!currAuthStep.data.email.isValid}
         />
-        {#if !currAuthStep.data.email.isValid}
-            <span class="input-error">Некорректный email</span>
-        {/if}
     </div>
 </section>
 
 <section class='w-40 x-self-l'>
 
     <div class='w-v50'>
-        <label class='label-close' for="password">Придумайте пароль приложения</label>
+        <label class='label-close' for="password">
+			Придумайте пароль приложения
+			<span class='input-tool' data-input-tool="Не менее 8 любых символов">?</span>
+		</label>
         <input 
             id="password" 
             type="password" 
@@ -240,13 +231,13 @@
             class="input-gr"
             class:input-error={!currAuthStep.data.password.isValid}
         />
-        {#if !currAuthStep.data.password.isValid}
-            <span class="input-error">Слишком короткий или простой пароль</span>
-        {/if}
     </div>
 
     <div class='w-v50'>
-        <label class='label-close' for="passwordRepeat">Повторите пароль</label>
+        <label class='label-close' for="passwordRepeat">
+			Повторите пароль
+			<span class='input-tool' data-input-tool="Требуется совпадение">?</span>
+		</label>
         <input 
             id="passwordRepeat" 
             type="password" 
@@ -256,9 +247,6 @@
             class="input-gr"
             class:input-error={currAuthStep.data.password.value !== passwordRepeat || passwordRepeat == ""}
         />
-        {#if currAuthStep.data.password.value !== passwordRepeat || passwordRepeat == ""}
-            <span class="input-error">Пароли не совпадают</span>
-        {/if}
     </div>
 </section>
 
@@ -276,6 +264,40 @@
 			</span>
 		</button>
 	</div>
+</section>
+
+
+<section class="w-40">
+	<div class='w-v50'>
+		<button
+			class="but-pu"
+			type="button"
+			onclick={()=>{
+				currAuthStep.loadUser1();
+				passwordRepeat="asdfasdf";
+			}}
+		>
+			<span class='w-g100 x-ce'>
+				Автозаполнение менеджер
+			</span>
+		</button>
+	</div>
+	
+	<div class='w-v50'>
+		<button
+			class="but-pu"
+			type="button"
+			onclick={()=>{
+				currAuthStep.loadUser2();
+				passwordRepeat="asdfasdf";
+			}}
+		>
+			<span class='w-g100 x-ce'>
+				Автозаполнение сотрудник
+			</span>
+		</button>
+	</div>
+	
 </section>
 
 

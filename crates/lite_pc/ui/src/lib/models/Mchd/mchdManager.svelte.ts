@@ -30,31 +30,31 @@ class MchdManager {
 	}
 
     data = $state({
-        PoaNumber: new FieldValidator("String1_50", "1"),
-        PoaEndDate: new FieldValidator("Date", "18.06.2028"),
-        taxOrgIdent: new FieldValidator("Digits4_4", "1655"),
+        PoaNumber: new FieldValidator("String1_50", ""),
+        PoaEndDate: new FieldValidator("Date", ""),
+        taxOrgIdent: new FieldValidator("Digits4_4", ""),
 
-        managerTitle: new FieldValidator("String1_255", "Директор"),
-        managerSurName: new FieldValidator("SurName", "Хабипов"),
-        managerFirstName: new FieldValidator("FirstName", "Ринат"),
-        managerMidName: new FieldValidator("MidName", "Ришатович"),
-        managerBirthDay: new FieldValidator("Date", "06.01.1985"),
-        managerSnils: new FieldValidator("Snils", "11021217665"),
-        managerInn: new FieldValidator("PersInn", "161101510882"),
-        managerIsCitizen: new FieldValidator("IsCitizen", "1"),
+        managerTitle: new FieldValidator("String1_255", ""),
+        managerSurName: new FieldValidator("SurName", ""),
+        managerFirstName: new FieldValidator("FirstName", ""),
+        managerMidName: new FieldValidator("MidName", ""),
+        managerBirthDay: new FieldValidator("Date", ""),
+        managerSnils: new FieldValidator("Snils", ""),
+        managerInn: new FieldValidator("PersInn", ""),
+        managerIsCitizen: new FieldValidator("IsCitizen", ""),
 
-        userSurName: new FieldValidator("SurName", "Хабипов"),
-        userFirstName: new FieldValidator("FirstName", "Радик"),
-        userMidName: new FieldValidator("MidName", "Ришатович"),
-        userBirthDay: new FieldValidator("Date", "17.08.1988"),
-        userGender: new FieldValidator("Gender", "1"),
-        userSnils: new FieldValidator("Snils", "12233162502"),
-        userInn: new FieldValidator("PersInn", "161101511050"),
-        userPassportNumber: new FieldValidator("PasspRfNumber", "9207352488"),
-        userPassportIssueDate: new FieldValidator("Date", "19.12.2008"),
-        userPassportIssueer: new FieldValidator("String1_4000", "Отделением УФМС РОССИИ ПО РЕСПУБЛИКЕ ТАТАРСТАН В БАВЛИНСКОМ РАЙОНЕ"),
-        userPassportUssuerCode: new FieldValidator("String7_7", "160-024"),
-        userIsCitizen: new FieldValidator("IsCitizen", "1"),
+        userSurName: new FieldValidator("SurName", ""),
+        userFirstName: new FieldValidator("FirstName", ""),
+        userMidName: new FieldValidator("MidName", ""),
+        userBirthDay: new FieldValidator("Date", ""),
+        userGender: new FieldValidator("Gender", ""),
+        userSnils: new FieldValidator("Snils", ""),
+        userInn: new FieldValidator("PersInn", ""),
+        userPassportNumber: new FieldValidator("PasspRfNumber", ""),
+        userPassportIssueDate: new FieldValidator("Date", ""),
+        userPassportIssueer: new FieldValidator("String1_4000", ""),
+        userPassportUssuerCode: new FieldValidator("String7_7", ""),
+        userIsCitizen: new FieldValidator("IsCitizen", ""),
     })
 
     get currentText(): string {
@@ -115,6 +115,42 @@ class MchdManager {
 		console.error('[currentMchdStep reload] before');
 		this.step = {Loading: {text: "Выберите действие с машиночитаемыми доверенностями. Вы можете создать и зарегистрировать МЧД на любое физ. лицо от имени организации указанной при регистрации в приложении"}};
 		console.error('[currentMchdStep reload] after');
+	}
+
+	async loadUser1() {
+		try {
+			await Promise.all([
+				this.data.PoaNumber.asyncSet("1"),
+				this.data.PoaEndDate.asyncSet("30.10.2026"),
+				this.data.taxOrgIdent.asyncSet("1655"),
+				this.data.managerTitle.asyncSet("Директор"),
+				this.data.managerSurName.asyncSet("Руководитель"),
+				this.data.managerFirstName.asyncSet("Иван"),
+				this.data.managerMidName.asyncSet("Иванович"),
+				this.data.managerBirthDay.asyncSet("01.01.2000"),
+				this.data.managerSnils.asyncSet("11021217665"),
+				this.data.managerInn.asyncSet("161101510882"),
+				this.data.managerIsCitizen.asyncSet("1"),
+
+				this.data.userSurName.asyncSet("Сотрудник"),
+				this.data.userFirstName.asyncSet("Петр"),
+				this.data.userMidName.asyncSet("Петрович"),
+				this.data.userBirthDay.asyncSet("01.01.2000"),
+				this.data.userGender.asyncSet("1"),
+				this.data.userSnils.asyncSet("12233162502"),
+				this.data.userInn.asyncSet("161101511050"),
+				this.data.userPassportNumber.asyncSet("1234567890"),
+				this.data.userPassportIssueDate.asyncSet("01.01.2000"),
+				this.data.userPassportIssueer.asyncSet("Отделением УФМС г. Казани"),
+				this.data.userPassportUssuerCode.asyncSet("160-000"),
+				this.data.userIsCitizen.asyncSet("1"),
+
+			])
+		} catch(err) {
+			let err_step: MchdStep = {TryLater: {text: "Критическая ошибка на устройстве..."}};
+			console.error("operStep.loadUser1 FAILED, err = ", err);
+			currentMchdStep.step = err_step;	
+		}
 	}
 
 }

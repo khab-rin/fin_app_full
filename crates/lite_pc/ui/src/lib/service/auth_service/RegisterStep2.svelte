@@ -109,6 +109,7 @@
     <div class='w-v100'>
         <label class="label-close" for="AuthStep2jsonFilePath">
             Загрузите путь до json файла
+			<span class='input-tool' data-input-tool="Выберите один из двух JSON файлов регистрации">?</span>
         </label>
         <input
             type="text"
@@ -137,6 +138,7 @@
     <div class='w-v100'>
         <label class="label-close" for="AuthStep2signFilePath">
             Загрузите путь до файла ЭЦП
+			<span class='input-tool' data-input-tool="Выберите один из двух файлов ЭЦП">?</span>
         </label>
   
         <input

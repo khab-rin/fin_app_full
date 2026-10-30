@@ -1,8 +1,8 @@
 [package]
-name = "xpinat_lite_mobile"
+name = "xpin_mobile"
 version = "0.1.0"
 description = "fin_helper"
-authors = [""]
+authors = ["xpinat Support oreolkazan@gmail.com"]
 license = ""
 repository = ""
 edition = "2021"
@@ -10,7 +10,7 @@ rust-version = "1.77.2"
 
 
 [lib]
-name = "mobile"
+name = "xpin_mobile"
 crate-type = ["staticlib", "cdylib", "rlib"]
 path = "src/lib.rs"
 
