@@ -10,8 +10,6 @@ pub(crate) async fn send_warn_mail(
     warn_data: WarnEmailData
 ) -> Result<Status, Status> {
 
-	Status::log(LL::Debug, "info = send_warn_mail started!");
-
     let WarnEmailData { 
         email, 
         pers_inn, 

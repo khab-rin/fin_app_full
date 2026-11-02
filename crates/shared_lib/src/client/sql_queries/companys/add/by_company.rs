@@ -1,4 +1,4 @@
-use crate::{Status, ClientState, ProcessError, LL};
+use crate::{Status, ClientState, ProcessError};
 use crate::sql_models::company::implements::{Company, CompanyDto};
 use crate::primitives::frozen::text::{CompInn, Kpp, BoxUuid, CompStatus, CompType, DateTime};
 
@@ -7,8 +7,6 @@ pub async fn add_company(
     state: &ClientState,
     company: &Company
 ) -> Result<Company, Status> {
-
-	Status::log(LL::Debug, "add_company function started!");
 
     let session = state.get_session().await
         .map_err(|err| err.process_err(err, ""))?; 
@@ -51,8 +49,6 @@ pub async fn add_company(
 	let company: Company = company_dto
 		.try_into()
 		.map_err(|err: serde_json::Error| err.process_err(Status::MappingError, ""))?;
-	
-	Status::log(LL::Debug, "add_company function finished!");
 
 	Ok(company)
 }

@@ -140,6 +140,9 @@
             mchdType: "BTBMchd" satisfies MchdType,
             powers: Array.from(selectedPowers)
         }
+		if (data.taxOrgIdent.length != 4) {
+			data.taxOrgIdent = "0000"
+		}
 
         try {
             const nextStep = await invoke<MchdStep>("cmd_make_xml_doc_files", {data: data})
@@ -170,9 +173,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.PoaNumber.isValid}
 			/>
-			{#if !currentMchdStep.data.PoaNumber.isValid}
-				<span class="green-error-span">Некоректный номер доверенности</span>
-			{/if}
 		</div>
 
 		<div class='w-v50'>
@@ -184,11 +184,9 @@
 				disabled={isMainPushed}
 				placeholder="Введите дату в формаде дд.мм.гггг"
 				class="input-gr"
-				class:input-error={!currentMchdStep.data.PoaNumber.isValid}
+				class:input-error={!currentMchdStep.data.PoaEndDate.isValid}
 			/>
-			{#if !currentMchdStep.data.PoaEndDate.isValid}
-				<span class="text-fill">Некорректная дата</span>
-			{/if}
+
 		</div>
 	</section>
 
@@ -229,27 +227,21 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.managerTitle.isValid}
 			/>
-			{#if !currentMchdStep.data.managerTitle.isValid}
-				<span class="text-fill">Введите должность</span>
-			{/if}
 		</div>
 		<div class='w-v50'>
 			<label class="label-close t-fill" for="MchdBtbuserIsCitizen">Гражданство</label>
 			<select
 				id="MchdBtbuserIsCitizen"
-				bind:value={currentMchdStep.data.userIsCitizen.value}
+				bind:value={currentMchdStep.data.managerIsCitizen.value}
 				disabled={isMainPushed}
 				class="input-gr"
-				class:input-error={!currentMchdStep.data.userIsCitizen.isValid}
+				class:input-error={!currentMchdStep.data.managerIsCitizen.isValid}
 			>
 				<option value="" disabled selected>Выберите статус гражданства</option>
 				<option value="1">1 — Гражданин РФ</option>
 				<option value="2">2 — Иностранный гражданин</option>
 				<option value="3">3 — Лицо без гражданства</option>
 			</select>
-			{#if !currentMchdStep.data.userIsCitizen.isValid}
-				<span class="text-fill">Выберите статус из списка</span>
-			{/if}
 		</div>
 	</section>
 
@@ -265,9 +257,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.managerSurName.isValid}
 			/>
-			{#if !currentMchdStep.data.managerSurName.isValid}
-				<span class="text-fill">Введите фамилию</span>
-			{/if}
 		</div>
 
 		<div  class='w-v33'>
@@ -281,9 +270,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.managerFirstName.isValid}
 			/>
-			{#if !currentMchdStep.data.managerFirstName.isValid}
-				<span class="text-fill">Введите имя</span>
-			{/if}
 		</div>
 
 		<div  class='w-v33'>
@@ -299,9 +285,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.managerMidName.isValid}
 			/>
-			{#if !currentMchdStep.data.managerMidName.isValid}
-				<span class="text-fill">Введите отчество</span>
-			{/if}
 		</div>
 	</section>
 
@@ -317,9 +300,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.managerBirthDay.isValid}
 			/>
-			{#if !currentMchdStep.data.managerBirthDay.isValid}
-				<span class="text-fill">Некорректная дата</span>
-			{/if}
 		</div>
 
 		<div>
@@ -333,9 +313,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.managerSnils.isValid}
 			/>
-			{#if !currentMchdStep.data.managerSnils.isValid}
-				<span class="text-fill">Некорректный СНИЛС</span>
-			{/if}
 		</div>
 
 		<div>
@@ -349,9 +326,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.managerInn.isValid}
 			/>
-			{#if !currentMchdStep.data.managerInn.isValid}
-				<span class="text-fill">Некорректный ИНН</span>
-			{/if}
 		</div>
 	</section>
 
@@ -390,9 +364,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.userSurName.isValid}
 			/>
-			{#if !currentMchdStep.data.userSurName.isValid}
-				<span class="text-fill">Введите фамилию</span>
-			{/if}
 		</div>
 
 		<div class='w-v33'>
@@ -406,9 +377,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.userFirstName.isValid}
 			/>
-			{#if !currentMchdStep.data.userFirstName.isValid}
-				<span class="text-fill">Введите имя</span>
-			{/if}
 		</div>
 
 		<div class='w-v33'>
@@ -422,9 +390,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.userMidName.isValid}
 			/>
-			{#if !currentMchdStep.data.userMidName.isValid}
-				<span class="text-fill">Введите отчество</span>
-			{/if}
 		</div>
 	</section>
 
@@ -440,9 +405,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.userBirthDay.isValid}
 			/>
-			{#if !currentMchdStep.data.userBirthDay.isValid}
-				<span class="text-fill">Некорректная дата</span>
-			{/if}
 		</div>
 
 		<div class='w-v33'>
@@ -474,9 +436,6 @@
 				<option value="2">2 — Иностранный гражданин</option>
 				<option value="3">3 — Лицо без гражданства</option>
 			</select>
-			{#if !currentMchdStep.data.userIsCitizen.isValid}
-				<span class="text-fill">Выберите статус из списка</span>
-			{/if}
 		</div>
 	</section>
 
@@ -492,9 +451,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.userSnils.isValid}
 			/>
-			{#if !currentMchdStep.data.userSnils.isValid}
-				<span class="text-fill">Некорректный СНИЛС</span>
-			{/if}
 		</div>
 
 		<div class='w-v50'>
@@ -508,9 +464,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.userInn.isValid}
 			/>
-			{#if !currentMchdStep.data.userInn.isValid}
-				<span class="text-fill">Некорректный ИНН</span>
-			{/if}
 		</div>
 	</section>
 

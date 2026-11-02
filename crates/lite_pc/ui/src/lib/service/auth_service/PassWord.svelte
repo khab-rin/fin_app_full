@@ -45,10 +45,6 @@
 
 <div class="w-40 x-self-l">
 	<div class='w-v100'>
-		<label class="label-close" for="taxOrgIdent">
-				4-значный номер налоговой
-				
-			</label>
 		<label class='label-close' for="AuthPassPersInn">
 			ИНН физического лица
 			<span class='input-tool' data-input-tool="Валидация по алгоритму ФНС">?</span>

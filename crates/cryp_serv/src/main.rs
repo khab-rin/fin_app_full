@@ -73,11 +73,10 @@ async fn main() {
         }
     };
 
-    Status::log(LL::Debug, &format!("Crypto service successfully started and listening on {}", addr));
-    
     
     if let Err(err) = axum::serve(listener, app).await {
         Status::log(LL::Error, &format!("Server error: {:?}", err));
     }
 
+	Status::log(LL::Info, &format!("Crypto service successfully started and listening on {}", addr));
 }

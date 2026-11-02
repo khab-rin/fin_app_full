@@ -1,7 +1,7 @@
 
 use std::collections::HashSet;
 
-use shared_lib::{Status, ProcessError};
+use shared_lib::{Status, ProcessError, LL};
 
 use shared_lib::service::mchd::home_mchd_power::HomeMchdPower;
 use shared_lib::service::mchd::implements::PoaRootKind;
@@ -58,12 +58,11 @@ pub(crate) async fn show_powers(
     let today = Date::unchecked(chrono::Local::now().date_naive());
 
     for guid in guids{
-
         let poa_option = storage.storage.get(&guid);
-
         let poa = match poa_option {
             Some(p) => p,
             None => {
+				Status::log(LL::Warn, &format!("miss poa guid = {}", guid));
                 del_guids.push(guid);
                 continue;
             }
@@ -72,15 +71,16 @@ pub(crate) async fn show_powers(
         let root_poa = match &poa.poa.poa_doc {
             PoaRootKind::RootPoa(r) => r.as_ref(),
             _ => {
+				Status::log(LL::Warn, &format!("wrong PoaRootKind guid = {}", guid));
                 del_guids.push(guid.clone());
                 continue;
             }
         }; 
 
-        
         let poa_end_data = root_poa.poa_metadata.life_date.clone();
 
         if today > poa_end_data {
+			Status::log(LL::Debug, &format!("old poa guid = {}", guid));
             del_guids.push(guid);
             continue;
         }
@@ -90,23 +90,33 @@ pub(crate) async fn show_powers(
         if let Some(text) = text_powers {
             for power in text.as_ref().split(" -*- ") {
                 let home_power = HomeMchdPower::parse_text_power(power.trim());
-                home_powers.insert(home_power);
+				if home_power == HomeMchdPower::Unknown {
+					Status::log(LL::Warn, &format!("wrong power = {:?}, guid = {}", power, guid));
+				} else {
+					home_powers.insert(home_power);
+				} 
             }
         }
 
         for power in &root_poa.delegate_powers.mchd_powers {
-            let home_power = HomeMchdPower::parse_text_power(power.powers_code.as_ref());
-            if poa.tax_file_identificator.is_some() {
-                fns.insert(home_power);
-            } else {
-                btb.insert(home_power);
-            }
+			let serde_val = serde_json::to_value(&power.powers_code)
+				.map_err(|err| err.process_err(Status::MappingError, ""))?;
+			let home_power: HomeMchdPower = serde_json::from_value(serde_val)
+				.map_err(|err:serde_json::Error| err.process_err(Status::MappingError, ""))?;
+			if home_power == HomeMchdPower::Unknown {
+				Status::log(LL::Warn, &format!("wrong power = {:?}, guid = {}", power, guid));
+			} else {
+				if poa.tax_file_identificator.is_some() {
+					fns.insert(home_power);
+				} else {
+					btb.insert(home_power);
+				}
+			}
         };
 
     }
 
     if !del_guids.is_empty() {
-
         for g in del_guids.iter() {
             let _ = storage.storage.remove(g);
         }
@@ -120,7 +130,6 @@ pub(crate) async fn show_powers(
             err.process_err(err, "");
             return Ok(failed_result);
         }
-
     }
     
     Ok(MchdStep::ShowPowers { 
@@ -129,7 +138,6 @@ pub(crate) async fn show_powers(
             home: home_powers, 
             text: MchdInfo::ShowPowers 
         })
-
 }
 
 

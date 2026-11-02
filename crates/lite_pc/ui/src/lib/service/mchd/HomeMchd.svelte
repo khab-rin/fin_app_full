@@ -143,6 +143,10 @@
             powers: Array.from(selectedPowers)
         }
 
+		if (data.taxOrgIdent.length != 4) {
+			data.taxOrgIdent = "0000"
+		}
+
         try {
             const nextStep = await invoke<MchdStep>("cmd_make_xml_doc_files", {data: data})
             currentMchdStep.step = nextStep;;
@@ -172,9 +176,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.PoaNumber.isValid}
 			/>
-			{#if !currentMchdStep.data.PoaNumber.isValid}
-				<span class="input-error-span">Некоректный номер доверенности</span>
-			{/if}
 		</div>
 
 		<div class='w-v50'>
@@ -186,11 +187,8 @@
 				disabled={isMainPushed}
 				placeholder="Введите дату в формаде дд.мм.гггг"
 				class="input-gr"
-				class:input-error={!currentMchdStep.data.PoaNumber.isValid}
+				class:input-error={!currentMchdStep.data.PoaEndDate.isValid}
 			/>
-			{#if !currentMchdStep.data.PoaEndDate.isValid}
-				<span class="input-error-span">Некорректная дата</span>
-			{/if}
 		</div>
 	</section>
 
@@ -230,9 +228,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.managerSurName.isValid}
 			/>
-			{#if !currentMchdStep.data.managerSurName.isValid}
-				<span class="input-error-span">Введите фамилию</span>
-			{/if}
 		</div>
 
 		<div class='v-v33'>
@@ -246,9 +241,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.managerFirstName.isValid}
 			/>
-			{#if !currentMchdStep.data.managerFirstName.isValid}
-				<span class="input-error-span">Введите имя</span>
-			{/if}
 		</div>
 
 		<div class='v-v33'>
@@ -262,9 +254,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.managerMidName.isValid}
 			/>
-			{#if !currentMchdStep.data.managerMidName.isValid}
-				<span class="input-error-span">Введите отчество</span>
-			{/if}
 		</div>
 	</section>
 
@@ -280,9 +269,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.managerBirthDay.isValid}
 			/>
-			{#if !currentMchdStep.data.managerBirthDay.isValid}
-				<span class="input-error-span">Некорректная дата</span>
-			{/if}
 		</div>
 		<div class='w-v33'>
 			<label class="label-close" for="managerTitle">Должность лица действующего без доверенности (руководителя организации)</label>
@@ -295,15 +281,12 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.managerTitle.isValid}
 			/>
-			{#if !currentMchdStep.data.managerTitle.isValid}
-				<span class="input-error-span">Введите должность</span>
-			{/if}
 		</div>
 		<div class='w-v33'>
 			<label class="label-close" for="userIsCitizen">Гражданство</label>
 			<select
 				id="userIsCitizen"
-				bind:value={currentMchdStep.data.userIsCitizen.value}
+				bind:value={currentMchdStep.data.managerIsCitizen.value}
 				disabled={isMainPushed}
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.managerIsCitizen.value}
@@ -313,9 +296,6 @@
 				<option value="2">2 — Иностранный гражданин</option>
 				<option value="3">3 — Лицо без гражданства</option>
 			</select>
-			{#if !currentMchdStep.data.managerIsCitizen.isValid}
-				<span class="input-select-error-span">Выберите статус из списка</span>
-			{/if}
 		</div>
 	</section>
 
@@ -331,9 +311,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.managerSnils.isValid}
 			/>
-			{#if !currentMchdStep.data.managerSnils.isValid}
-				<span class="input-error-span">Некорректный СНИЛС</span>
-			{/if}
 		</div>
 
 		<div class='w-v50'>
@@ -347,9 +324,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.managerInn.isValid}
 			/>
-			{#if !currentMchdStep.data.managerInn.isValid}
-				<span class="input-error-span">Некорректный ИНН</span>
-			{/if}
 		</div>	
 	</section>
 
@@ -388,9 +362,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.userSurName.isValid}
 			/>
-			{#if !currentMchdStep.data.userSurName.isValid}
-				<span class="input-error-span">Введите фамилию</span>
-			{/if}
 		</div>
 		<div class='w-v33'>
 			<label class="label-close" for="userFirstName">Имя пользователя</label>
@@ -403,9 +374,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.userFirstName.isValid}
 			/>
-			{#if !currentMchdStep.data.userFirstName.isValid}
-				<span class="input-error-span">Введите имя</span>
-			{/if}
 		</div>
 		<div class='w-v33'>
 			<label class="label-close" for="userMidName">Отчество пользователя</label>
@@ -418,9 +386,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.userMidName.isValid}
 			/>
-			{#if !currentMchdStep.data.userMidName.isValid}
-				<span class="input-error-span">Введите отчество</span>
-			{/if}
 		</div>
 	</section>
 
@@ -436,9 +401,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.userBirthDay.isValid}
 			/>
-			{#if !currentMchdStep.data.userBirthDay.isValid}
-				<span class="input-error-span">Некорректная дата</span>
-			{/if}
 		</div>
 
 		<div class='w-v33'>
@@ -463,16 +425,13 @@
 				bind:value={currentMchdStep.data.userIsCitizen.value}
 				disabled={isMainPushed}
 				class="input-gr"
-				class:input-error={!currentMchdStep.data.managerIsCitizen.value}
+				class:input-error={!currentMchdStep.data.userIsCitizen.value}
 			>
 				<option value="" disabled selected>Выберите статус гражданства</option>
 				<option value="1">1 — Гражданин РФ</option>
 				<option value="2">2 — Иностранный гражданин</option>
 				<option value="3">3 — Лицо без гражданства</option>
 			</select>
-			{#if !currentMchdStep.data.managerIsCitizen.isValid}
-				<span class="input-select-error-span">Выберите статус из списка</span>
-			{/if}
 		</div>
 	</section>
 
@@ -489,9 +448,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.userSnils.isValid}
 			/>
-			{#if !currentMchdStep.data.userSnils.isValid}
-				<span class="input-error-span">Некорректный СНИЛС</span>
-			{/if}
 		</div>
 
 		<div class='w-v50'>
@@ -505,9 +461,6 @@
 				class="input-gr"
 				class:input-error={!currentMchdStep.data.userInn.isValid}
 			/>
-			{#if !currentMchdStep.data.userInn.isValid}
-				<span class="input-error-span">Некорректный ИНН</span>
-			{/if}
 		</div>
 	</section>
 

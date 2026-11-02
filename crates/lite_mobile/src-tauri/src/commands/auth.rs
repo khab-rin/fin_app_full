@@ -1,4 +1,4 @@
-use shared_lib::{Status, ClientState, ProcessError, LL};
+use shared_lib::{Status, ClientState, ProcessError};
 use shared_lib::service::auth_service::implements::{
     AuthInfo, AuthStep, PasswordDataClientShort, RegFilesPathData, RegInitData
 };
@@ -18,8 +18,6 @@ pub fn cmd_get_device_id(
 	state: tauri::State<'_, ClientState>
 ) -> Result<BoxUuid, Status> {
 
-	Status::log(LL::Debug, "cmd_get_device_id running");
-
     get_device_id(&state)
 }
 
@@ -29,8 +27,6 @@ pub fn cmd_get_nick_names(
     state: tauri::State<'_, ClientState>
 ) -> Result<Vec<String>, Status> {
 
-    Status::log(LL::Debug, "cmd_get_nick_names running");
-
     get_nick_names(&state)
 }
 
@@ -39,8 +35,6 @@ pub fn cmd_get_nick_names(
 pub async  fn cmd_is_state_active_fast(
     state: tauri::State<'_, ClientState>
 ) -> Result<bool, Status> {
-
-    Status::log(LL::Debug, "cmd_is_state_active_fast running!!!!");
 
     let session = state.session.lock().await;
     Ok(session.is_some())
@@ -71,8 +65,6 @@ pub async  fn cmd_is_state_active_init(
 pub async fn cmd_logout(
     state: tauri::State<'_, ClientState>
 ) -> Result<(), Status> {
-	
-    Status::log(LL::Info, "cmd_logout running!!!!");
 
     let mut session_ref = state.session.lock().await;
     *session_ref = None;
@@ -86,8 +78,6 @@ pub async  fn cmd_register_step1(
     data: RegInitData
 ) -> Result<AuthStep, Status> {
 
-    Status::log(LL::Debug, "cmd_register_step1 running");
-
     let res = register_step1(&state, &data).await;
 
     res
@@ -98,8 +88,6 @@ pub async  fn cmd_register_step2(
     state: tauri::State<'_, ClientState>,
     data: RegFilesPathData
 ) -> Result<AuthStep, Status> {
-
-    Status::log(LL::Debug, "cmd_register_step2 running");
 
     let res = register_step2(&state, &data).await;
 
@@ -125,8 +113,6 @@ pub async fn cmd_session_by_password(
     state: tauri::State<'_, ClientState>,
     data: PasswordDataClientShort
 ) -> Result<AuthStep, Status> {
-
-    Status::log(LL::Debug, "cmd_session_by_password running!!!!");
 
     restore_by_password(&state, &data).await
 }

@@ -133,7 +133,7 @@ pub enum MchdType {
     HomeMchd
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct MchdStorage {
     pub storage: std::collections::HashMap<BoxUuid, PoaMchd>,
     pub managers: std::collections::HashSet<BoxUuid>

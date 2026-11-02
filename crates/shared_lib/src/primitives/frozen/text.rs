@@ -2,7 +2,6 @@ use chrono::{NaiveDate};
 use rust_decimal::Decimal;
 use serde::{Serialize, Deserialize};
 
-use crate::LL;
 use crate::primitives::frozen::validators::*;
 use crate::primitives::frozen::formatters::*;
 use crate::Status;
@@ -190,7 +189,6 @@ frozen_primitives!(
 impl BoxUuid {
 	pub fn new_v5(val: &str) -> Self {
 		let u = uuid::Uuid::new_v5(&uuid::Uuid::NAMESPACE_OID, val.as_bytes());
-		Status::log(LL::Trace, &format!("val = {}, uuid = {}", val, u));
 		BoxUuid::unchecked(u)
 	}
 }

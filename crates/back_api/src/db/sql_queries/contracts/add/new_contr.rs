@@ -1,4 +1,4 @@
-use shared_lib::{Status, ProcessError};
+use shared_lib::{Status, ProcessError, LL};
 use shared_lib::sql_models::contracts::implements::Contract;
 use shared_lib::primitives::frozen::text::{Integ,BoxUuid, DocNum, Date, Currency, RubF};
 
@@ -15,6 +15,7 @@ pub(crate) async fn add_contract(
         .map_err(|err| err.process_err(err, ""))?;
 
     if let Some(contract) = contr_option {
+		Status::log(LL::Debug, &format!("{:?}", contract.contract_id));
         return Ok(contract);
     }
 

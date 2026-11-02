@@ -16,6 +16,9 @@ pub fn parse_comment(
 		parse_data.is_founder = true;
 	}
     
+	if low.contains("налог") {
+		parse_data.is_tax = true;
+	}
     
     if low.contains("возвр") && (
         low.contains("кредит") || 
@@ -85,11 +88,10 @@ pub fn parse_comment(
                 raw_date.to_string()
             };
 
-            match Date::new(&normalized) {
-                Ok(dd) => parse_data.dates.push(dd),
-                Err(_) => { Status::log(LL::Debug, &format!("wrong_date_str = {}", normalized)); }
-            }
-        }
+			if let Ok(d) = Date::new(&normalized) {
+				parse_data.dates.push(d)
+			}
+		}
     }
     
     for cap in get_scan_doc_nums_reg().captures_iter(&low) {

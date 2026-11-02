@@ -75,9 +75,9 @@ pub(crate) async fn make_session_by_tel_call(
 
 	if let Some(session_user) = session_user_option {
 		let session_user_token = SessionUserToken {user: session_user, token};
-		return Ok(AuthStep::SuccessFull { session_user_token: Box::new(session_user_token)});
+		Ok(AuthStep::SuccessFull { session_user_token: Box::new(session_user_token)})
 	} else {
-		return failed_result;
+		failed_result
 	}
 
 }

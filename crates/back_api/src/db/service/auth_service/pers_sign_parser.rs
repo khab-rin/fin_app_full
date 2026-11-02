@@ -1,7 +1,7 @@
 use regex::Regex;
 use std::sync::OnceLock;
 
-use shared_lib::{Status, ProcessError, LL};
+use shared_lib::{Status, ProcessError};
 use shared_lib::primitives::frozen::text::{CompInn, Snils, PersInn};
 use shared_lib::service::cryp_serv::implements::CryptoSignFields;
 use shared_lib::service::auth_service::implements::RegInitData;
@@ -95,8 +95,6 @@ pub fn check_auth_manager(
     init_data: &RegInitData,
     fields: &CryptoSignFields
 ) -> bool {
-
-    Status::log(LL::Debug, "check_auth_manager runing");
 
     // Status::log(LL::Debug, &format!("init_data = {:?}, fields = {:?}", init_data, fields));
 

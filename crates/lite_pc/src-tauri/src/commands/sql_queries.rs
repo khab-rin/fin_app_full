@@ -2,7 +2,7 @@
 use shared_lib::client::sql_queries::contracts::get::contract_by_ids::get_contracts_by_comp_ctrpty_ids;
 use shared_lib::sql_models::company::implements::Company;
 use shared_lib::sql_models::contracts::implements::{Contract, NewContrData};
-use shared_lib::{ClientState, ProcessError, Status, LL};
+use shared_lib::{ClientState, ProcessError, Status};
 use shared_lib::primitives::composite::implements::RasBicAcc;
 use shared_lib::primitives::frozen::text::{RasAcc, Bic, CompInn, Kpp, BoxUuid};
 
@@ -61,8 +61,6 @@ pub async fn cmd_get_comp_by_inn_kpp(
     comp_inn: CompInn,
     kpp: Kpp
 ) -> Result<Option<Company>, Status> {
-
-    Status::log(LL::Debug, "cmd_get_comp_by_inn_kpp running");
     
     get_company_by_inn_kpp(&state, &comp_inn, &kpp).await
 }

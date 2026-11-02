@@ -1,4 +1,4 @@
-use crate::{Status, ClientState, ProcessError, LL};
+use crate::{Status, ClientState, ProcessError};
 use crate::primitives::frozen::text::{Kpp, CompInn, BoxUuid, CompStatus, CompType, DateTime};
 use crate::sql_models::company::implements::{Company, CompanyDto};
 use crate::client::sql_queries::companys::add::by_inn_kpp::add_company_by_inn_cpp_acc;
@@ -8,8 +8,6 @@ pub async fn get_company_by_inn_kpp(
     comp_inn: &CompInn,
     kpp: &Kpp
 ) -> Result<Option<Company>, Status> {
-
-	Status::log(LL::Debug, "get_company_by_inn_kpp function started");
 
     let session = state.get_session().await
         .map_err(|err| err.process_err(err, ""))?; 

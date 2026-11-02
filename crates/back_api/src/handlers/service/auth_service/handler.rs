@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use axum::{Json, extract::State};
 
-use shared_lib::{Status, LL};
+use shared_lib::{Status};
 use shared_lib::service::auth_service::implements::{
     TokenDeviceData,
     AuthStep,
@@ -25,8 +25,6 @@ pub async fn register_step1_handler(
     Json(payload) : Json<RegInitData>
 ) -> Result<Json<AuthStep>, Status> {
 
-    Status::log(LL::Debug, "register_step1_handler running!!");
-
     let res = register_step1(&state, &payload).await?;
 
     Ok(Json(res))
@@ -36,9 +34,6 @@ pub async fn register_step2_handler(
     State(state) : State<Arc<BackApiState>>,
     Json(payload) : Json<CheckSignDocData>
 ) -> Result<Json<AuthStep>, Status> {
-
-
-    Status::log(LL::Debug, "register_step2_handler running!!");
 
     let res = register_step2(&state, &payload).await?;
 

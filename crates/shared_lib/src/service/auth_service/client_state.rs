@@ -224,17 +224,14 @@ pub(crate) async fn init_session(
 
 	{
 		let project_root = env!("CARGO_MANIFEST_DIR");
-		Status::log(LL::Debug, &format!("project_root = {:?}", project_root));
 
 		let db_path = std::path::Path::new(project_root)
 			.join("../../data_base.db");
-		Status::log(LL::Debug, &format!("db_path = {:?}", db_path));
 
 		db_url = format!("sqlite://{}", db_path.display());
-		Status::log(LL::Debug, &format!("db_url = {:?}", db_url));
 	}
 
-	Status::log(LL::Debug, &format!("db_url = {}", db_url));
+	Status::log(LL::Info, &format!("connecting to database {}", db_url));
 
     let connect_options = SqliteConnectOptions::from_str(&db_url)
         .map_err(|err| err.process_err(Status::SystemErr, ""))?
@@ -274,8 +271,6 @@ pub(crate) async fn init_session(
 	insert_person_no_sync(state, person).await.map_err(|err| err.process_err(err, ""))?;
 	add_company(state, company).await.map_err(|err| err.process_err(err, ""))?;
 
-	Status::log(LL::Debug, "init_session finished");
-
     Ok(Status::Success)
 
 }
@@ -289,8 +284,6 @@ pub struct NickData {
     pub comp_inn: CompInn,
     pub kpp: Kpp
 }
-
-
 
 
 #[derive(Default, Debug)]

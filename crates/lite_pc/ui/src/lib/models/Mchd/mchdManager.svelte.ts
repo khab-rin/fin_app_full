@@ -112,17 +112,16 @@ class MchdManager {
     }
 
 	reload() {
-		console.error('[currentMchdStep reload] before');
 		this.step = {Loading: {text: "Выберите действие с машиночитаемыми доверенностями. Вы можете создать и зарегистрировать МЧД на любое физ. лицо от имени организации указанной при регистрации в приложении"}};
-		console.error('[currentMchdStep reload] after');
 	}
 
 	async loadUser1() {
 		try {
 			await Promise.all([
 				this.data.PoaNumber.asyncSet("1"),
-				this.data.PoaEndDate.asyncSet("30.10.2026"),
+				this.data.PoaEndDate.asyncSet("30.10.2028"),
 				this.data.taxOrgIdent.asyncSet("1655"),
+
 				this.data.managerTitle.asyncSet("Директор"),
 				this.data.managerSurName.asyncSet("Руководитель"),
 				this.data.managerFirstName.asyncSet("Иван"),

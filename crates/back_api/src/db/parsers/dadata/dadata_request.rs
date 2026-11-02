@@ -10,8 +10,6 @@ pub async fn dadata_reqwest_func(
     kpp: &Kpp
 ) -> Result<Option<CtrprtyMetadata>, Status> {
 
-	Status::log(LL::Debug, "dadata_reqwest_func started");
-
     let ext_info = format!("inn = {:?}, kpp = {:?}", comp_inn, kpp);
     
     let client = state.config.get_inst_client();
@@ -58,24 +56,16 @@ pub async fn dadata_reqwest_func(
         	err.process_err(Status::MappingError, &ext_info)
     })?;
 
-
-	Status::log(LL::Debug, &format!("status = {}", status));
-
     let resp_wrap: DadaRespWrap = serde_json::from_str(&raw_body)
         .map_err(|err| {
             let info = format!("SerdeError: {}; {}", err, ext_info);
             err.process_err(Status::MappingError, &info)
         })?;
-
-	Status::log(LL::Trace, &format!("suggestions_len = {}", resp_wrap.suggestions.len()));
-
-	if let Some(s) = resp_wrap.suggestions.first() {
-		Status::log(LL::Trace, &format!("comp = {:?}", s.short_name_dadata));
-	} else {
-		Status::log(LL::Debug, "result = company not found");
+	
+	if resp_wrap.suggestions.is_empty() {
+		Status::log(LL::Debug, &format!("Miss dadata result, comp_inn = {:?}, kpp = {:?}", comp_inn, kpp));
 	}
-
-
+	
     let mut iterator = resp_wrap.suggestions.into_iter();
 
     let mut main_metadata = match iterator.next() {
@@ -103,7 +93,6 @@ pub async fn dadata_reqwest_func(
             main_metadata.merge_dynamic(branch_metadata);
         }
     }
-
 
     Ok(Some(main_metadata))
 }
