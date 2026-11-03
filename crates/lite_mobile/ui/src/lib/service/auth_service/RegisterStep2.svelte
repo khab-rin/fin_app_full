@@ -50,33 +50,40 @@
     }
 
     async function getSignFilePath() {
-        if (isLoadSignFile) return;
-        isLoadSignFile = true;
-        try {
-            const selected = await openFileDialog({
-                multiple: false,
-                directory: false,
-                title: "Выберите отсоединенный файл подписи",
-                filters: [{name: 'документ подписи', extensions: ['sig', 'p7s']}]
-            });
+		if (isLoadSignFile) return;
 
-            if (selected) {
-                if (typeof selected === 'string') {
-                    signFilePath = selected
-                } else {
-                    isLoadSignFile = false;
-                }
-            } else {
-                isLoadSignFile = false;
-            }
+		isLoadSignFile = true;
 
-        } catch (err) {
-            console.error("GET FILE PATH FAILED, ERROR = ", err);
-            const nextStep: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
-            isLoadSignFile = false;
-            currAuthStep.step = nextStep;
-        }
-    }
+		try {
+			const selected = await openFileDialog({
+				multiple: false,
+				directory: false,
+				title: "Выберите отсоединенный файл подписи"
+			});
+
+			if (selected) {
+				if (typeof selected === 'string') {
+					signFilePath = selected;
+				} else {
+					isLoadSignFile = false;
+				}
+			} else {
+				isLoadSignFile = false;
+			}
+
+		} catch (err) {
+			console.error("GET FILE PATH FAILED, ERROR = ", err);
+
+			const nextStep: AuthStep = {
+				TryLater: {
+					text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"
+				}
+			};
+
+			isLoadSignFile = false;
+			currAuthStep.step = nextStep;
+		}
+	}
 
     async function register() {
         if (isPushedRegister) return;

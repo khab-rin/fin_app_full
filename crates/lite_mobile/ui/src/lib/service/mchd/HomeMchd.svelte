@@ -142,6 +142,9 @@
             mchdType: "HomeMchd" satisfies MchdType,
             powers: Array.from(selectedPowers)
         }
+		if (data.taxOrgIdent.length != 4) {
+			data.taxOrgIdent = "0000"
+		}
 
         try {
             const nextStep = await invoke<MchdStep>("cmd_make_xml_doc_files", {data: data})
@@ -659,14 +662,28 @@
     </div>
 </section>
 
-
-<button
-	type="button"
-	id="lend-mchd"
-	class="blue-button"
-	onclick={lendMchd}
-	disabled={allDone}>
-	<span class=main-batton-span>
-		Зарегистрировать
-	</span>
-</button>
+<section class='group-one'>
+	<div>
+		<button
+			type="button"
+			id="lend-mchd"
+			class="blue-button"
+			onclick={lendMchd}
+			disabled={allDone}>
+			<span class=main-batton-span>
+				Зарегистрировать
+			</span>
+		</button>
+	</div>
+	<div>
+		<button
+			type="button"
+			class="blue-button"
+			onclick={()=> currentMchdStep.loadUser1()}
+		>
+			<span class=main-batton-span>
+				Автозаполнение
+			</span>
+		</button>
+	</div>
+</section>

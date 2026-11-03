@@ -169,7 +169,6 @@ class SvelteAuthStep {
 				this.data.kpp.asyncSet("0"),
 				this.data.phone.asyncSet("+79173949166"),
 				this.data.email.asyncSet("Oreolkazan@gmail.com"),
-				this.data.password.asyncSet("asdfasdf")
 			])
 		} catch(err) {
 			let err_step: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
@@ -190,7 +189,6 @@ class SvelteAuthStep {
 				this.data.kpp.asyncSet("0"),
 				this.data.phone.asyncSet("+79173949166"),
 				this.data.email.asyncSet("Oreolkazan@gmail.com"),
-				this.data.password.asyncSet("asdfasdf")
 			])
 		} catch(err) {
 			let err_step: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};

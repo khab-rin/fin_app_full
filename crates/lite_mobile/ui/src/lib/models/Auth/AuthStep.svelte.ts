@@ -164,9 +164,9 @@ class SvelteAuthStep {
 	async loadUser1() {
 		try {
 			await Promise.all([
-				this.data.surName.asyncSet("Хабипов"),
-				this.data.firstName.asyncSet("Ринат"),
-				this.data.midName.asyncSet("Ришатович"),
+				this.data.surName.asyncSet("Руководитель"),
+				this.data.firstName.asyncSet("Иван"),
+				this.data.midName.asyncSet("Иванович"),
 				this.data.persInn.asyncSet("161101510882"),
 				this.data.snils.asyncSet("11021217665"),
 				this.data.compInn.asyncSet("161101510882"),
@@ -184,9 +184,9 @@ class SvelteAuthStep {
 	async loadUser2() {
 		try {
 			await Promise.all([
-				this.data.surName.asyncSet("Хабипов"),
-				this.data.firstName.asyncSet("Радик"),
-				this.data.midName.asyncSet("Ришатович"),
+				this.data.surName.asyncSet("Сотрудник"),
+				this.data.firstName.asyncSet("Петр"),
+				this.data.midName.asyncSet("Петрович"),
 				this.data.persInn.asyncSet("161101511050"),
 				this.data.snils.asyncSet("12233162502"),
 				this.data.compInn.asyncSet("161101510882"),

@@ -5,7 +5,6 @@
 
     import type { AuthStep } from "$lib/models/rustModels/AuthStep";
 
-
     let isPassword = $derived(AuthStepType.Password in currAuthStep.step);
     let isRegistrerStep1 = $derived(AuthStepType.RegisterStep1 in currAuthStep.step);
     let isRegistrerStep2 = $derived(AuthStepType.RegisterStep2 in currAuthStep.step);
@@ -89,29 +88,4 @@
 		</button>
 	</div>
 	
-</section>
-
-
-<section class="group-two">
-	<div>
-		<button
-			class="purple-button"
-			type="button"
-			hidden={isPassword}
-			onclick={()=>currAuthStep.loadUser1()}
-		>
-			Заполнить данные руководителя
-		</button>
-	</div>
-	
-	<div>
-		<button
-			class="purple-button"
-			type="button"
-			hidden={isRegistrerStep1}
-			onclick={()=>currAuthStep.loadUser2()}
-		>
-			Заполнить данные сотрудника
-		</button>
-	</div>
 </section>

@@ -76,7 +76,6 @@
 </script>
 
 <section class='group-one'>
-
     <div>
         <label class='green-field-label' for="surName">Фамилия</label>
         <input 
@@ -264,6 +263,32 @@
 			<span class="green-button-span">
 				{#if isPushedMakeDocs}Формирование файлов...{:else}Сформировать файлы{/if}
 			</span>
+		</button>
+	</div>
+</section>
+
+<section class='group-two'>
+	<div>
+		<button 
+			type="button" 
+			onclick={()=>{
+				currAuthStep.loadUser1();
+			}}
+			class="green-button"
+		>
+			Автозаполнение руководитель
+		</button>
+	</div>
+
+	<div>
+		<button 
+			type="button" 
+			onclick={()=>{
+				currAuthStep.loadUser2();
+			}}
+			class="green-button"
+		>
+			Автозаполнение сотрудник
 		</button>
 	</div>
 </section>

@@ -679,13 +679,29 @@
 </section>
 
 
-<button
-	type="button"
-	id="lend-mchd"
-	class="blue-button"
-	onclick={lendMchd}
-	disabled={allDone}>
-	<span class=main-batton-span>
-		Зарегистрировать
-	</span>
-</button>
+
+<section class='group-one'>
+	<div>
+		<button
+			type="button"
+			id="lend-mchd"
+			class="blue-button"
+			onclick={lendMchd}
+			disabled={allDone}>
+			<span class=main-batton-span>
+				Зарегистрировать
+			</span>
+		</button>
+	</div>
+	<div>
+		<button
+			type="button"
+			class="blue-button"
+			onclick={()=> currentMchdStep.loadUser1()}
+		>
+			<span class=main-batton-span>
+				Автозаполнение
+			</span>
+		</button>
+	</div>
+</section>

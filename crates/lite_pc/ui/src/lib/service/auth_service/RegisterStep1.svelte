@@ -274,7 +274,6 @@
 			type="button"
 			onclick={()=>{
 				currAuthStep.loadUser1();
-				passwordRepeat="asdfasdf";
 			}}
 		>
 			<span class='w-g100 x-ce'>
@@ -289,7 +288,6 @@
 			type="button"
 			onclick={()=>{
 				currAuthStep.loadUser2();
-				passwordRepeat="asdfasdf";
 			}}
 		>
 			<span class='w-g100 x-ce'>
