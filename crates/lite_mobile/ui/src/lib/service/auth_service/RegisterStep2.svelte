@@ -64,6 +64,7 @@
 			if (selected) {
 				if (typeof selected === 'string') {
 					signFilePath = selected;
+					isLoadSignFile = false;
 				} else {
 					isLoadSignFile = false;
 				}
@@ -106,7 +107,6 @@
             currAuthStep.step = nextStep;
         }
     }
-
 </script>
 
 

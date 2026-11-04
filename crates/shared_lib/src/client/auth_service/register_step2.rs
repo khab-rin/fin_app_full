@@ -7,7 +7,7 @@ use crate::service::auth_service::implements::{
 };
 use crate::service::cryp_serv::implements::CheckSignDocData;
 use crate::service::api_routes::implements::ApiRoutes;
-use crate::{Status, ClientState, ProcessError, LL};
+use crate::{Status, ClientState, ProcessError};
 use crate::service::auth_service::client_state::init_session;
 use crate::client::back_api::post_query::post_query_back_api;
 use crate::client::auth_service::helper::write_new_user_info_to_device;
@@ -22,25 +22,30 @@ pub async fn register_step2(
 
     let RegFilesPathData { json_path, sign_path } = data;
 
-	Status::log(crate::LL::Error, &format!("json_path = {}", json_path));
-	Status::log(crate::LL::Error, &format!("sign_path = {}", sign_path));
-
 	let tauri_json_path = tauri_plugin_fs::FilePath::from_str(json_path)
-		.map_err(|err| err.process_err(Status::SystemLogicErr, ""))?;
-
-	Status::log(LL::Error, &format!("tauri_json_path = {}", tauri_json_path));
+		.map_err(|err| {
+			let ext_info = format!("wrong svelte json_path = {:?}", json_path);
+			err.process_err(Status::FilePathError, &ext_info)
+		})?;
 
 	let init_file = state.app_handle.fs().read(tauri_json_path.to_owned())
-		.map_err(|err| err.process_err(Status::FileReadError, ""))?;
+		.map_err(|err| {
+			let ext_info = format!("wrong tauri_json_path = {:?}", tauri_json_path);
+			err.process_err(Status::FileReadError, &ext_info)
+		})?;
 
 
 	let tauri_sign_path = tauri_plugin_fs::FilePath::from_str(sign_path)
-		.map_err(|err| err.process_err(Status::SystemLogicErr, ""))?;
-
-	Status::log(LL::Error, &format!("tauri_sign_path = {}", tauri_sign_path));
+		.map_err(|err| {
+			let ext_info = format!("wrong svelte sign_path = {:?}", sign_path);
+			err.process_err(Status::FilePathError, &ext_info)
+		})?;
 
 	let sign_file = state.app_handle.fs().read(tauri_sign_path.to_owned())
-		.map_err(|err| err.process_err(Status::FileReadError, ""))?;
+		.map_err(|err| {
+			let ext_info = format!("wrong tauri_sign_path = {:?}", tauri_sign_path);
+			err.process_err(Status::FileReadError, &ext_info)
+		})?;
 
 	
     let reg_files_data = CheckSignDocData {

@@ -139,7 +139,7 @@ export class OperationSvelte {
 	}
 
 	async cmdAddNewContract() {
-		if (this.isNewContractValid) {
+		if (!this.isNewContractValid) {
 			return;
 		}
 		const data: NewContrData = {

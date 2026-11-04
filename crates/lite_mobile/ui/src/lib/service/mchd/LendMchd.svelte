@@ -14,6 +14,8 @@
     let isDataReady = $derived(xmlFilePath.length == 0 || sigFilePath.length == 0);
 
     async function getXmlFilePath() {
+		if (isLoadXmlFilePushed) {return;}
+		isLoadXmlFilePushed = true;
         try {
             const selected = await openFileDialog({
                 multiple: false,
@@ -25,26 +27,44 @@
             if (selected && typeof selected === 'string') {
                 xmlFilePath = selected
             }
+			isLoadXmlFilePushed = false;
         } catch (err) {
-            console.error("Ошибка при выборе файла доверенности:", err);
+            const nextStep: MchdStep = {
+				TryLater: {
+					text: "Критическая ошибка на устройстве..."
+				}
+			};
+
+			isLoadXmlFilePushed = false;
+			currentMchdStep.step = nextStep;
         }
     }
 
     async function getSigFilePath() {
+		if (isLoadSigFilePushed) { return;}
         try {
-            const selected = await openFileDialog({
-                multiple: false,
-                directory: false,
-                title: "Выберите файл доверенности подписи",
-                filters: [{name: 'документ подписи', extensions: ['sig', 'p7s']}]
-            });
+			const selected = await openFileDialog({
+				multiple: false,
+				directory: false,
+				title: "Выберите отсоединенный файл подписи"
+			});
 
-            if (selected && typeof selected === 'string') {
-                sigFilePath = selected
-            }
-        } catch (err) {
-            console.error("Ошибка при выборе файла доверенности:", err);
-        }
+			if (selected && typeof selected === 'string') {
+				sigFilePath = selected;
+			}
+			isLoadSigFilePushed = false;
+		} catch (err) {
+			console.error("GET FILE PATH FAILED, ERROR = ", err);
+
+			const nextStep: MchdStep = {
+				TryLater: {
+					text: "Критическая ошибка на устройстве..."
+				}
+			};
+
+			isLoadSigFilePushed = false;
+			currentMchdStep.step = nextStep;
+		}
     }
 
     async function LendMchd() {

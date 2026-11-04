@@ -608,7 +608,7 @@
 			class='yellow-button'
 			type='button'
 			onclick={cmdAddNewContract}
-			disabled={curOper.isNewContractValid || isNewContractPushed}
+			disabled={!curOper.isNewContractValid || isNewContractPushed}
 		>
 			Добавить договор
 		</button>

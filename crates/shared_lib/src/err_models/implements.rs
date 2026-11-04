@@ -95,6 +95,7 @@ pub enum Status {
     FileReadError = 251,
     FileWriteError = 252,
     DirCreateError = 253,
+	FilePathError = 254,
 
     // ==========================================
     // 300-я группа: Ошибки Баз Данных (Sqlite)

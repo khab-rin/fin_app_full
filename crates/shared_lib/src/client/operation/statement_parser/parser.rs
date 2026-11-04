@@ -1,4 +1,8 @@
+use tauri_plugin_fs::FsExt;
+use tokio::io::AsyncReadExt;
+
 use std::collections::{HashMap, HashSet};
+use std::str::FromStr;
 use encoding_rs::WINDOWS_1251;
 use futures::stream::{self, StreamExt};
 
@@ -37,13 +41,29 @@ pub async fn parse_statement(
 
     let mut parsed_blocks: Vec<ParsedBlock> = vec![];
 
-    let bytes = match tokio::fs::read(path).await {
-        Ok(b) => b,
-        Err(err) => {
-            err.process_err(Status::FileReadError, "");
-            return failed_result;
-        }
-    };
+	let tauri_file_path = tauri_plugin_fs::FilePath::from_str(path)
+		.map_err(|err| {
+			let ext_info = format!("wrong svelte path = {:?}", path);
+			err.process_err(Status::FilePathError, &ext_info)
+		})?;
+
+	let mut tauri_open_options = tauri_plugin_fs::OpenOptions::new();
+	tauri_open_options.read(true);
+
+	let open_file_obj = state.app_handle.fs().open(tauri_file_path.clone(), tauri_open_options.clone())
+		.map_err(|err| {
+			let ext_info = format!("wrong tauri_file_path = {:?}, wrong tauri_open_options = {:?}", tauri_file_path, tauri_open_options);
+			err.process_err(Status::FileReadError, &ext_info)
+		})?;
+	
+	let mut file = tokio::fs::File::from_std(open_file_obj);
+	let mut bytes: Vec<u8> = vec![];
+
+	if let Err(err) = file.read_to_end(&mut bytes).await {
+		let ext_info = format!("wrong file path = {:?}, wrong tokio file = {:?}", path, file);
+		err.process_err(Status::FileReadError, &ext_info);
+		return failed_result;
+	}
 
     let buffer = match String::from_utf8(bytes) {
         Ok(good_utf8) => good_utf8,

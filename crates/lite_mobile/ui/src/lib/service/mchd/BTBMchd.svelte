@@ -188,7 +188,7 @@
             disabled={isMainPushed}
             placeholder="Введите дату в формаде дд.мм.гггг"
             class="green-field"
-            class:input-error={!currentMchdStep.data.PoaNumber.isValid}
+            class:input-error={!currentMchdStep.data.PoaEndDate.isValid}
         />
         {#if !currentMchdStep.data.PoaEndDate.isValid}
             <span class="input-error-span">Некорректная дата</span>
@@ -331,17 +331,17 @@
         <label class="green-field-label" for="userIsCitizen">Гражданство</label>
         <select
             id="userIsCitizen"
-            bind:value={currentMchdStep.data.userIsCitizen.value}
+            bind:value={currentMchdStep.data.managerIsCitizen.value}
             disabled={isMainPushed}
             class="green-field"
-            class:input-error={!currentMchdStep.data.userIsCitizen.isValid}
+            class:input-error={!currentMchdStep.data.managerIsCitizen.isValid}
         >
             <option value="" disabled selected>Выберите статус гражданства</option>
             <option value="1">1 — Гражданин РФ</option>
             <option value="2">2 — Иностранный гражданин</option>
             <option value="3">3 — Лицо без гражданства</option>
         </select>
-        {#if !currentMchdStep.data.userIsCitizen.isValid}
+        {#if !currentMchdStep.data.managerIsCitizen.isValid}
             <span class="input-select-error-span">Выберите статус из списка</span>
         {/if}
     </div>
