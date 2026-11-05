@@ -124,6 +124,13 @@
         disabled={isLendMchdPushed || isDataReady}
         onclick={LendMchd}
         >
-        <span class='span-close'>Отправить файлы на регистрацию</span>
+			{#if isLendMchdPushed}
+				<span class="loading-content">
+					<span class="loading-spinner"></span>
+					Регистрация подписанной доверенности
+				</span>
+			{:else}
+				<span class='span-close'>Отправить файлы на регистрацию</span>
+			{/if}
     </button>
 </div>

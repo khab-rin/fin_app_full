@@ -130,7 +130,10 @@
 				onclick={() => call_nick_handle(currNick)}
 			>
 				{#if IsPushed}
-					<span class="text-cut">Проверка...</span>
+					<span class='loading-content'>
+						<span class='loading-spinner'></span>
+						Подключение
+					</span>
 				{:else}
 					<span class="text-fill">Войти как {currNick}</span>
 				{/if}

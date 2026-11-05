@@ -78,8 +78,15 @@
 			class='but-gr'
 			disabled={!bic.isValid || !rasAcc.isValid || isNewAccPushed}
 			onclick ={addAcc}
-		>
-			Добавить расчетный счет
+		>	
+			{#if isNewAccPushed}
+				<span class="loading-content">
+					<span class="loading-spinner"></span>
+					Добавление
+				</span>
+			{:else}
+				Добавить расчетный счет
+			{/if}		
 		</button>
 	</div>
 </div>

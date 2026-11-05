@@ -260,7 +260,14 @@
 			id="auth-make-doc-button"
 		>
 			<span class="x-self-c">
-				{#if isPushedMakeDocs}Формирование файлов...{:else}Сформировать файлы{/if}
+				{#if isPushedMakeDocs}
+					<span class='loading-content'>
+						<span class='loading-spinner'></span>
+						Формирование файлов
+					</span>
+				{:else}
+					Сформировать файлы
+				{/if}
 			</span>
 		</button>
 	</div>

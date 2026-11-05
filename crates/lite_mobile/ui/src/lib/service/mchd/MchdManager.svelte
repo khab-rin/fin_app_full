@@ -18,11 +18,16 @@
 
 
 <p class="text-small">{currentMchdStep.currentText}</p>
-{#if currentMchdStep.getPage}
-    <svelte:component this={currentMchdStep.getPage} />
-{:else}
-    <p>Загрузка или ошибка...</p>
-{/if}
+
+
+{#key currentMchdStep.step}
+    {#if currentMchdStep.getPage}
+        {@const CurrentPage = currentMchdStep.getPage}
+        <CurrentPage />
+    {:else}
+        <p>Загрузка или ошибка...</p>
+    {/if}
+{/key}
 
 
 <section class="group-two">

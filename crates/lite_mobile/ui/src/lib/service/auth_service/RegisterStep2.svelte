@@ -166,9 +166,15 @@
 			class='green-button'
 			disabled={isPushedRegister || IsDataReady}
 			onclick={register}
-
-		>
-			<span class='green-button-span'>Отправить файлы на регистрацию</span>
+		>	
+			{#if isPushedRegister}
+				<span class="loading-content">
+					<span class="loading-spinner"></span>
+					Регистрация...
+				</span>
+			{:else}
+				<span class='green-button-span'>Отправить файлы на регистрацию</span>
+			{/if}
 		</button>
 	</div>
 </section>

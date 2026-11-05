@@ -213,10 +213,19 @@
 		<button
 			type='button'
 			class='but-bl'
-			disabled={!isValid}
+			disabled={!isValid || isCmdMakeFnsReportFilesPushed}
 			onclick={cmdMakeFnsReportFiles}
-		>
-			Сформировать отчет
+		>	
+			{#if isCmdMakeFnsReportFilesPushed}
+				<span class='loading-content'>
+					<span class='loading-spinnet'></span>
+					формирование отчета
+				</span>
+			{:else}
+				Сформировать отчет
+			{/if}
+			
+			
 		</button>
 	</div>
 </section>

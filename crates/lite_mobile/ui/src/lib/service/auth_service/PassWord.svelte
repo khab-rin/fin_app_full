@@ -129,13 +129,15 @@
 		}
 		
 		id="auth-submit-button"
-	>
-		<span class="navi-buttons.button-icon">
-			{#if isPushed}⏳{:else}🔑{/if}
-		</span>
-		<span class="button-label">
-			{#if isPushed}Вход...{:else}Отправить{/if}
-		</span>
+	>	
+		{#if isPushed}
+			<span class="loading-content">
+				<span class="loading-spinner"></span>
+				Авторизация...
+			</span>
+		{:else}
+			Авториоваться
+		{/if}
 	</button>
 
 </div>

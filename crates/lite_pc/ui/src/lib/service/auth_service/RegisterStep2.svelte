@@ -173,7 +173,15 @@
 			onclick={register}
 
 		>
-			<span class='x-self-c'>Отправить файлы на регистрацию</span>
+			{#if isPushedRegister}
+				<span class='loading-content'>
+					<span class='loading-spinner'></span>
+					Регистрация
+				</span>
+			{:else}
+				<span class='x-self-c'>Отправить файлы на регистрацию</span>
+			{/if}
+			
 		</button>
 	</div>
 </section>

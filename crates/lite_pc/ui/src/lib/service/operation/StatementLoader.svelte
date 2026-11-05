@@ -108,6 +108,8 @@
                 rasAcc: rasAcc.value
             };
             bankAccounts = await invoke<RasBicAcc[]>('cmd_add_comp_bank_acc', data);
+			bic.value = "";
+			rasAcc.value = "";
             isPushAddAcc= false;
 
         } catch (err) {
@@ -241,8 +243,16 @@
 			class='but-gr'
 			disabled={parseStatementDisabled}
 			onclick ={parseStatement}
-		>
-			Загрузить выписку
+		>	
+			{#if isPushParseStatement}
+				<span class="loading-content">
+					<span class="loading-spinner"></span>
+					Обработка
+				</span>
+			{:else}
+				Обработать выписку
+			{/if}
+			
 		</button>
 	</div>
 </section>
@@ -286,8 +296,15 @@
 			class='but-gr'
 			disabled={isPushAddAcc || bankAccReady}
 			onclick ={addAcc}
-		>
-			Добавить расчетный счет
+		>	
+			{#if isPushAddAcc}
+				<span class="loading-content">
+					<span class="loading-spinner"></span>
+					Добавление...
+				</span>
+			{:else}
+				Добавить расчетный счет
+			{/if}
 		</button>
 	</div>
 </section>

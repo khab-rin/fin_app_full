@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invoke } from "@tauri-apps/api/core";
-    import { onMount } from "svelte";
+    import { onMount, tick } from 'svelte';
     import { SvelteSet } from 'svelte/reactivity';
     import { currentMchdStep } from "$lib/models/Mchd/mchdManager.svelte"
 
@@ -13,36 +13,36 @@
     let allPowers = $state<HomeMchdPower[]>([]);
 
     let firstDone = $derived(
-        !currentMchdStep.data.PoaNumber.isValid || 
-        !currentMchdStep.data.PoaEndDate.isValid);
+        currentMchdStep.data.PoaNumber.isValid && 
+        currentMchdStep.data.PoaEndDate.isValid);
 
     let secondDone = $derived(
-        !currentMchdStep.data.managerTitle.isValid ||
-        !currentMchdStep.data.managerSurName.isValid ||
-        !currentMchdStep.data.managerFirstName.isValid ||
-        !currentMchdStep.data.managerMidName.isValid ||
-        !currentMchdStep.data.managerBirthDay.isValid ||
-        !currentMchdStep.data.managerSnils.isValid ||
-        !currentMchdStep.data.managerInn.isValid ||
-        !currentMchdStep.data.managerIsCitizen.isValid);
+        currentMchdStep.data.managerTitle.isValid &&
+        currentMchdStep.data.managerSurName.isValid &&
+        currentMchdStep.data.managerFirstName.isValid &&
+        currentMchdStep.data.managerMidName.isValid &&
+        currentMchdStep.data.managerBirthDay.isValid &&
+        currentMchdStep.data.managerSnils.isValid &&
+        currentMchdStep.data.managerInn.isValid &&
+        currentMchdStep.data.managerIsCitizen.isValid);
 
     let thirdDone = $derived(
-        !currentMchdStep.data.userSurName.isValid ||
-        !currentMchdStep.data.userFirstName.isValid ||
-        !currentMchdStep.data.userMidName.isValid ||
-        !currentMchdStep.data.userBirthDay.isValid ||
-        !currentMchdStep.data.userGender.isValid ||
-        !currentMchdStep.data.userSnils.isValid ||
-        !currentMchdStep.data.userInn.isValid ||
-        !currentMchdStep.data.userPassportNumber.isValid ||
-        !currentMchdStep.data.userPassportIssueDate ||
-        !currentMchdStep.data.userPassportIssueer.isValid ||
-        !currentMchdStep.data.userPassportUssuerCode.isValid ||
-        !currentMchdStep.data.userIsCitizen.isValid);
+        currentMchdStep.data.userSurName.isValid &&
+        currentMchdStep.data.userFirstName.isValid &&
+        currentMchdStep.data.userMidName.isValid &&
+        currentMchdStep.data.userBirthDay.isValid &&
+        currentMchdStep.data.userGender.isValid &&
+        currentMchdStep.data.userSnils.isValid &&
+        currentMchdStep.data.userInn.isValid &&
+        currentMchdStep.data.userPassportNumber.isValid &&
+        currentMchdStep.data.userPassportIssueDate &&
+        currentMchdStep.data.userPassportIssueer.isValid &&
+        currentMchdStep.data.userPassportUssuerCode.isValid &&
+        currentMchdStep.data.userIsCitizen.isValid);
 
-    let forthDone = $derived(selectedPowers.size == 0);
+    let forthDone = $derived(selectedPowers.size != 0);
 
-    let allDone = $derived(firstDone || secondDone || thirdDone || forthDone)
+    let allDone = $derived(firstDone && secondDone && thirdDone && forthDone)
 
     let firstStep = $state(false);
     let secondStep = $state(true);
@@ -60,7 +60,7 @@
     }
 
     function switchSecondStep() {
-        if ( firstDone ) {return;}
+        if ( !firstDone ) {return;}
         firstStep = true;
         secondStep = false;
         thirdStep = true;
@@ -68,7 +68,7 @@
     }
 
     function switchThirdStep() {
-        if (firstDone || secondDone) {return;}
+        if (!firstDone || !secondDone) {return;}
         firstStep = true;
         secondStep = true;
         thirdStep = false;
@@ -76,7 +76,7 @@
     }
 
     function switchForthStep() {
-        if (firstDone || secondDone || thirdDone) {return;}
+        if (!firstDone || !secondDone || !thirdDone) {return;}
         firstStep = true;
         secondStep = true;
         thirdStep = true;
@@ -110,7 +110,8 @@
     }
 
     async function lendMchd() {
-        if (allDone) {return}
+        if (!allDone || isMainPushed) {return;}
+		isMainPushed = true;
         let data = {
             poaNumber: currentMchdStep.data.PoaNumber.value,
             poaEndDate: currentMchdStep.data.PoaEndDate.value,
@@ -146,17 +147,27 @@
 		}
 
         try {
-            const nextStep = await invoke<MchdStep>("cmd_make_xml_doc_files", {data: data})
+            const nextStep = await invoke<MchdStep>("cmd_make_xml_doc_files", {data: data});
+			isMainPushed = false;
             currentMchdStep.step = nextStep;
         } catch(err) {
             console.error("cmd_make_xml_doc_files FAILED, err = ", err);
             const nextStep: MchdStep = {TryLater: {text: "Критическая ошибка на устройстве..."}};
-            currentMchdStep.step = nextStep;
+            isMainPushed = false;
+			currentMchdStep.step = nextStep;
         }
     }
 
-    onMount(() => {
+    onMount(async() => {
         loadPowers();
+
+		await tick();
+
+		document.body.style.backgroundColor = 'transparent';
+
+		requestAnimationFrame(() => {
+			document.body.style.backgroundColor = '';
+		});
     });
     
 </script>
@@ -201,7 +212,7 @@
 	type="button"
 	hidden={firstStep}
 	onclick={switchSecondStep}
-	disabled={isMainPushed || firstDone}
+	disabled={!firstDone}
 	class="green-button"
 	id="mchd-tax-firstStep-button"
 	
@@ -352,7 +363,7 @@
 	type="button"
 	hidden={secondStep}
 	onclick={switchThirdStep}
-	disabled={isMainPushed || secondDone}
+	disabled={!secondDone}
 	class="green-button"
 	id="mchd-tax-secondStep-button"
 >
@@ -551,7 +562,7 @@
 	type="button"
 	hidden={thirdStep}
 	onclick={ switchForthStep }
-	disabled={isMainPushed || thirdDone}
+	disabled={!thirdDone}
 	class="green-button"
 >
 	<span class="green-button-span">
@@ -667,10 +678,16 @@
 			id="lend-mchd"
 			class="blue-button"
 			onclick={lendMchd}
-			disabled={allDone}>
-			<span class=main-batton-span>
-				Зарегистрировать
-			</span>
+			disabled={!allDone || isMainPushed}
+		>
+			{#if isMainPushed}
+				<span class="loading-content">
+					<span class="loading-spinner"></span>
+					Формирование электронной доверенности...
+				</span>
+			{:else}
+				Сформировать электронную доверенность
+			{/if}
 		</button>
 	</div>
 	<div>

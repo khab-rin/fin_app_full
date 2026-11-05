@@ -1,7 +1,6 @@
 <script lang='ts'>
     import { currAuthStep } from "$lib/models/Auth/AuthStep.svelte";
     import {AuthStepType} from "$lib/models/Auth/AuthValues";
-	import { operStep } from "$lib/models/Operation/OperationManager.svelte";
 
     import type { AuthStep } from "$lib/models/rustModels/AuthStep";
 

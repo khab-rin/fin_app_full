@@ -340,10 +340,18 @@
 			<button
 				type='button'
 				class='but-bl'
-				disabled={processor.unProcceed > 0}
+				disabled={isProcessOperationsPushed || processor.unProcceed > 0}
 				onclick={cmdProcessOperations}
-			>
-				сохранить операции
+			>	
+				{#if isProcessOperationsPushed}
+					<span class="loading-content">
+						<span class="loading-spinner"></span>
+						Сохранение
+					</span>
+				{:else}
+					сохранить операции
+				{/if}
+				
 			</button>
 		</div>
 	</section>

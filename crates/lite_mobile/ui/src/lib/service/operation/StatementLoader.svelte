@@ -133,7 +133,6 @@
 
         try {
             const next_step: OperationStep = await invoke<OperationStep>("cmd_load_bank_statement", data);
-            
             isPushParseStatement = false;
             operStep.step = next_step;
         } catch(err) {
@@ -247,9 +246,15 @@
 	class='green-button'
 	disabled={parseStatementDisabled}
 	onclick ={parseStatement}
->
-
-	Загрузить выписку
+>	
+	{#if isPushParseStatement}
+		<span class="loading-content">
+			<span class="loading-spinner"></span>
+			Обработка...
+		</span>
+	{:else}
+		Загрузить выписку
+	{/if}
 
 </button>
 
@@ -300,7 +305,14 @@
         class='green-button'
         disabled={isPushAddAcc || bankAccReady}
         onclick ={addAcc}
-    >
-        Добавить расчетный счет
+    >	
+		{#if isPushAddAcc}
+			<span class="loading-content">
+				<span class="loading-spinner"></span>
+				Добавление...
+			</span>
+		{:else}
+			Добавить расчетный счет
+		{/if}
     </button>
 </section>

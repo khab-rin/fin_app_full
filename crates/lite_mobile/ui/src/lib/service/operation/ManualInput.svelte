@@ -24,6 +24,7 @@
 		isChangeCtrPtyPushed = true;
 		try {
 			await curOper.cmdChangeCtrPty(compInn.value, kpp.value);
+			isChangeCtrPtyPushed = false;
 			(document.getElementById('OperManualNewCtrptyDialog') as HTMLDialogElement)?.close();
 
 		} catch(err) {
@@ -335,17 +336,31 @@
 		class='blue-button'
 		disabled={!curOper.isValid || isAddOperationPushed}	
 		onclick={addOperation}
-	>
-		сформировать операцию
+	>	
+		{#if isAddOperationPushed}
+			<span class="loading-content">
+				<span class="loading-spinner"></span>
+				Формирование...
+			</span>
+		{:else}
+			сформировать операцию
+		{/if}
 	</button>
 
 	<button
 		type='button'
 		class='blue-button'
-		disabled={false}	
+		disabled={isProcessOperationsPushed}	
 		onclick={cmdProcessOperations}
-	>
-		Загрузить операции
+	>	
+		{#if isProcessOperationsPushed}
+			<span class="loading-content">
+				<span class="loading-spinner"></span>
+				Загрузка...
+			</span>
+		{:else}
+			Загрузить операции
+		{/if}	
 	</button>
 
 </section>
@@ -429,10 +444,17 @@
 		<button
 			type='button'
 			class='yellow-button'
-			disabled={!compInn.isValid || !kpp.isValid}
+			disabled={!compInn.isValid || !kpp.isValid || isChangeCtrPtyPushed}
 			onclick={changeCtrpty}
-		>
-			Добавить нового контрагента
+		>	{#if isChangeCtrPtyPushed}
+				<span class="loading-content">
+					<span class="loading-spinner"></span>
+					Добавление...
+				</span>
+			{:else}
+				Добавить нового контрагента
+			{/if}
+	
 		</button>
 	</section>
 </dialog>
@@ -609,8 +631,16 @@
 			type='button'
 			onclick={cmdAddNewContract}
 			disabled={!curOper.isNewContractValid || isNewContractPushed}
-		>
-			Добавить договор
+		>	
+			{#if isNewContractPushed}
+				<span class="loading-content">
+					<span class="loading-spinner"></span>
+					Добавление...
+				</span>
+			{:else}
+				Добавить договор
+			{/if}
+			
 		</button>
 	</div>
 </dialog>

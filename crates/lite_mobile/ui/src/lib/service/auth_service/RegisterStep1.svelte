@@ -19,17 +19,17 @@
     
 
     let isDataValid = $derived(
-        !currAuthStep.data.surName.isValid ||
-        !currAuthStep.data.firstName.isValid ||
-        !currAuthStep.data.midName.isValid ||
-        !currAuthStep.data.persInn.isValid ||
-        !currAuthStep.data.snils.isValid ||
-        !currAuthStep.data.compInn.isValid ||
-        !currAuthStep.data.kpp.isValid ||
-        !currAuthStep.data.phone.isValid ||
-        !currAuthStep.data.email.isValid ||
-        !currAuthStep.data.password.isValid ||
-        currAuthStep.data.password.value != passwordRepeat
+        currAuthStep.data.surName.isValid &&
+        currAuthStep.data.firstName.isValid &&
+        currAuthStep.data.midName.isValid &&
+        currAuthStep.data.persInn.isValid &&
+        currAuthStep.data.snils.isValid &&
+        currAuthStep.data.compInn.isValid &&
+        currAuthStep.data.kpp.isValid &&
+        currAuthStep.data.phone.isValid &&
+        currAuthStep.data.email.isValid &&
+        currAuthStep.data.password.isValid &&
+        currAuthStep.data.password.value == passwordRepeat
     );
 
     async function finishStep1() {
@@ -256,13 +256,18 @@
 		<button 
 			type="button" 
 			onclick={finishStep1}
-			disabled={isPushedMakeDocs || isDataValid}
+			disabled={isPushedMakeDocs || !isDataValid}
 			class="green-button"
 			id="auth-make-doc-button"
-		>
-			<span class="green-button-span">
-				{#if isPushedMakeDocs}Формирование файлов...{:else}Сформировать файлы{/if}
-			</span>
+		>	
+			{#if isPushedMakeDocs}
+				<span class="loading-content">
+					<span class="loading-spinner"></span>
+					Формирование файлов...
+				</span>
+			{:else}
+				Сформировать файлы
+			{/if}
 		</button>
 	</div>
 </section>

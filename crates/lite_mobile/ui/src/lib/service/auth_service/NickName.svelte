@@ -135,12 +135,15 @@
             class="green-button" 
             disabled={IsPushed}
             onclick={() => call_nick_handle(curr_nick)}
-        >
-            {#if IsPushed}
-                <span class="green-button-span">Проверка...</span>
-            {:else}
-                <span class="green-button-span">Войти как {curr_nick}</span>
-            {/if}
+        >	
+			{#if IsPushed}
+				<span class="loading-content">
+					<span class="loading-spinner"></span>
+					Подключение...
+				</span>
+			{:else}
+				<span class="green-button-span">Войти как {curr_nick}</span>
+			{/if}
         </button>
     </div>
 {/if}

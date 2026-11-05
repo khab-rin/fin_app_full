@@ -125,9 +125,16 @@
             disabled={isShowPowersPushed}
             onclick={goToShowPowers}
             >
-            <span class='span-fill'>
-                Посмотреть текущие полномочия
-            </span>
+				{#if isShowPowersPushed}
+					<span class="loading-content">
+						<span class="loading-spinner"></span>
+						Загрузка...
+					</span>
+				{:else}
+					<span class='span-fill'>
+						Посмотреть текущие полномочия
+					</span>
+				{/if}
         </button>
     </div>
 

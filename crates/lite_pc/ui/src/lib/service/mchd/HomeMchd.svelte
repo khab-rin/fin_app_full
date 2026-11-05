@@ -13,36 +13,36 @@
     let allPowers = $state<HomeMchdPower[]>([]);
 
     let firstDone = $derived(
-        !currentMchdStep.data.PoaNumber.isValid || 
-        !currentMchdStep.data.PoaEndDate.isValid);
+        currentMchdStep.data.PoaNumber.isValid && 
+        currentMchdStep.data.PoaEndDate.isValid);
 
     let secondDone = $derived(
-        !currentMchdStep.data.managerTitle.isValid ||
-        !currentMchdStep.data.managerSurName.isValid ||
-        !currentMchdStep.data.managerFirstName.isValid ||
-        !currentMchdStep.data.managerMidName.isValid ||
-        !currentMchdStep.data.managerBirthDay.isValid ||
-        !currentMchdStep.data.managerSnils.isValid ||
-        !currentMchdStep.data.managerInn.isValid ||
-        !currentMchdStep.data.managerIsCitizen.isValid);
+        currentMchdStep.data.managerTitle.isValid &&
+        currentMchdStep.data.managerSurName.isValid &&
+        currentMchdStep.data.managerFirstName.isValid &&
+        currentMchdStep.data.managerMidName.isValid &&
+        currentMchdStep.data.managerBirthDay.isValid &&
+        currentMchdStep.data.managerSnils.isValid &&
+        currentMchdStep.data.managerInn.isValid &&
+        currentMchdStep.data.managerIsCitizen.isValid);
 
     let thirdDone = $derived(
-        !currentMchdStep.data.userSurName.isValid ||
-        !currentMchdStep.data.userFirstName.isValid ||
-        !currentMchdStep.data.userMidName.isValid ||
-        !currentMchdStep.data.userBirthDay.isValid ||
-        !currentMchdStep.data.userGender.isValid ||
-        !currentMchdStep.data.userSnils.isValid ||
-        !currentMchdStep.data.userInn.isValid ||
-        !currentMchdStep.data.userPassportNumber.isValid ||
-        !currentMchdStep.data.userPassportIssueDate ||
-        !currentMchdStep.data.userPassportIssueer.isValid ||
-        !currentMchdStep.data.userPassportUssuerCode.isValid ||
-        !currentMchdStep.data.userIsCitizen.isValid);
+        currentMchdStep.data.userSurName.isValid &&
+        currentMchdStep.data.userFirstName.isValid &&
+        currentMchdStep.data.userMidName.isValid &&
+        currentMchdStep.data.userBirthDay.isValid &&
+        currentMchdStep.data.userGender.isValid &&
+        currentMchdStep.data.userSnils.isValid &&
+        currentMchdStep.data.userInn.isValid &&
+        currentMchdStep.data.userPassportNumber.isValid &&
+        currentMchdStep.data.userPassportIssueDate &&
+        currentMchdStep.data.userPassportIssueer.isValid &&
+        currentMchdStep.data.userPassportUssuerCode.isValid &&
+        currentMchdStep.data.userIsCitizen.isValid);
 
-    let forthDone = $derived(selectedPowers.size == 0);
+    let forthDone = $derived(selectedPowers.size != 0);
 
-    let allDone = $derived(firstDone || secondDone || thirdDone || forthDone)
+    let allDone = $derived(firstDone && secondDone && thirdDone && forthDone)
 
     let firstStep = $state(true);
     let secondStep = $state(false);
@@ -60,7 +60,7 @@
     }
 
     function switchSecondStep() {
-        if ( firstDone ) {return;}
+        if ( !firstDone ) {return;}
         firstStep = false;
         secondStep = true;
         thirdStep = false;
@@ -68,7 +68,7 @@
     }
 
     function switchThirdStep() {
-        if (firstDone || secondDone) {return;}
+        if (!firstDone || !secondDone) {return;}
         firstStep = false;
         secondStep = false;
         thirdStep = true;
@@ -76,7 +76,7 @@
     }
 
     function switchForthStep() {
-        if (firstDone || secondDone || thirdDone) {return;}
+        if (!firstDone || !secondDone || !thirdDone) {return;}
         firstStep = false;
         secondStep = false;
         thirdStep = false;
@@ -112,7 +112,8 @@
     }
 
     async function lendMchd() {
-        if (allDone) {return}
+        if (isMainPushed || !allDone) {return}
+		isMainPushed = true;
         let data = {
             poaNumber: currentMchdStep.data.PoaNumber.value,
             poaEndDate: currentMchdStep.data.PoaEndDate.value,
@@ -148,11 +149,13 @@
 		}
 
         try {
-            const nextStep = await invoke<MchdStep>("cmd_make_xml_doc_files", {data: data})
+            const nextStep = await invoke<MchdStep>("cmd_make_xml_doc_files", {data: data});
+				isMainPushed = false;
             currentMchdStep.step = nextStep;;
         } catch(err) {
             console.error("cmd_make_xml_doc_files FAILED, err = ", err);
             const nextStep: MchdStep = {TryLater: {text: "Критическая ошибка на устройстве..."}};
+			isMainPushed = false;
             currentMchdStep.step = nextStep;;
         }
     }
@@ -196,7 +199,7 @@
 		<button
 			type="button"
 			onclick={switchSecondStep}
-			disabled={isMainPushed || firstDone}
+			disabled={!firstDone}
 			class="but-gr"
 			id="mchd-tax-firstStep-button"
 			
@@ -331,7 +334,7 @@
 		<button
 			type="button"
 			onclick={switchThirdStep}
-			disabled={isMainPushed || secondDone}
+			disabled={!secondDone}
 			class="but-gr"
 			id="mchd-tax-secondStep-button"
 		>
@@ -525,7 +528,7 @@
 		<button
 			type="button"
 			onclick={ switchForthStep }
-			disabled={isMainPushed || thirdDone}
+			disabled={!thirdDone}
 			class="but-gr"
 		>
 			<span>
@@ -573,7 +576,6 @@
 				class='w-v5'
 				checked={selectedPowers.has(power)}
 				onchange={()=>togglePower(power)}
-			
 			>
 			<button
 				type="button"
@@ -664,10 +666,17 @@
 			id="MchdBtbMchdBtbLendBut"
 			class="but-bl"
 			onclick={lendMchd}
-			disabled={allDone}>
-			<span class=main-batton-span>
-				Зарегистрировать
-			</span>
+			disabled={!allDone || isMainPushed}>
+			{#if isMainPushed}
+				<span class="loading-content">
+					<span class="loading-spinner"></span>
+					Регистрация доверенности
+				</span>
+			{:else}
+				<span class=main-batton-span>
+					Зарегистрировать доверенность
+				</span>
+			{/if}
 		</button>
 	</div>
 	<div class='w-v50'>
