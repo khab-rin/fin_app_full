@@ -1,97 +1,80 @@
 <script lang="ts">
 	import '$lib/style/global.css'
-
-	import { page } from '$app/state';
-    import favicon from '$lib/assets/favicon.svg';
-	import { goTo } from '$lib/rules/navigation';
-	import { fade } from 'svelte/transition';
-
-	import SettingsMainMenu from "$lib/service/Settings/SettingsMainMenu.svelte";
-	import {pageManager} from "$lib/models/MainManager/MainManager.svelte";
 	
-	let { children }: { children: import('svelte').Snippet } = $props();
+	let { children } = $props();
+    import favicon from '$lib/assets/favicon.svg';
 
-	let menuRef: HTMLElement | null = $state(null);
+	import {pageManager} from "$lib/models/MainManager/MainManager.svelte";
 
-	function handlePointerOutside(event: PointerEvent) {
-		if (
-			pageManager.settingsOnOff &&
-			menuRef &&
-			!menuRef.contains(event.target as Node) &&
-			!(event.target as HTMLElement).closest('.param-button') 
-		) {
-			pageManager.settingsOnOff = false; // Закрываем меню
-		}
+	async function logOut() {
+		await pageManager.logOut();
 	}
 
 </script>
 
-<svelte:document onpointerdown={handlePointerOutside} />
 
-<svelte:head>
-    <link rel="icon" href={favicon} />
-</svelte:head>
-
-<div class='app-container'>
-
-
-	{#if pageManager.settingsOnOff}
-		<div bind:this={menuRef} transition:fade={{ duration: 150 }}>
-			<SettingsMainMenu/>
+<header class='top-bar'>
+	<div class="w-g50"></div>
+	<div class="w-g50" style="width: 100%;">
+		<div class='w-g10'>
+			<link rel='icon' href={favicon}/>
 		</div>
-	{/if}
-
-	<header class="top-bar">
-		<div class="user-avatar">
-			<span class="avatar-icon">👤</span>
+		<div class='w-g80'>
+			{pageManager.compName}
 		</div>
+		<div class='w-g10'>
+			<button
+				type='button'
+				class='but-bl'
+				disabled={pageManager.totalOff}
+				onclick={logOut}
+			>
+				Выход
+			</button>
+		</div>
+		<div class='style="width: 0px;'></div>
 
-		<input type="text" class="search-input" placeholder="Поиск...">
+	</div>
+</header>
 
-		<button 
-			class="param-button" 
-			onclick={() => pageManager.settingsOnOff = true}
-			disabled={pageManager.totalOff}>⚙️
-		</button>
-	</header>
-
-
-
-	<main class="main-content">
+<main>
+	{#key pageManager.Page}
 		{#if pageManager.getPage}
-			<pageManager.getPage />
+			{@const CurrentPage = pageManager.getPage}
+			<CurrentPage/>
 		{:else}
 			{@render children()}
 		{/if}
-	</main>
+	{/key}
+</main>
 
-	<footer class="down-bar">
-
-		<button
-			class="bar-button"
-			class:active={page.url.pathname === '/' }
-			onclick={() => goTo('/')}
+<footer class='footer'>
+	<div class="w-100">
+		<button class="w-v25"
+			onclick={pageManager.Page = null}
 		>
 			<span class="bar-icon">🏠</span>
 			<span class="bar-label">Главная</span>
 		</button>
 
-		<button class="bar-button">
+		<button class="w-v25"
+		>
 			<span class="bar-icon">📊</span>
 			<span class="bar-label">Статистика</span>
 		</button>
 
-		<button class="bar-button">
+		<button class="w-v25"
+			onclick={pageManager.Page = null}
+		>
 			<span class="bar-icon">📅</span>
-				<span class="bar-label">Календарь</span>
+			<span class="bar-label">Календарь</span>
 		</button>
 
-		<button class="bar-button">
+		<button class="w-v25"
+		>
 			<span class="bar-icon">❓</span>
 			<span class="bar-label">Справка</span>
 		</button>
+	</div>
+</footer>
 
-	</footer>
-
-
-</div>

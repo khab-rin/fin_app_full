@@ -1,77 +1,66 @@
-<script lang="ts">
-  import {pageManager} from '$lib/models/MainManager/MainManager.svelte';
-  import { PageType } from "$lib/models/MainManager/PageValues";
+<script lang='ts'>
+	import { pageManager } from "$lib/models/MainManager/MainManager.svelte";
+	import { PageType } from "$lib/models/MainManager/PageValues";
 
 
-  function goToOperation() {
-    pageManager.Page = PageType.Operation;
-  }
+	function goToOper() {
+		pageManager.Page = PageType.Operation;
+	}
 
-  function goToMchd() {
-	pageManager.Page = PageType.Mchd;
-  }
+	function goToMchd() {
+		pageManager.Page = PageType.Mchd;
+	}
 
-  function goToReports() {
-	pageManager.Page = PageType.Report;
-  }
+	function goToReport() {
+		pageManager.Page = PageType.Report;
+	}
+
 
 </script>
 
-
-<section class='group-one'>
-	<div>
-		<label
-			class='blue-field-label'
-			for='mainOperationButton'
-		>
-			Раздел операций
+<div class='w-100'>
+	<div class='w-v100'>
+		<label class='label-close' for='mainGoToOper'>
+			Раздел проводок и операций
 		</label>
-		<button
-			type='button'
-			class='purple-button'
-			id='mainOperationButton'
-			disabled={pageManager.totalOff}
-			onclick={goToOperation}
+		<button 
+			class='but-pu'
+			id='mainGoToOper'
+			onclick={goToOper}
 		>
-			Операции
+			Оперции
 		</button>
 	</div>
+</div>
 
-	<div>
-		<label
-			class='blue-field-label'
-			for='mainReportsButton'
-		>
+
+<div class='w-100'>
+	<div class='w-v100'>
+		<label class='label-close' for='mainGoToReport'>
 			Раздел отчетов
 		</label>
-		<button
-			type='button'
-			class='purple-button'
-			id='mainReportsButton'
-			disabled={pageManager.totalOff}
-			onclick={goToReports}
+		<button 
+			class='but-pu'
+			id='mainGoToReport'
+			onclick={goToReport}
+		
 		>
-			Отчеты
+			отчеты
 		</button>
 	</div>
+</div>
 
-	<div>
-		<label
-			class='blue-field-label'
-			for='mainMchdButton'
-		>
-			Раздел доверенностей
+<div class='w-100'>
+	<div class='w-v100'>
+		<label class='label-close' for='maingoToMchd'>
+			Раздел электронных доверенностей
 		</label>
-		<button
-			type='button'
-			class='purple-button'
-			id='mainMchdButton'
-			disabled={pageManager.totalOff}
+		<button 
+			class='but-pu'
+			id='maingoToMchd'
 			onclick={goToMchd}
 		>
 			Доверенности
 		</button>
 	</div>
-
-
-</section>
+</div>
