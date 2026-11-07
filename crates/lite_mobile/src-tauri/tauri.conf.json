@@ -19,9 +19,9 @@
     "windows": [
       {
         "title": "fin-app",
-        "width": 500,
-        "height": 950,
-        "resizable": true,
+        "width": 390,
+        "height": 840,
+        "resizable": false,
         "fullscreen": false
       }
     ],
@@ -39,6 +39,10 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+	"android": {
+		"autoIncrementVersionCode": false,
+		"minSdkVersion": 24
+	}
   }
 }
