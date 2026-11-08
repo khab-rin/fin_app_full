@@ -2,33 +2,36 @@
 
     import {onMount} from "svelte";
     import { invoke } from "@tauri-apps/api/core";
-    import { currAuthStep } from "$lib/models/Auth/AuthStep.svelte";
-    import type { AuthStep } from '$lib/models/rustModels/AuthStep';
+	import { dialogBackdrop } from "$lib/rules/dialogBorders";
+
+	import { pageManager } from "$lib/models/MainManager/MainManager.svelte";
+	import { currAuthStep } from "$lib/models/Auth/AuthStep.svelte";
+	import type { AuthStep } from '$lib/models/rustModels/AuthStep';
+
+	import {fitText} from '$lib/rules/text';
 
     let IsPushed = $state(false);
-    let dialogRef = $state<HTMLDialogElement | null>(null);
 
-    let curr_nick = $state("");
+    let currNick = $state("");
 
-    // Функция открытия модального окна
-    function openAccountsModal() {
-        if (dialogRef) dialogRef.showModal();
+    function openAccountsModal(id: string) {
+        (document.getElementById(id) as HTMLDialogElement)?.showModal();
     }
 
-    // Функция закрытия модального окна
-    function closeAccountsModal() {
-        if (dialogRef) dialogRef.close();
-    }
+    function selectElem(id: string, value: string): string {
+		(document.getElementById(id) as HTMLDialogElement)?.close()
+		return value;
+	}
 
     async function call_nick_handle(selectedNick: string) {
         if (IsPushed) return;
         
         IsPushed = true;
-        closeAccountsModal();
         
         try {
             let nextStep = await invoke<AuthStep>('cmd_session_by_nick', { nick: selectedNick });
-            IsPushed = false;
+            pageManager.compName = await invoke<string>("cmd_get_comp_name", {});
+			IsPushed = false;
             currAuthStep.step = nextStep;
         } catch (err) {
             let nextStep: AuthStep = { 
@@ -39,6 +42,7 @@
             currAuthStep.step = nextStep;
         }
     }
+
 
     onMount(async() => {
         try {
@@ -57,94 +61,89 @@
 </script>
 
 
+<dialog
+	class='dial-t-l'
+	id='AuthNickNames'
+	onclick={dialogBackdrop}
+>
+	<div class='w-100'>
+		<span class='v-w100 x-self-c x-cont-ce'>
+			Выберите пользователя
+		</span>
+	</div>
+	{#if currAuthStep.nick_names.length > 0}
+		{#each currAuthStep.nick_names as nickName}
+			<div class='w100'>
+				<button
+					class='but-ye'
+					type="button"
+					disabled={false}
+					onclick={()=> {currNick=selectElem("AuthNickNames", nickName)}}
+				>
+					<span
+						class='x-self-ce t-fill' use:fitText
+					>
+						{nickName}
+					</span>
+				</button>
+			</div>
+		{/each}	
+	{:else}
+		<div class='w-100'>
+			<p>На этом устройстве еще нет сохраненных аккаунтов</p>
+		</div>
+	{/if}
 
-<div class="selector-wrapper">
+	<div class='w-100'>
+		<button
+			type='button'
+			class='but-gr'
+			onclick={()=> {
+				selectElem('AuthNickNames', '')
+			}}
+		>
+			Отмена
+		</button>
+	</div>
+</dialog>
+
+
+<div class="w-100">
     <button
         type="button"
-        class="green-button"
+        class="but-gr"
         disabled={IsPushed}
         
-        onclick={openAccountsModal}
+        onclick={()=>{openAccountsModal("AuthNickNames")}}
     >
 
-        <span class="green-button-span">
-             - {curr_nick ? "Текущий выбор" : "Нажмите для просмотра списка"}
-        </span>
-
-        <span class="wide-button-span">
-            {curr_nick || "Выбрать аккаунт на устройстве"} >
+        <span class="x-self-c text-fill">
+            {#if currNick}
+				Текущий выбор - {currNick}
+			{:else}
+				Выберите пользователя
+			{/if}
         </span>
     </button>
 </div>
 
 
-<dialog 
-    bind:this={dialogRef} 
-    class="selector-dialog"
-    onclick={(e) => { if (e.target === dialogRef) closeAccountsModal(); }}
->
+<div class="w-100">
+	<button 
+		type="button" 
+		class="but-gr" 
+		disabled={!currNick || IsPushed}
+		onclick={() => call_nick_handle(currNick)}
+	>	
+		{#if IsPushed}
+			<span class="loading-content">
+				<span class="loading-spinner"></span>
+				Подключение...
+			</span>
+		{:else}
+			<span class="x-self-c">Войти как {currNick}</span>
+		{/if}
+	</button>
+</div>
 
-    <h5>Выбор аккаунта</h5>
-
-
-    <div class="selector-dialog-content">
-        {#if currAuthStep.nick_names.length > 0}
-            <ul class="dialog-list">
-                {#each currAuthStep.nick_names as name (name)}
-                    <li>
-						<button 
-							type="button" 
-							class="yellow-button"
-							onclick={() => {
-								curr_nick = name;
-								closeAccountsModal();}    
-							}
-						>
-							<span class="yellow-button-span">{name}</span>
-						</button>
-		
-                    </li>
-                {/each}
-            </ul>
-
-
-			<button class="green-button"
-				type="button"
-				onclick={closeAccountsModal}
-				>
-				
-				<span class="wide-button-span">
-					Отмена
-				</span>
-
-
-			</button>
-
-
-        {:else}
-            <p>На этом устройстве еще нет сохраненных аккаунтов</p>
-        {/if}
-    </div>
-
-</dialog>
-
-{#if curr_nick}
-    <div class="group-one">
-        <button 
-            type="button" 
-            class="green-button" 
-            disabled={IsPushed}
-            onclick={() => call_nick_handle(curr_nick)}
-        >	
-			{#if IsPushed}
-				<span class="loading-content">
-					<span class="loading-spinner"></span>
-					Подключение...
-				</span>
-			{:else}
-				<span class="green-button-span">Войти как {curr_nick}</span>
-			{/if}
-        </button>
-    </div>
-{/if}
 

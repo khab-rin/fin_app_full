@@ -207,13 +207,15 @@ select.input-bl {
     line-height: 1;
     background-color: #f3f4f6;
     vertical-align: middle;
+		z-index: 10;
 }
 
 .input-tool::after {
     content: attr(data-input-tool);
     position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+
+    left: 0; 
+    transform: none; 
     top: 130%;
     width: 260px;
     padding: 10px;

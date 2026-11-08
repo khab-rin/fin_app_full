@@ -1,0 +1,156 @@
+.input-gr,
+.input-ye,
+.input-bl {
+	width: 100%;
+	min-height: 3rem;
+	max-height: 3rem;
+	padding: 0 1rem;
+	font-weight: 500;
+	border-radius: var(--r-s);
+	outline: none;
+	display: block;
+	transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+
+.input-gr:disabled {
+	border-color: var(--gr-1);
+	background-color: var(--gr-1);
+	color: var(--gr-3);
+	cursor: not-allowed;
+}
+
+
+.input-gr {
+	border: 2px solid var(--gr-2);
+	background-color: var(--gr-1);
+}
+.input-gr:hover:not(:disabled) { 
+	border-color: var(--gr-3); 
+}
+.input-gr:focus:not(:disabled) {
+	border-color: var(--gr-3);
+	box-shadow: 0 0 0 3px rgba(67, 139, 89, 0.15);
+}
+
+.input-gr.input-success {
+	border-color: var(--gr-4) !important;
+	background-color: var(--gr-2) !important; 
+}
+
+
+.input-bl:disabled {
+	border-color: var(--bl-1);
+	background-color: var(--bl-1);
+	color: var(--bl-3);
+	cursor: not-allowed;
+}
+
+.input-bl {
+	border: 2px solid var(--bl-2);
+	background-color: var(--bl-1);
+}
+
+.input-bl:hover:not(:disabled) { 
+	border-color: var(--bl-3); 
+}
+.input-bl:focus:not(:disabled) {
+	border-color: var(--bl-3);
+	box-shadow: 0 0 0 3px rgba(57, 127, 203, 0.15);
+}
+
+.input-bl.input-success {
+	border-color: var(--bl-4) !important;
+	background-color: var(--bl-2) !important;
+}
+
+
+.input-ye:disabled {
+	border-color: var(--ye-1);
+	background-color: var(--ye-1);
+	color: var(--ye-3);
+	cursor: not-allowed;
+}
+
+.input-ye {
+	border: 2px solid var(--ye-2);
+	background-color: var(--ye-1);
+}
+
+.input-ye:hover:not(:disabled) { 
+	border-color: var(--ye-3); 
+}
+.input-ye:focus:not(:disabled) {
+	border-color: var(--ye-3);
+	box-shadow: 0 0 0 3px rgba(214, 167, 44, 0.15);
+}
+
+.input-ye.input-success {
+	border-color: var(--ye-4) !important;
+	background-color: var(--ye-2) !important;
+}
+
+
+.input-gr.input-error,
+.input-bl.input-error,
+.input-ye.input-error {
+	background-color: var(--re-1) !important; 
+	border-color: var(--re-3) !important;
+	box-shadow: 0 0 0 3px rgba(201, 75, 75, 0.15) !important;
+}
+
+
+
+.input-tool {
+	cursor: help;
+	border: 0.08rem solid #9ca3af; /* Перевели 1px в rem */
+	border-radius: 50%;
+	font-size: 0.65rem; /* Чуть увеличили, чтобы на телефоне было читаемо */
+	font-weight: 600;
+	color: #4b5563;
+	position: relative;
+	display: inline-block;
+	line-height: 1;
+	background-color: #f3f4f6;
+	vertical-align: middle;
+	
+	/* Мобильный фикс: добавляем внутренние отступы, 
+	   чтобы по кружочку было легче попасть пальцем */
+	padding: 0.15rem 0.35rem; 
+	margin-left: 0.4rem;
+}
+
+
+.input-tool::after {
+	content: attr(data-input-tool);
+	position: absolute;
+	
+	left: 0;
+	top: 140%;
+	
+	width: 65vw;
+	max-width: 16rem;
+	padding: 0.6rem;
+	
+	background: #1f2937;
+	color: #ffffff;
+	border-radius: 0.4rem;
+	font-size: 0.75rem;  
+	line-height: 1.4;
+	font-weight: 400;
+	
+	visibility: hidden;
+	opacity: 0;
+	transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+	z-index: 100;
+	pointer-events: none;
+	text-align: left;
+	white-space: normal;
+	box-shadow: 0 0.25rem 0.4rem -0.06rem rgba(0, 0, 0, 0.1);
+}
+
+.input-tool:hover::after,
+.input-tool:active::after {
+	visibility: visible;
+	opacity: 1;
+}

@@ -27,11 +27,22 @@ class OperationManager {
 	}
 
 	get currentText(): string {
-		return Object.values(this._step)[0].text;
+		const key = Object.keys(this._step)[0];
+		return (this._step as any)[key]?.text ?? '';
 	}
 
-	set currentText(value: OperationInfo) {
-		Object.values(this._step)[0].text = value
+	set currentText(value: string) {
+		const key = Object.keys(this._step)[0];
+		if (!key) return;
+
+		// Перезаписываем объект целиком, чтобы Svelte 5 увидел реактивность
+		this._step = { 
+			...this._step, 
+			[key]: { 
+				...(this._step as any)[key],
+				text: value 
+			} 
+		};
 	}
 
     get getPage() {

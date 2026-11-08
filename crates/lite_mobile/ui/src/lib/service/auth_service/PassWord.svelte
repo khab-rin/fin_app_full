@@ -43,82 +43,84 @@
 
 </script>
 
-<div class="group-one">
-
-	<div>
-		<label class='green-field-label' for="persInn">ИНН физического лица</label>
+<div class="w-100">
+	<div class='w-v100'>
+		<label class='label-close' for="persInn">
+			ИНН физического лица
+			<span class='input-tool' data-input-tool="Валидация по алгоритму ФНС">?</span>
+		</label>
 		<input 
 			id="persInn"
-			class="green-field"
+			class="input-gr"
 			type="text" 
 			bind:value={currAuthStep.data.persInn.value} 
 			disabled={isPushed}
 			placeholder="12 цифр ИНН ФЛ"
 			class:input-error={!currAuthStep.data.persInn.isValid}
 		/>
-		{#if !currAuthStep.data.persInn.isValid}
-			<span class="input-error">Некорректный инн физического лица</span>
-		{/if}
 	</div>
-	
+</div>
 
+<div class="w-100">
 
-	<div>
-		<label class='green-field-label' for="compInn">ИНН организации</label>
+	<div class='w-v100'>
+		<label class='label-close' for="compInn">
+			ИНН организации
+			<span class='input-tool' data-input-tool="Валидация по алгоритму ФНС">?</span>
+		</label>
 		<input 
-			class="green-field"
+			class="input-gr"
 			id="innOrg" 
 			type="text" 
 			bind:value={currAuthStep.data.compInn.value}
 			disabled={isPushed}
 			placeholder="10 цифр ИНН ЮЛ"
-			
 			class:input-error={!currAuthStep.data.compInn.isValid}/>
-		{#if !currAuthStep.data.compInn.isValid}
-			<span class="input-error">Некорректный инн юридического лица</span>
-		{/if}
 	</div>
+</div>
 
-	<div>
-		<label 
-			class='green-field-label' 
-			for="kpp">
+
+<div class="w-100">
+	<div class='w-v100'>
+		<label class='label-close' for="kpp">
 			КПП организации
+			<span class='input-tool' data-input-tool="Валидация по алгоритму ФНС, для ип - [0, _]">?</span>
 		</label>
 		<input 
-			class="green-field"
+			class="input-gr"
 			id="kppOrg" 
 			type="text" 
 			bind:value={currAuthStep.data.kpp.value}
 			disabled={isPushed} 
 			placeholder="9 знаков КПП"
 			class:input-error={!currAuthStep.data.kpp.isValid}/>
-		{#if !currAuthStep.data.kpp.isValid}
-			<span class="input-error">Некорректный кпп</span>
-		{/if}
 	</div>
+</div>
 
 
-	<div>
-		<label class='green-field-label' for="password">Пароль</label>
+<div class="w-100">
+	<div class='w-v100'>
+		<label class='label-close' for="password">
+			Пароль
+			<span class='input-tool' data-input-tool="Не менее 8 символов">?</span>
+		</label>
 		<input 
 			id="password" 
-			class="green-field"
+			class="input-gr"
 			type="password" 
 			bind:value={currAuthStep.data.password.value}
 			disabled={isPushed} 
 			placeholder="Введите пароль"
 			
 			class:input-error={!currAuthStep.data.password.isValid}/>
-		{#if !currAuthStep.data.password.isValid}
-			<span class="input-error">Пароль некоректен в рамках прилжоения</span>
-		{/if}
 	</div>
-	
+</div>
 
+
+<div class="w-100">
 	<button 
 		type="button" 
-		class="green-button"
+		class="but-gr"
 		onclick={handleAuthSubmit}
 		disabled={
 			isPushed || 

@@ -2,7 +2,6 @@
 
     import {onMount} from "svelte";
     import { invoke } from "@tauri-apps/api/core";
-
 	import {dialogBackdrop} from '$lib/rules/dialogBorders'
 
 	import { pageManager } from "$lib/models/MainManager/MainManager.svelte";
@@ -89,7 +88,7 @@
 		</div>
 	{/if}
 
-	<div class='group-5'>
+	<div class='w-100'>
 		<button
 			type='button'
 			class='but-gr'

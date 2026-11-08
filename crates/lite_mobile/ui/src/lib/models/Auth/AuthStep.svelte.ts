@@ -68,50 +68,23 @@ class SvelteAuthStep {
     nick_names = $state<string[]>([]);
 
     get currentText(): string {
-        if (!this.step || typeof this.step !== 'object') {
-            return '';
-        }
+		const key = Object.keys(this._step)[0];
+		return (this._step as any)[key]?.text ?? '';
+	}
 
-        const currentStepObj = Object.values(this.step)[0];
+	set currentText(value: string) {
+		const key = Object.keys(this._step)[0];
+		if (!key) return;
 
-        if (
-            currentStepObj && 
-            typeof currentStepObj === 'object' && 
-            'text' in currentStepObj && 
-            typeof (currentStepObj as { text: unknown }).text === 'string'
-        ) {
-            return (currentStepObj as { text: string }).text;
-        }
-        
-        return '';
-    }
-
-    set currentText(value: Partial<Record<keyof AuthStep, string>>) {
-        if (!this.step || typeof this.step !== 'object') {
-            return;
-        }
-
-        const stepKey = Object.keys(this.step)[0] as keyof AuthStep;
-        if (!stepKey) return;
-
-        if (value && typeof value === 'object' && stepKey in value) {
-            const newText = value[stepKey];
-            
-            if (typeof newText === 'string') {
-                const currentStepObj = this.step[stepKey];
-
-                if (currentStepObj && typeof currentStepObj === 'object' && 'text' in currentStepObj) {
-                    this.step = {
-                        ...this.step,
-                        [stepKey]: {
-                            ...(currentStepObj as Record<string, unknown>),
-                            text: newText
-                        }
-                    };
-                }
-            }
-        }
-    }
+		// Перезаписываем объект целиком, чтобы Svelte 5 увидел реактивность
+		this._step = { 
+			...this._step, 
+			[key]: { 
+				...(this._step as any)[key],
+				text: value 
+			} 
+		};
+	}
 
     get getPage() {
         const step = this.step;

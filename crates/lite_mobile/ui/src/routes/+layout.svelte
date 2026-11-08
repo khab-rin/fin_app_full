@@ -14,25 +14,27 @@
 </script>
 
 
-<header class='top-bar'>
-	<div class="w-g50"></div>
-	<div class="w-g50">
-		<div class='w-g10'>
-			<link rel='icon' href={favicon}/>
-		</div>
-		<div class='w-g80'>
+<header>
+	<div class='w-g10'>
+		<link rel='icon' href={favicon}/>
+	</div>
+	<div class='w-g90'>
+		<span class='t-cut'>
 			{pageManager.compName}
-		</div>
-		<div class='w-g10'>
-			<button
-				type='button'
-				class='but-bl'
-				disabled={pageManager.totalOff}
-				onclick={logOut}
-			>
+		</span>
+		
+	</div>
+	<div class='w-g15'>
+		<button
+			type='button'
+			class='but-bl'
+			disabled={pageManager.totalOff}
+			onclick={logOut}
+		>
+			<span class='t-cut'>
 				Выход
-			</button>
-		</div>
+			</span>
+		</button>
 	</div>
 </header>
 

@@ -8,6 +8,7 @@
     import type {RegInitData} from "$lib/models/rustModels/RegInitData";
     import type {BoxUuid} from "$lib/models/rustModels/BoxUuid";
 
+	import {fitText} from '$lib/rules/text';
     
     let isPushedMakeDocs = $state(false);
 
@@ -75,189 +76,178 @@
 
 </script>
 
-<section class='group-one'>
-    <div>
-        <label class='green-field-label' for="surName">Фамилия</label>
+<div class='w-100'>
+    <div class='w-v100'>
+        <label class='label-close' for="surName">Фамилия</label>
         <input 
             id="surName" 
             type="text" 
             bind:value={currAuthStep.data.surName.value} 
             disabled={isPushedMakeDocs}
             placeholder="Только русские буквы"
-            class="green-field"
+            class="input-gr"
             class:input-error={!currAuthStep.data.surName.isValid}
         />
-        {#if !currAuthStep.data.surName.isValid}
-            <span class="input-error">Некорректная фамилия</span>
-        {/if}
     </div>
+</div>
 
-    <div>
-        <label class='green-field-label' for="firstName">Имя</label>
+<div class='w-100'>
+    <div class='w-v100'>
+        <label class='label-close' for="firstName">Имя</label>
         <input 
             id="firstName" 
             type="text" 
             bind:value={currAuthStep.data.firstName.value} 
             disabled={isPushedMakeDocs}
             placeholder="Только русские буквы"
-            class="green-field"
+            class="input-gr"
             class:input-error={!currAuthStep.data.firstName.isValid}
         />
-        {#if !currAuthStep.data.firstName.isValid}
-            <span class="input-error">Некорректное имя</span>
-        {/if}
     </div>
+</div>
 
-    <div>
-        <label class='green-field-label' for="midName">Отчество (при наличии)</label>
+<div class='w-100'>
+    <div class='w-v100'>
+        <label class='label-close' for="midName">Отчество (при наличии)</label>
         <input 
             id="midName" 
             type="text" 
             bind:value={currAuthStep.data.midName.value} 
             disabled={isPushedMakeDocs}
             placeholder="Только русские буквы"
-            class="green-field"
+            class="input-gr"
             class:input-error={!currAuthStep.data.midName.isValid}
         />
-        {#if !currAuthStep.data.midName.isValid}
-            <span class="input-error">Некорректное отчество</span>
-        {/if}
     </div>
+</div>
 
-    <div>
-        <label class='green-field-label' for="persInn">Личный ИНН</label>
+<div class='w-100'>
+    <div class='w-v100'>
+        <label class='label-close' for="persInn">Личный ИНН</label>
         <input 
             id="persInn" 
             type="text" 
             bind:value={currAuthStep.data.persInn.value} 
             disabled={isPushedMakeDocs}
             placeholder="12 цифр"
-            class="green-field"
+            class="input-gr"
             class:input-error={!currAuthStep.data.persInn.isValid}
         />
-        {#if !currAuthStep.data.persInn.isValid}
-            <span class="input-error">Некорректный ИНН (должно быть 12 цифр)</span>
-        {/if}
     </div>
+</div>
 
-    <div>
-        <label class='green-field-label' for="snils">СНИЛС</label>
+<div class='w-100'>
+    <div class='w-v100'>
+        <label class='label-close' for="snils">СНИЛС</label>
         <input 
             id="snils" 
             type="text" 
             bind:value={currAuthStep.data.snils.value} 
             disabled={isPushedMakeDocs}
             placeholder="Формат: 000-000-000 00"
-            class="green-field"
+            class="input-gr"
             class:input-error={!currAuthStep.data.snils.isValid}
         />
-        {#if !currAuthStep.data.snils.isValid}
-            <span class="input-error">Некорректный СНИЛС</span>
-        {/if}
     </div>
+</div>
 
-    <div>
-        <label class='green-field-label' for="compInn">ИНН Организации</label>
+<div class='w-100'>
+    <div class='w-v100'>
+        <label class='label-close' for="compInn">ИНН Организации</label>
         <input 
             id="compInn" 
             type="text" 
             bind:value={currAuthStep.data.compInn.value} 
             disabled={isPushedMakeDocs}
             placeholder="10 цифр"
-            class="green-field"
+            class="input-gr"
             class:input-error={!currAuthStep.data.compInn.isValid}
         />
-        {#if !currAuthStep.data.compInn.isValid}
-            <span class="input-error">Некорректный ИНН организации (должно быть 10 цифр)</span>
-        {/if}
     </div>
+</div>
 
-    <div>
-        <label class='green-field-label' for="kpp">КПП</label>
+<div class='w-100'>
+    <div class='w-v100'>
+        <label class='label-close' for="kpp">КПП</label>
         <input 
             id="kpp" 
             type="text" 
             bind:value={currAuthStep.data.kpp.value} 
             disabled={isPushedMakeDocs}
             placeholder="9 цифр"
-            class="green-field"
+            class="input-gr"
             class:input-error={!currAuthStep.data.kpp.isValid}
         />
-        {#if !currAuthStep.data.kpp.isValid}
-            <span class="input-error">Некорректный КПП (должно быть 9 цифр)</span>
-        {/if}
     </div>
+</div>
 
-    <div>
-        <label class='green-field-label' for="phone">Номер телефона</label>
+<div class='w-100'>
+    <div class='w-v100'>
+        <label class='label-close' for="phone">Номер телефона</label>
         <input 
             id="phone" 
             type="tel" 
             bind:value={currAuthStep.data.phone.value} 
             disabled={isPushedMakeDocs}
             placeholder="+7 (900) 000-00-00"
-            class="green-field"
+            class="input-gr"
             class:input-error={!currAuthStep.data.phone.isValid}
         />
-        {#if !currAuthStep.data.phone.isValid}
-            <span class="input-error">Некорректный номер телефона</span>
-        {/if}
     </div>
+</div>
 
-    <div>
-        <label class='green-field-label' for="email">Электронная почта</label>
+<div class='w-100'>
+    <div class='w-v100'>
+        <label class='label-close' for="email">Электронная почта</label>
         <input 
             id="email" 
             type="email" 
             bind:value={currAuthStep.data.email.value} 
             disabled={isPushedMakeDocs}
             placeholder="example@mail.ru"
-            class="green-field"
+            class="input-gr"
             class:input-error={!currAuthStep.data.email.isValid}
         />
-        {#if !currAuthStep.data.email.isValid}
-            <span class="input-error">Некорректный email</span>
-        {/if}
     </div>
+</div>
 
-    <div>
-        <label class='green-field-label' for="password">Придумайте пароль приложения</label>
+<div class='w-100'>
+    <div class='w-v100'>
+        <label class='label-close' for="password">Придумайте пароль приложения</label>
         <input 
             id="password" 
             type="password" 
             bind:value={currAuthStep.data.password.value} 
             disabled={isPushedMakeDocs}
             placeholder="Минимум 6 символов"
-            class="green-field"
+            class="input-gr"
             class:input-error={!currAuthStep.data.password.isValid}
         />
-        {#if !currAuthStep.data.password.isValid}
-            <span class="input-error">Слишком короткий или простой пароль</span>
-        {/if}
     </div>
+</div>
 
-    <div>
-        <label class='green-field-label' for="passwordRepeat">Повторите пароль</label>
+<div class='w-100'>
+    <div class='w-v100'>
+        <label class='label-close' for="passwordRepeat">Повторите пароль</label>
         <input 
             id="passwordRepeat" 
             type="password" 
             bind:value={passwordRepeat} 
             disabled={isPushedMakeDocs}
             placeholder="Введите пароль еще раз"
-            class="green-field"
+            class="input-gr"
             class:input-error={currAuthStep.data.password.value !== passwordRepeat && passwordRepeat !== ''}
         />
-        {#if currAuthStep.data.password.value !== passwordRepeat || passwordRepeat == ''}
-            <span class="input-error">Пароли не совпадают</span>
-        {/if}
     </div>
+</div>
 
-	<div>
+<div class='w-100'>
+	<div class='w-v100'>
 		<button 
 			type="button" 
 			onclick={finishStep1}
 			disabled={isPushedMakeDocs || !isDataValid}
-			class="green-button"
+			class="but-gr"
 			id="auth-make-doc-button"
 		>	
 			{#if isPushedMakeDocs}
@@ -270,32 +260,37 @@
 			{/if}
 		</button>
 	</div>
-</section>
+</div>
 
-<section class='group-two'>
-	<div>
+<div class='w-100'>
+	<div class='w-v50'>
 		<button 
 			type="button" 
 			onclick={()=>{
 				currAuthStep.loadUser1();
 			}}
-			class="green-button"
+			class="but-gr"
 		>
-			Автозаполнение руководитель
+			<span class="t-cut">
+				Автозаполнение руководитель
+			</span>
+			
 		</button>
 	</div>
 
-	<div>
+	<div class='w-v50'>
 		<button 
 			type="button" 
 			onclick={()=>{
 				currAuthStep.loadUser2();
 			}}
-			class="green-button"
-		>
-			Автозаполнение сотрудник
+			class="but-gr"
+		>	
+			<span class="t-cut">
+				Автозаполнение сотрудник
+			</span>
 		</button>
 	</div>
-</section>
+</div>
 
 

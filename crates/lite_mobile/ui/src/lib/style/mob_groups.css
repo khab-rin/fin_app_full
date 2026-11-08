@@ -2,15 +2,14 @@
 .w-55, .w-60, .w-66, .w-65, .w-70, .w-75, .w-80, .w-85, .w-90, .w-95, .w-100 {
 	display: flex;
 	flex-direction: row;
-	justify-content: center;
+	justify-content: space-between;
+	gap: 0.3rem;
 	align-items: center;
 	flex-wrap: nowrap;
-	gap: 1rem;
 	border: var(--border);
 	border-radius: var(--r-s);
 	background-color: var(--bg-c);
-	margin: 5px;
-	padding: 5px;
+	padding: 0.1rem;
 	box-sizing: border-box;
 }
 
@@ -80,11 +79,7 @@
 	justify-content:end;
 	align-items: center;
 	flex-wrap: nowrap;
-	gap: 1rem;
-	margin: 1px;
-	padding: 1px;
-	min-width: 0;
-
+	gap: 0.3rem;
 }
 
 .w-v5   { flex: 0 1 5% !important; }

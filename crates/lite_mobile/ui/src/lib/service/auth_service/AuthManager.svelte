@@ -30,9 +30,12 @@
     }
 </script>
 
-<p class="text-small">
-    {currAuthStep.currentText}
-</p>
+<div class='w-100'>
+	<p class="x-cont-c with-info">
+		{currAuthStep.currentText}
+	</p>
+</div>
+
 
 {#if currAuthStep.getPage}
     {@const ChosenPage = currAuthStep.getPage}
@@ -41,49 +44,65 @@
     <p>Загрузка или ошибка...</p>
 {/if}
 
-<h6> Навигация по авторизации </h6>
-<section class="group-two">
-	<div>
+
+<div class='w-100'>
+	<h6 class="x-self-c x-cont-c"> Навигация по авторизации </h6>
+</div>
+
+
+<section class="w-100">
+	<div class="w-v50">
 		<button
-			class="purple-button"
+			class="but-pu"
 			type="button"
 			hidden={isPassword}
 			onclick={goToPassword}
 		>
-			Вход по паролю
+			<span class='t-carry-cut'>
+				Вход по паролю
+			</span>
 		</button>
 	</div>
 	
-	<div>
+	<div class="w-v50">
 		<button
-			class="purple-button"
+			class="but-pu"
 			type="button"
 			hidden={isRegistrerStep1}
 			onclick={goToRegisterStep1}
-		>
-			Регистрация шаг 1
+		>	
+			<span class='t-carry-cut'>
+				Регистрация шаг 1
+			</span>
 		</button>
 	</div>
-	
-	<div>
+</section>
+
+<section class="w-100">
+	<div class="w-v50">
 		<button
-			class="purple-button"
+			class="but-pu"
 			type="button"
 			hidden={isRegistrerStep2}
 			onclick={goToRegisterStep2}
 		>
-			Регистрация шаг 2
+			<span class='t-carry-cut'>
+				Регистрация шаг 2
+			</span>
+			
 		</button>
 	</div>
 	
-	<div>
+	<div class="w-v50">
 		<button
-			class="purple-button"
+			class="but-pu"
 			type="button"
 			hidden={isNickName}
 			onclick={goToNickName}
 		>
-			Войти как
+			<span class='t-carry-cut'>
+				Войти как
+			</span>
 		</button>
 	</div>
 	
