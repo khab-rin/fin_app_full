@@ -78,7 +78,9 @@
 
 <div class='w-100'>
     <div class='w-v100'>
-        <label class='label-close' for="surName">Фамилия</label>
+        <label class='label-close' for="surName">
+			Фамилия
+		</label>
         <input 
             id="surName" 
             type="text" 
@@ -123,7 +125,10 @@
 
 <div class='w-100'>
     <div class='w-v100'>
-        <label class='label-close' for="persInn">Личный ИНН</label>
+        <label class='label-close' for="persInn">
+			Личный ИНН
+			<span class="input-tool" data-input-tool="Валидаця по алгоритму ФНС">?</span>
+		</label>
         <input 
             id="persInn" 
             type="text" 
@@ -138,7 +143,10 @@
 
 <div class='w-100'>
     <div class='w-v100'>
-        <label class='label-close' for="snils">СНИЛС</label>
+        <label class='label-close' for="snils">
+			СНИЛС
+			<span class="input-tool" data-input-tool="Валидаця по алгоритму ФНС">?</span>
+		</label>
         <input 
             id="snils" 
             type="text" 
@@ -153,7 +161,10 @@
 
 <div class='w-100'>
     <div class='w-v100'>
-        <label class='label-close' for="compInn">ИНН Организации</label>
+        <label class='label-close' for="compInn">
+			ИНН Организации
+			<span class="input-tool" data-input-tool="Валидаця по алгоритму ФНС">?</span>
+		</label>
         <input 
             id="compInn" 
             type="text" 
@@ -168,7 +179,10 @@
 
 <div class='w-100'>
     <div class='w-v100'>
-        <label class='label-close' for="kpp">КПП</label>
+        <label class='label-close' for="kpp">
+			<span class="input-tool" data-input-tool="Валидаця по алгоритму ФНС, [_, 0] для ИП">?</span>
+			КПП
+		</label>
         <input 
             id="kpp" 
             type="text" 
@@ -213,7 +227,10 @@
 
 <div class='w-100'>
     <div class='w-v100'>
-        <label class='label-close' for="password">Придумайте пароль приложения</label>
+        <label class='label-close' for="password">
+			Придумайте пароль приложения
+			<span class="input-tool" data-input-tool="Минимум 8 любым символов">?</span>
+		</label>
         <input 
             id="password" 
             type="password" 
@@ -228,7 +245,10 @@
 
 <div class='w-100'>
     <div class='w-v100'>
-        <label class='label-close' for="passwordRepeat">Повторите пароль</label>
+        <label class='label-close' for="passwordRepeat">
+			Повторите пароль
+			<span class="input-tool" data-input-tool="Совпадение с предыдущим вводом">?</span>
+		</label>
         <input 
             id="passwordRepeat" 
             type="password" 

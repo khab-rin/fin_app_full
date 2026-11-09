@@ -69,7 +69,6 @@ pub async fn cmd_add_new_contract(
     state: tauri::State<'_, ClientState>,
     data: NewContrData
 ) -> Result<Vec<Contract>, Status> {
-	Status::log(LL::Debug, "cmd_add_new_contract started!");
 
     let ctrpty_id = data.ctrpty_id.clone();
 
@@ -77,8 +76,6 @@ pub async fn cmd_add_new_contract(
         .map_err(|err| err.process_err(err, ""))?;
 
     let contracts = get_contracts_by_comp_ctrpty_ids(&state, &ctrpty_id).await?;
-
-	Status::log(LL::Debug, &format!("contracts = {:?}", contracts));
 
 	Ok(contracts)
 

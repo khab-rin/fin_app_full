@@ -3,85 +3,82 @@
 <script lang='ts'>
 	import {onMount} from 'svelte';
 	import {invoke} from '@tauri-apps/api/core';
+	import {dialogBackdrop} from '$lib/rules/dialogBorders'
+
+	import {fitText} from '$lib/rules/text';
+	import { FieldValidator } from '$lib/models/Auth/FieldValidator.svelte';
 	import {operStep} from '$lib/models/Operation/OperationManager.svelte';
 	import { OperationType } from '$lib/models/Operation/OperationValues';
 	import { StateProcessor } from '$lib/models/Operation/StatementProcessor.svelte';
-	import type { OperationStep } from '$lib/models/rustModels/OperationStep';
-	import { FieldValidator } from '$lib/models/Auth/FieldValidator.svelte';
+	import type { Company } from '$lib/models/rustModels/Company';
 	import type { Contract } from '$lib/models/rustModels/Contract';
+	import type { OperationStep } from '$lib/models/rustModels/OperationStep';
 
 	let processor = new StateProcessor;
 
-	let openCtrpty = $state(false);
 	let compInn = new FieldValidator('CompInn', '');
 	let kpp = new FieldValidator('Kpp', '');
 	let changeCtrptyPushed = $state(false);
-	function showCtrPty() {
-		openCtrpty = !openCtrpty;
-	}
 
-	let isContractsOpen = $state(false);
-	let isNewContractOpen = $state(false);
-	let isChangeContractOpen = $state(false);
 	let isNewContractPushed = $state(false);
 
-	function openContracts() {
-		isContractsOpen = !isContractsOpen;
+	function openModal(id: string) {
+		(document.getElementById(id) as HTMLDialogElement)?.showModal();
 	}
 
-	function openNewContract() {
-		isChangeContractOpen = false;
-		isNewContractOpen = !isNewContractOpen;
+	function closeModal(id: string) {
+		(document.getElementById(id) as HTMLDialogElement)?.close();
 	}
 
-	function openChangeContract() {
-		isNewContractOpen = false;
-		isChangeContractOpen = !isChangeContractOpen;
-	}
 
-	function changeContract(contract: Contract) {
+	function changeContract(id: string, contract: Contract) {
 		processor.curOper?.changeContract(contract);
-		isChangeContractOpen = false;
-		isNewContractOpen = false;
-		isContractsOpen = false;
+		closeModal(id);
+	}
+
+	async function selectCtrPty(id: string, ctrPty: Company) {
+		closeModal(id);
+		if (processor == null || processor.curOper == null) {return;}
+		await processor.curOper.selectCtrPty(ctrPty);
 	}
 
 	let isProcessOperationsPushed = $state(false);
 
-	async function cmdAddNewContract() {
+	async function cmdAddNewContract(id: string) {
 		if (isNewContractPushed) return;
 		try {
 			isNewContractPushed = true;
 			await processor.curOper?.cmdAddNewContract();
+			closeModal(id);
 			isNewContractPushed = false;
-			isNewContractOpen = false;
-			isContractsOpen = true;
-			isChangeContractOpen = true;
+
 		} catch(err) {
 			const next_step: OperationStep = {
 				TryLater:{text:'Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение'}
 			}
 			console.error("cmdAddNewContract FAILED, err = ", err);
 			isNewContractPushed = false;
-			isNewContractOpen = false;
-			isContractsOpen = false;
+			closeModal(id);
 			operStep.step = next_step;
 		}
 	}
 
-	async function changeCtrpty() {
-		if (changeCtrptyPushed) {return;}
+	async function changeCtrpty(id: string) {
+		if (processor == null || processor.curOper == null) {return}
+		if (changeCtrptyPushed || !kpp.isValid || !compInn.isValid) {return;}
 		changeCtrptyPushed = true;
-
 		try {
-			await processor.curOper?.cmdChangeCtrPty(compInn.value, kpp.value);
+			await processor.curOper.cmdChangeCtrPty(compInn.value, kpp.value);
+			closeModal(id);
 			changeCtrptyPushed = false;
+
 		} catch(err) {
 			const next_step: OperationStep = {
 				TryLater:{text:'Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение'}
 			}
 			console.error("cmdChangeCtrPty FAILED, err = ", err);
 			changeCtrptyPushed = false;
+			closeModal(id);
 			operStep.step = next_step;
 		}
 	}
@@ -107,6 +104,8 @@
 	onMount(async() => {
 		if (OperationType.StatementSuccess in operStep.step) {
 			await processor.init(operStep.step.StatementSuccess.operations)
+			if (processor.curOper == null) {return;}
+			await processor.curOper.cmdGetAllCompanys();
 		} else {
 			const next_step: OperationStep = {
 				TryLater: {
@@ -115,23 +114,26 @@
 			};
 			console.error('System Logic Error, wrong current step');
 			operStep.step = next_step;
-
 		}
 	})
 </script>
 
 {#if processor}
-	<p>колечество необработанных операций {processor.unProcceed}</p>
+	<section class='w-100'>
+		<p class="x-self-c x-cont-c with-info">
+			Необработанных операций - {processor.unProcceed}
+		</p>
+	</section>
 {/if}
 
 {#if processor && processor.curOper}
-	<section class='group-one'>
-		<div>
-			<label class='green-field-label' for='operStatSuccCtrPtyName'>
+	<div class='w-100'>
+		<div class='w-v100'>
+			<label class='label-close' for='operStatSuccCtrPtyName'>
 				Выбранный контрагент
 			</label>
 			<input
-				class='green-field'
+				class='input-gr'
 				type='text'
 				id='operStatSuccCtrPtyName'
 				disabled={true}
@@ -139,74 +141,48 @@
 				value={processor.curOper.ctrPty?.metadata.comp_name?.short_egrul_name ?? ''}
 			/>
 		</div>
-
-		{#if openCtrpty}
-			<div>
-				<label class='yellow-field-label' for='operStatSuccCtrPtyInn'>
-					Инн орназизации
-				</label>
-				<input
-					class='yellow-field'
-					type='text'
-					id='operStatSuccCtrPtyInn'
-					placeholder='10 | 12 цифр'
-					bind:value={compInn.value}
-					class:input-error={!compInn.isValid}
-
-				/>
-			</div>
-
-			<div>
-				<label class='yellow-field-label' for='operStatSuccCtrPtyKpp'>
-					Кпп орназизации
-				</label>
-				<input
-					class='yellow-field'
-					type='text'
-					id='operStatSuccCtrPtyKpp'
-					placeholder='10 | 12 цифр'
-					bind:value={kpp.value}
-					class:input-error={!kpp.isValid}
-				/>
-			</div>
-
-			<button
-				type='button'
-				class='yellow-button'
-				disabled={!compInn.isValid || !kpp.isValid}
-				onclick={changeCtrpty}
-			>
-				Сменить контрагента
-			</button>
-
-		{/if}
-
-		<button 
-			type='button'
-			class='green-button'
-			disabled={false}
-			onclick={showCtrPty}
-		>
-			Контрагент
-		</button>
-	</section>
-
-	<div>
-		<label class='green-field-label' for='operStatSuccComment'>
-			Комментарий операции
-		</label>
-		<p id='operStatSuccComment'>{processor.curOper.comment}</p>
-
 	</div>
 	
+	<div class='w-100'>
+		<div class='w-v100'>
+			<button 
+				type='button'
+				class='but-gr'
+				disabled={false}
+				onclick={()=>openModal("OperStatSuccNewCtrptyDialog")}
+				id='OperStatSuccChangCtrty'
+			>	
+				<span>
+					Новый контрагент
+				</span>
+			</button>
+		</div>
+	</div>
+	
+	<div class='w-100'>
+		<div class='w-v100'>
+			<button 
+				type='button'
+				class='but-gr'
+				disabled={false}
+				onclick={()=>openModal("operStateSuccAllCompanys")}
+				id='OperStatSuccChangCtrty'
+			>	
+				<span class='t-but'>
+					Сменить контрагента
+				</span>
+				
+			</button>
+		</div>	
+	</div>
 
-	<section class=group-one>
-		<div>
-			<label class='green-field-label' for='operStatSuccDebet'>
+	<div class=w-100>
+		<div class='w-v50'>
+			<label class='label-close' for='operStatSuccDebet'>
 				Дебет {processor.curOper.debetStr}
 			</label>
 			<input
-				class = 'green-field'
+				class = 'input-gr'
 				type='text'
 				id='operStatSuccDebet'
 				bind:value={processor.curOper.data.debet.value}
@@ -216,13 +192,12 @@
 			/>
 		</div>
 
-
-		<div>
-			<label class='green-field-label' for='operStatSuccCredit'>
+		<div class='w-v50'>
+			<label class='label-close' for='operStatSuccCredit'>
 				Кредит {processor.curOper.creditStr}
 			</label>
 			<input
-				class = 'green-field'
+				class = 'input-gr'
 				type='text'
 				id='operStatSuccCredit'
 				bind:value={processor.curOper.data.credit.value}
@@ -233,14 +208,15 @@
 				}
 			/>
 		</div>
+	</div>
 
-
-		<div>
-			<label class='green-field-label' for='operStatSuccAmnt'>
+	<div class='w-100'>
+		<div class='w-v50'>
+			<label class='label-close' for='operStatSuccAmnt'>
 				Сумма операции
 			</label>
 			<input
-				class = 'green-field'
+				class = 'input-gr'
 				type='text'
 				id='operStatSuccAmnt'
 				bind:value={processor.curOper.data.amount.value}
@@ -250,12 +226,12 @@
 			/>
 		</div>
 
-		<div>
-			<label class='green-field-label' for='operStatSuccOperDate'>
+		<div class='w-v100'>
+			<label class='label-close' for='operStatSuccOperDate'>
 				Дата операции
 			</label>
 			<input
-				class='green-field'
+				class='input-gr'
 				type='text'
 				id='operStatSuccOperDate'
 				bind:value={processor.curOper.data.operDate.value}
@@ -264,16 +240,15 @@
 				class:input-error={!processor.curOper.data.operDate.isValid}
 			/>
 		</div>
-	</section>
+	</div>
 
-	<section class='group-one'>
-
-		<div>
-			<label class='green-field-label' for='operStatSuccContrInfo'>
+	<div class='w-100'>
+		<div class='w-v100'>
+			<label class='label-close' for='operStatSuccContrInfo'>
 				Информация о договоре
 			</label>
 			<input
-				class='green-field'
+				class='input-gr'
 				type='text'
 				id='operStatSuccContrInfo'
 				disabled={true}
@@ -281,217 +256,426 @@
 				bind:value={processor.curOper.contrStr}
 			/>
 		</div>
-			
-		{#if isContractsOpen}
-			<div class='group-one'>
-				{#if isChangeContractOpen}
-					<span class='yellow-field-span'>Выберите договор</span>
-					<section class='group-one' id='operStatSuccContrSelSect'>
-						{#each processor.curOper.allPossContracts as contract}
-							<button
-								type='button'
-								class='yellow-button'
-								onclick={() => changeContract(contract)}
-							>
-								{processor.curOper.anyContractStr(contract)}
-							</button>
-						{/each}
-					</section>
-				{/if}
-				
-				<button 
-					type='button'
-					class='yellow-button'
-					disabled={false}
-					onclick={openChangeContract}
-				>
-					Список договоров
-				</button>
-			</div>
+	</div>
 
-
-			{#if isNewContractOpen}
-				<section class='group-one'>
-					<label class='yellow-field-label' for='StateSuccNewContNum'>Номер договора</label>
-					<input 
-						class='yellow-field'
-						type='text' 
-						id='StateSuccNewContNum'
-						bind:value={processor.curOper.newContrData.contractNum.value} 
-						placeholder='строка до 50 знаков'
-						class:input-error={!processor.curOper.newContrData.contractNum.isValid}
-					/>
-
-					<label class='yellow-field-label' for='StateSuccNewContDate'>Дата договора</label>
-					<input 
-						class='yellow-field'
-						type='text' 
-						id='StateSuccNewContDate' 
-						bind:value={processor.curOper.newContrData.contractDate.value} 
-						placeholder='дд.мм.гггг'
-						class:input-error={!processor.curOper.newContrData.contractDate.isValid}
-					/>
-
-					<label class='yellow-field-label' for='StateSuccNewContName'>Название договора</label>
-					<input 
-						class='yellow-field'
-						type='text' 
-						id='StateSuccNewContName' 
-						bind:value={processor.curOper.newContrData.contractTitle.value} 
-						placeholder='строка до 50 знаков'
-						class:input-error={!processor.curOper.newContrData.contractTitle.isValid}
-					/>
-
-					<label class='yellow-field-label' for='StateSuccNewContStDate'>Дата начала</label>
-					<input 
-						class='yellow-field'
-						type='text' 
-						id='StateSuccNewContStDate'  
-						bind:value={processor.curOper.newContrData.contractStDate.value} 
-						placeholder='дд.мм.гггг'
-						class:input-error={!processor.curOper.newContrData.contractStDate.isValid}
-					/>
-
-					<label class='yellow-field-label' for='StateSuccNewContEndDate'>Дата завершения</label>
-					<input 
-						class='yellow-field'
-						type='text' 
-						id='StateSuccNewContEndDate' 
-						bind:value={processor.curOper.newContrData.contractEndDate.value} 
-						placeholder='дд.мм.гггг'
-						class:input-error={!processor.curOper.newContrData.contractEndDate.isValid}
-					/>
-
-					<label class='yellow-field-label' for='StateSuccNewContCurrency'>Валюта договора</label>
-					<input 
-						class='yellow-field'
-						type='text' 
-						id='StateSuccNewContCurrency' 
-						bind:value={processor.curOper.newContrData.contractCurrency.value} 
-						placeholder='РУБ'
-						class:input-error={!processor.curOper.newContrData.contractCurrency.isValid}
-					/>
-
-					<label class='yellow-field-label' for='StateSuccNewContAmnt'>Сумма договора</label>
-					<input 
-						class='yellow-field'
-						type='text' 
-						id='StateSuccNewContAmnt'  
-						bind:value={processor.curOper.newContrData.contractTotAmnt.value} 
-						placeholder='Сумма в валюте договора'
-						class:input-error={!processor.curOper.newContrData.contractTotAmnt.isValid}
-					/>
-
-					<label class='yellow-field-label' for='StateSuccNewContDeffDays'>Рассрочка в днях</label>
-					<input 
-						class='yellow-field'
-						type='text' 
-						id='StateSuccNewContDeffDays' 
-						bind:value={processor.curOper.newContrData.contractDefDays.value} 
-						placeholder='количество дней'
-						class:input-error={!processor.curOper.newContrData.contractDefDays.isValid}
-					/>
-
-					<label class='yellow-field-label' for='StateSuccNewContDescr'>Описание</label>
-					<input 
-						class='yellow-field'
-						type='text' 
-						id='StateSuccNewContDescr' 
-						bind:value={processor.curOper.newContrData.contractDescr.value} 
-						placeholder='строка до 50 знаков'
-						class:input-error={!processor.curOper.newContrData.contractDescr.isValid}
-					/>
-
-					<button class='yellow-button'
-						type='button'
-						onclick={cmdAddNewContract}
-						disabled={!processor.curOper.isNewContractValid || isNewContractPushed}
-					>
-						Добавить договор
-					</button>
-				</section>
-			{/if}
-
+	<div class='w-100'>
+		<div class='w-v100'>
 			<button 
 				type='button'
-				class='yellow-button'
+				class='but-ye'
 				disabled={false}
-				onclick={openNewContract}
+				onclick={()=>openModal("OperStatSeccNewContractDialog")}
 			>
-				Новый договор
+				<span class='t-fill' use:fitText>
+					Новый договор
+				</span>
+				
 			</button>
-		{/if}
-			
-		<button 
-			type='button'
-			class='green-button'
-			disabled={false}
-			onclick={openContracts}
-		>
-			Изменить договор
-		</button>
+		</div>
+	</div>
 
-	</section>
+	<div class='w-100'>
+		<div class='w-v100'>
+			<button 
+				type='button'
+				class='but-ye'
+				disabled={false}
+				onclick={()=>openModal("operStatSuccContrDial")}
+			>
+				<span class='t-fill' use:fitText>
+					Список договоров
+				</span>
+			</button>
+		</div>
+	</div>
 
-
-
-
-	<div class='group-one'>
-		<div>
-			<label class='green-field-label' for='StateSuccIsDupl'>
+	<section class='w-100'>
+		<div class='w-v100'>
+			<label class='label-close' for='StateSuccIsDupl'>
 				Признак дубликата
 			</label>
 			<input
-				class = 'green-field'
+				class = 'input-gr'
 				type='text'
 				id='StateSuccIsDupl'
 				bind:value={processor.curOper.isDuplicateStr}
 				disabled={true}
 			/>
 		</div>
-
-
-
-		<button
-			type='button'
-			class='blue-button'
-			id='StateSuccProcessBut'
-			onclick={() => processor.makeRust()}
-			disabled={!processor.curOper.isValid}
-		>
-			Обработать
-		</button>
-	</div>
-
-
-	<section class='group-two'>
-		<button
-			type='button'
-			class='purple-button'
-			onclick={() => processor.prev()}
-		>
-			Пред. операция
-		</button>
-
-		<button
-			type='button'
-			class='purple-button'
-			onclick={() => processor.next()}
-		>
-			След. операция
-		</button>
 	</section>
 
+	<section class='w-100'>
+		<div class='w-v100'>
+			<label class='label-close' for='operStatSuccComment'>
+				Комментарий операции
+			</label>
+			<p class='x-self-l x-cont-l t-fill' use:fitText id='operStatSuccComment'>
+				{processor.curOper.comment}
+			</p>
+		</div>
+	</section>
+
+	<section class='w-100'>
+		<div class='w-v100'>
+			<button
+				type='button'
+				class='but-bl'
+				id='StateSuccProcessBut'
+				onclick={() => processor.makeRust()}
+				disabled={!processor.curOper.isValid}
+			>
+				Обработать
+			</button>
+		</div>
+	</section>
+		
+	<section class='w-100'>
+		<div class='w-v50'>
+			<button
+				type='button'
+				class='but-pu'
+				onclick={() => processor.prev()}
+			>
+				Пред. операция
+			</button>
+		</div>
+
+		<div class='w-v50'>
+			<button
+				type='button'
+				class='but-pu'
+				onclick={() => processor.next()}
+			>
+				След. операция
+			</button>
+		</div>
+	</section>
 {/if}
 
 
 {#if (processor && processor.unProcceed == 0)}
-	<button
-		type='button'
-		class='blue-button'
-		disabled={processor.unProcceed > 0}
-		onclick={cmdProcessOperations}
-	>
-		сохранить операции
-	</button>
+	<section class='w-100'>
+		<div class='w-v100'>
+			<button
+				type='button'
+				class='but-bl'
+				disabled={isProcessOperationsPushed || processor.unProcceed > 0}
+				onclick={cmdProcessOperations}
+			>	
+				{#if isProcessOperationsPushed}
+					<span class="loading-content">
+						<span class="loading-spinner"></span>
+						Сохранение
+					</span>
+				{:else}
+					сохранить операции
+				{/if}
+				
+			</button>
+		</div>
+	</section>
 {/if}
+
+<dialog 
+	class='dial-t-l' 
+	id='operStatSuccContrDial'
+	onclick={dialogBackdrop}
+>
+	<div class='w-100'>
+		<span class='w-v100'>
+			Выберите договор
+		</span>
+	</div>
+	{#if processor && processor.curOper}
+		{#each processor.curOper?.allPossContracts as contract}
+			<div class='w-100'>
+				<div class='w-v100'>
+					<button
+						class='but-ye'
+						type='button'
+						onclick={()=>changeContract("operStatSuccContrDial", contract)}
+					>
+						<span class='x-self-c t-fill' use:fitText>
+							{processor.curOper.anyContractStr(contract)}
+						</span>
+					</button>
+				</div>
+			</div>
+		{/each}
+	{/if}
+</dialog>
+
+<dialog
+	class='dial-t-l'
+	id='OperStatSeccNewContractDialog'
+	onclick={dialogBackdrop}
+>
+	
+	<div class='w-100'>
+		<p class='x-self-c x-cont-c t-fill with-info'>Введите данные нового договора</p>
+	</div>
+	
+	{#if processor && processor.curOper} 
+		<div class='w-100'>
+			<div class='w-v100'>
+				<label class='label-close' for='OperManualNewContrNum'>
+					Номер договора
+				</label>
+				<input
+					type='text'
+					class='input-ye'
+					id='OperManualNewContrNum'
+					bind:value={processor.curOper.newContrData.contractNum.value}
+					placeholder='Строка до 50 знаков'
+					class:input-error={!processor.curOper.newContrData.contractNum.isValid}
+				/>
+			</div>
+		</div>
+		<div class='w-100'>
+			<div class='w-v100'>
+				<label class='label-close' for='OperManualNewContrDate'>
+					Дата договора
+				</label>
+				<input
+					type='text'
+					class='input-ye'
+					id='OperManualNewContrDate'
+					bind:value={processor.curOper.newContrData.contractDate.value}
+					placeholder='00.00.0000'
+					class:input-error={!processor.curOper.newContrData.contractDate.isValid}
+				/>
+			</div>
+		</div>
+		<div class='w-100'>
+			<div class='w-v100'>
+				<label class='label-close' for='OperManualNewContrTittle'>
+					Название договора
+				</label>
+				<input
+					type='text'
+					class='input-ye'
+					id='OperManualNewContrTittle'
+					bind:value={processor.curOper.newContrData.contractTitle.value}
+					placeholder='Строка до 50 знаков'
+					class:input-error={!processor.curOper.newContrData.contractTitle.isValid}
+				/>
+			</div>
+		</div>
+		<div class='w-100'>
+			<div class='w-v100'>
+				<label class='label-close' for='OperManualNewContrStFDate'>
+					Дата начала
+				</label>
+				<input
+					type='text'
+					class='input-ye'
+					id='OperManualNewContrStFDate'
+					bind:value={processor.curOper.newContrData.contractStDate.value}
+					placeholder='00.00.0000'
+					class:input-error={!processor.curOper.newContrData.contractStDate.isValid}
+				/>
+			</div>
+		</div>
+		<div class='w-100'>
+			<div class='w-v100'>
+				<label class='label-close' for='OperManualNewContrEndFDate'>
+					Дата окончания
+				</label>
+				<input
+					type='text'
+					class='input-ye'
+					id='OperManualNewContrEndFDate'
+					bind:value={processor.curOper.newContrData.contractEndDate.value}
+					placeholder='00.00.0000'
+					class:input-error={!processor.curOper.newContrData.contractEndDate.isValid}
+				/>
+			</div>
+		</div>
+		<div class='w-100'>
+			<div class='w-v100'>
+				<label class='label-close' for='OperManualNewContrCurrency'>
+					Валюта договора
+				</label>
+				<input
+					type='text'
+					class='input-ye'
+					id='OperManualNewContrCurrency'
+					bind:value={processor.curOper.newContrData.contractCurrency.value}
+					placeholder='РУБ'
+					class:input-error={!processor.curOper.newContrData.contractCurrency.isValid}
+				/>
+			</div>
+		</div>
+		<div class='w-100'>
+			<div class='w-v100'>
+				<label class='label-close' for='OperManualNewContramnt'>
+					Сумма договора
+				</label>
+				<input
+					type='text'
+					class='input-ye'
+					id='OperManualNewContramnt'
+					bind:value={processor.curOper.newContrData.contractTotAmnt.value}
+					placeholder='Сумма в валюте договора'
+					class:input-error={!processor.curOper.newContrData.contractTotAmnt.isValid}
+				/>
+			</div>
+		</div>
+		<div class='w-100'>
+			<div class='w-v100'>
+				<label class='label-close' for='OperManualNewContrDeffDays'>
+					Рассрочка в днях
+				</label>
+				<input
+					type='text'
+					class='input-ye'
+					id='OperManualNewContrDeffDays'
+					bind:value={processor.curOper.newContrData.contractDefDays.value}
+					placeholder='Количество дней'
+					class:input-error={!processor.curOper.newContrData.contractDefDays.isValid}
+				/>
+			</div>
+		</div>
+		<div class='w-100'>
+			<div class='w-v100'>
+				<label class='label-close' for='OperManualNewContrDescr'>
+					Описание договора
+				</label>
+				<input
+					type='text'
+					class='input-ye'
+					id='OperManualNewContrDescr'
+					bind:value={processor.curOper.newContrData.contractDescr.value}
+					placeholder='Краткое описание'
+					class:input-error={!processor.curOper.newContrData.contractDescr.isValid}
+				/>
+			</div>
+		</div>
+		<div class='w-100'>
+			<div class='w-v100'>
+				<button 
+					class='but-ye'
+					type='button'
+					onclick={()=>cmdAddNewContract("OperStatSeccNewContractDialog")}
+					disabled={isNewContractPushed || !processor.curOper.isNewContractValid || isNewContractPushed}
+				>
+					{#if isNewContractPushed}
+						<span class='loading-content'>
+							<span class='loading-spinner'></span>
+							Добавление
+						</span>
+					{:else}
+						Добавить договор
+					{/if}
+					
+				</button>
+			</div>
+		</div>
+	{/if}
+</dialog>
+
+<dialog 
+	class='dial-t-l'
+	id='operStateSuccAllCompanys'
+	onclick={dialogBackdrop}
+>
+	<div class='w-100'>
+		<p class='x-self-c x-cont-c with-info'>
+			Выберите контрагента
+		</p>
+	</div>
+	{#if processor && processor.curOper}
+		{#each processor.curOper.allCtrPtys as ctrPty}
+			<div class='w-100'>
+				<div class='w-v100'>
+					<button
+						type='button'
+						class='but-ye'
+						disabled={false}
+						onclick={()=> selectCtrPty("operStateSuccAllCompanys", ctrPty)}
+
+					>
+						<span class='t-fill' use:fitText>
+							{ctrPty.metadata.comp_name?.short_egrul_name ?? ""}
+						</span>
+					</button>
+				</div>
+			</div>	
+		{/each}
+	{/if}
+	<div class='w-100'>
+		<div class='w-v100'>
+			<button
+				type='button'
+				class='but-bl'
+				disabled={false}
+				onclick={()=>closeModal("operStateSuccAllCompanys")}
+			>
+				Закрыть окно
+			</button>
+		</div>
+	</div>
+</dialog>
+
+
+<dialog
+	class='dial-t-l'
+	id='OperStatSuccNewCtrptyDialog'
+	onclick={dialogBackdrop}
+>
+	<div class='w-100'>
+		<p class="x-self-c t-fill with-info">
+			Введите реквизиты
+		</p>
+	</div>
+	<div class='w-100'>
+		<div class='w-v100'>
+			<label class='label-close' for='operManualNewCtrPryInn'>
+				Инн организации
+			</label>
+			<input
+				class='input-ye'
+				id='operManualNewCtrPryInn'
+				type='text'
+				placeholder='10 | 12 цифр'
+				bind:value={compInn.value}
+				class:input-error={!compInn.isValid}
+			/>
+		</div>
+	</div>
+	<div class='w-100'>
+		<div class='w-v100'>
+			<label class='label-close' for='operManualNewCtrPryKpp'>
+				Кпп орназизации
+			</label>
+			<input
+				class='input-ye'
+				id='operManualNewCtrPryKpp'
+				type='text'
+				placeholder='10 | 12 цифр'
+				bind:value={kpp.value}
+				class:input-error={!kpp.isValid}
+			/>
+		</div>
+	</div>
+
+	<div class='w-100'>
+		<div class='w-v100'>
+			<button
+				type='button'
+				class='but-ye'
+				disabled={changeCtrptyPushed || !compInn.isValid || !kpp.isValid}
+				onclick={() => changeCtrpty("OperStatSuccNewCtrptyDialog")}
+			>
+				{#if changeCtrptyPushed}
+					<span class='loading-content'>
+						<span class='loading-spinner'></span>
+						Добавление
+					</span>
+				{:else}
+					Добавить нового контрагента
+				{/if}
+			</button>
+		</div>
+	</div>
+</dialog>

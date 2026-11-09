@@ -111,22 +111,22 @@
 
 
 
-<section class="group-one">
-    <div>
-        <label class="green-field-label" for="jsonFilePath">
+<div class="w-100">
+    <div class='w-v100'>
+        <label class="label-close" for="jsonFilePath">
             Загрузите путь до json файла
         </label>
         <input
             type="text"
             id="jsonFilePath"
             value={jsonFilePath}
-            class="green-field"
+            class="input-gr"
 			disabled={true}
         />
         <button
             type="button"
             id="xmlFileButton"
-            class="green-button"
+            class="but-gr"
             onclick={getJsonFilePath}
             disabled={isLoadJsonFile}
         >
@@ -134,9 +134,11 @@
         </button>
 
     </div>
+</div>
 
-    <div>
-        <label class="green-field-label" for="signFilePath">
+<div class="w-100">
+    <div class='w-v100'>
+        <label class="label-close" for="signFilePath">
             Загрузите путь до файла ЭЦП
         </label>
   
@@ -144,13 +146,13 @@
             type="text"
             id="signFilePath"
             value={signFilePath}
-            class="green-field"
+            class="input-gr"
 			disabled={true}
         />
         <button
             type="button"
             id="sigFileButton"
-            class="green-button"
+            class="but-gr"
             onclick={getSignFilePath}
             disabled={isLoadSignFile}
         >
@@ -158,12 +160,15 @@
         </button>
 
     </div>
+</div>
 
-	<div>
+
+<div class="w-100">
+    <div class='w-v100'>
 		<button
 			type="button"
 			id='Register'
-			class='green-button'
+			class='but-gr'
 			disabled={isPushedRegister || IsDataReady}
 			onclick={register}
 		>	
@@ -173,9 +178,9 @@
 					Регистрация...
 				</span>
 			{:else}
-				<span class='green-button-span'>Отправить файлы на регистрацию</span>
+				<span class='but-gr-span'>Отправить файлы на регистрацию</span>
 			{/if}
 		</button>
 	</div>
-</section>
+</div>
 

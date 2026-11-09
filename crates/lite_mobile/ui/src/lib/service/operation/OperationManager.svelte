@@ -15,7 +15,12 @@
 	}
 </script>
 
-<p class="text-small">{operStep.currentText}</p>
+<div class='w-100'>
+	<p class='x-cont-c x-self-c with-info'>
+		{operStep.currentText}
+	</p>
+</div>
+
 
 {#if operStep.getPage}
     <svelte:component this={operStep.getPage} />
@@ -24,30 +29,30 @@
 {/if}
 
 
-<div class='group-one'>
-	<div>
+<div class='w-100'>
+	<div class='w-v100'>
 		<button
 			type='button'
-			class='blue-button'
+			class='but-pu'
 			onclick={goToLoading}
 		>
-			<span class="blue-button-span">
+			<span>
 				Меню операций
 			</span>
 		</button>
 	</div>
+</div>
 
-	<div>
+<div class='w-100'>
+	<div class='w-v100'>
 		<button
 			type="button"
-			class="blue-button"
+			class="but-pu"
 			onclick={closeOper}
 			>
-			<span class="blue-button-span">
+			<span>
 				Основной экран
 			</span>
 		</button>
 	</div>
-
-
 </div>

@@ -1,8 +1,8 @@
 /* Основная секция */
 .info-section {
-    background: rgba(224, 30, 30, 0.7);
+    background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(12px);
-    border: 0.9rem solid rgba(229, 231, 235, 0.8);
+    border: 0.05rem solid rgba(229, 231, 235, 0.8);
     border-radius: 16px;
     padding: 24px;
     margin-bottom: 24px;

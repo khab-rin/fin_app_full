@@ -7,6 +7,7 @@
 @import './mob_groups.css';
 @import './mob_info.css';
 @import './mob_input.css';
+@import './mob_pooling.css';
 @import './mob_text.css';
 @import './mob_top_bar.css';
 
@@ -106,7 +107,8 @@ main {
 	background: radial-gradient(circle, var(--main-c) 0%, var(--main-b) 100%);
 	padding-left: 0.3rem;
 	padding-right: 0.3rem;
-	gap: 0.5rem
+	gap: 0.5rem;
+	padding-top: 1.5rem;
 }
 
 footer {

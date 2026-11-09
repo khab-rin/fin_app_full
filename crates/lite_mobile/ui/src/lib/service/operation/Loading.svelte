@@ -32,39 +32,49 @@
 </script>
 
 
-<div class='group-one'>
-	<button
-		type='button'
-		class='green-button'
-		onclick={goToStatementParser}
-		disabled={isPushedStatementParser}
-	>
-		<span class='green-button-span'>
-			Загрзить проводки из банковской выписки
-		</span>
-	</button>
+<div class='w-100'>
+	<div class='w-v100'>
+		<button
+			type='button'
+			class='but-bl'
+			onclick={goToStatementParser}
+			disabled={isPushedStatementParser}
+		>
+			<span>
+				Загрзить проводки из банковской выписки
+			</span>
+		</button>
+	</div>
+</div>
 
-	<button
-		type='button'
-		class='green-button'
-		onclick={goToManualInput}
-		disabled={isPushedManualInput}
-	>
-		<span class='green-button-span'>
-			Создать проводки вручную
-		</span>
-	</button>
+<div class='w-100'>
+	<div class='w-v100'>
+		<button
+			type='button'
+			class='but-bl'
+			onclick={goToManualInput}
+			disabled={isPushedManualInput}
+		>
+			<span>
+				Создать проводки вручную
+			</span>
+		</button>
+	</div>
+</div>
 
-	<button
-		type='button'
-		class='green-button'
-		onclick={goToNewBankAcc}
-		disabled={isPushedManualInput}
-	>
-		<span class='green-button-span'>
-			Добавить расчетный счет
-		</span>
-	</button>
+<div class='w-100'>
+	<div class='w-v100'>
+		<button
+			type='button'
+			class='but-bl'
+			onclick={goToNewBankAcc}
+			disabled={isPushedManualInput}
+		>
+			<span>
+				Добавить расчетный счет
+			</span>
+		</button>
+	</div>
 </div>
 
 

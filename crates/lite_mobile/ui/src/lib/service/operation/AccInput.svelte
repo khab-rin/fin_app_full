@@ -38,36 +38,43 @@
 </script>
 
 
-<div class='group-one'>
-	<label class='green-field-label' for='operAccBic'>
-		Введите БИК
-	</label>
-	<input
-		type='text'
-		class='green-field'
-		id='operAccBic'
-		disabled={false}
-		bind:value={bic.value}
-		placeholder="9 цифр"
-		class:input-error={!bic.isValid}
-	/>
+<div class='w-100'>
+	<div class='w-v30'>
+		<label class='label-close' for='operAccBic'>
+			Введите БИК
+		</label>
+		<input
+			type='text'
+			class='input-gr'
+			id='operAccBic'
+			disabled={false}
+			bind:value={bic.value}
+			placeholder="9 цифр"
+			class:input-error={!bic.isValid}
+		/>
+	</div>
+		
+	<div class='w-v70'>
+		<label class='label-close' for='operAccInn'>
+			Введите номер расчетного счета
+		</label>
+		<input
+			type='text'
+			class='input-gr'
+			id='operAccInn'
+			disabled={false}
+			bind:value={rasAcc.value}
+			placeholder="20 цифр"
+			class:input-error={!rasAcc.isValid}
+		/>
+	</div>
 
-	<label class='green-field-label' for='operAccInn'>
-		Введите номер расчетного счета
-	</label>
-	<input
-		type='text'
-		class='green-field'
-		id='operAccInn'
-		disabled={false}
-		bind:value={rasAcc.value}
-		placeholder="20 цифр"
-		class:input-error={!rasAcc.isValid}
-	/>
+</div>
 
+<div class='w-100'>
 	<button
         type='button'
-        class='green-button'
+        class='but-gr'
         disabled={!bic.isValid || !rasAcc.isValid || isNewAccPushed}
         onclick ={addAcc}
     >	

@@ -31,7 +31,7 @@
 </script>
 
 <div class='w-100'>
-	<p class="x-cont-c with-info">
+	<p class="x-cont-c x-self-c with-info">
 		{currAuthStep.currentText}
 	</p>
 </div>

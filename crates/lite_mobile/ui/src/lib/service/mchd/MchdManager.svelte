@@ -30,27 +30,29 @@
 {/key}
 
 
-<section class="group-two">
+<div class="w-100">
+	<div class='w-v100'>
+		<button
+			type="button"
+			class="but-pu"
+			onclick={goToLoading}
+			>
+			<span>
+				Меню доверенностей
+			</span>
+		</button>
+	</div>
 
-	<button
-		type="button"
-		class="blue-button"
-		onclick={goToLoading}
-		>
-		<span class="blue-button-span">
-			Меню доверенностей
-		</span>
-	</button>
-
-	<button
-		type="button"
-		class="blue-button"
-		onclick={closeMchd}
-		>
-		<span class="blue-button-span">
-			Основной экран
-		</span>
-	</button>
-
-</section>
+	<div class='w-v100'>
+		<button
+			type="button"
+			class="but-pu"
+			onclick={closeMchd}
+			>
+			<span>
+				Основной экран
+			</span>
+		</button>
+	</div>
+</div>
 

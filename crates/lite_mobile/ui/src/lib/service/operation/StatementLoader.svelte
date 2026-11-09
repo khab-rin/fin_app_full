@@ -2,6 +2,9 @@
     import {onMount} from 'svelte';
     import {invoke} from '@tauri-apps/api/core';
     import {open as OpenFileDialog} from '@tauri-apps/plugin-dialog';
+
+	import {dialogBackdrop} from '$lib/rules/dialogBorders';
+	import {fitText} from '$lib/rules/text';
     import {FieldValidator} from '$lib/models/Auth/FieldValidator.svelte';
 
     import type {OperationStep} from '$lib/models/rustModels/OperationStep';
@@ -37,28 +40,19 @@
 		}
 	}
 
-    let dialogRef = $state<HTMLDialogElement | null>(null);
+	function selectElem(id: string, value: RasBicAcc): RasBicAcc {
+		(document.getElementById(id) as HTMLDialogElement)?.close()
+		return value;
+	}
 
-    function openAccModal() {
-        if (dialogRef) dialogRef.showModal();
+	function openModal(id: string) {
+        (document.getElementById(id) as HTMLDialogElement)?.showModal();
     }
 
-    function closeAccModal() {
-        if (dialogRef) dialogRef.close();
+	function closeModal(id: string) {
+        (document.getElementById(id) as HTMLDialogElement)?.close();
     }
-
-    function selectAcc(acc: RasBicAcc) {
-        if (isPushedAccLoad) return;
-
-        isPushedAccLoad = true;
-
-        selectedBankAcc = acc;
-        closeAccModal();
-
-        isPushedAccLoad = false;
-        
-    }
-
+	
     async function selectFile() {
         if (isPushFileLoad) return;
         isPushFileLoad = true;
@@ -108,6 +102,8 @@
                 rasAcc: rasAcc.value
             };
             bankAccounts = await invoke<RasBicAcc[]>('cmd_add_comp_bank_acc', data);
+			bic.value="";
+			rasAcc.value="";
             isPushAddAcc= false;
 
         } catch (err) {
@@ -147,121 +143,128 @@
     onMount(async() => {
         freshAccs()
     });
-
-
 </script>
 
-<section class='group-one'>
-    <div>
-        <label class="green-field-label" for="statementPath">
+<dialog 
+	class="dial-t-l"
+	onclick={dialogBackdrop}
+    id="OperStatProcBankAccs" 
+>
+	<div class='w-100'>
+		<p class= 'x-self-c x-cont-c'>
+			Выбор счета
+		</p>
+	</div>
+
+	{#if bankAccounts.length > 0}
+		{#each bankAccounts as acc (acc)}
+			<div class='w-100'>
+				<div class='w-v100'>
+					<button 
+						type="button" 
+						class="but-ye"
+						onclick={()=>{selectedBankAcc=selectElem("OperStatProcBankAccs", acc)}}
+					>
+						<span class="t-fill" use:fitText>
+							{bankAccStr(acc)}
+						</span>
+					</button>
+				</div>
+			</div>
+		{/each}
+
+		<div class='w-100'>
+			<div class='w-v100'>
+				<button 
+					class="but-ye"
+					type="button"
+					onclick={()=>closeModal("OperStatProcBankAccs")}
+					>			
+					<span>
+						Отмена
+					</span>
+				</button>
+			</div>
+		</div>
+	{:else}
+		<div class='w-100'>
+			<p class= 'x-self-c, x-cont-c'>
+				На этом устройстве еще нет сохраненных счетов
+			</p>
+		</div>
+	{/if}
+</dialog>
+
+
+
+<div class='w-100'>
+    <div class='w-v100'>
+        <label class="label-close" for="statementPath">
             Укажите путь до файла выписки
         </label>
         <input
             type='text'
             id='statementPath'
             value={path}
-            class='green-field'
-
+            class='input-gr'
         />
 	</div>
+</div>
 
-	<button
-		type='button'
-		id='statementPathButton'
-		class='green-button'
-		onclick={selectFile}
-		disabled={isPushFileLoad}
-	>
-		Выбрать файл выписки
-	</button>
- 
+<div class='w-100'>
+    <div class='w-v100'>
+		<button
+			type='button'
+			id='statementPathButton'
+			class='but-gr'
+			onclick={selectFile}
+			disabled={isPushFileLoad}
+		>
+			Выбрать файл выписки
+		</button>
+	</div>
+</div>
 
-	<button
-		type="button"
-		class="green-button"
-		disabled={isPushedAccLoad}
-		
-		onclick={openAccModal}
-	>
+<div class='w-100'>
+    <div class='w-v100'>	
+		<button
+			type="button"
+			class="but-gr"
+			disabled={isPushedAccLoad}
+			
+			onclick={()=>openModal("OperStatProcBankAccs")}
+		>
+			<span>
+				{bankAccStr(selectedBankAcc)}
+			</span>
+		</button>
+	</div>
+</div>
 
-		<span class="wide-button-span">
-			{bankAccStr(selectedBankAcc)}
-		</span>
-    </button>
+<div class='w-100'>
+    <div class='w-v100'>
+		<button
+			type='button'
+			class='but-gr'
+			disabled={parseStatementDisabled}
+			onclick ={parseStatement}
+		>	
+			{#if isPushParseStatement}
+				<span class="loading-content">
+					<span class="loading-spinner"></span>
+					Обработка...
+				</span>
+			{:else}
+				Загрузить выписку
+			{/if}
 
-</section>
+		</button>
+	</div>
+</div>
 
-
-<dialog 
-    bind:this={dialogRef} 
-    class="selector-dialog"
-    onclick={(e) => { if (e.target === dialogRef) closeAccModal(); }}
->
-
-    <h5>Выбор счета</h5>
-
-
-    <div class="group-one">
-        {#if bankAccounts.length > 0}
-            <ul>
-                {#each bankAccounts as acc (acc)}
-                    <li>
-						<button 
-							type="button" 
-							class="yellow-button"
-							onclick={() => selectAcc(acc)}
-						>
-							<span class="yellow-button-span">
-								{bankAccStr(acc)}
-							</span>
-						</button>
-                    </li>
-                {/each}
-            </ul>
-
-            <div>
-                <button class="yellow-button"
-                    type="button"
-                    onclick={closeAccModal}
-                    >
-                    
-                    <span class="yellow-button-span">
-                        Отмена
-                    </span>
-
-
-                </button>
-            </div>
-
-        {:else}
-            <p>На этом устройстве еще нет сохраненных счетов</p>
-        {/if}
-    </div>
-
-</dialog>
-
-
-<button
-	type='button'
-	class='green-button'
-	disabled={parseStatementDisabled}
-	onclick ={parseStatement}
->	
-	{#if isPushParseStatement}
-		<span class="loading-content">
-			<span class="loading-spinner"></span>
-			Обработка...
-		</span>
-	{:else}
-		Загрузить выписку
-	{/if}
-
-</button>
-
-
-<section class='group-one'>
-    <div>
-        <label class='yellow-field-label' for='inputBic'>
+<div class='w-100'>
+    <div class='w-v100'>
+        <label class='label-close' for='inputBic'>
             Введите бик Вашего банка
         </label>
         <input
@@ -270,18 +273,15 @@
             bind:value={bic.value}
             disabled={isPushAddAcc}
             placeholder="9 цифр"
-            class='yellow-field'
+            class='input-ye'
             class:input-error={!bic.isValid}
         />
-        {#if !bic.isValid}
-            <span class="yellow-field-error-span">
-                Некорректный БИК
-            </span>
-        {/if}
-    </div>
+	</div>
+</div>
 
-    <div>
-        <label class='yellow-field-label' for='operStateLoaderRassAcc'>
+<div class='w-100'>
+    <div class='w-v100'>
+        <label class='label-close' for='operStateLoaderRassAcc'>
             Введите номер расчетного счета
         </label>
         <input
@@ -290,29 +290,29 @@
             bind:value={rasAcc.value}
             disabled={isPushAddAcc}
             placeholder="20 цифр"
-            class='yellow-field'
+            class='input-ye'
             class:input-error={!rasAcc.isValid}
         />
-        {#if !rasAcc.isValid}
-            <span class="yellow-field-error-span">
-                Некорректный БИК
-            </span>
-        {/if}
-    </div>
+	</div>
+</div>
 
-	<button
-        type='button'
-        class='green-button'
-        disabled={isPushAddAcc || bankAccReady}
-        onclick ={addAcc}
-    >	
-		{#if isPushAddAcc}
-			<span class="loading-content">
-				<span class="loading-spinner"></span>
-				Добавление...
-			</span>
-		{:else}
-			Добавить расчетный счет
-		{/if}
-    </button>
-</section>
+<div class='w-100'>
+    <div class='w-v100'>
+		<button
+			type='button'
+			class='but-gr'
+			disabled={isPushAddAcc || bankAccReady}
+			onclick ={addAcc}
+		>	
+			{#if isPushAddAcc}
+				<span class="loading-content">
+					<span class="loading-spinner"></span>
+					Добавление...
+				</span>
+			{:else}
+				Добавить расчетный счет
+			{/if}
+		</button>
+	</div>
+</div>
+

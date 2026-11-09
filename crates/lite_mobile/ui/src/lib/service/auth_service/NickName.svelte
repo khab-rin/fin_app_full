@@ -81,7 +81,7 @@
 					onclick={()=> {currNick=selectElem("AuthNickNames", nickName)}}
 				>
 					<span
-						class='x-self-ce t-fill' use:fitText
+						class='x-self-c t-fill' use:fitText
 					>
 						{nickName}
 					</span>
