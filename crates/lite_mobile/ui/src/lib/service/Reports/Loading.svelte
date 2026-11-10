@@ -16,24 +16,28 @@
 
 </script>
 
-<section class='group-one'>
+<div class='w-100'>
+	<div class='w-v100'>
+		<button
+			class='but-bl'
+			type='button'
+			disabled={false}
+			onclick={goToFnsReports}
+		>
+			Отчеты для налоговой
+		</button>
+	</div>
+</div>
 
-	<button
-		class='green-button'
-		type='button'
-		disabled={false}
-		onclick={goToFnsReports}
-	>
-		Отчеты для налоговой
-	</button>
-
-	<button
-		class='green-button'
-		type='button'
-		disabled={false}
-		onclick={goToHomeReports}
-	>
-		Внутренние управленческие отчеты
-	</button>
-
-</section>
+<div class='w-100'>
+	<div class='w-v100'>
+		<button
+			class='but-bl'
+			type='button'
+			disabled={false}
+			onclick={goToHomeReports}
+		>
+			Внутренние управленческие отчеты
+		</button>
+	</div>
+</div>

@@ -24,7 +24,7 @@
 			Раздел проводок и операций
 		</label>
 		<button 
-			class='but-pu'
+			class='but-bl'
 			id='mainGoToOper'
 			onclick={goToOper}
 		>
@@ -40,12 +40,12 @@
 			Раздел отчетов
 		</label>
 		<button 
-			class='but-pu'
+			class='but-bl'
 			id='mainGoToReport'
 			onclick={goToReport}
 		
 		>
-			отчеты
+			Отчеты
 		</button>
 	</div>
 </div>
@@ -56,7 +56,7 @@
 			Раздел электронных доверенностей
 		</label>
 		<button 
-			class='but-pu'
+			class='but-bl'
 			id='maingoToMchd'
 			onclick={goToMchd}
 		>

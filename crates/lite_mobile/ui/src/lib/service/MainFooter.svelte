@@ -7,8 +7,10 @@
 
 
 <div class='w-v25'>
-	<button class="but-footer"
+	<button 
+		class="but-footer"
 		onclick={pageManager.Page = null}
+		disabled={pageManager.totalOff}
 	>
 		<span class="bar-icon">🏠</span>
 		<span class="bar-label">Главная</span>

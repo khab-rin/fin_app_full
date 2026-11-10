@@ -56,75 +56,81 @@
 </script>
 
 
-<section class="group-one">
-    <div>
+<div class="w-100">
+    <div class='w-v100'>
         <button
             type="button"
-            class="green-button"
+            class="but-bl"
             onclick={goToBTBMchd}
             disabled={isBTBPushed}
         >
-            <span class="green-button-span">
+            <span>
                 Создать B2B МЧД
             </span>
         </button>
     </div>
+</div>
 
-    <div>
+<div class="w-100">
+    <div class='w-v100'>
         <button
             type="button"
-            class="green-button"
+            class="but-bl"
             onclick={goToFnsMchd}
             disabled={isFnsPushed}
         >
-            <span class="green-button-span">
+            <span>
                 Создать МЧД для отчетности
             </span>
         </button>
     </div>
+</div>
 
-    <div>
+<div class="w-100">
+    <div class='w-v100'>
         <button
             type="button"
-            class="green-button"
+            class="but-bl"
             onclick={goToHomeMchd}
             disabled={isHomePushed}
         >
-            <span class="green-button-span">
+            <span>
                 Создать МЧД для работы в системе
             </span>
         </button>
     </div>
+</div>
 
-
-    <div>
+<div class="w-100">
+    <div class='w-v100'>
         <button
             type="button"
-            class="green-button"
+            class="but-bl"
             onclick={goToLendMchd}
             disabled={isLendPushed}
 
             >
-            <span class='green-button-span'>
+            <span>
                 Отправить подписанный МЧД
             </span>
         </button>
     </div>
+</div>
 
-    <div>
+<div class="w-100">
+    <div class='w-v100'>
         <button
             type="button"
-            class="green-button"
+            class="but-bl"
             disabled={isShowPowersPushed}
             onclick={goToShowPowers}
             >
-            <span class='green-button-span'>
+            <span>
                 Посмотреть текущие полномочия
             </span>
         </button>
     </div>
-
-</section>
+</div>
 
 
 

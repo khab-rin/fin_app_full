@@ -16,8 +16,11 @@
     }
 </script>
 
-
-<p class="text-small">{currentMchdStep.currentText}</p>
+{#if currentMchdStep.currentText}
+	<div class='w-100'>
+		<p class="x-self-c x-cont-c with-info">{currentMchdStep.currentText}</p>
+	</div>
+{/if}
 
 
 {#key currentMchdStep.step}
@@ -31,7 +34,7 @@
 
 
 <div class="w-100">
-	<div class='w-v100'>
+	<div class='w-v50'>
 		<button
 			type="button"
 			class="but-pu"
@@ -43,7 +46,7 @@
 		</button>
 	</div>
 
-	<div class='w-v100'>
+	<div class='w-v50'>
 		<button
 			type="button"
 			class="but-pu"

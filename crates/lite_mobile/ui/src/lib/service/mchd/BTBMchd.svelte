@@ -359,7 +359,7 @@
 
 	<div class="w-100">
 		<div class='w-v33'>
-			<label class="label-close" for="MchdBtbuserSurName">Фамилия пользователя</label>
+			<label class="label-close" for="MchdBtbuserSurName">Фамилия</label>
 			<input
 				id="MchdBtbuserSurName"
 				type="text"
@@ -372,7 +372,7 @@
 		</div>
 
 		<div class='w-v33'>
-			<label class="label-close" for="MchdBtbuserFirstName">Имя пользователя</label>
+			<label class="label-close" for="MchdBtbuserFirstName">Имя</label>
 			<input
 				id="MchdBtbuserFirstName"
 				type="text"
@@ -385,7 +385,7 @@
 		</div>
 
 		<div class='w-v33'>
-			<label class="label-close" for="MchdBtbuserMidName">Отчество пользователя</label>
+			<label class="label-close" for="MchdBtbuserMidName">Отчество</label>
 			<input
 				id="MchdBtbuserMidName"
 				type="text"
@@ -400,7 +400,7 @@
 
 	<div class='w-100'>
 		<div class='w-v33'>
-			<label class="label-close" for="MchdBtbuserBirthDay">Дата рождения пользователя</label>
+			<label class="label-close" for="MchdBtbuserBirthDay">Дата рождения</label>
 			<input
 				id="MchdBtbuserBirthDay"
 				type="text"
@@ -413,7 +413,7 @@
 		</div>
 
 		<div class='w-v33'>
-			<label class="label-close" for="MchdBtbuserGender">Пол пользователя</label>
+			<label class="label-close" for="MchdBtbuserGender">Пол</label>
 			<select 
 				id="MchdBtbuserGender"
 				bind:value={currentMchdStep.data.userGender.value}
@@ -446,7 +446,7 @@
 
 	<div class=w-100>
 		<div class='w-v50'>
-			<label class="label-close" for="MchdBtbuserSnils">СНИЛС пользователя</label>
+			<label class="label-close" for="MchdBtbuserSnils">СНИЛС</label>
 			<input
 				id="MchdBtbuserSnils"
 				type="text"
@@ -459,7 +459,7 @@
 		</div>
 
 		<div class='w-v50'>
-			<label class="label-close" for="MchdBtbuserInn">ИНН пользователя</label>
+			<label class="label-close" for="MchdBtbuserInn">ИНН</label>
 			<input
 				id="MchdBtbuserInn"
 				type="text"
@@ -514,7 +514,7 @@
 
 	<div class='w-100'>
 		<div class='w-v100'>
-			<label class="label-close" for="MchdBtbuserPassportIssueer">Кем выдан пасорт  пользователя</label>
+			<label class="label-close" for="MchdBtbuserPassportIssueer">Кем выдан пасорт </label>
 			<input
 				id="MchdBtbuserPassportIssueer"
 				type="text"
@@ -615,7 +615,7 @@
 
 
 
-<div class='w-40'>
+<div class='w-100'>
     <div class='w-v50'>
         <button
             class="but-pu"
@@ -643,7 +643,7 @@
     </div>
 </div>
 
-<div class='w-40'>
+<div class='w-100'>
     <div class='w-v50'>
         <button
             class="but-pu"
@@ -672,10 +672,10 @@
 </div>
 
 
-<div class='w-40'>
+<div class='w-100'>
 	<div class='w-v50'>
         <button
-            class="but-pu"
+            class="but-gr"
             type="button"
             onclick={()=>currentMchdStep.loadUser1()}
         >
@@ -689,7 +689,7 @@
 		<button
 			type="button"
 			id="MchdBtbMchdBtbLendBut"
-			class="but-bl"
+			class="but-gr"
 			onclick={lendMchd}
 			disabled={isMainPushed || !allDone}>
 				{#if isMainPushed}

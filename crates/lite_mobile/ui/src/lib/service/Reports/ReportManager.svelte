@@ -17,35 +17,42 @@
 
 </script>
 
-<p class="text-small">{reportManager.currentText}</p>
+{#if reportManager.currentText}
+	<div class='w-100'>
+		<span class='x-self-c x-cont-c with-info'>
+			{reportManager.currentText}
+		</span>
+	</div>
+{/if}
+
 
 <svelte:component this={reportManager.getPage}/>
 
 
-<section class='group-two'>
-	<button
-		type="button"
-		class="blue-button"
-		onclick={goToLoading}
-		>
-		<span class="blue-button-span">
-			Меню отчетов
-		</span>
-	</button>
+<section class='w-100'>
+	<div class='w-v50'>
+		<button
+			type="button"
+			class="but-pu"
+			onclick={goToLoading}
+			>
+			<span>
+				Меню отчетов
+			</span>
+		</button>
+	</div>
 
-
-
-	<button
-		type="button"
-		class="blue-button"
-		onclick={closeReport}
-		>
-		<span class="blue-button-span">
-			Основной экран
-		</span>
-	</button>
-
-
+	<div class='w-v50'>
+		<button
+			type="button"
+			class="but-pu"
+			onclick={closeReport}
+			>
+			<span>
+				Основной экран
+			</span>
+		</button>
+	</div>
 </section>
 
 

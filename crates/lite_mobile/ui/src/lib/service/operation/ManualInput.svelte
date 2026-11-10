@@ -374,7 +374,7 @@
 	<div class='w-v50'>
 		<button
 			type='button'
-			class='but-bl'
+			class='but-gr'
 			disabled={!curOper.isValid || isAddOperationPushed}	
 			onclick={addOperation}
 		>
@@ -385,7 +385,7 @@
 	<div class='w-v50'>
 		<button
 			type='button'
-			class='but-bl'
+			class='but-gr'
 			disabled={isProcessOperationsPushed}	
 			onclick={cmdProcessOperations}
 		>
@@ -421,6 +421,28 @@
 			</div>
 		</div>
 	{/each}
+
+	{#if curOper.allPossContracts.length == 0}
+		<div class='w-100'>
+			<span class='x-self-c x-cont-c with-info'>
+				Отсутствуют сохраненные договора
+			</span>
+		</div>
+	{/if}
+
+	<div class='w-100'>
+		<div class='w-v100'>
+			<button
+				class='but-ye'
+				type='button'
+				onclick={()=>closeModal("operManInpContrDial")}
+			>
+				<span class='x-self-c x-cont-c t-fill' use:fitText>
+					Отмена
+				</span>
+			</button>
+		</div>
+	</div>
 </dialog>
 
 <dialog
@@ -624,7 +646,7 @@
 		<div class='w-v100'>
 			<button
 				type='button'
-				class='but-bl'
+				class='but-ye'
 				disabled={false}
 				onclick={()=>closeModal("operManInpAllCompanys")}
 			>

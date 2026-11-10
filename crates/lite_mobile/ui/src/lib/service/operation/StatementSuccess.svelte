@@ -147,7 +147,7 @@
 		<div class='w-v100'>
 			<button 
 				type='button'
-				class='but-gr'
+				class='but-ye'
 				disabled={false}
 				onclick={()=>openModal("OperStatSuccNewCtrptyDialog")}
 				id='OperStatSuccChangCtrty'
@@ -163,7 +163,7 @@
 		<div class='w-v100'>
 			<button 
 				type='button'
-				class='but-gr'
+				class='but-ye'
 				disabled={false}
 				onclick={()=>openModal("operStateSuccAllCompanys")}
 				id='OperStatSuccChangCtrty'
@@ -319,7 +319,7 @@
 		<div class='w-v100'>
 			<button
 				type='button'
-				class='but-bl'
+				class='but-gr'
 				id='StateSuccProcessBut'
 				onclick={() => processor.makeRust()}
 				disabled={!processor.curOper.isValid}
@@ -403,6 +403,30 @@
 			</div>
 		{/each}
 	{/if}
+
+	{#if processor && processor.curOper?.allCtrPtys}
+		{#if processor.curOper.allPossContracts.length == 0}
+			<div class='w-100'>
+				<span class='x-self-c x-cont-c with-info'>
+					Отсутствуют сохраненные договора
+				</span>
+			</div>
+		{/if}
+	{/if}
+
+	<div class='w-100'>
+		<div class='w-v100'>
+			<button
+				class='but-ye'
+				type='button'
+				onclick={()=>closeModal("operStatSuccContrDial")}
+			>
+				<span class='x-self-c x-cont-c t-fill' use:fitText>
+					Отмена
+				</span>
+			</button>
+		</div>
+	</div>
 </dialog>
 
 <dialog
@@ -607,7 +631,7 @@
 		<div class='w-v100'>
 			<button
 				type='button'
-				class='but-bl'
+				class='but-ye'
 				disabled={false}
 				onclick={()=>closeModal("operStateSuccAllCompanys")}
 			>

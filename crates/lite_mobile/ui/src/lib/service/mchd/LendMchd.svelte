@@ -88,21 +88,21 @@
 
 </script>
 
-<section class="group-one">
-    <div>
-        <label class="green-field-label" for="xmlFileInput">
+<div class="w-100">
+    <div class='w-v100'>
+        <label class="label-close" for="xmlFileInput">
             Загрузите путь до XML файла доверенности
         </label>
         <input
             type="text"
             id="xmlFileInput"
             value={xmlFilePath}
-            class="green-field"
+            class="input-gr"
         />
         <button
             type="button"
             id="xmlFileButton"
-            class="green-button"
+            class="but-gr"
             onclick={getXmlFilePath}
             disabled={isLoadXmlFilePushed}
             >
@@ -110,9 +110,11 @@
         </button>
 
     </div>
+</div>
 
-    <div>
-        <label class="green-field-label" for="sigFileInput">
+<div class="w-100">
+    <div class='w-v100'>
+        <label class="label-close" for="sigFileInput">
             Загрузите путь до файла ЭЦП
         </label>
   
@@ -120,12 +122,12 @@
             type="text"
             id="sigFileInput"
             value={sigFilePath}
-            class="green-field"
+            class="input-gr"
         />
         <button
             type="button"
             id="sigFileButton"
-            class="green-button"
+            class="but-gr"
             onclick={getSigFilePath}
             disabled={isLoadSigFilePushed}
             >
@@ -133,19 +135,24 @@
         </button>
 
     </div>
-</section>
+</div>
 
-<div class="blue-group">
-    <button
-        type="button"
-        id='lendMchdButton'
-        class='blue-button'
-        disabled={isLendMchdPushed || isDataReady}
-        onclick={LendMchd}
-
-        >
-        <span class='blue-button-span'>Отправить файлы на регистрацию</span>
-    </button>
-
-
+<div class="w-100">
+    <div class='w-v100'>
+		<button
+			type="button"
+			id='lendMchdButton'
+			class='but-bl'
+			disabled={isLendMchdPushed || isDataReady}
+			onclick={LendMchd}
+			>
+				{#if isLendMchdPushed}
+					<span class='loading-content'>
+						<span class='loading-spinner'></span>
+					</span>
+				{:else}
+					Отправить файлы на регистрацию
+				{/if}
+		</button>
+	</div>
 </div>

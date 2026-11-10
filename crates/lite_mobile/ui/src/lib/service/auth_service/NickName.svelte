@@ -95,15 +95,17 @@
 	{/if}
 
 	<div class='w-100'>
-		<button
-			type='button'
-			class='but-gr'
-			onclick={()=> {
-				selectElem('AuthNickNames', '')
-			}}
-		>
-			Отмена
-		</button>
+		<div class='w-v10'>
+			<button
+				type='button'
+				class='but-ye'
+				onclick={()=> {
+					selectElem('AuthNickNames', '')
+				}}
+			>
+				Отмена
+			</button>
+		</div>
 	</div>
 </dialog>
 

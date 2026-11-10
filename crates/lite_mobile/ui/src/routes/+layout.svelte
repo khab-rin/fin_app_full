@@ -27,7 +27,6 @@
 	<div class='w-g15'>
 		<button
 			type='button'
-			class='but-bl'
 			disabled={pageManager.totalOff}
 			onclick={logOut}
 		>
