@@ -1,6 +1,6 @@
 use shared_lib::sql_models::company::implements::Company;
 use shared_lib::sql_models::contracts::implements::{Contract, NewContrData};
-use shared_lib::{ClientState, ProcessError, Status, LL};
+use shared_lib::{ClientState, ProcessError, Status};
 use shared_lib::primitives::composite::implements::RasBicAcc;
 use shared_lib::primitives::frozen::text::{RasAcc, Bic, CompInn, Kpp, BoxUuid};
 
