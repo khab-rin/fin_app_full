@@ -1,5 +1,6 @@
 use tauri_plugin_machine_uid::MachineUidExt;
 
+use crate::primitives::frozen::text_base::String1_1000;
 use crate::{ProcessError, Status, LL};
 use crate::primitives::frozen::text::{BoxUuid, MidName};
 use crate::service::auth_service::implements::SessionUserToken;
@@ -93,7 +94,8 @@ pub async fn get_comp_name(
 	let comp_name = match &session.session_user.company.metadata.comp_name {
 		Some(c) => {
 			match &c.short_egrul_name {
-				Some(n) => n.clone(),
+				Some(_) => String1_1000::unchecked("ООО Ромашка"),
+				// Some(n) => n.clone(),
 				None => return failed_res
 			}
 		},
