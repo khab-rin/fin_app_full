@@ -95,7 +95,7 @@
 	{/if}
 
 	<div class='w-100'>
-		<div class='w-v10'>
+		<div class='w-v100'>
 			<button
 				type='button'
 				class='but-ye'

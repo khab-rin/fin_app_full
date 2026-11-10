@@ -1,13 +1,13 @@
 .dial-t-l {
 	position: fixed;
-	top: 16px;
+	top: calc(env(safe-area-inset-top, 0px) + 2.5rem);
 	left: 16px;
 	margin: 0;
 	width: 70%;
 	background-color: #fff0f5;
 	border: 2px solid #ffb6c1;
 	border-radius: 12px;
-	padding: 0.3rem;
+	padding-left: 0.3rem;
 	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 

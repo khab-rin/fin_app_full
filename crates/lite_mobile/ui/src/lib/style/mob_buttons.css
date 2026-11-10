@@ -45,17 +45,22 @@
 }
 
 
-.but-gr:hover {
-	background-color: var(--gr-3);
-}
-.but-bl:hover {
-	background-color: var(--bl-3);
-}
-.but-ye:hover {
-	background-color: var(--ye-3);
-}
-.but-pu:hover {
-	background-color: var(--pu-3);
+@media (hover: hover) and (pointer: fine) {
+    .but-gr:hover {
+        background-color: var(--gr-3);
+    }
+
+    .but-bl:hover {
+        background-color: var(--bl-3);
+    }
+
+    .but-ye:hover {
+        background-color: var(--ye-3);
+    }
+
+    .but-pu:hover {
+        background-color: var(--pu-3);
+    }
 }
 
 
