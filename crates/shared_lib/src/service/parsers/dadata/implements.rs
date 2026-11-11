@@ -204,17 +204,23 @@ pub struct MainManager {
 
 impl CtrprtyMetadata {
     pub fn merge_dynamic(&mut self, other: Self) {
-        let mut base = serde_json::to_value(&self).unwrap_or(serde_json::Value::Object(Default::default()));
-        let extra = serde_json::to_value(&other).unwrap_or(serde_json::Value::Object(Default::default()));
+        let mut base = serde_json::to_value(&self)
+            .unwrap_or(serde_json::Value::Object(Default::default()));
 
-        if let (serde_json::Value::Object(ref mut b), serde_json::Value::Object(e)) = (&mut base, extra) {
+        let extra = serde_json::to_value(&other)
+            .unwrap_or(serde_json::Value::Object(Default::default()));
+
+        if let (
+            serde_json::Value::Object(b),
+            serde_json::Value::Object(e)
+        ) = (&mut base, extra) {
             for (k, v) in e {
                 if !v.is_null() {
                     b.insert(k, v);
                 }
             }
         }
-        
+
         if let Ok(merged) = serde_json::from_value::<Self>(base) {
             *self = merged;
         }
