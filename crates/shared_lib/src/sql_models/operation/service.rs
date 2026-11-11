@@ -37,6 +37,9 @@ pub enum OperationInfo {
     #[serde(rename = "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение")]
     ClientApiSystemError,
 
+	#[serde(rename = "Ошибка соединения, пожалуйста попробуйте выключить ВПН")]
+	ConnectionError,
+
 	#[serde(rename  = "Контрагент с указанными реквизитами не найден")]
 	CtrPtyNotFound,
 

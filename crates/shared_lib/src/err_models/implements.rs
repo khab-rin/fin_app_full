@@ -136,6 +136,7 @@ pub enum Status {
     QueryPostRequestErr = 602,
     QueryResponseFormatErr = 603,
     QueryConnectErr = 604,
+	ConnectProblems = 605,
 
 }
 
@@ -173,13 +174,13 @@ impl Status {
         if n == 1 { return Status::Unknown; }
         
         match n {
-            100..=154 => unsafe { std::mem::transmute::<u16, Status>(n) },
-            200..=202 => unsafe { std::mem::transmute::<u16, Status>(n) },
-            250..=252 => unsafe { std::mem::transmute::<u16, Status>(n) },
-            300..=302 => unsafe { std::mem::transmute::<u16, Status>(n) },
-            400..=401 => unsafe { std::mem::transmute::<u16, Status>(n) },
-            500..=502 => unsafe { std::mem::transmute::<u16, Status>(n) },
-            600..=603 => unsafe { std::mem::transmute::<u16, Status>(n) },
+            100..=199 => unsafe { std::mem::transmute::<u16, Status>(n) },
+            200..=249 => unsafe { std::mem::transmute::<u16, Status>(n) },
+            250..=299 => unsafe { std::mem::transmute::<u16, Status>(n) },
+            300..=399 => unsafe { std::mem::transmute::<u16, Status>(n) },
+            400..=499 => unsafe { std::mem::transmute::<u16, Status>(n) },
+            500..=599 => unsafe { std::mem::transmute::<u16, Status>(n) },
+            600.. => unsafe { std::mem::transmute::<u16, Status>(n) },
             _ => Status::Unknown,
         }
     }

@@ -34,19 +34,21 @@ where
 				));
                 match err {
                     reqwest_middleware::Error::Reqwest(reqwest_err) => {
-                        if reqwest_err.is_timeout() {
-                            Status::log(LL::Error,&format!(
-        						"Back API request timeout, local_err = {}, url = {}",
-								Status::BackApiError, back_api_url
-    						));
-                            return Err(Status::BackApiError);
-                        }
-                        if reqwest_err.is_connect() {
-                            Status::log(LL::Error, &format!("Back API connection failed (server is offline), url = {}", back_api_url));
-                            return Err(Status::QueryConnectErr);
-                        }
-                        
-                        return Err(Status::QueryPostRequestErr);
+                        if reqwest_err.is_timeout() || reqwest_err.is_connect() {
+							Status::log(
+								LL::Error,
+								&format!(
+									"Back API connection problems, local_err = {}, url = {}, tech_err = {}",
+									Status::ConnectProblems,
+									back_api_url,
+									reqwest_err
+								)
+							);
+
+							return Err(Status::ConnectProblems);
+						}
+
+						return Err(Status::QueryPostRequestErr);
                     },
 
                     reqwest_middleware::Error::Middleware(_) => {
