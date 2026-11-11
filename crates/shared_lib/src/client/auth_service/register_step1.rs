@@ -1,7 +1,7 @@
 use crate::{Status, ClientState, ProcessError};
 use crate::primitives::frozen::text::Password;
 
-use crate::service::auth_service::implements::{RegInitData, AuthStep};
+use crate::service::auth_service::implements::{RegInitData, AuthStep, AuthInfo};
 use crate::service::api_routes::implements::ApiRoutes;
 
 
@@ -14,6 +14,8 @@ pub
     data: &RegInitData
 ) -> Result<AuthStep, Status> {
 
+	let mut failed_result: Result<AuthStep, Status> = Ok(AuthStep::TryLater { text: AuthInfo::ClientApiSystemError });
+
     let blake_password = blake3::hash(data.password.as_ref().as_bytes())
         .to_hex()
         .to_string();
@@ -22,14 +24,22 @@ pub
 
     data_copy.password = Password::unchecked(blake_password);
 
-    let response = post_query_back_api(
+    let response = match post_query_back_api(
             state, 
             state.config.get_std_client(),
             ApiRoutes::AuthRegisterStep1,
             &data_copy)
-        .await
-        .map_err(|err| err.process_err(err, ""))?;
-    
+        .await {
+			Ok(r) => r,
+			Err(err) => {
+				err.process_err(err, "");
+				if err == Status::ConnectProblems && let Ok(AuthStep::TryLater { text }) = &mut failed_result {
+					*text = AuthInfo::ConnectionError;
+				}
+				return failed_result;
+			}
+		};
+
 
     let auth_step: AuthStep = response.json()
         .await

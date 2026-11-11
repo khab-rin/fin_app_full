@@ -9,7 +9,7 @@ pub async fn show_powers(
     state: &ClientState,
 ) -> Result<MchdStep, Status> {
 
-    let failed_result = Ok(MchdStep::TryLater { text: MchdInfo::ClientServiceError });
+    let mut failed_result = Ok(MchdStep::TryLater { text: MchdInfo::ClientServiceError });
 
 
     let session = match state.get_session().await {
@@ -30,6 +30,9 @@ pub async fn show_powers(
         Ok(r) => r,
         Err(err) => {
             err.process_err(err, "");
+			if err == Status::ConnectProblems && let Ok(MchdStep::TryLater { text }) = &mut failed_result {
+				*text = MchdInfo::ConnectionError;
+			}
             return failed_result;
         }
     };

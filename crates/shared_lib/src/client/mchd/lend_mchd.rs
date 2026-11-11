@@ -14,7 +14,7 @@ pub async fn lend_mchd_to_back_api_for_register(
     sig_file_path: &String
 ) -> Result<MchdStep, Status> {
 
-    let failed_result = Ok(MchdStep::TryLater { text: MchdInfo::ClientServiceError });
+    let mut failed_result = Ok(MchdStep::TryLater { text: MchdInfo::ClientServiceError });
 
     let session = match state.get_session().await {
         Ok(s) => s,
@@ -65,6 +65,9 @@ pub async fn lend_mchd_to_back_api_for_register(
         Ok(r) => r, 
         Err(err) => {
             err.process_err(err, "");
+			if err == Status::ConnectProblems && let Ok(MchdStep::TryLater { text }) = &mut failed_result {
+				*text = MchdInfo::ConnectionError;
+			}
             return failed_result;
         }
     };

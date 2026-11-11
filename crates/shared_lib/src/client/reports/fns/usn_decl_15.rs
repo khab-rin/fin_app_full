@@ -23,7 +23,7 @@ pub async fn make_decl_15_files(
 	fns_branch: Digits4_4
 ) -> Result<ReportStep, Status> {
 
-	let failed_result = Ok(ReportStep::TryLater { text: ReportInfo::ClientServiceError });
+	let mut failed_result = Ok(ReportStep::TryLater { text: ReportInfo::ClientServiceError });
 
 	let session = match state.get_session().await {
 		Ok(s) => s,
@@ -45,6 +45,9 @@ pub async fn make_decl_15_files(
 			Ok(r) => r,
 			Err(err) => {
 				err.process_err(err, "");
+				if err == Status::ConnectProblems && let Ok(ReportStep::TryLater { text }) = &mut failed_result {
+					*text = ReportInfo::ConnectionError;
+				}
 				return failed_result;
 			}
 		};

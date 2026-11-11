@@ -18,7 +18,7 @@ pub async fn register_step2(
     data: &RegFilesPathData
 ) -> Result<AuthStep, Status> {
 
-    let failed_result = AuthStep::TryLater { text: AuthInfo::ClientApiSystemError };
+    let mut failed_result = Ok(AuthStep::TryLater { text: AuthInfo::ClientApiSystemError });
 
     let RegFilesPathData { json_path, sign_path } = data;
 
@@ -62,7 +62,10 @@ pub async fn register_step2(
         Ok(r) => r,
         Err(err) => {
             err.process_err(err, "");
-            return Ok(failed_result);
+			if err == Status::ConnectProblems && let Ok(AuthStep::TryLater { text }) = &mut failed_result {
+				*text = AuthInfo::ConnectionError;
+			}
+            return failed_result;
         }
     };
 
@@ -70,7 +73,7 @@ pub async fn register_step2(
         Ok(s) => s,
         Err(err) => {
             err.process_err(Status::MappingError, "");
-            return Ok(failed_result);
+            return failed_result;
         }
     };
 
@@ -83,7 +86,7 @@ pub async fn register_step2(
         Ok(_) => {},
         Err(err) => {
             err.process_err(Status::MappingError, "");
-            return Ok(failed_result);
+            return failed_result;
         }
     }
 
@@ -91,7 +94,7 @@ pub async fn register_step2(
         Ok(_) => Ok(AuthStep::SuccessShort {  }),
         Err(err) => {
             err.process_err(err, "");
-            Ok(failed_result)
+            failed_result
         }
     }
 

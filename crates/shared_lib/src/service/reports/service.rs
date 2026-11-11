@@ -31,6 +31,9 @@ pub enum ReportInfo {
 	#[serde(rename = "Критическая ошибка на устройстве...")]
     ClientServiceError,
 
+	#[serde(rename = "Проблема соединения, попробуйте выключить ВПН")]
+	ConnectionError,
+
 	#[serde(rename = "Выберите тип управленческого отчета и период")]
 	HomeReports,
 
