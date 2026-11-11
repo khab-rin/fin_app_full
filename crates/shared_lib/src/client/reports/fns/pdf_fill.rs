@@ -121,66 +121,69 @@ fn recursive_collect_fields(
     doc: &Document,
     result: &mut HashMap<String, Vec<ObjectId>>
 ) -> Result<(), Status> {
-	
-    if let Ok(field_obj_ref) = doc.get_object(field_id) {
-        if let Ok(field_dict) = field_obj_ref.as_dict() {
 
-            let mut current_full_name = parent_name.clone();
-            if let Ok(t_obj) = field_dict.get_deref(b"T", doc) {
-                if let Ok(pdf_string) = t_obj.as_str() {
-                    let local_name = String::from_utf8_lossy(pdf_string).into_owned();
-                    current_full_name = match current_full_name {
-                        Some(p_name) => Some(format!("{}.{}", p_name, local_name)),
-                        None => Some(local_name),
-                    };
+    if let Ok(field_obj_ref) = doc.get_object(field_id)
+        && let Ok(field_dict) = field_obj_ref.as_dict()
+    {
+        let mut current_full_name = parent_name.clone();
+
+        if let Ok(t_obj) = field_dict.get_deref(b"T", doc)
+            && let Ok(pdf_string) = t_obj.as_str()
+        {
+            let local_name = String::from_utf8_lossy(pdf_string).into_owned();
+            current_full_name = match current_full_name {
+                Some(p_name) => Some(format!("{}.{}", p_name, local_name)),
+                None => Some(local_name),
+            };
+        }
+
+        if let Ok(kids_obj) = field_dict.get_deref(b"Kids", doc)
+            && let Ok(kids_array) = kids_obj.as_array()
+        {
+            let mut has_named_children = false;
+
+            for kid_ref in kids_array {
+                if let Object::Reference(kid_id) = kid_ref
+                    && let Ok(k_obj) = doc.get_object(*kid_id)
+                    && let Ok(k_dict) = k_obj.as_dict()
+                    && k_dict.get(b"T").is_ok()
+                {
+                    has_named_children = true;
+                    break;
                 }
             }
 
-            if let Ok(kids_obj) = field_dict.get_deref(b"Kids", doc) {
-                if let Ok(kids_array) = kids_obj.as_array() {
-
-                    let mut has_named_children = false;
-                    for kid_ref in kids_array {
-                        if let Object::Reference(kid_id) = kid_ref {
-                            if let Ok(k_obj) = doc.get_object(*kid_id) {
-                                if let Ok(k_dict) = k_obj.as_dict() {
-                                    if k_dict.get(b"T").is_ok() {
-                                        has_named_children = true;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
+            if has_named_children {
+                for kid_ref in kids_array {
+                    if let Object::Reference(kid_id) = kid_ref {
+                        recursive_collect_fields(
+                            *kid_id,
+                            current_full_name.clone(),
+                            doc,
+                            result
+                        )?;
                     }
-
-                    if has_named_children {
-
-                        for kid_ref in kids_array {
-                            if let Object::Reference(kid_id) = kid_ref {
-                                recursive_collect_fields(*kid_id, current_full_name.clone(), doc, result)?;
-                            }
-                        }
-                    } else {
-                        if let Some(final_name) = current_full_name {
-                            let mut ids = vec![field_id];
-                            for kid_ref in kids_array {
-                                if let Object::Reference(kid_id) = kid_ref {
-                                    ids.push(*kid_id);
-                                }
-                            }
-                            result.entry(final_name).or_default().extend(ids);
-                        }
-                    }
-                    return Ok(());
                 }
+            } else if let Some(final_name) = current_full_name {
+                let mut ids = vec![field_id];
+
+                for kid_ref in kids_array {
+                    if let Object::Reference(kid_id) = kid_ref {
+                        ids.push(*kid_id);
+                    }
+                }
+
+                result.entry(final_name).or_default().extend(ids);
             }
 
-            // 3. Если дочерних элементов нет (конечный плоский узел дерева)
-            if let Some(final_name) = current_full_name {
-                result.entry(final_name).or_default().push(field_id);
-            }
+            return Ok(());
+        }
+
+        if let Some(final_name) = current_full_name {
+            result.entry(final_name).or_default().push(field_id);
         }
     }
+
     Ok(())
 }
 

@@ -86,17 +86,16 @@ pub(crate) async fn parse_company_by_inn_kpp(
         }
     };
 
-    if let Some(ms) = metadata.ogrn_date_dadata {
-        if let Some(dt) = chrono::DateTime::from_timestamp_millis(ms) {
-            let date_str = dt.naive_utc().date().to_string();
-            metadata.ogrn_date_date = match Date::new(date_str.as_str()) {
-                Ok(d) => Some(d),
-                Err(err) => {
-                    err.process_err(Status::MappingError, &ext_info);
-                    return Ok(None);
-                }
-            }
-        }
+    if let Some(ms) = metadata.ogrn_date_dadata && let Some(dt) = chrono::DateTime::from_timestamp_millis(ms) {
+		let date_str = dt.naive_utc().date().to_string();
+		metadata.ogrn_date_date = match Date::new(date_str.as_str()) {
+			Ok(d) => Some(d),
+			Err(err) => {
+				err.process_err(Status::MappingError, &ext_info);
+				return Ok(None);
+			}
+		}
+
     }
 
 	let uuid_str = format!("{}-{}", comp_inn, kpp);

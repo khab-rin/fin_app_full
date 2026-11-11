@@ -270,11 +270,9 @@ pub(crate) async fn register_step2(
         }
     };
 
-    if check_auth_manager(&json_data, &sign_fields) {
-        if let Err(err) = add_new_manager(&user.user_id).await {
-            err.process_err(err, "");
-            return Ok(failed_result);
-        }
+    if check_auth_manager(&json_data, &sign_fields) && let Err(err) = add_new_manager(&user.user_id).await {
+		err.process_err(err, "");
+		return Ok(failed_result);
     }
 
     let token = match new_session(state, &user.user_id, &device_id).await {

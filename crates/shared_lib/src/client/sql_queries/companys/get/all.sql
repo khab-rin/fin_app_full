@@ -7,4 +7,3 @@ SELECT
     metadata,
     last_update AS "last_update: DateTime"
 FROM companys
-WHERE comp_status != 'LIQUIDATED'

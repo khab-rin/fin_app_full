@@ -21,3 +21,51 @@
         transform: rotate(360deg);
     }
 }
+
+
+
+.sync-progress {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+
+    width: 280px;
+    padding: 12px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    background: var(--background-color, white);
+    border: 1px solid #88888855;
+    border-radius: 8px;
+
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+
+    z-index: 1000;
+}
+
+.sync-progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+
+    font-size: 0.85rem;
+}
+
+.sync-progress-track {
+    width: 100%;
+    height: 4px;
+
+    background: #88888844;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.sync-progress-bar {
+    height: 100%;
+    background: #3985d6;
+    border-radius: 4px;
+    transition: width 0.2s ease;
+}

@@ -88,11 +88,9 @@ pub async fn dadata_reqwest_func(
             s.data.as_ref().and_then(|d| d.kpp.as_ref()) == Some(kpp)
         });
     
-    if let Some(branch_elem) = element {
-        if let Some(branch_metadata) = branch_elem.data {
-            main_metadata.merge_dynamic(branch_metadata);
-        }
-    }
-
+    if let Some(branch_elem) = element && let Some(branch_metadata) = branch_elem.data {
+		main_metadata.merge_dynamic(branch_metadata);
+	}
+    
     Ok(Some(main_metadata))
 }

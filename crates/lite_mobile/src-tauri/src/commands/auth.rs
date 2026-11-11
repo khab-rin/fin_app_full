@@ -88,10 +88,7 @@ pub async  fn cmd_register_step1(
     state: tauri::State<'_, ClientState>,
     data: RegInitData
 ) -> Result<AuthStep, Status> {
-
-    let res = register_step1(&state, &data).await;
-
-    res
+    register_step1(&state, &data).await
 }
 
 #[tauri::command]
@@ -100,9 +97,7 @@ pub async  fn cmd_register_step2(
     data: RegFilesPathData
 ) -> Result<AuthStep, Status> {
 
-    let res = register_step2(&state, &data).await;
-
-    res
+    register_step2(&state, &data).await
 }
 
 

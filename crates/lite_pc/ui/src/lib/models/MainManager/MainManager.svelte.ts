@@ -4,6 +4,7 @@ import {PageType} from "$lib/models/MainManager/PageValues";
 import { currAuthStep } from '$lib/models/Auth/AuthStep.svelte';
 
 import AuthManager from "$lib/service/auth_service/AuthManager.svelte";
+import DbMain from '$lib/service/DataBase/DbMain.svelte';
 import MchdManager from "$lib/service/mchd/MchdManager.svelte";
 import OperationManager from "$lib/service/operation/OperationManager.svelte";
 import ReportManager from "$lib/service/Reports/ReportManager.svelte";
@@ -17,6 +18,7 @@ class PageManager {
     get getPage() {
         switch (this.Page) {
             case PageType.Auth: return AuthManager;
+			case PageType.DataBase: return DbMain;
             case PageType.Mchd: return MchdManager;
             case PageType.Operation: return OperationManager;
 			case PageType.Report: return ReportManager;

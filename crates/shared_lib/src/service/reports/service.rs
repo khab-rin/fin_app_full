@@ -3,6 +3,11 @@ use serde::{Serialize, Deserialize};
 
 use crate::primitives::frozen::text::{RubF, Date, BoxUuid};
 use crate::service::reports::fns_xsd_shemas::usn_1152017_decl::UsnDeclQuaterAmnts;
+use crate::sql_models::company::implements::Company;
+use crate::sql_models::contracts::implements::Contract;
+use crate::sql_models::person::implements::Person;
+
+use crate::sql_models::operation::implements::Operation;
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub enum ReportStep {
@@ -17,7 +22,13 @@ pub enum ReportStep {
 		xml_name: String,
 		xml_file: Vec<u8>,
 		pdf_name: String, 
-		pdf_file: Vec<u8> },
+		pdf_file: Vec<u8> 
+	},
+
+	SyncCompanys {text: ReportInfo, companys: Vec<Company>, user_id: BoxUuid},
+	SyncContracts {text: ReportInfo, contracts: Vec<Contract>, user_id: BoxUuid},
+	SyncPersons {text: ReportInfo, persons: Vec<Person>, user_id: BoxUuid},
+	SyncOperations {text: ReportInfo, operations: Vec<Operation>, user_id: BoxUuid},
 
 	TryLater {text: ReportInfo },
 }
@@ -33,6 +44,9 @@ pub enum ReportInfo {
 
 	#[serde(rename = "Проблема соединения, попробуйте выключить ВПН")]
 	ConnectionError,
+
+	#[serde(rename="База данных успешно синхронизирована")]
+	DataBaseSyncSuccess,
 
 	#[serde(rename = "Выберите тип управленческого отчета и период")]
 	HomeReports,
@@ -117,6 +131,8 @@ pub struct VerifyPowersResult {
 	pub is_manager: bool,
 	pub mchd_uuid: Option<BoxUuid>
 }
+
+
 
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
