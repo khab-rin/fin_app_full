@@ -14,7 +14,7 @@ pub async fn add_new_operations(
 	post_query_back_api(
 		state, 
 		state.config.get_sql_long(), 
-		ApiRoutes::SqlOperationsAddMany, 
+		ApiRoutes::SqlOperationAddMany, 
 		&operations).await
 		.map_err(|err| err.process_err(err, ""))?;
 

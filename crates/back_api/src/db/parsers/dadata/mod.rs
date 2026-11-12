@@ -1,2 +1,2 @@
-pub(crate) mod inn_kpp_query;
-pub(crate) mod dadata_request;
+pub(crate) mod get_new_company;
+pub(crate) mod get_metadata;

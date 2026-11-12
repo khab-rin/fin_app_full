@@ -26,7 +26,7 @@ pub async fn make_null_postgress_elements(
 	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
 
 	let _ = sqlx::query_file!(
-		"src/db/sql_queries/companys/add/company.sql",
+		"src/db/sql_queries/companys/add/que_insert_update.sql",
 		*null_uuid,
 		*null_comp_inn,
 		*null_kpp,

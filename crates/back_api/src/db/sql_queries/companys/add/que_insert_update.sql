@@ -6,12 +6,13 @@ INSERT INTO companys(
     comp_status,
     metadata
 ) 
-SELECT $1, $2, $3, $4, $5, $6
+VALUES ($1, $2, $3, $4, $5, $6)
 ON CONFLICT (comp_inn, kpp)
     DO UPDATE SET 
         comp_type = EXCLUDED.comp_type,
         comp_status = EXCLUDED.comp_status,
-        metadata = EXCLUDED.metadata
+        metadata = EXCLUDED.metadata,
+		last_update = NOW()
 
 RETURNING
     comp_id AS "comp_id!: BoxUuid",

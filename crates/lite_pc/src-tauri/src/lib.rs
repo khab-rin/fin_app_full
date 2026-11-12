@@ -64,6 +64,7 @@ pub fn run_lib() {
             commands::other::cmd_validate_field,
 			commands::reports::cmd_get_all_fns_report_types,
 			commands::reports::cmd_make_fns_report_files,
+			commands::reports::cmd_sync_data_base,
 			commands::sql_queries::cmd_add_comp_bank_acc,
 			commands::sql_queries::cmd_add_new_contract,
 			commands::sql_queries::cmd_get_all_companys,

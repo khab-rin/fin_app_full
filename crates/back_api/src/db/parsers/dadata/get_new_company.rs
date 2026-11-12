@@ -3,15 +3,15 @@ use shared_lib::sql_models::company::implements::Company;
 use shared_lib::primitives::frozen::text::{CompInn, Kpp, CompType, Date, BoxUuid, DateTime};
 
 use crate::config::BackApiState;
-use crate::db::parsers::dadata::dadata_request::dadata_reqwest_func;
+use crate::db::parsers::dadata::get_metadata::get_dadata_metadata;
 
-pub(crate) async fn parse_company_by_inn_kpp(
+pub(crate) async fn get_dadata_company(
     state: &BackApiState,
     comp_inn: &CompInn,
     kpp: &Kpp
 ) -> Result<Option<Company>, Status> {
 
-    let metadata_option = match dadata_reqwest_func(
+    let metadata_option = match get_dadata_metadata(
             state, 
             comp_inn, 
             kpp)

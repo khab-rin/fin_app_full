@@ -104,6 +104,7 @@ pub enum Status {
     SqLitePoolErr = 300,
     SqlQueryWrongLogic = 301,
     SqliteCommitErr = 302,
+	SqlSyncError = 303,
 
     // ==========================================
     // 400-я группа: Системные ошибки бэкенда

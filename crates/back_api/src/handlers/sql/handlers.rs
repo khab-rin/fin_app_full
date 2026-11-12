@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use axum::{extract::State, Json};
 
+use shared_lib::service::reports::service::ReportStep;
 use shared_lib::{ProcessError, Status};
 use shared_lib::primitives::frozen::text::PersInn;
 use shared_lib::sql_models::operation::implements::Operation;
@@ -14,6 +15,7 @@ use crate::db::sql_queries::persons::get::person_by_inn::get_person_by_inn;
 use crate::db::sql_queries::companys::add::sync_companys::update_companys;
 use crate::db::sql_queries::contracts::add::new_contr::add_contract;
 use crate::db::sql_queries::operations::add::add_many::add_operations_many;
+use crate::db::sql_queries::companys::sync::sql_company_sync;
 
 
 pub(crate) async fn get_person_by_inn_handler(
@@ -56,5 +58,21 @@ pub async fn sql_operations_add_many_handler(
 		.map_err(|err| err.process_err(err, ""))?;
 
 	Ok(())
+
+}
+
+pub async fn sql_sync_handler(
+	State(state): State<Arc<BackApiState>>,
+	Json(data): Json<ReportStep>
+) -> Result<Json<ReportStep>, Status> {
+
+	match &data {
+		ReportStep::SyncCompanysToServer { .. } => {
+			let res = sql_company_sync(&state, &data).await
+				.map_err(|err| err.process_err(err, ""))?;
+			Ok(Json(res))
+		},
+		_ => Err(Status::Unknown)
+	}
 
 }

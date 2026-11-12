@@ -9,7 +9,7 @@ use shared_lib::sql_models::company::implements::{Company, CompanyDto, InnKppMap
 
 use crate::config::BackApiState;
 use crate::db::sql_queries::companys::get::companys_by_inn_kpp::get_companys_by_inn_kpp;
-use crate::db::parsers::dadata::inn_kpp_query::parse_company_by_inn_kpp;
+use crate::db::parsers::dadata::get_new_company::get_dadata_company;
 
 use crate::db::sql_queries::companys::helper::{
     dto_to_company_vec, 
@@ -48,7 +48,7 @@ pub(crate) async fn update_companys(
 		let comp_inn_clone = comp_inn.clone();
 		let kpp_clone = kpp.clone();
 		tasks_vec.push(async move {
-			parse_company_by_inn_kpp(state, &comp_inn_clone, &kpp_clone).await
+			get_dadata_company(state, &comp_inn_clone, &kpp_clone).await
 		});
 	}
 

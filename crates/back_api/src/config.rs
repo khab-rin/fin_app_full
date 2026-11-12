@@ -1,6 +1,6 @@
 use std::sync::OnceLock;
-use std::time::Duration;
 
+use futures::lock::Mutex;
 use reqwest::header::{HeaderMap, HeaderName, CONTENT_TYPE, ACCEPT, AUTHORIZATION};
 use serde::Deserialize;
 
@@ -12,7 +12,8 @@ use shared_lib::make_header;
 pub struct BackApiState {
     pub pool_fast: sqlx::PgPool,
     pub pool_long: sqlx::PgPool,
-    pub config: &'static Config
+    pub config: &'static Config,
+	pub dadata_lock: Mutex<tokio::time::Instant>
 }
 
 #[derive(Deserialize, Debug)]
@@ -37,28 +38,28 @@ pub struct Config {
 pub struct PostgresQlOptions {
     pub fast_max_conn: u32,
     #[serde(deserialize_with = "time_parser::duration_from_f64")]
-    pub fast_timeout: Duration,
+    pub fast_timeout: std::time::Duration,
     pub long_max_conn: u32,
     #[serde(deserialize_with = "time_parser::duration_from_f64")]
-    pub long_timeout: Duration
+    pub long_timeout:std::time::Duration
 }
 
 #[derive(Deserialize, Debug)]
 pub struct NetWork {
     #[serde(deserialize_with = "time_parser::duration_from_f64")]
-    pub inst_conn_timeout: Duration,
+    pub inst_conn_timeout:std::time::Duration,
     #[serde(deserialize_with = "time_parser::duration_from_f64")]
-    pub inst_tot_timeout: Duration,
+    pub inst_tot_timeout:std::time::Duration,
     #[serde(deserialize_with = "time_parser::duration_from_f64")]
-    pub inst_request_interval: Duration,
+    pub inst_request_interval:std::time::Duration,
     pub inst_retries: u32,
 
     #[serde(deserialize_with = "time_parser::duration_from_f64")]
-    pub std_conn_timeout: Duration,
+    pub std_conn_timeout:std::time::Duration,
     #[serde(deserialize_with = "time_parser::duration_from_f64")]
-    pub std_tot_timeout: Duration,
+    pub std_tot_timeout:std::time::Duration,
     #[serde(deserialize_with = "time_parser::duration_from_f64")]
-    pub std_request_interval: Duration,
+    pub std_request_interval:std::time::Duration,
     pub std_retries: u32,
     }
 
@@ -141,7 +142,7 @@ impl Config {
 }
 
 
-pub(crate) async fn create_pool(base_url: &str, max_conn: &u32, timeout: &Duration) -> sqlx::PgPool {
+pub(crate) async fn create_pool(base_url: &str, max_conn: &u32, timeout: &std::time::Duration) -> sqlx::PgPool {
     let mut attempts = 0;
     loop {
         attempts += 1;
@@ -159,7 +160,7 @@ pub(crate) async fn create_pool(base_url: &str, max_conn: &u32, timeout: &Durati
 					Status::log(LL::Warn, "ФАТАЛЬНАЯ ОШИБКА: Не удалось подключиться к PostgreSQL.");
                     panic!("Database connection failed: {}", er);
                 }
-                tokio::time::sleep(Duration::from_secs(5)).await;
+                tokio::time::sleep(std::time::Duration::from_secs(5)).await;
             }
         }
     }

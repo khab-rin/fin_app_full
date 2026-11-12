@@ -3,7 +3,7 @@ use shared_lib::primitives::frozen::text::{CompInn, Kpp, BoxUuid, CompStatus, Co
 use shared_lib::sql_models::company::implements::{Company, CompanyDto};
 
 use crate::config::BackApiState;
-use crate::db::parsers::dadata::inn_kpp_query::parse_company_by_inn_kpp;
+use crate::db::parsers::dadata::get_new_company::get_dadata_company;
 use crate::db::sql_queries::companys::add::company::add_company;
 
 pub(crate) async fn get_company_by_inn_kpp(
@@ -29,7 +29,7 @@ pub(crate) async fn get_company_by_inn_kpp(
 		return Ok(Some(company));
 	}
 
-    let company_option = parse_company_by_inn_kpp(state, comp_inn, kpp)
+    let company_option = get_dadata_company(state, comp_inn, kpp)
 		.await
 		.map_err(|err| err.process_err(err, ""))?;
 

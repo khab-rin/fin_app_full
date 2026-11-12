@@ -7,10 +7,11 @@ pub enum ApiRoutes {
     MchdLend,
     MchdShowPowers,
 	MchdVerivyPower,
-    SqlComppanysAddByInnKpp,
+    SqlComppanyAddByInnKpp,
     SqlContractAddNew,
-	SqlOperationsAddMany,
-    SqlPersonGetByInn
+	SqlOperationAddMany,
+    SqlPersonGetByInn,
+	SqlSync
 }
 
 impl ApiRoutes {
@@ -25,10 +26,11 @@ impl ApiRoutes {
             Self::MchdLend => "/api/mchd/lend_mchd_for_register",
             Self::MchdShowPowers => "/api/mchd/lend_show_powers",
 			Self::MchdVerivyPower => "/api/mchd/verify_user_power",
-            Self::SqlComppanysAddByInnKpp => "/api/companys/add_by_inn_kpp",
-            Self::SqlContractAddNew => "/api/contracts/add_new",
-			Self::SqlOperationsAddMany => "/api/operations/add_many",
-            Self::SqlPersonGetByInn => "/api/sql/person_get_by_inn"
+            Self::SqlComppanyAddByInnKpp => "/api/company/add_by_inn_kpp",
+            Self::SqlContractAddNew => "/api/contract/add_new",
+			Self::SqlOperationAddMany => "/api/operations/add_many",
+            Self::SqlPersonGetByInn => "/api/sql/person_get_by_inn",
+			Self::SqlSync => "/api/sql/sync",
         }
     }
 }

@@ -4,6 +4,7 @@ mod config;
 
 use std::sync::Arc;
 use axum::{routing::post, Router};
+use futures::lock::Mutex;
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::{fmt, prelude::*, EnvFilter};
 
@@ -32,7 +33,8 @@ use crate::handlers::service::mchd::handler::{
 use crate::handlers::sql::handlers::{
     get_person_by_inn_handler,
     sql_add_new_contract_handler,
-	sql_operations_add_many_handler
+	sql_operations_add_many_handler,
+	sql_sync_handler
 };
 
 
@@ -95,7 +97,8 @@ async fn main() {
     let state = Arc::new(config::BackApiState {
         pool_fast,
         pool_long,
-        config: config::Config::global()
+        config: config::Config::global(),
+		dadata_lock: Mutex::new(tokio::time::Instant::now())
     });
 
 	make_null_postgress_elements(&state).await.expect("err");
@@ -130,15 +133,18 @@ async fn main() {
             ApiRoutes::SqlContractAddNew.get_path(), 
             post(sql_add_new_contract_handler)
         ).route(
-            ApiRoutes::SqlComppanysAddByInnKpp.get_path(),
+            ApiRoutes::SqlComppanyAddByInnKpp.get_path(),
             post(sql_new_companys_handler)
 		).route(
-			ApiRoutes::SqlOperationsAddMany.get_path(),
+			ApiRoutes::SqlOperationAddMany.get_path(),
 			post(sql_operations_add_many_handler)
         ).route(
             ApiRoutes::SqlPersonGetByInn.get_path(), 
             post(get_person_by_inn_handler)
-        )
+        ).route(
+			ApiRoutes::SqlSync.get_path(), 
+			post(sql_sync_handler)
+		)
 
         .layer(TraceLayer::new_for_http())
         .with_state(state);

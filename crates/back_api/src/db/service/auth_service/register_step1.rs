@@ -7,7 +7,7 @@ use shared_lib::service::auth_service::implements::{AuthInfo, AuthStep, RegInitD
 use crate::config::BackApiState;
 use crate::db::sql_queries::persons::add::by_person::add_person;
 use crate::db::sql_queries::companys::add::company::add_company;
-use crate::db::parsers::dadata::inn_kpp_query::parse_company_by_inn_kpp;
+use crate::db::parsers::dadata::get_new_company::get_dadata_company;
 use crate::db::service::auth_service::make_init_files::make_init_files;
 
 
@@ -63,7 +63,7 @@ pub(crate) async fn register_step1(
         }
     };
 
-    let new_company = match parse_company_by_inn_kpp(state, comp_inn, kpp).await {
+    let new_company = match get_dadata_company(state, comp_inn, kpp).await {
         Ok(Some(c)) => c,
         Ok(None) => {
             Status::Tech.process_err(Status::SystemLogicErr, "");

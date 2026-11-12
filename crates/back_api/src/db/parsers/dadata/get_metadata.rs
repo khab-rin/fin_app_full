@@ -1,14 +1,17 @@
+use tokio::time::{Duration, Instant};
+
 use shared_lib::{ProcessError, Status, LL};
 use shared_lib::primitives::frozen::text::{CompInn, Kpp};
 use shared_lib::service::parsers::dadata::implements::*;
 
 use crate::config::BackApiState;
 
-pub async fn dadata_reqwest_func(
+pub async fn get_dadata_metadata(
     state: &BackApiState, 
     comp_inn: &CompInn, 
     kpp: &Kpp
 ) -> Result<Option<CtrprtyMetadata>, Status> {
+
 
     let ext_info = format!("inn = {:?}, kpp = {:?}", comp_inn, kpp);
     
@@ -16,6 +19,16 @@ pub async fn dadata_reqwest_func(
 
     let header = state.config.get_dadata_header();
     let url =  &state.config.dadata.dadata_comp_url;
+
+	let interval = Duration::from_millis(100);
+	{
+		let mut last_call = state.dadata_lock.lock().await;
+		let elapsed = last_call.elapsed();
+		if elapsed < Duration::from_millis(100) {
+			tokio::time::sleep(interval - elapsed).await;
+		}
+		*last_call = Instant::now();
+	}
 
     let response = client
         .post(url)

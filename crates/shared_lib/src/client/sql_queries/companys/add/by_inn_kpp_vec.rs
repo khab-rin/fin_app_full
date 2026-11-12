@@ -15,7 +15,7 @@ pub async fn add_companys_by_inn_cpp_acc(
    let response = post_query_back_api(
             state, 
             state.config.get_sql_long(), 
-            ApiRoutes::SqlComppanysAddByInnKpp, 
+            ApiRoutes::SqlComppanyAddByInnKpp, 
             data)
         .await
         .map_err(|err| err.process_err(err, ""))?;
@@ -36,7 +36,7 @@ pub async fn add_companys_by_inn_cpp_acc(
         let last_update = company.last_update.as_ref();
 
         sqlx::query_file!(
-            "src/client/sql_queries/companys/add/add_company.sql",
+            "src/client/sql_queries/companys/add/que_insert_update.sql",
             comp_id,
             comp_inn,
             kpp,

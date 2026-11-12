@@ -51,10 +51,17 @@ where
 						return Err(Status::QueryPostRequestErr);
                     },
 
-                    reqwest_middleware::Error::Middleware(_) => {
-                        Status::log(LL::Error,&format!("Request blocked or failed inside middleware layer, url = {}", back_api_url),);
-                        return Err(Status::SystemErr); // 400
-                    }
+                    reqwest_middleware::Error::Middleware(err) => {
+						Status::log(
+							LL::Error,
+							&format!(
+								"Request failed inside middleware layer, url = {}, tech_err = {:?}",
+								back_api_url,
+								err
+							),
+						);
+						return Err(Status::SystemErr);
+					}
                 }
             }
         };

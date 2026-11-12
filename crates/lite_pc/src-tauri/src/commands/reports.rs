@@ -1,11 +1,15 @@
+use shared_lib::service::reports::service::ReportInfo::Notning;
+use tauri::Emitter;
+
 use shared_lib::primitives::frozen::text_base::Digits4_4;
 use shared_lib::{ClientState, Status, ProcessError};
-use shared_lib::service::reports::service::{FnsReportType, ReportStep};
+use shared_lib::service::reports::service::{FnsReportType, ReportStep, ReportInfo};
 
 use shared_lib::client::reports::fns::usn_decl_6::make_decl_6_files;
 use shared_lib::client::reports::fns::usn_decl_15::make_decl_15_files;
 use shared_lib::client::reports::fns::usn_notif_6::make_notif_usn_6_files;
 use shared_lib::client::reports::fns::usn_notif_15::make_notif_15_files;
+use shared_lib::client::sql_queries::companys::sync::sync_all_companys;
 
 
 #[tauri::command]
@@ -37,4 +41,30 @@ pub async fn cmd_make_fns_report_files(
 			return make_decl_15_files(&state, year, fns_code).await.map_err(|err| err.process_err(err, ""))
 		}
 	}
+}
+
+
+#[tauri::command]
+pub async fn cmd_sync_data_base(
+	state: tauri::State<'_, ClientState>
+) -> Result<ReportStep, Status> {
+	state.app_handle.emit("синхронизация контрагентов", 0).ok();
+
+	
+
+	state.app_handle.emit("синхронизация физ. лиц", 25).ok();
+
+	state.app_handle.emit("синхронизация договоров", 50).ok();
+
+	state.app_handle.emit("синхронизация операций", 75).ok();
+
+
+	state.app_handle.emit("синхронизация завершена", 100).ok();
+
+	let step = sync_all_companys(&state).await?;
+	if let ReportStep::SyncSuccess { .. } = step {
+		return Ok(ReportStep::Loading { text: ReportInfo::SqlSyncSuccess  });
+	}
+
+	Ok(ReportStep::TryLater { text: Notning })
 }

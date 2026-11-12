@@ -38,7 +38,7 @@ pub(crate) async fn add_company(
 
     let company_dto = sqlx::query_file_as!(
             CompanyDto,
-            "src/db/sql_queries/companys/add/company.sql",
+            "src/db/sql_queries/companys/add/que_insert_update.sql",
 			company.comp_id.as_ref(),
             company.comp_inn.as_ref(),
             company.kpp.as_ref(),

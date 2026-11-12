@@ -1,0 +1,1 @@
+delete from companys where comp_id = $1

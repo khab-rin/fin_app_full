@@ -1,36 +1,13 @@
 <script lang='ts'>
+	import type { ReportStep } from '$lib/models/rustModels/ReportStep';
 	import {invoke} from '@tauri-apps/api/core'
 
-	let isFullSyncPushed = $state(false);
-
-	async function syncDataBase() {
-		isFullSyncPushed = true;
-
-	}
+	
 
 </script>
 
 
-<div class='w-40'>
-	<div class='w-v100'>
-		<label class='label-close' for='DbMainSync'>
-			Синхронизация всей базы данных
-		</label>
-		<button
-			class='but-gr'
-			type='button'
-			disabled={isFullSyncPushed}
-			onclick={syncDataBase}
-		>
-			{#if isFullSyncPushed}
-				<span class='loading-content'><span class='loading-spinner'>Синхронизация...</span></span>
-			{:else}
-				Синхронизировать
-			{/if}
-		
-		</button>
-	</div>
-</div>
+
 
 
 

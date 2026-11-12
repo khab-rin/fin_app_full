@@ -86,5 +86,6 @@ impl Company {
         }
 
         self.metadata.bank_acc = new_acc.into_iter().collect(); 
+		self.last_update = DateTime::unchecked(chrono::Utc::now());
     }
 }

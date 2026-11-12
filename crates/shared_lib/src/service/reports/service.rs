@@ -25,10 +25,12 @@ pub enum ReportStep {
 		pdf_file: Vec<u8> 
 	},
 
-	SyncCompanys {text: ReportInfo, companys: Vec<Company>, user_id: BoxUuid},
+	SyncCompanysToServer {companys: Vec<Company>},
+	SyncCompanysToClient {del_companys: Vec<Company>, server_companys: Vec<Company>},
 	SyncContracts {text: ReportInfo, contracts: Vec<Contract>, user_id: BoxUuid},
 	SyncPersons {text: ReportInfo, persons: Vec<Person>, user_id: BoxUuid},
 	SyncOperations {text: ReportInfo, operations: Vec<Operation>, user_id: BoxUuid},
+	SyncSuccess {text: ReportInfo},
 
 	TryLater {text: ReportInfo },
 }
@@ -65,6 +67,12 @@ pub enum ReportInfo {
 
 	#[serde(rename = "Файлы успешно сгенерированы, сохраните их в формате xls и pdf")]
 	SaveFiles,
+
+	#[serde(rename = "База данных успешно сихнронизирована")]
+	SqlSyncSuccess,
+
+	#[serde(rename = "Ошибка! Требуется синхронизация базы данных")]
+	SqlNeedSync,
 
 	#[serde(rename = "Был введен некоректный год")]
 	WrongYear

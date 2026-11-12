@@ -17,15 +17,27 @@ pub trait ProcessError {
 
 impl<E> ProcessError for E
 where 
-    E: std::fmt::Display
+    E: std::fmt::Display + 'static
 {
     #[track_caller]
     fn process_err(self, local_err: Status, ext_info: &str) -> Status {
         
-        let tech_err = anyhow::Error::msg(self.to_string());
-        
         #[cfg(feature = "server")]
         {   
+
+			let local_err = match (&self as &dyn std::any::Any)
+                .downcast_ref::<sqlx::Error>()
+            {
+                Some(sqlx::Error::Database(db_err))
+                    if db_err.code().as_deref() == Some("23503") =>
+                {
+                    Status::SqlSyncError
+                }
+                _ => local_err,
+            };
+
+
+			let tech_err = anyhow::Error::msg(self.to_string());
             let caller = std::panic::Location::caller();
             let location = format!("api_error_at::{}:{}:{}", caller.file().replace(".rs", ""), caller.line(), caller.column());
 
@@ -35,17 +47,18 @@ where
                 local_err = ?local_err,
                 ext_info = ext_info,
             );
+			return local_err;
         }
         
+		#[allow(unreachable_code)]
         #[cfg(any(feature = "lite_pc", feature = "lite_mobile"))]
         {
+			let tech_err = anyhow::Error::msg(self.to_string());
             log::error!(
                 "tech_err = {:?}, local_err = {:?}, ext_info = {}", tech_err, local_err, ext_info
             );
+			local_err
         }
-        
-        local_err
-    
     }
 }
 
