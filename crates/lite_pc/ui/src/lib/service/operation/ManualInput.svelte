@@ -63,6 +63,8 @@
 			(document.getElementById('OperManualNewContractDialgo') as HTMLDialogElement)?.close();
 			isNewContractPushed = false;
 		} catch(err) {
+
+			console.error("cmdAddNewContract FAILED, err = ", err);
 			const nextStep: OperationStep = {
 				TryLater: {text:'Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение'}
 			};

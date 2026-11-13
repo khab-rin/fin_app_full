@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS companys (
 
     CONSTRAINT check_inn_kpp_logic CHECK (
         CASE 
-            WHEN length(comp_inn) = 12 THEN kpp = ''
+            WHEN length(comp_inn) = 12 THEN kpp = '0'
             WHEN length(comp_inn) = 10 THEN length(kpp) = 9 AND kpp GLOB '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'
             ELSE 0
         END

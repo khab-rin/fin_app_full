@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS companys (
 
     CONSTRAINT is_kpp
         CHECK (
-            (LENGTH(comp_inn) = 12 AND kpp = '') OR
+            (LENGTH(comp_inn) = 12 AND kpp = '0') OR
             (LENGTH(comp_inn) = 10 AND kpp ~ '^[0-9]{9}$')
         ),
 

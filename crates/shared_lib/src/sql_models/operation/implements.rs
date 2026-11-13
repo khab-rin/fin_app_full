@@ -165,42 +165,6 @@ pub struct OperationDocument {
     pub doc_data: Date
 }
 
-pub fn make_oper_id(
-    doc_num: &Option<DocNum>, 
-    oper_date: &Option<Date>, 
-    amount: &Option<RubF>, 
-    ctrpty_id: &Option<BoxUuid>
-) -> BoxUuid {
-    
-    let num_str = doc_num.as_ref().map_or("".to_string(), |v| v.to_string());
-    let date_str = oper_date.as_ref().map_or("".to_string(), |v| v.to_string());
-    let amount_str = amount.as_ref().map_or("".to_string(), |v| {
-        let s = v.to_string();
-        if s.contains('.') {
-            let trimmed = s.trim_end_matches('0');
-            if trimmed.ends_with('.') {
-                trimmed.trim_end_matches('.').to_string()
-            } else {
-                trimmed.to_string()
-            }
-        } else {
-            s
-        }
-    });
-    let ctrpty_str = ctrpty_id.as_ref().map_or("".to_string(), |v| v.to_string());
-
-    let text_id = format!(
-        "{}-{}-{}-{}",
-        num_str,
-        date_str,
-        amount_str,
-        ctrpty_str
-    );
-
-	BoxUuid::new_v5(&text_id)
-
-}
-
 
 #[allow(dead_code)]
 #[derive(ts_rs::TS)]

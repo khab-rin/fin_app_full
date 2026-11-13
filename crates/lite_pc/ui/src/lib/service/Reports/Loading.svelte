@@ -67,9 +67,10 @@
 			type='button'
 			disabled={isFullSyncPushed}
 			onclick={syncDataBase}
+			id='DbMainSync'
 		>
 			{#if isFullSyncPushed}
-				<span class='loading-content'><span class='loading-spinner'>Синхронизация...</span></span>
+				<span class='loading-content'><span class='loading-spinner'></span>Синхронизация...</span>
 			{:else}
 				Синхронизировать
 			{/if}

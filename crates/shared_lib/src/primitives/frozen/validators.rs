@@ -90,8 +90,8 @@ pub fn init_comp_inn_from_str(inn: &str) -> Result<String, Status> {
 
 pub(crate) fn init_kpp_from_str(kpp: &str) -> Result<String, Status> {
     let kpp = kpp.trim().to_uppercase();
-    if kpp.is_empty() || kpp == "0" || kpp == "000000000" {
-        return Ok("".into());
+    if kpp.is_empty() || kpp == "0" {
+        return Ok("0".into());
     }
     get_is_kpp_reg().is_match(&kpp)
         .then_some(kpp)
@@ -341,7 +341,7 @@ pub(crate) fn init_snils_from_str(val: &str) -> Result<String, Status> {
     if digits.len() != 11 {
         return Err(Status::ValidSnils);
     }
-    let snils_num: u64 = digits.parse().unwrap_or(0);
+    let snils_num: u64 = digits[..9].parse().unwrap_or(0);
     if snils_num > 1001998 {
         let d: Vec<u32> = digits
             .chars()

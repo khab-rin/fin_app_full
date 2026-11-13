@@ -1,10 +1,13 @@
 use serde::{Serialize, Deserialize};
 
 use crate::sql_models::operation::implements::OperationRaw;
+use crate::sql_models::contracts::implements::Contract;
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub enum OperationStep {
-    AccInput { text: OperationInfo },
+	AddContractSuccess {contracts: Vec<Contract>, text: OperationInfo},
+    
+	AccInput { text: OperationInfo },
 
     Loading { text: OperationInfo },
 
@@ -25,6 +28,9 @@ pub enum OperationStep {
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub enum OperationInfo {
+	#[serde(rename = "Договор успешно добавлен")]
+	AddContractSuccess,
+
     #[serde(rename = "Введите БИК банка и номер расчетного счета")]
     AccInput,
 
@@ -63,6 +69,9 @@ pub enum OperationInfo {
 
 	#[serde(rename = "Выписка обработана, добавлено операций - ")]
 	StatementSuccess,
+
+	#[serde(rename = "Операция невозможна, требуется синхронизация базы данных")]
+	SqlSyncError,
 
     #[serde(rename = "Указанный банковский счет и банковский счет выписки не совпадают")]
     WrongBankAcc,

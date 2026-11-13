@@ -1,24 +1,31 @@
 export function fitText(node: HTMLElement) {
+    const parent = node.closest('button');
+    if (!parent) return;
+
+    const button: HTMLButtonElement = parent;
+    const initialFontSize = parseFloat(getComputedStyle(node).fontSize);
+
     function adjustFontSize() {
-        let fontSize = 14; 
+        let fontSize = initialFontSize;
         node.style.fontSize = `${fontSize}px`;
 
-        const parent = node.closest('button');
-        if (!parent) return;
+        const overflows = () =>
+            button.scrollHeight > button.clientHeight ||
+            button.scrollWidth > button.clientWidth;
 
-        while (
-            (parent.scrollHeight > parent.clientHeight || node.scrollHeight > parent.clientHeight) 
-            && fontSize > 7
-        ) {
-            fontSize -= 0.5;
+        while (fontSize > 7 && overflows()) {
+            fontSize = Math.max(7, fontSize - 0.5);
             node.style.fontSize = `${fontSize}px`;
         }
     }
 
     adjustFontSize();
 
-    const resizeObserver = new ResizeObserver(adjustFontSize);
-    resizeObserver.observe(node);
+    const resizeObserver = new ResizeObserver(() => {
+        requestAnimationFrame(adjustFontSize);
+    });
+
+    resizeObserver.observe(button);
 
     return {
         destroy() {

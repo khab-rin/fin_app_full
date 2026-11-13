@@ -186,13 +186,6 @@ frozen_primitives!(
     "код Uuid",
     default_fmt);
 
-impl BoxUuid {
-	pub fn new_v5(val: &str) -> Self {
-		let u = uuid::Uuid::new_v5(&uuid::Uuid::NAMESPACE_OID, val.as_bytes());
-		BoxUuid::unchecked(u)
-	}
-}
-
 frozen_primitives!(
     DateTime,
     init_date_time_from_str,

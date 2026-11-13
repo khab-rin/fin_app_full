@@ -80,31 +80,31 @@ where
         let raw_body = response.text().await.unwrap_or_else(|_| "<failed to read body>".to_string());
 
         if is_json {
-            // Пробуем распарсить сырой текст в статус, чтобы при неудаче сохранить сырой JSON в логе
-            match serde_json::from_str::<Status>(&raw_body) {
-                Ok(back_err) => {
-                    Status::log(LL::Error,&format!(
+			match serde_json::from_str::<Status>(&raw_body) {
+				Ok(back_err) => {
+					Status::log(LL::Error, &format!(
 						"BACK API REJECTED REQUEST! url: {}, status: {}, backend_enum_err: {:?}, raw_body: {}",
 						back_api_url, status_code, back_err, raw_body
 					));
-                }
-                Err(parse_err) => {
-                    Status::log(LL::Error,&format!(
+
+					return Err(back_err);
+				}
+				Err(parse_err) => {
+					Status::log(LL::Error, &format!(
 						"BACK API RETURNED JSON BUT DESERIALIZE TO Status FAILED! url: {}, status: {}, parse_err: {}, raw_body: {}",
 						back_api_url, status_code, parse_err, raw_body
 					));
-                }
-            }
-        } else {
-            Status::log(LL::Error,&format!(
+				}
+			}
+		} else {
+			Status::log(LL::Error, &format!(
 				"BACK API CRASHED OR REJECTED WITH NON-JSON! url: {}, status: {}, headers: {:?}, raw_body: {}",
 				back_api_url, status_code, headers, raw_body
 			));
-        }
+		}
 
-        return Err(Status::BackApiError);
-    }
-
+		return Err(Status::BackApiError);
+	}
 
     Ok(response)
 }

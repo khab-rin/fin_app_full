@@ -1,17 +1,22 @@
-import { FieldValidator } from "../Auth/FieldValidator.svelte";
+import { invoke } from "@tauri-apps/api/core";
 
+import { FieldValidator } from "../Auth/FieldValidator.svelte";
 import type { DocType } from "../rustModels/DocType";
 import type { Account } from "../rustModels/Account";
 import type { Operation } from "../rustModels/Operation";
 import type { OperationRaw } from "../rustModels/OperationRaw";
-import { invoke } from "@tauri-apps/api/core";
+
+
+import { operStep } from "./OperationManager.svelte";
+import type {Date} from '$lib/models/rustModels/Date';
 import type { Company } from "../rustModels/Company";
 import type { Contract } from "../rustModels/Contract";
 import type { Currency } from "../rustModels/Currency";
 import type { NewContrData } from "../rustModels/NewContrData";
 import type { BoxUuid } from "../rustModels/BoxUuid";
-import type {Date} from '$lib/models/rustModels/Date';
-import { operStep } from "./OperationManager.svelte";
+import type { OperationStep } from "../rustModels/OperationStep";
+import { OperationType } from '$lib/models/Operation/OperationValues';
+
 
 export class OperationSvelte {
 	
@@ -155,12 +160,24 @@ export class OperationSvelte {
             contract_descr: this.newContrData.contractDescr.value
         }
 
-		const contracts = await invoke<Contract[]>(
+		let step: OperationStep = await invoke<OperationStep>(
 			'cmd_add_new_contract',
 			{data: data}
 		);
-		this._allPossContracts = contracts;
-		this._currContract = null;
+
+		switch (true) {
+			case OperationType.AddContractSuccess in step: {
+				operStep.currentText = step.AddContractSuccess.text;
+				this._allPossContracts = step.AddContractSuccess.contracts;
+				this._currContract = null;
+				break;
+			}
+			case OperationType.TryLater in step: {
+				operStep.currentText = step.TryLater.text;
+				break;
+			}
+
+		}
 	}
 
 	private _allCtrPtys = $state<Company[]>([]);

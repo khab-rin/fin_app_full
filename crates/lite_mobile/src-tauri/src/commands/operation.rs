@@ -1,14 +1,15 @@
 
 
 use shared_lib::primitives::frozen::text::{BoxUuid, DocNum, RubF, Date};
-use shared_lib::sql_models::operation::implements::{DocType, make_oper_id, Operation};
+use shared_lib::sql_models::id_rules::IdRules;
+use shared_lib::sql_models::operation::implements::{DocType, Operation};
 use shared_lib::{ClientState, ProcessError, Status};
 use shared_lib::primitives::composite::implements::RasBicAcc;
 use shared_lib::sql_models::operation::service::{OperationInfo, OperationStep};
 use shared_lib::service::mchd::home_mchd_power::HomeMchdPower;
-
 use shared_lib::primitives::frozen::macros::RussEnumName; 
 use shared_lib::sql_models::operation::account::Account;
+
 use shared_lib::client::sql_queries::operations::get::exist_id_by_id::get_exist_id_by_id;
 use shared_lib::client::sql_queries::operations::add::many::add_new_operations;
 use shared_lib::client::mchd::show_powers::check_access;
@@ -57,7 +58,8 @@ pub async fn cmd_is_operation_exist(
     ctrpty_id: Option<BoxUuid>
 ) -> Result<(BoxUuid, bool), Status> {
 
-    let check_oper_id = make_oper_id(&doc_num, &oper_date, &amount, &ctrpty_id);
+	let rule = IdRules::Operation { doc_num: doc_num.clone(), oper_date: oper_date.clone(), amount: amount.clone(), ctrpty_id: ctrpty_id.clone() };
+	let check_oper_id = rule.make_stat_id();
 
     match get_exist_id_by_id(&state, &check_oper_id).await
         .map_err(|err| err.process_err(err, ""))? {

@@ -1,4 +1,5 @@
 export const OperationType = {
+	AddContractSuccess: 'AddContractSuccess',
     AccInput: 'AccInput',
     Loading: 'Loading',
     ManualInput: 'ManualInput',

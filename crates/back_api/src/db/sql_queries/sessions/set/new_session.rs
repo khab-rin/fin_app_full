@@ -1,4 +1,5 @@
 
+use shared_lib::sql_models::id_rules::IdRules;
 use shared_lib::{Status, ProcessError};
 use shared_lib::primitives::frozen::text::BoxUuid;
 
@@ -11,9 +12,8 @@ pub(crate) async fn new_session(
     device_id: &BoxUuid
 ) -> Result<BoxUuid, Status> {
 
-	let session_id_str = format!("{}-{}", user_id, device_id);
-	let session_id = BoxUuid::new_v5(&session_id_str);
-
+	let rule = IdRules::Session { user_id: user_id.clone(), device_id: device_id.clone() };
+	let session_id = rule.make_stat_id();
 
     let record = sqlx::query_file!(
             "src/db/sql_queries/sessions/set/new_session.sql",

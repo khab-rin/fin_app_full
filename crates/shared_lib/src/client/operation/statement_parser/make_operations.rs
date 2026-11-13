@@ -1,9 +1,10 @@
+use crate::sql_models::id_rules::IdRules;
 use crate::{ClientState, ProcessError, Status};
 
 use crate::primitives::frozen::text::Date;
 use crate::sql_models::operation::parser::ParsedBlock;
 use crate::sql_models::operation::implements::{
-    ContractOption, OperationRaw, make_oper_id
+    ContractOption, OperationRaw
 };
 use crate::sql_models::operation::account::Account;
 
@@ -141,9 +142,10 @@ pub async fn make_statement_pay_operation_raw(
 
     let entr_date = Date::unchecked(chrono::Utc::now().naive_utc());
 
-    let ctrpty_id_ref = &ctrpty_option.as_ref().map(|c| c.comp_id.clone());
+    let ctrpty_id_oprion = ctrpty_option.as_ref().map(|c| c.comp_id.clone());
 
-    let oper_id = make_oper_id(&Some(doc_num.clone()), &oper_date, &Some(amount.clone()), ctrpty_id_ref);
+	let rule = IdRules::Operation { doc_num: Some(doc_num.clone()), oper_date: oper_date.clone(), amount: Some(amount.clone()), ctrpty_id: ctrpty_id_oprion };
+	let oper_id = rule.make_stat_id();
 
     let is_sync = Some(false);
 
@@ -264,9 +266,10 @@ pub async fn make_statement_rec_operation_raw(
 
     let entr_date = Date::unchecked(chrono::Utc::now().naive_utc());
 
-    let ctrpty_id_ref = &ctrpty_option.as_ref().map(|c| c.comp_id.clone());
+    let ctrpty_id_option = ctrpty_option.as_ref().map(|c| c.comp_id.clone());
 
-    let oper_id = make_oper_id(&Some(doc_num.clone()), &oper_date, &Some(amount.clone()), ctrpty_id_ref);
+	let rule = IdRules::Operation { doc_num: Some(doc_num.clone()), oper_date: oper_date.clone(), amount: Some(amount.clone()), ctrpty_id: ctrpty_id_option };
+	let oper_id = rule.make_stat_id();
 
     let is_sync = Some(false);
 
@@ -346,9 +349,10 @@ pub async fn make_statement_home_operation_raw(
 
     let entr_date = Date::unchecked(chrono::Utc::now().naive_utc());
 
-    let ctrpty_id_ref = &ctrpty_option.as_ref().map(|c| c.comp_id.clone());
+    let ctrpty_id_option = ctrpty_option.as_ref().map(|c| c.comp_id.clone());
 
-    let oper_id = make_oper_id(&Some(doc_num.clone()), &oper_date, &Some(amount.clone()), ctrpty_id_ref);
+	let rule = IdRules::Operation { doc_num: Some(doc_num.clone()), oper_date: oper_date.clone(), amount: Some(amount.clone()), ctrpty_id: ctrpty_id_option.clone() };
+	let oper_id = rule.make_stat_id();
 
     let is_sync = Some(false);
 

@@ -57,8 +57,10 @@ where
             log::error!(
                 "tech_err = {:?}, local_err = {:?}, ext_info = {}", tech_err, local_err, ext_info
             );
-			local_err
+			return local_err;
         }
+
+		local_err
     }
 }
 

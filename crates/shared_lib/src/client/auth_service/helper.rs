@@ -1,6 +1,7 @@
 use tauri_plugin_machine_uid::MachineUidExt;
 
 use crate::primitives::frozen::text_base::String1_1000;
+use crate::sql_models::id_rules::IdRules;
 use crate::{ProcessError, Status, LL};
 use crate::primitives::frozen::text::{BoxUuid, MidName};
 use crate::service::auth_service::implements::SessionUserToken;
@@ -28,7 +29,8 @@ pub fn get_device_id(state: &ClientState) -> Result<BoxUuid, Status> {
             Status::SystemErr
         })?; 
 
-    let device_id = BoxUuid::new_v5(&id_string);
+	let rule = IdRules::Device { app_str: id_string };
+	let device_id = rule.make_stat_id();
 
     Ok(device_id)
 }

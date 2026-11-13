@@ -1,11 +1,13 @@
 
 
 use shared_lib::primitives::frozen::text::{BoxUuid, DocNum, RubF, Date};
-use shared_lib::sql_models::operation::implements::{DocType, make_oper_id, Operation};
+use shared_lib::sql_models::id_rules::IdRules;
+use shared_lib::sql_models::operation::implements::{DocType, Operation};
 use shared_lib::{ClientState, ProcessError, Status};
 use shared_lib::primitives::composite::implements::RasBicAcc;
 use shared_lib::sql_models::operation::service::{OperationInfo, OperationStep};
 use shared_lib::service::mchd::home_mchd_power::HomeMchdPower;
+use shared_lib::sql_models::contracts::implements::{NewContrData};
 
 use shared_lib::primitives::frozen::macros::RussEnumName; 
 use shared_lib::sql_models::operation::account::Account;
@@ -14,6 +16,51 @@ use shared_lib::client::sql_queries::operations::add::many::add_new_operations;
 use shared_lib::client::mchd::show_powers::check_access;
 
 use crate::service::operation::make_bank_statement_operations;
+use shared_lib::client::sql_queries::contracts::add::new_contract::make_new_contract;
+use shared_lib::client::sql_queries::contracts::get::contract_by_ids::get_contracts_by_comp_ctrpty_ids;
+
+
+#[tauri::command]
+pub async fn cmd_add_new_contract(
+    state: tauri::State<'_, ClientState>,
+    data: NewContrData
+) -> Result<OperationStep, Status> {
+
+	let mut failed_result: OperationStep = OperationStep::TryLater { text: OperationInfo::ClientApiSystemError };
+
+    let ctrpty_id = data.ctrpty_id.clone();
+
+    match make_new_contract(&state, data).await {
+		Ok(_) => {},
+		Err(err) => {
+			if let OperationStep::TryLater { text } = &mut failed_result {
+				match err {
+					Status::SqlSyncError => {*text = OperationInfo::SqlSyncError},
+					Status::ConnectProblems => {*text = OperationInfo::ConnectionError},
+					_ => {}
+				}
+			}
+			return Ok(failed_result);
+		}
+	};
+
+    let contracts = match get_contracts_by_comp_ctrpty_ids(&state, &ctrpty_id).await {
+		Ok(c) => c,
+		Err(err) => {
+			if let OperationStep::TryLater { text } = &mut failed_result {
+				match err {
+					Status::SqlSyncError => {*text = OperationInfo::SqlSyncError},
+					Status::ConnectProblems => {*text = OperationInfo::ConnectionError},
+					_ => {}
+				}
+			}
+			return Ok(failed_result);
+		}
+	};
+
+	Ok(OperationStep::AddContractSuccess { contracts, text: OperationInfo::AddContractSuccess} )
+
+}
 
 
 #[tauri::command]
@@ -57,7 +104,8 @@ pub async fn cmd_is_operation_exist(
     ctrpty_id: Option<BoxUuid>
 ) -> Result<(BoxUuid, bool), Status> {
 
-    let check_oper_id = make_oper_id(&doc_num, &oper_date, &amount, &ctrpty_id);
+	let rule = IdRules::Operation { doc_num, oper_date, amount, ctrpty_id };
+	let check_oper_id = rule.make_stat_id();
 
     match get_exist_id_by_id(&state, &check_oper_id).await
         .map_err(|err| err.process_err(err, ""))? {

@@ -1,3 +1,4 @@
+use shared_lib::sql_models::id_rules::IdRules;
 use shared_lib::{Status, ProcessError};
 use shared_lib::sql_models::company::implements::Company;
 use shared_lib::primitives::frozen::text::{CompInn, Kpp, CompType, Date, BoxUuid, DateTime};
@@ -98,10 +99,8 @@ pub(crate) async fn get_dadata_company(
 
     }
 
-	let uuid_str = format!("{}-{}", comp_inn, kpp);
-
-    let comp_id = BoxUuid::new_v5(&uuid_str);
-
+	let rule = IdRules::Company { comp_inn: comp_inn.clone(), kpp: kpp.clone() };
+	let comp_id = rule.make_stat_id();
 
     Ok(Some(Company {
         comp_id,

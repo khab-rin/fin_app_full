@@ -1,7 +1,7 @@
 
 use shared_lib::client::sql_queries::contracts::get::contract_by_ids::get_contracts_by_comp_ctrpty_ids;
 use shared_lib::sql_models::company::implements::Company;
-use shared_lib::sql_models::contracts::implements::{Contract, NewContrData};
+use shared_lib::sql_models::contracts::implements::{Contract};
 use shared_lib::{ClientState, ProcessError, Status};
 use shared_lib::primitives::composite::implements::RasBicAcc;
 use shared_lib::primitives::frozen::text::{RasAcc, Bic, CompInn, Kpp, BoxUuid};
@@ -9,7 +9,6 @@ use shared_lib::primitives::frozen::text::{RasAcc, Bic, CompInn, Kpp, BoxUuid};
 use shared_lib::client::sql_queries::companys::get::bank_acc_by_comp_inn_kpp::get_bank_accs_by_comp_id;
 use shared_lib::client::sql_queries::companys::add::by_inn_kpp::add_company_by_inn_cpp_acc;
 use shared_lib::client::sql_queries::companys::get::by_inn_kpp::get_company_by_inn_kpp;
-use shared_lib::client::sql_queries::contracts::add::new_contract::make_new_contract;
 use shared_lib::client::sql_queries::companys::get::all::get_all_companys;
 
 #[tauri::command]
@@ -65,19 +64,7 @@ pub async fn cmd_get_comp_by_inn_kpp(
     get_company_by_inn_kpp(&state, &comp_inn, &kpp).await
 }
 
-#[tauri::command]
-pub async fn cmd_add_new_contract(
-    state: tauri::State<'_, ClientState>,
-    data: NewContrData
-) -> Result<Vec<Contract>, Status> {
-    let ctrpty_id = data.ctrpty_id.clone();
 
-    make_new_contract(&state, data).await
-        .map_err(|err| err.process_err(err, ""))?;
-
-    get_contracts_by_comp_ctrpty_ids(&state, &ctrpty_id).await
-
-}
 
 #[tauri::command]
 pub async fn cmd_get_contracts_by_ctrpty_id(

@@ -8,8 +8,6 @@
 @import './pc_label.css';
 @import './pc_lists.css';
 @import './pc_text.css';
-@import "./pc_zones.css";
-@import './pc_zone_top.css';
 
 :root {
   --main-c: #f8f9fa;

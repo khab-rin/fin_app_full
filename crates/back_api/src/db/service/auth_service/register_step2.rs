@@ -8,7 +8,7 @@ use argon2::{
     Argon2
 };
 
-use shared_lib::{ProcessError, Status};
+use shared_lib::{ProcessError, Status, sql_models::id_rules::IdRules};
 use shared_lib::primitives::frozen::text::{DateTime, BoxUuid};
 use shared_lib::primitives::composite::implements::Fio;
 use shared_lib::service::auth_service::implements::{
@@ -87,9 +87,8 @@ pub(crate) async fn register_step2(
         device_id
     } = json_data.clone();
 
-	let uuid_str = format!("{}-{}", pers_inn, snils);
-	let pers_id = BoxUuid::new_v5(&uuid_str);
-
+	let rule = IdRules::Person { pers_inn: pers_inn.clone(), snils: snils.clone() };
+	let pers_id = rule.make_stat_id();
 
 	let mut person =  Person {
 		pers_id,
