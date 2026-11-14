@@ -9,11 +9,11 @@ CREATE TABLE IF NOT EXISTS operations (
     debet VARCHAR(10) NOT NULL,
     credit VARCHAR(10) NOT NULL,
     amount NUMERIC(15, 2) NOT NULL,
-    oper_date DATE,
+    oper_date DATE NOT NULL,
 
-    doc_type VARCHAR(50),
-    doc_num VARCHAR(100),
-    doc_date DATE,
+    doc_type VARCHAR(50) NOT NULL,
+    doc_num VARCHAR(100) NOT NULL,
+    doc_date DATE NOT NULL,
 
     is_storno BOOLEAN NOT NULL DEFAULT false,
     is_del BOOLEAN NOT NULL DEFAULT false,

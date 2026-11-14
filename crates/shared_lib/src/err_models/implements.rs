@@ -103,7 +103,7 @@ pub enum Status {
     // ==========================================
     SqLitePoolErr = 300,
     SqlQueryWrongLogic = 301,
-    SqliteCommitErr = 302,
+    SqlCommitErr = 302,
 	SqlSyncError = 303,
 
     // ==========================================

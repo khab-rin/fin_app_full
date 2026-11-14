@@ -17,7 +17,7 @@ use crate::service::auth_service::general::*;
 use crate::service::auth_service::implements::SessionUserToken;
 
 use crate::make_header;
-use crate::client::sql_queries::null_elems::make_null_postgress_elements;
+use crate::client::sql_queries::null_elems::make_null_sqlite_elements;
 use crate::client::sql_queries::companys::add::by_company::add_company;
 use crate::client::sql_queries::persons::insert::person_no_sync::insert_person_no_sync;
 
@@ -260,7 +260,7 @@ pub(crate) async fn init_session(
 	let company: &Company = &user_data.user.company;
 	let person: &Person = &user_data.user.person;
 
-	make_null_postgress_elements(&session).await
+	make_null_sqlite_elements(&session).await
 		.map_err(|err| err.process_err(err, ""))?;
 
 	{

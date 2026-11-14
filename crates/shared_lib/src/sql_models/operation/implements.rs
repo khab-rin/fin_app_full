@@ -55,7 +55,6 @@ pub struct Operation {
 	
     pub user_id: BoxUuid,
     pub comp_id: BoxUuid,
-
     pub ctrpty_id: BoxUuid,
 
     pub contract_id: BoxUuid,

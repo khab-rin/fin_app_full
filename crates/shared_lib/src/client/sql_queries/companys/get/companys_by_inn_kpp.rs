@@ -50,7 +50,7 @@ pub
     }
 
     tx.commit().await
-        .map_err(|err| err.process_err(Status::SqliteCommitErr, ""))?; 
+        .map_err(|err| err.process_err(Status::SqlCommitErr, ""))?; 
 
 
     Ok(res)

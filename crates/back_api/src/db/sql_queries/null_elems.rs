@@ -1,27 +1,30 @@
 
 
-use shared_lib::sql_models::contracts::implements::Contract;
+
 use shared_lib::sql_models::id_rules::IdRules;
 use shared_lib::sql_models::person::implements::Person;
 use shared_lib::sql_models::company::implements::Company;
+use shared_lib::sql_models::user::implements::{UserSetData};
+use shared_lib::sql_models::contracts::implements::Contract;
 use shared_lib::sql_models::operation::implements::Operation;
 use shared_lib::sql_models::operation::account::{Account};
 use shared_lib::sql_models::operation::implements::DocType;
-use shared_lib::sql_models::user;
 use shared_lib::{Status, ProcessError};
 use shared_lib::service::parsers::dadata::implements::CtrprtyMetadata;
 use shared_lib::sql_models::person::implements::PersonMetadata;
 use shared_lib::primitives::composite::implements::Fio;
-use shared_lib::primitives::frozen::text::{BoxUuid, CompInn, CompStatus, CompType, Currency, Date, DateTime, DocNum, Integ, Kpp, PersInn, RubF, Snils, SurName, FirstName};
-
-use crate::db::sql_queries::companys::add::que_insert_update::sql_insert_update_company_function;
+use shared_lib::primitives::frozen::text::{Email, Phone, CompInn, CompStatus, CompType, Currency, Date, DateTime, DocNum, Integ, Kpp, PersInn, RubF, Snils, SurName, FirstName};
 
 use crate::config::BackApiState;
+use crate::db::sql_queries::companys::add::que_insert_update::sql_insert_update_company_function;
+use crate::db::sql_queries::persons::add::que_insert_update::sql_insert_update_person_function;
+use crate::db::sql_queries::users::add::que_insert_update_user::sql_insert_update_user_function;
+use crate::db::sql_queries::contracts::add::que_insert_update_contract::sql_insert_update_contract_function;
+use crate::db::sql_queries::operations::add::que_insert_update_operation::que_insert_update_operation_function;
 
 pub async fn make_null_postgress_elements(
 	state: &BackApiState
 ) -> Result<(), Status> {
-	let null_uuid = BoxUuid::unchecked(uuid::Uuid::nil());
 	let null_pers_inn = PersInn::unchecked("202000000000".to_string());
 	let null_comp_inn = CompInn::unchecked("0010000000".to_string());
 	let null_kpp = Kpp::unchecked("000000000".to_string());
@@ -33,45 +36,9 @@ pub async fn make_null_postgress_elements(
 	let null_currency = Currency::RUB;
 	let null_integer: Integ = Integ::unchecked(0);
 	let null_acc = Account::BankAcc;
-	let null_doc_type = DocType::BankOrder;
-
-	let null_pers_metadata: PersonMetadata = PersonMetadata {
-		snils: null_snils.clone(),
-		fio: Fio {
-			sur_name: SurName::unchecked("".to_string()),
-			first_name: FirstName::unchecked("".to_string()),
-			mid_name: None,
-		},
-		passport: None,
-		address: None,
-		gender: None,
-		birth_day: None,
-		phone: std::collections::HashSet::new(),
-		email: std::collections::HashSet::new(),
-	};
-
-	let null_comp_metadata = CtrprtyMetadata {
-		kpp: None,
-		main_manager: None,
-		branch_type: None,
-		kind: None,
-		is_active: None,
-		opf: None,
-		comp_name: None,
-		inn: None,
-		ogrn: None,
-		oktmo_company: None,
-		okogu: None,
-		okfs: None,
-		okved: None,
-		ogrn_date_dadata: None,
-		address: None,
-		e_mail: None,
-		phone: None,
-		bank_acc: vec![],
-		ogrn_date_date: None,
-		okpo: None
-	};
+	let null_doc_type = DocType::Other;
+	let null_phone = Phone::unchecked("70000000000".to_string());
+	let null_email = Email::unchecked("null@null.nul".to_string());
 
 	let person_id_rule = IdRules::Person { pers_inn: null_pers_inn.clone(), snils: null_snils.clone() };
 	let null_pers_id = person_id_rule.make_stat_id();
@@ -84,11 +51,23 @@ pub async fn make_null_postgress_elements(
 	let operation_id_rule = IdRules::Operation { doc_num: Some(null_doc_num.clone()), oper_date: Some(null_date.clone()), amount: Some(null_amont.clone()), ctrpty_id: Some(null_comp_id.clone()) };
 	let null_operation_id = operation_id_rule.make_stat_id();
 	
-	
 	let null_person = Person {
-		pers_id: null_pers_id,
+		pers_id: null_pers_id.clone(),
 		pers_inn: null_pers_inn,
-		metadata: null_pers_metadata,
+		metadata: PersonMetadata {
+			snils: null_snils.clone(),
+			fio: Fio {
+				sur_name: SurName::unchecked("nullname".to_string()),
+				first_name: FirstName::unchecked("nullfirstname".to_string()),
+				mid_name: None,
+			},
+			passport: None,
+			address: None,
+			gender: None,
+			birth_day: None,
+			phone: std::collections::HashSet::new(),
+			email: std::collections::HashSet::new(),
+		},
 		last_update: DateTime::unchecked(chrono::Utc::now())
 	};
 
@@ -98,8 +77,39 @@ pub async fn make_null_postgress_elements(
 		kpp: null_kpp,
 		comp_type: CompType::ComEnt,
 		comp_status: CompStatus::Liquidated,
-		metadata: null_comp_metadata,
+		metadata: CtrprtyMetadata {
+			kpp: None,
+			main_manager: None,
+			branch_type: None,
+			kind: None,
+			is_active: None,
+			opf: None,
+			comp_name: None,
+			inn: None,
+			ogrn: None,
+			oktmo_company: None,
+			okogu: None,
+			okfs: None,
+			okved: None,
+			ogrn_date_dadata: None,
+			address: None,
+			e_mail: None,
+			phone: None,
+			bank_acc: vec![],
+			ogrn_date_date: None,
+			okpo: None
+		},
 		last_update: DateTime::unchecked(chrono::Utc::now())
+	};
+
+	let null_user_data = UserSetData {
+		user_id: null_user_id.clone(),
+		pers_id: null_pers_id.clone(),
+		comp_id: null_comp_id.clone(),
+		phone: null_phone,
+		password_hash: "".to_string(),
+		email: null_email,
+		guids: std::collections::HashSet::new()
 	};
 
 	let null_contract = Contract {
@@ -142,83 +152,22 @@ pub async fn make_null_postgress_elements(
 	let mut conn = state.pool_fast.begin().await
 		.map_err(|err| err.process_err(Status::SqLitePoolErr, ""))?;
 
-
-
-
 	sql_insert_update_company_function(&mut *conn, &null_company).await
 		.map_err(|err| err.process_err(err, ""))?;
+	
+	sql_insert_update_person_function(&mut *conn, &null_person).await
+		.map_err(|err| err.process_err(err, ""))?;
 
-	// let _ = sqlx::query_file!(
-	// 	"src/db/sql_queries/persons/add/by_person.sql",
-	// 	*null_uuid,
-	// 	*null_pers_inn,
-	// 	&serde_json::Value::default()
-	// ).fetch_one(&state.pool_fast).await
-	// .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+	sql_insert_update_user_function(&mut *conn, &null_user_data).await
+		.map_err(|err| err.process_err(err, ""))?;
 
-	// let _ = sqlx::query_file!(
-	// 	"src/db/sql_queries/companys/add/que_insert_update.sql",
-	// 	*null_uuid,
-	// 	*null_comp_inn,
-	// 	*null_kpp,
-	// 	CompType::ComEnt.as_str(),
-	// 	CompStatus::Liquidating.as_str(),
-	// 	&serde_json::Value::default()
-	// ).fetch_one(&state.pool_fast).await
-	// .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+	sql_insert_update_contract_function(&mut *conn, &null_contract).await
+		.map_err(|err| err.process_err(err, ""))?;
 
-	// let _ = sqlx::query_file!(
-	// 	"src/db/sql_queries/users/add/user.sql",
-	// 	*null_uuid,
-	// 	*null_uuid,
-	// 	*null_uuid,
-	// 	"",
-	// 	"",
-	// 	"",
-	// 	&Vec::<uuid::Uuid>::new()[..]
-	// ).fetch_one(&state.pool_fast).await
-	// .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+	que_insert_update_operation_function(&mut *conn, &null_operation).await
+		.map_err(|err| err.process_err(err, ""))?;
 
-	// let _ = sqlx::query_file!(
-	// 	"src/db/sql_queries/contracts/add/new_contr.sql",
-	// 	*null_uuid,
-	// 	*null_uuid,
-	// 	*null_uuid,
-	// 	*null_uuid,
-	// 	"",
-	// 	*null_date,
-	// 	"",
-	// 	*null_date,
-	// 	*null_date,
-	// 	"RUB",
-	// 	*null_rub,
-	// 	*null_i32,
-	// 	false,
-	// 	"",
-	// 	*null_date,
-	// 	true
-	// ).fetch_one(&state.pool_fast).await
-	// .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
-
-	// sqlx::query_file!(
-	// 	"src/db/sql_queries/operations/add/add_one.sql",
-	// 	*null_uuid,
-	// 	*null_uuid,
-	// 	*null_uuid,
-	// 	*null_uuid,
-	// 	*null_uuid,
-	// 	"",
-	// 	"",
-	// 	*null_rub,
-	// 	*null_date,
-	// 	"",
-	// 	"",
-	// 	*null_date,
-	// 	false,
-	// 	true,
-	// 	*null_date
-	// ).execute(&state.pool_fast).await
-	// .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+	conn.commit().await.map_err(|err| err.process_err(Status::SqlCommitErr, ""))?;
 
 	Ok(())
 }

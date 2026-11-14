@@ -9,7 +9,7 @@ use argon2::{
 };
 
 use shared_lib::{ProcessError, Status, sql_models::id_rules::IdRules};
-use shared_lib::primitives::frozen::text::{DateTime, BoxUuid};
+use shared_lib::primitives::frozen::text::{DateTime};
 use shared_lib::primitives::composite::implements::Fio;
 use shared_lib::service::auth_service::implements::{
     RegInitData, 
@@ -250,7 +250,11 @@ pub(crate) async fn register_step2(
         }
     };
 
+	let rule = IdRules::User { comp_id: company.comp_id.clone(), pers_id: person.pers_id.clone() };
+	let user_id = rule.make_stat_id();
+
     let user_set_data = UserSetData {
+		user_id,
         pers_id: person.pers_id.clone(),
         comp_id: company.comp_id.clone(),
 

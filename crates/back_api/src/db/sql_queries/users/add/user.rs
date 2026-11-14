@@ -12,6 +12,7 @@ pub(crate) async fn add_user(
 ) -> Result<User, Status> {
 
     let UserSetData {
+		user_id,
         pers_id,
         comp_id,
         phone,

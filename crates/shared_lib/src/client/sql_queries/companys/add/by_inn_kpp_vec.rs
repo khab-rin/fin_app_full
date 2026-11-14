@@ -50,7 +50,7 @@ pub async fn add_companys_by_inn_cpp_acc(
     }
 
     tx.commit().await
-        .map_err(|err| err.process_err(Status::SqliteCommitErr, ""))?;
+        .map_err(|err| err.process_err(Status::SqlCommitErr, ""))?;
 
     Ok(companys)
 }

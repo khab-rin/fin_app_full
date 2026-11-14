@@ -21,22 +21,20 @@ where
 {
     #[track_caller]
     fn process_err(self, local_err: Status, ext_info: &str) -> Status {
-        
-        #[cfg(feature = "server")]
-        {   
 
-			let local_err = match (&self as &dyn std::any::Any)
+		let local_err = match (&self as &dyn std::any::Any)
                 .downcast_ref::<sqlx::Error>()
             {
                 Some(sqlx::Error::Database(db_err))
                     if db_err.code().as_deref() == Some("23503") =>
                 {
                     Status::SqlSyncError
-                }
+                },
                 _ => local_err,
             };
-
-
+        
+        #[cfg(feature = "server")]
+        {   
 			let tech_err = anyhow::Error::msg(self.to_string());
             let caller = std::panic::Location::caller();
             let location = format!("api_error_at::{}:{}:{}", caller.file().replace(".rs", ""), caller.line(), caller.column());

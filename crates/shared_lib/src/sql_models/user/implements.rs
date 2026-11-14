@@ -39,6 +39,7 @@ impl std::convert::TryFrom<UserDto> for User {
 
 #[derive(Debug)]
 pub struct UserSetData {
+	pub user_id: BoxUuid,
     pub pers_id: BoxUuid,
     pub comp_id: BoxUuid,
 
