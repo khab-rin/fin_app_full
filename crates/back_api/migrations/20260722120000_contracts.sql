@@ -6,23 +6,23 @@ CREATE TABLE IF NOT EXISTS contracts (
     ctrpty_id UUID NOT NULL REFERENCES companys(comp_id),
 
 
-    contract_num VARCHAR(100) NOT NULL DEFAULT 'б/н',
+    contract_num VARCHAR(100) NOT NULL,
     contract_date DATE NOT NULL,
-    title VARCHAR(255) NOT NULL DEFAULT '',
+    title VARCHAR(255) NOT NULL,
 
     st_date DATE NOT NULL,
     end_date DATE NOT NULL,
 
-    currency VARCHAR(3) NOT NULL DEFAULT 'RUB',
-    total_amount NUMERIC(15, 2) NOT NULL DEFAULT 0,
+    currency VARCHAR(3) NOT NULL,
+    total_amount NUMERIC(15, 2) NOT NULL,
 
-    payment_deferral_days INT NOT NULL DEFAULT 0,
+    payment_deferral_days INT NOT NULL,
 
-    is_active BOOLEAN NOT NULL DEFAULT true,
+    is_active BOOLEAN NOT NULL,
     descrip TEXT NOT NULL DEFAULT '',
     
     entr_date DATE NOT NULL DEFAULT CURRENT_DATE,
 
-    is_del BOOLEAN NOT NULL DEFAULT false
+    is_del BOOLEAN NOT NULL
 
 );

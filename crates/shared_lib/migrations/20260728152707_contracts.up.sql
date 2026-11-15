@@ -5,25 +5,27 @@ CREATE TABLE IF NOT EXISTS contracts (
     comp_id TEXT NOT NULL REFERENCES companys(comp_id),
     ctrpty_id TEXT NOT NULL REFERENCES companys(comp_id),
 
-    contract_num TEXT NOT NULL DEFAULT 'б/н',
+    contract_num TEXT NOT NULL,
     contract_date TEXT NOT NULL,
-    title TEXT NOT NULL DEFAULT '',
+    title TEXT NOT NULL,
 
     st_date TEXT NOT NULL,
     end_date TEXT NOT NULL,
 
-    currency TEXT NOT NULL DEFAULT 'RUB',
+    currency TEXT NOT NULL,
 
-    total_amount TEXT NOT NULL DEFAULT '0',
+    total_amount TEXT NOT NULL,
 
-    payment_deferral_days INTEGER NOT NULL DEFAULT 0,
+    payment_deferral_days INTEGER NOT NULL,
 
-    is_active BOOLEAN NOT NULL DEFAULT true,
+    is_active BOOLEAN NOT NULL,
     descrip TEXT NOT NULL DEFAULT '',
     
     entr_date TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
 
-    is_del BOOLEAN NOT NULL DEFAULT false
+    is_del BOOLEAN NOT NULL,
+
+	is_synced INTEGER NOT NULL
 );
 
 CREATE INDEX IF NOT EXISTS idx_contracts_comp_id ON contracts(comp_id);

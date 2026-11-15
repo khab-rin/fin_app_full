@@ -1,5 +1,5 @@
-INSERT INTO sessions (session_id, user_id, device_id)
-VALUES ($1, $2, $3)
+INSERT INTO sessions (session_id, user_id, device_id, token)
+VALUES ($1, $2, $3, $4)
 ON CONFLICT (user_id, device_id)
 DO UPDATE SET 
     last_login = CURRENT_TIMESTAMP

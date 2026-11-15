@@ -12,16 +12,18 @@ CREATE TABLE IF NOT EXISTS operations (
 
     amount REAL NOT NULL,
 
-    oper_date TEXT,
+    oper_date TEXT NOT NULL,
 
-    doc_type TEXT,
-    doc_num TEXT,
-    doc_date TEXT,
+    doc_type TEXT NOT NULL,
+    doc_num TEXT NOT NULL,
+    doc_date TEXT NOT NULL,
 
-    is_storno BOOLEAN NOT NULL DEFAULT false,
-    is_del BOOLEAN NOT NULL DEFAULT false,
+    is_storno BOOLEAN NOT NULL,
+    is_del BOOLEAN NOT NULL,
 
-    entr_date TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
+    entr_date TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+
+	is_synced INTEGER NOT NULL
 
 );
 

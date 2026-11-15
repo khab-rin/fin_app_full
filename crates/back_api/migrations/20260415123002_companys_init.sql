@@ -1,10 +1,10 @@
 CREATE TABLE IF NOT EXISTS companys (
     comp_id UUID PRIMARY KEY,
     comp_inn VARCHAR(12) NOT NULL,
-    kpp VARCHAR(9) NOT NULL DEFAULT '',
+    kpp VARCHAR(9) NOT NULL,
     comp_type VARCHAR(10) NOT NULL,
-    comp_status VARCHAR(12) NOT NULL DEFAULT 'ACTIVE',
-    metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+    comp_status VARCHAR(12) NOT NULL,
+    metadata JSONB NOT NULL,
     last_update TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT is_inn
@@ -44,7 +44,7 @@ BEGIN
             RAISE EXCEPTION 'Пара ИНН - ТИП ошибочна: для ИНН из 12 цифр тип должен быть IP';
         END IF;
         
-        NEW.kpp := '';
+        NEW.kpp := '0';
         NEW.comp_type := 'IP';
     ELSIF LENGTH(NEW.comp_inn) = 10 THEN
         IF NEW.comp_type = 'IP' THEN

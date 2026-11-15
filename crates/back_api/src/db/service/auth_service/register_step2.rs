@@ -8,7 +8,8 @@ use argon2::{
     Argon2
 };
 
-use shared_lib::{ProcessError, Status, sql_models::id_rules::IdRules};
+use shared_lib::{ProcessError, Status, LL};
+use shared_lib::sql_models::id_rules::IdRules;
 use shared_lib::primitives::frozen::text::{DateTime};
 use shared_lib::primitives::composite::implements::Fio;
 use shared_lib::service::auth_service::implements::{
@@ -32,11 +33,11 @@ use crate::config::BackApiState;
 use crate::db::service::auth_service::helper::{mask_email, mask_string};
 use crate::db::service::mchd::mchd_storage::add_new_manager;
 use crate::db::sql_queries::persons::add::by_person::add_person;
-use crate::db::sql_queries::companys::get::company_by_inn_kpp::get_company_by_inn_kpp;
+use crate::db::sql_queries::companys::get::fun_get_or_parse_insert::get_or_parse_insert_function;
 use crate::db::sql_queries::users::get::by_inn_pers_comp_kpp::get_user_by_inn_pers_comp_kpp;
 use crate::db::sql_queries::users::get::tel_mail_by_id::get_user_phone_mail_by_id;
 use crate::db::sql_queries::users::add::user::add_user;
-use crate::db::sql_queries::sessions::set::new_session::new_session;
+use crate::db::sql_queries::sessions::set::que_insert_session::sql_insert_session_fun;
 use crate::db::service::auth_service::pers_sign_parser::{
     parse_crypto_fields_org,
     check_auth_manager,
@@ -49,7 +50,7 @@ pub(crate) async fn register_step2(
     data: &CheckSignDocData
 ) -> Result<AuthStep, Status> {
 
-    let failed_result = AuthStep::TryLater { text: AuthInfo::BackApiError };
+    let mut failed_result = AuthStep::TryLater { text: AuthInfo::BackApiError };
 
 
     let CheckSignDocData { 
@@ -118,7 +119,7 @@ pub(crate) async fn register_step2(
         }
     };
 
-    let company_option = match get_company_by_inn_kpp(state, &comp_inn, &kpp).await {
+    let company_option = match get_or_parse_insert_function(state, &comp_inn, &kpp).await {
         Ok(o) => o,
         Err(err) => {
             err.process_err(err, "");
@@ -129,7 +130,10 @@ pub(crate) async fn register_step2(
     let company = match company_option {
         Some(c) => c,
         None => {
-            Status::Tech.process_err(Status::SystemLogicErr, "");
+            Status::log(LL::Debug, &format!("Компания не найдена. Инн - {:?}, Кпп - {:?}", comp_inn, kpp));
+			if let AuthStep::TryLater { text } = &mut failed_result {
+				*text = AuthInfo::MissCompany;
+			}
             return Ok(failed_result);
         }
     };
@@ -278,7 +282,7 @@ pub(crate) async fn register_step2(
 		return Ok(failed_result);
     }
 
-    let token = match new_session(state, &user.user_id, &device_id).await {
+    let token = match sql_insert_session_fun(&state.pool_fast, &user.user_id, &device_id).await {
         Ok(t) => t,
         Err(err) => {
             err.process_err(err, "");

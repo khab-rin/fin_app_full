@@ -18,6 +18,7 @@ use shared_lib::client::mchd::show_powers::check_access;
 use crate::service::operation::make_bank_statement_operations;
 use shared_lib::client::sql_queries::contracts::add::new_contract::make_new_contract;
 use shared_lib::client::sql_queries::contracts::get::contract_by_ids::get_contracts_by_comp_ctrpty_ids;
+use shared_lib::client::sql_queries::contracts::get::que_get_by_contr_id::sql_get_contract_by_contr_id_fun;
 
 
 #[tauri::command]
@@ -28,21 +29,33 @@ pub async fn cmd_add_new_contract(
 
 	let mut failed_result: OperationStep = OperationStep::TryLater { text: OperationInfo::ClientApiSystemError };
 
-    let ctrpty_id = data.ctrpty_id.clone();
-
-    match make_new_contract(&state, data).await {
-		Ok(_) => {},
+	let session = match state.get_session().await {
+		Ok(s) => s,
 		Err(err) => {
-			if let OperationStep::TryLater { text } = &mut failed_result {
-				match err {
-					Status::SqlSyncError => {*text = OperationInfo::SqlSyncError},
-					Status::ConnectProblems => {*text = OperationInfo::ConnectionError},
-					_ => {}
-				}
-			}
+			err.process_err(Status::ClientSessionMissError, "");
 			return Ok(failed_result);
 		}
 	};
+
+	let new_contract = match make_new_contract(&state, data).await {
+		Ok(c) => c,
+		Err(err) => {
+			err.process_err(err, "");
+			return Ok(failed_result);
+		}
+	};
+
+	let exist_contract = match sql_get_contract_by_contr_id_fun(&session.local_db, &new_contract.contract_id).await {
+		Ok(opt) => opt,
+		Err(err) => {
+			err.process_err(err, "");
+			return Ok(failed_result);
+		};
+	}
+
+
+
+
 
     let contracts = match get_contracts_by_comp_ctrpty_ids(&state, &ctrpty_id).await {
 		Ok(c) => c,

@@ -13,15 +13,18 @@ where E: sqlx::Executor<'t, Database = sqlx::Postgres>
     let company_dto = sqlx::query_file_as!(
             CompanyDto,
             "src/db/sql_queries/companys/add/que_insert_update.sql",
-			*company.comp_id,
-            *company.comp_inn,
-            *company.kpp,
-            company.comp_type.as_str(),
-            company.comp_status.as_str(),
+			&company.comp_id as &BoxUuid,
+        	&company.comp_inn as &CompInn,
+           	&company.kpp as &Kpp,
+            &company.comp_type as &CompType,
+            &company.comp_status as &CompStatus,
             serde_json::to_value(&company.metadata).unwrap_or_default()
         ).fetch_one(conn)
         .await
-        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+        .map_err(|err| {
+			let ext_info = format!("ошибка в запросе. инн = {:?}, кпп = {:?}", company.comp_inn, company.kpp);
+			err.process_err(Status::SqlQueryWrongLogic, &ext_info)
+		})?;
     
     let company: Company = company_dto
         .try_into()

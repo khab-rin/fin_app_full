@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS persons (
     pers_id UUID PRIMARY KEY,
     pers_inn VARCHAR(12) NOT NULL UNIQUE,
-    metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+    metadata JSONB NOT NULL,
     last_update TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT is_inn_ind

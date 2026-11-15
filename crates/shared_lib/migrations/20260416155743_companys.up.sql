@@ -1,10 +1,10 @@
 CREATE TABLE IF NOT EXISTS companys (
     comp_id TEXT PRIMARY KEY NOT NULL,
     comp_inn TEXT NOT NULL,
-    kpp TEXT NOT NULL DEFAULT '',
+    kpp TEXT NOT NULL,
     comp_type TEXT NOT NULL,
-    comp_status TEXT NOT NULL DEFAULT 'ACTIVE',
-    metadata TEXT NOT NULL DEFAULT '{}',
+    comp_status TEXT NOT NULL,
+    metadata TEXT NOT NULL,
     last_update DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       
     UNIQUE (comp_inn, kpp),

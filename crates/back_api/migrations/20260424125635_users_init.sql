@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
     password_hash TEXT NOT NULL,
     email VARCHAR NOT NULL,
 
-    guids UUID[] NOT NULL DEFAULT '{}',
+    guids UUID[] NOT NULL,
     
     sync_shard_id INTEGER DEFAULT floor(random() * 7),
 

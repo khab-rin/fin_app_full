@@ -10,11 +10,13 @@ use crate::{ProcessError, Status};
 use crate::service::parsers::dadata::implements::CtrprtyMetadata;
 use crate::sql_models::person::implements::PersonMetadata;
 use crate::primitives::composite::implements::Fio;
-use crate::primitives::frozen::text::{Email, Phone, CompInn, CompStatus, CompType, 
+use crate::primitives::frozen::text::{CompInn, CompStatus, CompType, 
 	Currency, Date, DateTime, DocNum, Integ, Kpp, PersInn, RubF, Snils, SurName, FirstName};
 
 use crate::client::sql_queries::companys::add::que_insert_update::sql_insert_update_company_query;
 use crate::client::sql_queries::persons::add::que_insert_update::sql_insert_update_person_function;
+use crate::client::sql_queries::contracts::add::que_insert_update::sql_insert_update_contract_function;
+use crate::client::sql_queries::operations::add::que_insert_update::sql_insert_update_operation_function;
 
 pub async fn make_null_sqlite_elements(
 	session: &ActiveSession
@@ -142,7 +144,11 @@ pub async fn make_null_sqlite_elements(
 	sql_insert_update_person_function(&mut *conn, &null_person, 1).await
 		.map_err(|err| err.process_err(err, ""))?;
 
-	
+	sql_insert_update_contract_function(&mut *conn, &null_contract, 1).await
+		.map_err(|err| err.process_err(err, ""))?;
+
+	sql_insert_update_operation_function(&mut *conn, &null_operation, 1).await
+		.map_err(|err| err.process_err(err, ""))?;
 
 	conn.commit().await.map_err(|err| err.process_err(Status::SqlCommitErr, ""))?;
 

@@ -8,9 +8,8 @@ use shared_lib::service::auth_service::implements::{
 use crate::config::BackApiState;
 use crate::db::sql_queries::call_cf::get::by_extern_device::get_user_time_by_device_external;
 use crate::db::service::auth_service::smsru_cf_query::smsru_get_cf;
-use crate::db::sql_queries::sessions::set::new_session::new_session;
+use crate::db::sql_queries::sessions::set::que_insert_session::sql_insert_session_fun;
 use crate::db::sql_queries::users::get::by_user_id::get_user_by_user_id;
-
 
 pub(crate) async fn make_session_by_tel_call(
     state: &Arc<BackApiState>,
@@ -57,7 +56,7 @@ pub(crate) async fn make_session_by_tel_call(
         }
     }
 
-    let token = match new_session(state, &user_id, device_id).await {
+    let token = match sql_insert_session_fun(&state.pool_fast, &user_id, device_id).await {
         Ok(t) => t,
         Err(err) => {
             err.process_err(err, "");

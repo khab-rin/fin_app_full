@@ -1,14 +1,13 @@
 use shared_lib::sql_models::id_rules::IdRules;
-use shared_lib::{ProcessError, Status};
-use shared_lib::primitives::frozen::text::{BoxUuid, DateTime};
+use shared_lib::{ProcessError, Status, LL};
+use shared_lib::primitives::frozen::text::{DateTime};
 use shared_lib::primitives::composite::implements::Fio;
 use shared_lib::sql_models::person::implements::{Person, PersonMetadata};
 use shared_lib::service::auth_service::implements::{AuthInfo, AuthStep, RegInitData};
 
 use crate::config::BackApiState;
 use crate::db::sql_queries::persons::add::by_person::add_person;
-use crate::db::sql_queries::companys::add::company::add_company;
-use crate::db::parsers::dadata::get_new_company::get_dadata_company;
+use crate::db::sql_queries::companys::get::fun_get_or_parse_insert::get_or_parse_insert_function;
 use crate::db::service::auth_service::make_init_files::make_init_files;
 
 
@@ -17,7 +16,7 @@ pub(crate) async fn register_step1(
     data: &RegInitData
 ) -> Result<AuthStep, Status> {
 
-    let failed_result = AuthStep::TryLater { text: AuthInfo::BackApiError };
+    let mut failed_result = AuthStep::TryLater { text: AuthInfo::BackApiError };
 
     let RegInitData { 
         sur_name, 
@@ -63,20 +62,15 @@ pub(crate) async fn register_step1(
         }
     };
 
-    let new_company = match get_dadata_company(state, comp_inn, kpp).await {
+    let _ = match get_or_parse_insert_function(state, comp_inn, kpp).await {
         Ok(Some(c)) => c,
         Ok(None) => {
-            Status::Tech.process_err(Status::SystemLogicErr, "");
+            Status::log(LL::Debug, &format!("Компания не найдена. Инн - {:?}, Кпп - {:?}", comp_inn, kpp));
+			if let AuthStep::TryLater { text } = &mut failed_result {
+				*text = AuthInfo::MissCompany;
+			}
             return Ok(failed_result);
         }
-        Err(err) => {
-            err.process_err(err, "");
-            return Ok(failed_result)
-        }
-    };
-
-    let _ = match add_company(state, &new_company).await {
-        Ok(c) => c,
         Err(err) => {
             err.process_err(err, "");
             return Ok(failed_result)

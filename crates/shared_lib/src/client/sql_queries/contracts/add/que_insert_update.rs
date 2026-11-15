@@ -6,7 +6,8 @@ use crate::sql_models::contracts::implements::Contract;
 
 pub async fn sql_insert_update_contract_function<'t, E>(
 	conn: E,
-	contract: &Contract
+	contract: &Contract,
+	is_sync: i32
 ) -> Result<Contract, Status> 
 where E: sqlx::Executor<'t, Database = Sqlite>
 {
@@ -28,7 +29,8 @@ where E: sqlx::Executor<'t, Database = Sqlite>
         contract.is_active,
         contract.descrip,
         contract.entr_date,
-        contract.is_del
+        contract.is_del,
+		is_sync
 	).fetch_one(conn).await
 	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
 

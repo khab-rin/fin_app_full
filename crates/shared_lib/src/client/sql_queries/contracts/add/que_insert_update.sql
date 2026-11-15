@@ -14,8 +14,9 @@ INSERT INTO contracts(
     is_active,
     descrip,
     entr_date,
-    is_del
-) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+    is_del, 
+	is_synced
+) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
 
 ON CONFLICT (contract_id)
     DO UPDATE SET
@@ -27,7 +28,8 @@ ON CONFLICT (contract_id)
 		payment_deferral_days = EXCLUDED.payment_deferral_days,
 		is_active = EXCLUDED.is_active,
         descrip = EXCLUDED.descrip,
-        is_del = EXCLUDED.is_del
+        is_del = EXCLUDED.is_del,
+		is_synced = EXCLUDED.is_synced
 RETURNING
     contract_id AS "contract_id: BoxUuid",
     

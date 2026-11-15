@@ -1,9 +1,9 @@
 CREATE TABLE IF NOT EXISTS persons (
     pers_id TEXT PRIMARY KEY NOT NULL,
     pers_inn TEXT NOT NULL UNIQUE,
-    metadata TEXT NOT NULL DEFAULT '{}',
-    last_update DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    is_synced INTEGER NOT NULL DEFAULT 0,
+    metadata TEXT NOT NULL,
+    last_update DATETIME NOT NULL,
+    is_synced INTEGER NOT NULL,
 
     CONSTRAINT check_inn_person CHECK (length(pers_inn) = 12 AND pers_inn GLOB '[0-9]*'),
     CONSTRAINT check_synced_bool CHECK (is_synced IN (0, 1))

@@ -49,6 +49,9 @@ pub enum OperationInfo {
 	#[serde(rename  = "Контрагент с указанными реквизитами не найден")]
 	CtrPtyNotFound,
 
+	#[serde(rename = "Договор с данными реквизитами уже существует в системе, выберите его из списка")]
+	DuplicateContract,
+
     #[serde(rename = "Выберите функционал работы с проводками")]
     InitInfo,
 

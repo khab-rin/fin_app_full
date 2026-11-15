@@ -15,8 +15,8 @@ CREATE TABLE IF NOT EXISTS operations (
     doc_num VARCHAR(100) NOT NULL,
     doc_date DATE NOT NULL,
 
-    is_storno BOOLEAN NOT NULL DEFAULT false,
-    is_del BOOLEAN NOT NULL DEFAULT false,
+    is_storno BOOLEAN NOT NULL,
+    is_del BOOLEAN NOT NULL,
 
     entr_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
