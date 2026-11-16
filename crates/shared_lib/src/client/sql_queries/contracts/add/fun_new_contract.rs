@@ -1,11 +1,11 @@
 
 use crate::primitives::frozen::text::{Date};
 use crate::sql_models::id_rules::IdRules;
-use crate::{Status, ClientState, ProcessError, LL};
+use crate::{Status, ClientState, ProcessError};
 use crate::sql_models::contracts::implements::{Contract, NewContrData};
 
 
-pub async fn make_new_contract(
+pub async fn make_new_contract_function(
     state: &ClientState,
     data: NewContrData
 ) -> Result<Contract, Status> {

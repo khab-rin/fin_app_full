@@ -17,7 +17,7 @@ pub
 
     let mut tx = session.local_db.begin()
         .await
-        .map_err(|err| err.process_err(Status::SqLitePoolErr, ""))?; 
+        .map_err(|err| err.process_err(Status::SqlPoolErr, ""))?; 
 
 
     let mut res: Vec<Company> = vec![];

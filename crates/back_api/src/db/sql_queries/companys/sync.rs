@@ -27,7 +27,7 @@ pub async fn sql_company_sync(
 	let mut tx = match state.pool_fast.acquire().await {
 		Ok(t) => t,
 		Err(err) => {
-			let _ = err.process_err(Status::SqLitePoolErr, "ext_info");
+			let _ = err.process_err(Status::SqlCommitErr, "ext_info");
 			return Ok(failed_result);
 		}
 	};

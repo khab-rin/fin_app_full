@@ -8,7 +8,7 @@ use shared_lib::client::sql_queries::contracts::get::contract_by_ids::get_contra
 use shared_lib::client::sql_queries::companys::get::bank_acc_by_comp_inn_kpp::get_bank_accs_by_comp_id;
 use shared_lib::client::sql_queries::companys::add::by_inn_kpp::add_company_by_inn_cpp_acc;
 use shared_lib::client::sql_queries::companys::get::by_inn_kpp::get_company_by_inn_kpp;
-use shared_lib::client::sql_queries::contracts::add::new_contract::make_new_contract;
+use shared_lib::client::sql_queries::contracts::add::fun_new_contract::make_new_contract_function;
 use shared_lib::client::sql_queries::companys::get::all::get_all_companys;
 
 #[tauri::command]
@@ -72,7 +72,7 @@ pub async fn cmd_add_new_contract(
 
     let ctrpty_id = data.ctrpty_id.clone();
 
-    make_new_contract(&state, data).await
+    make_new_contract_function(&state, data).await
         .map_err(|err| err.process_err(err, ""))?;
 
     let contracts = get_contracts_by_comp_ctrpty_ids(&state, &ctrpty_id).await?;

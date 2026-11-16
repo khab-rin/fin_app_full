@@ -1,2 +1,2 @@
-pub mod new_contract;
+pub mod fun_new_contract;
 pub mod que_insert_update;

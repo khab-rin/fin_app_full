@@ -129,36 +129,23 @@ pub async fn parse_statement(
             }
         };
 
-        if let Some(comp_inn) = block_fields.pay_inn.clone() {
-            if comp_inn.len() == 12 {
-                block_fields.pay_kpp = Kpp::unchecked("".to_string());
-            }
-        } else {
-            block_fields.pay_kpp = Kpp::unchecked("".to_string());
-        }
-        
-        if let Some(comp_inn) = block_fields.rec_inn.clone() {
-            if comp_inn.len() == 12 {
-                block_fields.rec_kpp = Kpp::unchecked("".to_string());
-            }
-        } else {
-            block_fields.rec_kpp = Kpp::unchecked("".to_string());
-        }
+		if block_fields.pay_inn.len() == 12 {
+			block_fields.pay_kpp = Kpp::unchecked("0".to_string());
+		}
+
+		if block_fields.rec_inn.len() == 12 {
+			block_fields.rec_kpp = Kpp::unchecked("0".to_string());
+		}
 
         let comment_data = parse_comment(&block_fields.doc_comment);
 
+		let pay_key = (block_fields.pay_inn.clone(), block_fields.pay_kpp.clone());
+		new_companys.insert(pay_key, HashSet::new());
 
+		let rec_key = (block_fields.rec_inn.clone(), block_fields.rec_kpp.clone());
+		new_companys.insert(rec_key, HashSet::new());
 
-        if let Some(comp_inn) = block_fields.pay_inn.clone() {
-            let pay_key = (comp_inn, block_fields.pay_kpp.clone());
-            new_companys.insert(pay_key, HashSet::new());
-    
-        }
-
-        if let Some(comp_inn) = block_fields.rec_inn.clone() {
-            let rec_key = (comp_inn, block_fields.rec_kpp.clone());
-            new_companys.insert(rec_key, HashSet::new());
-        }
+       
         
         parsed_blocks.push(ParsedBlock { block_fields, comment_data});
 

@@ -24,7 +24,7 @@ pub async fn add_companys_by_inn_cpp_acc(
         .map_err(|err| err.process_err(Status::MappingError, ""))?; 
 
     let mut tx = session.local_db.begin().await
-        .map_err(|err| err.process_err(Status::SqLitePoolErr, ""))?;
+        .map_err(|err| err.process_err(Status::SqlPoolErr, ""))?;
 
     for company in companys.iter() {
         let comp_id = company.comp_id.clone();

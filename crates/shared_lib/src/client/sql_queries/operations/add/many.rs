@@ -20,7 +20,7 @@ pub async fn add_new_operations(
 
 
 	let mut tx = session.local_db.begin().await
-		.map_err(|err| err.process_err(Status::SqLitePoolErr, ""))?;
+		.map_err(|err| err.process_err(Status::SqlPoolErr, ""))?;
 
 
 	for oper in operations.iter() {

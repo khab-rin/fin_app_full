@@ -1,5 +1,7 @@
+use crate::static_data::null_elems::NULLS;
+
 use crate::sql_models::id_rules::IdRules;
-use crate::{ClientState, ProcessError, Status};
+use crate::{ClientState, ProcessError, Status, LL};
 
 use crate::primitives::frozen::text::Date;
 use crate::sql_models::operation::parser::ParsedBlock;
@@ -21,38 +23,22 @@ pub async fn make_statement_operation_raw(
         .await
         .map_err(|err| err.process_err(err, ""))?;
 
-    if let Some(ctrpty_inn) = parsed_block.block_fields.pay_inn.as_ref() {
-        if ctrpty_inn != session.session_user.company.comp_inn ||
-            parsed_block.block_fields.pay_kpp != session.session_user.company.kpp {
-                return make_statement_rec_operation_raw(state, parsed_block)
-                    .await
-                    .map_err(|err| err.process_err(err, "ext_info"));
-        }
-    } else {
-        return make_statement_rec_operation_raw(state, parsed_block)
-            .await
-            .map_err(|err| err.process_err(err, "ext_info"));
-    }
-
-    if let Some(ctrpty_inn) = parsed_block.block_fields.rec_inn.as_ref() {
-        if ctrpty_inn != session.session_user.company.comp_inn ||
-            parsed_block.block_fields.rec_kpp != session.session_user.company.kpp {
-                return make_statement_pay_operation_raw(state, parsed_block)
-                    .await
-                    .map_err(|err| err.process_err(err, ""));
-            }
-    } else {
-        return make_statement_pay_operation_raw(state, parsed_block)
-            .await
-            .map_err(|err| err.process_err(err, ""));
-    }
-
-    make_statement_home_operation_raw(state, parsed_block)
-        .await
-        .map_err(|err| err.process_err(err, &format!("ext_info = {:?}", parsed_block)))
+	let own_inn = &session.session_user.company.comp_inn;
 
 
+	let comp_inn_pay = &parsed_block.block_fields.pay_inn;
 
+	
+	let comp_inn_rec = &parsed_block.block_fields.rec_inn;
+
+
+	if own_inn == comp_inn_pay && own_inn == comp_inn_rec {
+		return make_statement_home_operation_raw(state, parsed_block).await
+	} else if own_inn == comp_inn_pay {
+		return make_statement_pay_operation_raw(state, parsed_block).await
+	} else {
+		return make_statement_rec_operation_raw(state, parsed_block).await
+	}
 }
 
 
@@ -60,6 +46,10 @@ pub async fn make_statement_pay_operation_raw(
     state: &ClientState,
     parsed_block: &ParsedBlock
 ) -> Result<OperationRaw, Status> {
+
+	Status::log(LL::Debug, &format!("pay_oper - {:?}", parsed_block));
+
+
 
     let session = state
         .get_session()
@@ -187,6 +177,8 @@ pub async fn make_statement_rec_operation_raw(
     state: &ClientState,
     parsed_block: &ParsedBlock
 ) -> Result<OperationRaw, Status> {
+
+	Status::log(LL::Debug, &format!("rec_oper - {:?}", parsed_block));
 
     let session = state
         .get_session()
@@ -327,6 +319,7 @@ pub async fn make_statement_home_operation_raw(
         contracts: vec![]
     };
 
+	Status::log(LL::Debug, &format!("{:?}", parsed_block.comment_data));
     let (debet, credit) = if parsed_block.comment_data.is_cred_loan {
         (Account::SpecBankAcc, Account::BankAcc)
     } else {

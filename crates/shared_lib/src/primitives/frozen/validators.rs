@@ -4,6 +4,7 @@ use rust_decimal::Decimal;
 
 use crate::static_data::primitives_re::*;
 use crate::static_data::const_var::DATE_FORMATS;
+use crate::static_data::null_elems::NULLS;
 use crate::Status;
 
 fn validate_mod11_rosstat(s: &str) -> bool {
@@ -298,9 +299,6 @@ pub(crate) fn init_phone_from_str(val: &str) -> Result<String, Status> {
 pub(crate) fn init_boxuuid<T: ToString>(val: T) -> Result<uuid::Uuid, Status> {
     let s = val.to_string();
     let trimmed = s.trim();
-	if trimmed.is_empty() {
-		return Ok(uuid::Uuid::nil());
-	}
     uuid::Uuid::parse_str(trimmed)
         .map_err(|_| Status::ValidUuid)
 }

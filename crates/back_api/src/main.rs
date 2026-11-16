@@ -97,7 +97,7 @@ async fn main() {
     let state = Arc::new(config::BackApiState {
         pool_fast,
         pool_long,
-        config: config::Config::global(),
+        config: config::Config::global(), 
 		dadata_lock: Mutex::new(tokio::time::Instant::now())
     });
 

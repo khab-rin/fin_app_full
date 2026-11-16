@@ -11,7 +11,13 @@ pub async fn sql_get_contracts_by_comp_ctrpty_id_func<'t, E>(
 where E: sqlx::Executor <'t, Database = sqlx::Sqlite>
 {
 	let contracts = sqlx::query_file_as!(
-		Vec<Contract>,
-		"src/client/sql_queries/"
-	)
+		Contract,
+		"src/client/sql_queries/contracts/get/que_get_by_comp_ctrpty_id.sql",
+		comp_id,
+		ctrpty_id
+	).fetch_all(conn).await
+	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+
+	Ok(contracts)
+
 }
