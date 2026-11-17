@@ -33,7 +33,7 @@ use crate::config::BackApiState;
 use crate::db::service::auth_service::helper::{mask_email, mask_string};
 use crate::db::service::mchd::mchd_storage::add_new_manager;
 use crate::db::sql_queries::persons::add::by_person::add_person;
-use crate::db::sql_queries::companys::get::fun_get_or_parse_insert::get_or_parse_insert_function;
+use crate::db::sql_queries::companys::get::fun_get_or_parse_insert_one::get_or_parse_insert_one_company_function;
 use crate::db::sql_queries::users::get::by_inn_pers_comp_kpp::get_user_by_inn_pers_comp_kpp;
 use crate::db::sql_queries::users::get::tel_mail_by_id::get_user_phone_mail_by_id;
 use crate::db::sql_queries::users::add::user::add_user;
@@ -119,7 +119,7 @@ pub(crate) async fn register_step2(
         }
     };
 
-    let company_option = match get_or_parse_insert_function(state, &comp_inn, &kpp).await {
+    let company_option = match get_or_parse_insert_one_company_function(state, &comp_inn, &kpp).await {
         Ok(o) => o,
         Err(err) => {
             err.process_err(err, "");

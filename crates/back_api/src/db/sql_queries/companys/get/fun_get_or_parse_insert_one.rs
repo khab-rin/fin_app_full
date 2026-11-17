@@ -8,7 +8,7 @@ use crate::db::parsers::dadata::get_new_company::get_dadata_company;
 use crate::db::sql_queries::companys::get::que_get_by_inn_kpp::sql_get_company_by_inn_kpp_function;
 use crate::db::sql_queries::companys::add::que_insert_update::sql_insert_update_company_function;
 
-pub async fn get_or_parse_insert_function(
+pub async fn get_or_parse_insert_one_company_function(
 	state: &BackApiState,
 	comp_inn: &CompInn,
 	kpp: &Kpp

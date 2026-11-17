@@ -65,11 +65,10 @@ pub struct CompanyCurt {
     pub kpp: Kpp
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Hash)]
 pub struct CompCrateData {
     pub comp_inn: CompInn,
     pub kpp: Kpp,
-    pub bank_acc: HashSet<RasBicAcc>
 }
 
 pub type InnKppMapAcc = HashMap<(CompInn, Kpp), HashSet<RasBicAcc>>;

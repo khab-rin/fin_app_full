@@ -1,5 +1,5 @@
 use crate::{Status, ProcessError, ClientState, LL};
-use crate::sql_models::operation::implements::{Operation};
+use crate::sql_models::operation::implements::{Operation, OperationDto};
 use crate::sql_models::operation::service::{OperationStep, OperationInfo};
 use crate::service::mchd::home_mchd_power::HomeMchdPower;
 
@@ -8,7 +8,7 @@ use crate::client::sql_queries::operations::add::que_insert_update::sql_insert_u
 
 pub async fn process_cmd_process_operations_function(
 	state: &ClientState,
-	option_operations: Vec<Option<Operation>>
+	option_operations: Vec<Option<OperationDto>>
 ) -> Result<OperationStep, Status> {
 
 	let failed_result = OperationStep::TryLater { text: OperationInfo::ClientApiSystemError };
@@ -18,7 +18,6 @@ pub async fn process_cmd_process_operations_function(
 		HomeMchdPower::H110,
 		HomeMchdPower::H510,
 		HomeMchdPower::H810,
-
 	]).await {
         Ok(true) => {},
         Ok(false) => {
@@ -38,7 +37,7 @@ pub async fn process_cmd_process_operations_function(
 		}
 	};
 
-	let operations: Vec<Operation> = option_operations.into_iter().flatten().collect();
+	let operations: Vec<Operation> = option_operations.into_iter().flatten().map(|x| x.into()).collect();
 
 	let count = operations.len();
 
@@ -51,7 +50,6 @@ pub async fn process_cmd_process_operations_function(
 	};
 
 	for operation in operations {
-		Status::log(LL::Debug, &format!("contr_id - {:?}", operation.contract_id));
 		if let Err(err) = sql_insert_update_operation_function(&mut *conn, &operation, 0). await {
 			err.process_err(Status::SqlQueryWrongLogic, "");
 			return Ok(failed_result);

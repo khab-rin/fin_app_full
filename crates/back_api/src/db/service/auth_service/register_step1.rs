@@ -7,7 +7,7 @@ use shared_lib::service::auth_service::implements::{AuthInfo, AuthStep, RegInitD
 
 use crate::config::BackApiState;
 use crate::db::sql_queries::persons::add::by_person::add_person;
-use crate::db::sql_queries::companys::get::fun_get_or_parse_insert::get_or_parse_insert_function;
+use crate::db::sql_queries::companys::get::fun_get_or_parse_insert_one::get_or_parse_insert_one_company_function;
 use crate::db::service::auth_service::make_init_files::make_init_files;
 
 
@@ -62,7 +62,7 @@ pub(crate) async fn register_step1(
         }
     };
 
-    let _ = match get_or_parse_insert_function(state, comp_inn, kpp).await {
+    let _ = match get_or_parse_insert_one_company_function(state, comp_inn, kpp).await {
         Ok(Some(c)) => c,
         Ok(None) => {
             Status::log(LL::Debug, &format!("Компания не найдена. Инн - {:?}, Кпп - {:?}", comp_inn, kpp));

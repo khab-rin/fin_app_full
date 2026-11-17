@@ -1,10 +1,10 @@
-import type { Operation } from "../rustModels/Operation";
+import type { OperationDto } from "../rustModels/OperationDto";
 import type { OperationRaw } from "../rustModels/OperationRaw";
 import { OperationSvelte } from "./OperationSvelte.svelte";
 
 export class StateProcessor {
 	private _svelteOperations: OperationSvelte[] = [];
-	private _rustOperations: (Operation | null)[] = [];
+	private _rustOperations: (OperationDto | null)[] = [];
 	get rustOperations() { return this._rustOperations; }
 	private _curIndex: number | null = null;
 	get curIndex() {return this._curIndex;}
@@ -57,7 +57,7 @@ export class StateProcessor {
 
 		const allCtrPtys = this.curOper.allCtrPtys;
 
-		const operation: Operation | null = this.curOper.makeRust();
+		const operation: OperationDto | null = this.curOper.makeRust();
 		
 		this._rustOperations[this._curIndex] = operation;
 		this._unProcceed -= 1;

@@ -1,6 +1,7 @@
 use crate::{Status, ClientState, ProcessError};
 use crate::primitives::frozen::text::{Kpp, CompInn, BoxUuid, CompStatus, CompType, DateTime};
 use crate::sql_models::company::implements::{Company, CompanyDto};
+use crate::static_data::null_elems::NULLS;
 
 
 pub async fn get_all_companys(
@@ -20,6 +21,7 @@ pub async fn get_all_companys(
 
     let companys: Vec<Company> = companys_dto
 		.into_iter()
+		.filter(|x| x.comp_id != NULLS.id.comp_id)
 		.map(|x| 
 			x
 			.try_into()

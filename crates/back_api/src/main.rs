@@ -34,7 +34,9 @@ use crate::handlers::sql::handlers::{
     get_person_by_inn_handler,
     sql_add_new_contract_handler,
 	sql_operations_add_many_handler,
-	sql_sync_handler
+	sql_sync_handler,
+	get_or_parse_insert_company_many_handler,
+	get_or_parse_insert_company_one_handler,
 };
 
 
@@ -133,6 +135,12 @@ async fn main() {
             ApiRoutes::SqlContractAddNew.get_path(), 
             post(sql_add_new_contract_handler)
         ).route(
+			ApiRoutes::SqlCompanyGetOrParseInsertMany.get_path(), 
+			post(get_or_parse_insert_company_many_handler)
+		).route(
+			ApiRoutes::SqlCompanyGetOrParseInsertOne.get_path(), 
+			post(get_or_parse_insert_company_one_handler)
+		).route(
             ApiRoutes::SqlComppanyAddByInnKpp.get_path(),
             post(sql_new_companys_handler)
 		).route(

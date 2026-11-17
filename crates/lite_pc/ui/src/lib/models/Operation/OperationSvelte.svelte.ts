@@ -3,7 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { FieldValidator } from "../Auth/FieldValidator.svelte";
 import type { DocType } from "../rustModels/DocType";
 import type { Account } from "../rustModels/Account";
-import type { Operation } from "../rustModels/Operation";
+import type { OperationDto } from "../rustModels/OperationDto";
 import type { OperationRaw } from "../rustModels/OperationRaw";
 
 
@@ -402,7 +402,7 @@ export class OperationSvelte {
 	}
 
 	
-	makeRust(): Operation | null {
+	makeRust(): OperationDto | null {
 		if (!this.isValid) {
 			return null
 		}
@@ -410,14 +410,14 @@ export class OperationSvelte {
 			this._isConfirmed = true;
 			return null;
 		} else {
-			let operation: Operation = {
+			let operation: OperationDto = {
 				oper_id: this.data.operId.value,
 				user_id: this.data.userId.value,
 				comp_id: this.data.compId.value, 
 
 				ctrpty_id: this.data.ctrptyId.value, 
 
-				contract_id: this._currContract?.contract_id ?? "",
+				contract_id: this._currContract?.contract_id ?? null,
 
 				debet: this.data.debet.value as Account, 
 				credit: this.data.credit.value  as Account, 

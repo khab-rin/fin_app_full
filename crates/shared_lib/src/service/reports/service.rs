@@ -80,7 +80,6 @@ pub enum ReportInfo {
 
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
-#[ts(export)]
 pub enum FnsReportType {
     #[serde(rename = "Декларация УСН (Доходы 6%)")]
     UsnDeclSix,

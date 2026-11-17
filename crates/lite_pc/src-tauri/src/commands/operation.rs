@@ -1,6 +1,6 @@
 use shared_lib::primitives::frozen::text::{BoxUuid, DocNum, RubF, Date};
 use shared_lib::sql_models::id_rules::IdRules;
-use shared_lib::sql_models::operation::implements::{DocType, Operation};
+use shared_lib::sql_models::operation::implements::{DocType, Operation, OperationDto};
 use shared_lib::{ClientState, ProcessError, Status};
 use shared_lib::primitives::composite::implements::RasBicAcc;
 use shared_lib::sql_models::operation::service::{OperationInfo, OperationStep};
@@ -91,7 +91,7 @@ pub fn cmd_get_acc_info(
 #[tauri::command]
 pub async  fn cmd_process_operations(
 	state: tauri::State<'_, ClientState>,
-	option_operations: Vec<Option<Operation>>
+	option_operations: Vec<Option<OperationDto>>
 ) -> Result<OperationStep, Status> {
 	process_cmd_process_operations_function(&state, option_operations).await
 }

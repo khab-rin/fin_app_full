@@ -45,7 +45,7 @@ pub async fn sync_all_companys(
 			companys.push(c);
 		}
 		let step_to_serv = ReportStep::SyncCompanysToServer { companys };
-		let response = match post_query_back_api(state, state.config.get_std_client(), ApiRoutes::SqlSync, &step_to_serv).await {
+		let response = match post_query_back_api(state, state.config.get_sql_long(), ApiRoutes::SqlSync, &step_to_serv).await {
 			Ok(r) => r,
 			Err(err) => {
 				if err == Status::ConnectProblems && let ReportStep::TryLater{text} = &mut failed_result {

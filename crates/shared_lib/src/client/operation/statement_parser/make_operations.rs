@@ -1,5 +1,4 @@
-use crate::static_data::null_elems::NULLS;
-
+use crate::client::sql_queries::companys::get::fun_get_or_parse_insert_one::get_or_parse_insert_company_function;
 use crate::sql_models::id_rules::IdRules;
 use crate::{ClientState, ProcessError, Status, LL};
 
@@ -10,7 +9,6 @@ use crate::sql_models::operation::implements::{
 };
 use crate::sql_models::operation::account::Account;
 
-use crate::client::sql_queries::companys::get::by_inn_kpp::get_company_by_inn_kpp;
 use crate::client::sql_queries::contracts::get::contract_by_ids::get_contracts_by_comp_ctrpty_ids;
 
 pub async fn make_statement_operation_raw(
@@ -24,13 +22,8 @@ pub async fn make_statement_operation_raw(
         .map_err(|err| err.process_err(err, ""))?;
 
 	let own_inn = &session.session_user.company.comp_inn;
-
-
 	let comp_inn_pay = &parsed_block.block_fields.pay_inn;
-
-	
 	let comp_inn_rec = &parsed_block.block_fields.rec_inn;
-
 
 	if own_inn == comp_inn_pay && own_inn == comp_inn_rec {
 		return make_statement_home_operation_raw(state, parsed_block).await
@@ -47,9 +40,6 @@ pub async fn make_statement_pay_operation_raw(
     parsed_block: &ParsedBlock
 ) -> Result<OperationRaw, Status> {
 
-	Status::log(LL::Debug, &format!("pay_oper - {:?}", parsed_block));
-
-
 
     let session = state
         .get_session()
@@ -62,16 +52,13 @@ pub async fn make_statement_pay_operation_raw(
 
     let comp_id = session.session_user.company.comp_id.clone();
 
-    let mut ctrpty_option = if let Some(c_inn) = block_fields.rec_inn.clone() {
-        get_company_by_inn_kpp(
-                state, 
-                &c_inn, 
-                &block_fields.pay_kpp)
-            .await
-            .map_err(|err| err.process_err(err, ""))?
-    } else {
-        None
-    };
+	let mut ctrpty_option = get_or_parse_insert_company_function(
+		state, 
+		&block_fields.rec_inn, 
+		&block_fields.rec_kpp
+	).await
+	.map_err(|err| err.process_err(err, ""))?;
+
     
     let contracts = if let Some(ctrpty) = ctrpty_option.as_ref() {
         get_contracts_by_comp_ctrpty_ids (
@@ -178,7 +165,6 @@ pub async fn make_statement_rec_operation_raw(
     parsed_block: &ParsedBlock
 ) -> Result<OperationRaw, Status> {
 
-	Status::log(LL::Debug, &format!("rec_oper - {:?}", parsed_block));
 
     let session = state
         .get_session()
@@ -191,16 +177,12 @@ pub async fn make_statement_rec_operation_raw(
 
     let comp_id = session.session_user.company.comp_id.clone();
 
-    let ctrpty_option = if let Some(c_inn) = block_fields.pay_inn.clone() {
-        get_company_by_inn_kpp(
-                state, 
-                &c_inn, 
-                &block_fields.pay_kpp)
-            .await
-            .map_err(|err| err.process_err(err, ""))?
-    } else {
-        None
-    };
+	let ctrpty_option = get_or_parse_insert_company_function(
+		state, 
+		&block_fields.pay_inn, 
+		&block_fields.pay_kpp
+	).await
+	.map_err(|err| err.process_err(err, ""))?;
 
     let contracts = if let Some(ctrpty) = ctrpty_option.as_ref() {
         get_contracts_by_comp_ctrpty_ids (
@@ -319,7 +301,6 @@ pub async fn make_statement_home_operation_raw(
         contracts: vec![]
     };
 
-	Status::log(LL::Debug, &format!("{:?}", parsed_block.comment_data));
     let (debet, credit) = if parsed_block.comment_data.is_cred_loan {
         (Account::SpecBankAcc, Account::BankAcc)
     } else {

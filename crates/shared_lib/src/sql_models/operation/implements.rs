@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{Status, make_enum_frozen};
+use crate::static_data::null_elems::NULLS;
 use crate::sql_models::operation::macros::ParseFromStrMapValue;
 use crate::primitives::frozen::text::{BoxUuid, Date, DocNum, RubF, TextInfo};
 use crate::sql_models::operation::account::Account;
@@ -48,6 +49,31 @@ pub struct ContractOption {
     pub contracts: Vec<Contract>
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, ts_rs::TS)]
+pub struct OperationDto {
+    pub oper_id: BoxUuid,
+	
+    pub user_id: BoxUuid,
+    pub comp_id: BoxUuid,
+    pub ctrpty_id: BoxUuid,
+
+	#[serde(default)]
+    pub contract_id: Option<BoxUuid>,
+
+    pub debet: Account,
+    pub credit: Account,
+    pub amount: RubF,
+    pub oper_date: Date,
+
+    pub doc_type: DocType,
+    pub doc_num: DocNum,
+    pub doc_date: Date,
+
+    pub is_storno: bool,
+    pub is_del: bool,
+
+    pub entr_date: Date,
+}
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, ts_rs::TS)]
 pub struct Operation {
@@ -73,8 +99,6 @@ pub struct Operation {
 
     pub entr_date: Date,
 }
-
-
 
 make_enum_frozen! {
     DocType, {
@@ -144,6 +168,34 @@ make_enum_frozen! {
     }
 }
 
+impl std::convert::From<OperationDto> for Operation {
+	fn from(value: OperationDto) -> Self {
+		Self {
+			oper_id: value.oper_id,
+			user_id: value.user_id,
+			comp_id: value.comp_id,
+			ctrpty_id: value.ctrpty_id,
+
+			contract_id: value.contract_id.unwrap_or(NULLS.id.contract_id.clone()),
+
+			debet: value.debet,
+			credit: value.credit,
+			amount: value.amount,
+			oper_date: value.oper_date,
+
+			doc_type: value.doc_type,
+			doc_num: value.doc_num,
+			doc_date: value.doc_date,
+
+			is_storno: value.is_storno,
+			is_del: value.is_del,
+
+			entr_date: value.entr_date,
+
+		}
+	}
+}
+
 
 impl ParseFromStrMapValue for DocType {
     fn parse_from_str_map_value(value: Option<&&str>) -> Result<Self, Status> {
@@ -170,6 +222,7 @@ pub struct OperationDocument {
 pub struct OperationTSTS {
     operation_raw: OperationRaw,
     operation: Operation,
+	operation_dto: OperationDto,
     contract_option: ContractOption,
     doc_type: DocType,
     account: Account,

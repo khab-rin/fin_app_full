@@ -1,12 +1,11 @@
 use tauri_plugin_fs::FsExt;
 use tokio::io::AsyncReadExt;
 
-use std::collections::{HashMap, HashSet};
 use std::str::FromStr;
 use encoding_rs::WINDOWS_1251;
 use futures::stream::{self, StreamExt};
 
-use crate::primitives::frozen::text::Kpp;
+use crate::primitives::frozen::text::{BoxUuid, Kpp};
 use crate::{ClientState, ProcessError, Status};
 use crate::sql_models::operation::parser::{
     BlockFields,
@@ -19,13 +18,13 @@ use crate::sql_models::operation::service::{
 };
 use crate::sql_models::operation::implements::OperationRaw;
 use crate::primitives::composite::implements::RasBicAcc;
-use crate::sql_models::company::implements::{InnKppMapAcc, CompCrateData};
+use crate::sql_models::company::implements::CompCrateData;
+
 use crate::client::operation::helper::make_statement_block_map;
 use crate::client::operation::statement_parser::comment::parse_comment;
+use crate::client::sql_queries::companys::get::fun_get_or_parse_insert_many::get_or_parse_insert_companys_function;
 use crate::client::operation::statement_parser::make_operations::make_statement_operation_raw;
-use crate::client::sql_queries::companys::add::by_inn_kpp_vec::add_companys_by_inn_cpp_acc;
-use crate::client::sql_queries::operations::get::exist_ids_by_operations::get_exist_ids_by_ids;
-
+use crate::client::sql_queries::operations::get::fun_get_exists_by_ids::get_exists_operations_by_ids_function;
 
 pub async fn parse_statement(
     state: &ClientState,
@@ -37,7 +36,7 @@ pub async fn parse_statement(
         text: OperationInfo::ClientApiSystemError,
     });
 
-    let mut new_companys: InnKppMapAcc = HashMap::new();
+    let mut new_company_pairs: std::collections::HashSet<CompCrateData> = std::collections::HashSet::new();
 
     let mut parsed_blocks: Vec<ParsedBlock> = vec![];
 
@@ -119,15 +118,10 @@ pub async fn parse_statement(
     }
 
     for block_str in data_iter {
-        let block_map = make_statement_block_map(block_str);
+        let block_map: std::collections::HashMap<&str, &str> = make_statement_block_map(block_str);
 
-        let mut block_fields = match BlockFields::from_map(&block_map) {
-            Ok(f) => f,
-            Err(err) => {
-                err.process_err(err, block_str);
-                return failed_result;
-            }
-        };
+		let mut block_fields = BlockFields::try_from(&block_map)
+    		.map_err(|err| err.process_err(err, ""))?;
 
 		if block_fields.pay_inn.len() == 12 {
 			block_fields.pay_kpp = Kpp::unchecked("0".to_string());
@@ -139,31 +133,22 @@ pub async fn parse_statement(
 
         let comment_data = parse_comment(&block_fields.doc_comment);
 
-		let pay_key = (block_fields.pay_inn.clone(), block_fields.pay_kpp.clone());
-		new_companys.insert(pay_key, HashSet::new());
+		let pay_key: CompCrateData = CompCrateData {comp_inn: block_fields.pay_inn.clone(), kpp: block_fields.pay_kpp.clone()};
+		new_company_pairs.insert(pay_key);
 
-		let rec_key = (block_fields.rec_inn.clone(), block_fields.rec_kpp.clone());
-		new_companys.insert(rec_key, HashSet::new());
+		let rec_key: CompCrateData = CompCrateData {comp_inn: block_fields.rec_inn.clone(), kpp: block_fields.rec_kpp.clone()};
+		new_company_pairs.insert(rec_key);
 
-       
-        
         parsed_blocks.push(ParsedBlock { block_fields, comment_data});
 
     }
 
-    let mut data: Vec<CompCrateData> = vec![];
+	let new_company_pairs: Vec<CompCrateData> = new_company_pairs.into_iter().collect();
 
-    for ((comp_inn, kpp), bank_acc) in new_companys {
-        data.push(CompCrateData{comp_inn, kpp, bank_acc});
-    }
-
-    match add_companys_by_inn_cpp_acc(state, &data).await {
-        Ok(_) => {},
-        Err(err) => {
-            err.process_err(err, "");
-            return failed_result;
-        }
-    }
+	if let Err(err) = get_or_parse_insert_companys_function(state, new_company_pairs).await {
+		err.process_err(err, "");
+		return failed_result;
+	}
 
     let mut operations: Vec<OperationRaw> = vec![];   
 
@@ -185,19 +170,19 @@ pub async fn parse_statement(
             } 
         }
     }
-    
-    let exist_ids = match get_exist_ids_by_ids(state, &operations).await {
-        Ok(ids) => ids,
-        Err(err) => {
-            err.process_err(err, "");
-            return failed_result;
-        }
-    };
+
+	let check_ids: Vec<BoxUuid> = operations.iter().map(|x| x.oper_id.clone()).collect();
+
+	let exist_ids: std::collections::HashSet<BoxUuid> = get_exists_operations_by_ids_function(
+		state, &check_ids
+	).await
+	.map_err(|err| err.process_err(err, ""))?
+	.into_iter()
+	.collect();
 
     for operation in operations.iter_mut() {
         if exist_ids.contains(&operation.oper_id) {
             operation.is_duplicate  = true;
-   
         }
     }
     

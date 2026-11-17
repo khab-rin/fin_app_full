@@ -4,7 +4,6 @@ use rust_decimal::Decimal;
 
 use crate::static_data::primitives_re::*;
 use crate::static_data::const_var::DATE_FORMATS;
-use crate::static_data::null_elems::NULLS;
 use crate::Status;
 
 fn validate_mod11_rosstat(s: &str) -> bool {

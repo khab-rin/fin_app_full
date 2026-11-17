@@ -260,8 +260,8 @@ pub(crate) async fn init_session(
 	let company: &Company = &user_data.user.company;
 	let person: &Person = &user_data.user.person;
 
-	// make_null_sqlite_elements(&session).await
-	// 	.map_err(|err| err.process_err(err, ""))?;
+	make_null_sqlite_elements(&session).await
+		.map_err(|err| err.process_err(err, ""))?;
 
 	{
 		let mut session_ref = state.session.lock().await;
