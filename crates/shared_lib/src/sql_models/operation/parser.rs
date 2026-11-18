@@ -129,6 +129,7 @@ pub struct BlockCommentData {
 	pub is_founder: bool,
     pub nds_amount: Option<RubF>,
     pub nds_rate: u8,
+	pub is_person: bool
 }
 
 #[derive(Debug, Clone)]

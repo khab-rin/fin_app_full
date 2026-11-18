@@ -2,7 +2,7 @@ use crate::{ClientState, ProcessError, Status};
 use crate::primitives::frozen::text::{PersInn, BoxUuid, DateTime};
 use crate::sql_models::person::implements::Person;
 
-use crate::client::sql_queries::persons::get::by_inn::get_person_by_inn;
+use crate::client::sql_queries::persons::get::que::sql_get_person_by_inn_function;
 
 pub async fn insert_person_no_sync(
     state: &ClientState,
@@ -12,7 +12,7 @@ pub async fn insert_person_no_sync(
     let session = state.get_session().await
         .map_err(|err| err.process_err(err, ""))?;
 
-    let prev_person_option = get_person_by_inn(state, &person.pers_inn)
+    let prev_person_option = sql_get_person_by_inn_function(&session.local_db, &person.pers_inn)
         .await
         .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
 

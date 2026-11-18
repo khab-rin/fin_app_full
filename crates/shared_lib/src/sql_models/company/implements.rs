@@ -88,3 +88,11 @@ impl Company {
 		self.last_update = DateTime::unchecked(chrono::Utc::now());
     }
 }
+
+
+pub struct CtrPtyTypes {
+	pub ip: std::collections::HashSet<BoxUuid>,
+	pub com_ent: std::collections::HashSet<BoxUuid>,
+	pub gov: std::collections::HashSet<BoxUuid>,
+	pub banks: std::collections::HashSet<BoxUuid>,
+}

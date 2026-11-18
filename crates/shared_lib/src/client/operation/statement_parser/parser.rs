@@ -18,13 +18,15 @@ use crate::sql_models::operation::service::{
 };
 use crate::sql_models::operation::implements::OperationRaw;
 use crate::primitives::composite::implements::RasBicAcc;
-use crate::sql_models::company::implements::CompCrateData;
+use crate::sql_models::company::implements::{CompCrateData, CtrPtyTypes};
+use crate::primitives::frozen::text::CompType;
 
 use crate::client::operation::helper::make_statement_block_map;
 use crate::client::operation::statement_parser::comment::parse_comment;
 use crate::client::sql_queries::companys::get::fun_get_or_parse_insert_many::get_or_parse_insert_companys_function;
 use crate::client::operation::statement_parser::make_operations::make_statement_operation_raw;
 use crate::client::sql_queries::operations::get::fun_get_exists_by_ids::get_exists_operations_by_ids_function;
+use crate::client::sql_queries::companys::get::que::sql_get_company_ids_by_type_function;
 
 pub async fn parse_statement(
     state: &ClientState,
@@ -35,6 +37,14 @@ pub async fn parse_statement(
     let failed_result = Ok(OperationStep::TryLater {
         text: OperationInfo::ClientApiSystemError,
     });
+
+	let session = match state.get_session().await {
+		Ok(s) => s,
+		Err(err) => {
+			err.process_err(err, "");
+			return failed_result;
+		}
+	};
 
     let mut new_company_pairs: std::collections::HashSet<CompCrateData> = std::collections::HashSet::new();
 
@@ -152,11 +162,44 @@ pub async fn parse_statement(
 
     let mut operations: Vec<OperationRaw> = vec![];   
 
-    let mut tasks_vec = vec![];
+	let gov: std::collections::HashSet<BoxUuid> = match sql_get_company_ids_by_type_function(&session.local_db, &CompType::Gov).await {
+		Ok(v) => v.into_iter().collect(),
+		Err(err) => {
+			err.process_err(err, "");
+			return failed_result;
+		}
+	};
 
+	let com_ent: std::collections::HashSet<BoxUuid> = match sql_get_company_ids_by_type_function(&session.local_db, &CompType::ComEnt).await {
+		Ok(v) => v.into_iter().collect(),
+		Err(err) => {
+			err.process_err(err, "");
+			return failed_result;
+		}
+	};
+
+	let ip: std::collections::HashSet<BoxUuid> = match sql_get_company_ids_by_type_function(&session.local_db, &CompType::Ip).await {
+		Ok(v) => v.into_iter().collect(),
+		Err(err) => {
+			err.process_err(err, "");
+			return failed_result;
+		}
+	};
+
+	let banks: std::collections::HashSet<BoxUuid> = match sql_get_company_ids_by_type_function(&session.local_db, &CompType::Bank).await {
+		Ok(v) => v.into_iter().collect(),
+		Err(err) => {
+			err.process_err(err, "");
+			return failed_result;
+		}
+	};
+
+	let ctrpty_types = CtrPtyTypes {gov, com_ent, ip, banks};
+
+	let mut tasks_vec = vec![];
 
     for block in &parsed_blocks {
-        tasks_vec.push(make_statement_operation_raw(state, block));
+        tasks_vec.push(make_statement_operation_raw(state, block, &ctrpty_types));
     }
 
     let mut task_stream = stream::iter(tasks_vec).buffer_unordered(2);

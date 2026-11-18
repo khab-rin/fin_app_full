@@ -37,7 +37,7 @@ impl std::convert::TryFrom<UserDto> for User {
     }
 }
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone, ts_rs::TS)]
 pub struct UserSetData {
 	pub user_id: BoxUuid,
     pub pers_id: BoxUuid,

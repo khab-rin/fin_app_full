@@ -5,9 +5,12 @@ use crate::sql_models::operation::service::{OperationInfo, OperationStep};
 use crate::service::api_routes::implements::ApiRoutes;
 
 use crate::client::sql_queries::contracts::add::fun_new_contract::make_new_contract_function;
-use crate::client::sql_queries::contracts::get::que_get_by_contr_id::sql_get_contract_by_contr_id_fun;
-use crate::client::sql_queries::contracts::get::que_get_by_comp_ctrpty_id::sql_get_contracts_by_comp_ctrpty_id_func;
-use crate::client::sql_queries::contracts::add::que_insert_update::sql_insert_update_contract_function;
+use crate::client::sql_queries::contracts::get::que::{
+	sql_get_contract_by_contr_id_fun,
+	sql_get_contracts_by_comp_ctrpty_id_func
+};
+
+use crate::client::sql_queries::contracts::add::que::sql_insert_update_contract_function;
 use crate::client::back_api::post_query::post_query_back_api;
 
 pub async fn process_cmd_add_new_contract(

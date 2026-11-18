@@ -1,6 +1,7 @@
 use crate::client::sql_queries::companys::get::fun_get_or_parse_insert_one::get_or_parse_insert_company_function;
+use crate::sql_models::company::implements::CtrPtyTypes;
 use crate::sql_models::id_rules::IdRules;
-use crate::{ClientState, ProcessError, Status, LL};
+use crate::{ClientState, ProcessError, Status};
 
 use crate::primitives::frozen::text::Date;
 use crate::sql_models::operation::parser::ParsedBlock;
@@ -13,7 +14,8 @@ use crate::client::sql_queries::contracts::get::contract_by_ids::get_contracts_b
 
 pub async fn make_statement_operation_raw(
     state: &ClientState,
-    parsed_block: &ParsedBlock
+    parsed_block: &ParsedBlock,
+	ctrpty_types: &CtrPtyTypes
 ) -> Result<OperationRaw, Status> {
 
     let session = state
@@ -28,16 +30,17 @@ pub async fn make_statement_operation_raw(
 	if own_inn == comp_inn_pay && own_inn == comp_inn_rec {
 		return make_statement_home_operation_raw(state, parsed_block).await
 	} else if own_inn == comp_inn_pay {
-		return make_statement_pay_operation_raw(state, parsed_block).await
+		return make_statement_pay_operation_raw(state, parsed_block, ctrpty_types).await
 	} else {
-		return make_statement_rec_operation_raw(state, parsed_block).await
+		return make_statement_rec_operation_raw(state, parsed_block, ctrpty_types).await
 	}
 }
 
 
 pub async fn make_statement_pay_operation_raw(
     state: &ClientState,
-    parsed_block: &ParsedBlock
+    parsed_block: &ParsedBlock,
+	ctrpty_types: &CtrPtyTypes
 ) -> Result<OperationRaw, Status> {
 
 
@@ -85,21 +88,42 @@ pub async fn make_statement_pay_operation_raw(
         }
     }
 
-    let debet = if comment_data.is_tax {
-        Account::Taxes
-    } else if comment_data.is_salary {
-        Account::Payroll
-    } else if comment_data.is_komis || comment_data.is_depos_persent {
-        Account::OtherIncome
-	} else if comment_data.is_founder {
-		if ctrpty_option.is_none() {
-			ctrpty_option = Some(session.session_user.company.clone());
+	let debet: Account = if let Some(ctrpty) = &ctrpty_option {
+		if ctrpty_types.banks.contains(&ctrpty.comp_id) {
+			if comment_data.is_komis || comment_data.is_depos_persent {
+				Account::OtherIncome
+			} else if comment_data.is_person || comment_data.is_founder {
+				Account::OtherPayables
+			} else if comment_data.is_salary {
+				Account::Payroll
+			} else {
+				Account::SpecBankAcc
+			}
+		} else if ctrpty_types.gov.contains(&ctrpty.comp_id) {
+			if comment_data.is_tax {
+				Account::Taxes
+			} else {
+				Account::OtherIncome
+			}
+		} else {
+			if comment_data.is_depos_persent {
+				Account::OtherIncome
+			} else if comment_data.is_cred_return {
+				Account::ShortLoans
+			} else {
+				Account::Vendors
+			}	
 		}
-		Account::OtherPayables
-		
-    } else {
-        Account::Vendors
-    };
+	} else {
+		if comment_data.is_founder || comment_data.is_person {
+			Account::OtherPayables
+		} else if comment_data.is_salary {
+			Account::Payroll
+		} else {
+			Account::Vendors
+		}
+	};
+
      
     let credit = Account::BankAcc;
     
@@ -162,9 +186,9 @@ pub async fn make_statement_pay_operation_raw(
 
 pub async fn make_statement_rec_operation_raw(
     state: &ClientState,
-    parsed_block: &ParsedBlock
+    parsed_block: &ParsedBlock,
+	ctrpty_types: &CtrPtyTypes
 ) -> Result<OperationRaw, Status> {
-
 
     let session = state
         .get_session()
@@ -210,19 +234,35 @@ pub async fn make_statement_rec_operation_raw(
     
     let debet = Account::BankAcc;
 
-    let credit = if comment_data.is_tax {
-        Account::Taxes
-    } else if comment_data.is_penalty {
-        Account::OtherPayables
-    } else if comment_data.is_cred_loan || comment_data.is_cred_return {
-        Account::ShortLoans
-    } else if comment_data.is_komis {
-        Account::OtherPayables
-	} else if comment_data.is_depos_persent {
-		Account::OtherIncome
-    } else {
-        Account::Customers
-    };
+	let credit: Account = if let Some(ctrpty) = &ctrpty_option {
+		if ctrpty_types.banks.contains(&ctrpty.comp_id) {
+			if comment_data.is_cred_return {
+				Account::ShortLoans
+			} else {
+				Account::SpecBankAcc
+			}
+		} else if ctrpty_types.gov.contains(&ctrpty.comp_id) {
+			if comment_data.is_tax {
+				Account::Taxes
+			} else {
+				Account::OtherIncome
+			}
+		} else {
+			if comment_data.is_depos_persent {
+				Account::OtherIncome
+			} else if comment_data.is_cred_loan {
+				Account::ShortLoans
+			} else {
+				Account::Customers
+			}	
+		}
+	} else {
+		if comment_data.is_founder {
+			Account::OtherPayables
+		} else {
+			Account::Customers
+		}
+	};
     
     let amount = block_fields.statement_amount.clone();
 

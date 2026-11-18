@@ -37,8 +37,8 @@ mod ts_tests {
             primitives::svelte_validate::SvelteValidator::export_all_to(path)
                 .expect("Не удалось экспортировать SvelteValidator");
 
-            sql_models::operation::implements::OperationTSTS::export_all_to(path)
-                .expect("Не удалось экспортировать OperationTSTS");
+            static_data::null_elems::NullRegistry::export_all_to(path)
+				.expect("Не удалось экспортировать NullRegistry");
 
             service::auth_service::implements::AuthTSRS::export_all_to(path)
                 .expect("Не удалось экспортировать AuthTSRS");
@@ -48,6 +48,10 @@ mod ts_tests {
 
             service::reports::service::ReportTSTS::export_all_to(path)
                 .expect("Не удалось экспортировать ReportTSTS");
+
+			sql_models::operation::implements::OperationTSTS::export_all_to(path)
+                .expect("Не удалось экспортировать OperationTSTS");
+
         }
     }
 }

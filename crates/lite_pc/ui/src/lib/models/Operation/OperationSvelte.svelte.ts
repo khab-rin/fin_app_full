@@ -5,9 +5,8 @@ import type { DocType } from "../rustModels/DocType";
 import type { Account } from "../rustModels/Account";
 import type { OperationDto } from "../rustModels/OperationDto";
 import type { OperationRaw } from "../rustModels/OperationRaw";
-
-
 import { operStep } from "./OperationManager.svelte";
+import {nulls} from '$lib/rules/nulls.svelte';
 import type {Date} from '$lib/models/rustModels/Date';
 import type { Company } from "../rustModels/Company";
 import type { Contract } from "../rustModels/Contract";
@@ -82,6 +81,7 @@ export class OperationSvelte {
 		this.data.userId.isValid &&
 		this.data.compId.isValid &&
 		this.data.ctrptyId.isValid &&
+		this.data.ctrptyId.value !== nulls.value?.id.comp_id &&
 		this.data.debet.isValid &&
 		this.data.credit.isValid &&
 		this.data.amount.isValid &&

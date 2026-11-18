@@ -61,6 +61,7 @@ pub fn run_lib() {
             commands::operation::cmd_is_operation_exist,
 			commands::other::cmd_get_today,
 			commands::other::cmd_get_current_year,
+			commands::other::cmd_get_nulls,
 			commands::other::cmd_get_user_comp_ids,
             commands::other::cmd_validate_field,
 			commands::reports::cmd_get_all_fns_report_types,

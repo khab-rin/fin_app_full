@@ -1,7 +1,7 @@
 use crate::{ClientState, ProcessError, Status};
 use crate::primitives::frozen::text::BoxUuid;
 
-use crate::client::sql_queries::operations::get::que_exist_by_id::sql_exist_operation_by_id_que;
+use crate::client::sql_queries::operations::get::que::sql_exist_operation_by_id_que;
 
 pub async fn get_exists_operations_by_ids_function(
 	state: &ClientState,

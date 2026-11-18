@@ -12,6 +12,10 @@ pub fn parse_comment(
 
     let mut parse_data = BlockCommentData::default();
 
+	if (low.contains("пласт") && low.contains("карт")) || (low.contains("лиц") && low.contains("физ")) {
+		parse_data.is_person = true;
+	}
+
 	if (low.contains("личн") || low.contains("средст")) && (low.contains("учредит") || low.contains("предприним")) {
 		parse_data.is_founder = true;
 	}

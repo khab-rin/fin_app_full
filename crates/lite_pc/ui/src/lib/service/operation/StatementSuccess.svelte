@@ -10,6 +10,7 @@
 	import {operStep} from '$lib/models/Operation/OperationManager.svelte';
 	import { OperationType } from '$lib/models/Operation/OperationValues';
 	import { StateProcessor } from '$lib/models/Operation/StatementProcessor.svelte';
+	import { nulls } from '$lib/rules/nulls.svelte';
 	import type { Company } from '$lib/models/rustModels/Company';
 	import type { Contract } from '$lib/models/rustModels/Contract';
 	import type { OperationStep } from '$lib/models/rustModels/OperationStep';
@@ -127,6 +128,7 @@
 				disabled={true}
 				placeholder='Контрагент не выбран'
 				value={processor.curOper.ctrPty?.metadata.comp_name?.short_egrul_name ?? ''}
+				class:input-error={processor.curOper.ctrPty?.comp_id == nulls.value?.id.comp_id}
 			/>
 		</div>
 

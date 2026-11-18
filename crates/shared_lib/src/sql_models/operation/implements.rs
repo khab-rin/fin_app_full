@@ -100,6 +100,7 @@ pub struct Operation {
     pub entr_date: Date,
 }
 
+
 make_enum_frozen! {
     DocType, {
         BankOrder, "банковский ордер", {

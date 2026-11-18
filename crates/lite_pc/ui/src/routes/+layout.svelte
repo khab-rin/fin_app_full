@@ -1,5 +1,7 @@
 <script lang="ts">
-	import '$lib/style/global.css'
+	import '$lib/style/global.css';
+	import {nulls} from '$lib/rules/nulls.svelte';
+	import { onMount } from 'svelte';
 
 	import {pageManager} from '$lib/models/MainManager/MainManager.svelte'
 
@@ -8,6 +10,11 @@
 	async function logOut() {
 		await pageManager.logOut();
 	}
+
+	onMount(async() =>{
+		await nulls.init()
+	})
+
 
 </script>
 

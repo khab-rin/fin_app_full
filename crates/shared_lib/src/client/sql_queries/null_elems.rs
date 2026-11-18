@@ -4,8 +4,8 @@ use crate::service::auth_service::general::ActiveSession;
 
 use crate::client::sql_queries::companys::add::que_insert_update::sql_insert_update_company_query;
 use crate::client::sql_queries::persons::add::que_insert_update::sql_insert_update_person_function;
-use crate::client::sql_queries::contracts::add::que_insert_update::sql_insert_update_contract_function;
-use crate::client::sql_queries::operations::add::que_insert_update::sql_insert_update_operation_function;
+use crate::client::sql_queries::contracts::add::que::sql_insert_update_contract_function;
+use crate::client::sql_queries::operations::add::que::sql_insert_update_operation_function;
 
 pub async fn make_null_sqlite_elements(
 	session: &ActiveSession

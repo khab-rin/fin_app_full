@@ -2,6 +2,7 @@ use chrono::Datelike;
 use shared_lib::primitives::frozen::text::{BoxUuid, Date};
 use shared_lib::{ClientState, Status, ProcessError};
 use shared_lib::primitives::svelte_validate::SvelteValidator;
+use shared_lib::static_data::null_elems::{NullRegistry, NULLS};
 
 
 #[tauri::command]
@@ -11,6 +12,10 @@ pub fn cmd_get_today(
 	Ok(res)
 }
 
+#[tauri::command]
+pub fn cmd_get_nulls() -> Result<NullRegistry, Status> {
+    Ok((*NULLS).clone())
+}
 
 #[tauri::command]
 pub async fn cmd_get_user_comp_ids(
@@ -25,7 +30,6 @@ pub async fn cmd_get_user_comp_ids(
 
 	Ok((user_id, comp_id))
 }
-
 
 #[tauri::command]
 pub fn cmd_validate_field(

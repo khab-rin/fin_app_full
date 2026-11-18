@@ -1,12 +1,13 @@
 
-use crate::client::sql_queries::companys::add::que_insert_update::sql_insert_update_company_query;
+
 use crate::{ClientState, ProcessError, Status};
 use crate::service::api_routes::implements::ApiRoutes;
 use crate::service::reports::service::{ReportStep, ReportInfo};
 use crate::sql_models::company::implements::Company;
 
-use crate::client::sql_queries::companys::get::all::get_all_companys;
+use crate::client::sql_queries::companys::get::que::sql_get_all_companys_function;
 use crate::client::sql_queries::companys::del::que_by_id::sql_del_company_by_id_query;
+use crate::client::sql_queries::companys::add::que_insert_update::sql_insert_update_company_query;
 use crate::client::back_api::post_query::post_query_back_api;
 
 pub async fn sync_all_companys(
@@ -23,7 +24,7 @@ pub async fn sync_all_companys(
 		}
 	};
 
-	let mut local_companys = match get_all_companys(state).await {
+	let mut local_companys = match sql_get_all_companys_function(&session.local_db).await {
 		Ok(a) => a,
 		Err(err) => {
 			err.process_err(err, "");
@@ -31,7 +32,7 @@ pub async fn sync_all_companys(
 		}
 	};
 
-	let mut tx = match session.local_db.acquire().await {
+	let mut conn = match session.local_db.acquire().await {
 		Ok(t) => t,
 		Err(err) => {
 			err.process_err(Status::SystemErr, "");
@@ -65,14 +66,14 @@ pub async fn sync_all_companys(
 
 		if let ReportStep::SyncCompanysToClient { del_companys, server_companys } = step_to_client {
 			for del_company in del_companys {
-				if let Err(err) = sql_del_company_by_id_query(&mut *tx, &del_company.comp_id).await {
+				if let Err(err) = sql_del_company_by_id_query(&mut *conn, &del_company.comp_id).await {
 					err.process_err(err, "");
 					return Ok(failed_result);
 				}
 			}
 
 			for server_company in server_companys {
-				if let Err(err) =  sql_insert_update_company_query(&mut *tx, &server_company).await {
+				if let Err(err) =  sql_insert_update_company_query(&mut *conn, &server_company).await {
 					err.process_err(err, "");
 					return Ok(failed_result);
 				}

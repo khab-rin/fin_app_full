@@ -4,7 +4,7 @@ use crate::sql_models::operation::service::{OperationStep, OperationInfo};
 use crate::service::mchd::home_mchd_power::HomeMchdPower;
 
 use crate::client::mchd::show_powers::check_access;
-use crate::client::sql_queries::operations::add::que_insert_update::sql_insert_update_operation_function;
+use crate::client::sql_queries::operations::add::que::sql_insert_update_operation_function;
 
 pub async fn process_cmd_process_operations_function(
 	state: &ClientState,
@@ -56,7 +56,12 @@ pub async fn process_cmd_process_operations_function(
 		}
 	}
 
-	let step = OperationStep::ProcessSuccess { text: OperationInfo::Nothing, count: count as i32};
+	match conn.commit().await {
+		Ok(_) => Ok(OperationStep::ProcessSuccess { text: OperationInfo::Nothing, count: count as i32}),
+		Err(err) => {
+			err.process_err(Status::SqlCommitErr, "");
+			Ok(failed_result)
+		}
+	}
 
-	Ok(step)
 }

@@ -9,7 +9,7 @@ use shared_lib::primitives::frozen::text::{RasAcc, Bic, CompInn, Kpp, BoxUuid};
 use shared_lib::client::sql_queries::companys::get::bank_acc_by_comp_inn_kpp::get_bank_accs_by_comp_id;
 use shared_lib::client::sql_queries::companys::add::by_inn_kpp::add_company_by_inn_cpp_acc;
 use shared_lib::client::sql_queries::companys::get::by_inn_kpp::get_company_by_inn_kpp;
-use shared_lib::client::sql_queries::companys::get::all::get_all_companys;
+use shared_lib::client::sql_queries::companys::get::que::sql_get_all_companys_function;
 
 #[tauri::command]
 pub async fn cmd_add_comp_bank_acc(
@@ -81,5 +81,8 @@ pub async fn cmd_get_all_companys(
 	state: tauri::State<'_, ClientState>
 ) -> Result<Vec<Company>, Status> {
 
-	get_all_companys(&state).await
+	let session = state.get_session().await
+		.map_err(|err| err.process_err(err, ""))?;
+	
+	sql_get_all_companys_function(&session.local_db).await
 }

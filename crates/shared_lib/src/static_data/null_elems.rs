@@ -1,7 +1,10 @@
+use serde::{Serialize, Deserialize};
+
 use std::collections::HashSet;
 use std::sync::LazyLock;
-use chrono::{NaiveDate, Utc};
+use chrono::{NaiveDate};
 use rust_decimal::Decimal;
+
 
 use crate::sql_models::id_rules::IdRules;
 use crate::sql_models::person::implements::Person;
@@ -14,8 +17,12 @@ use crate::sql_models::operation::implements::DocType;
 use crate::service::parsers::dadata::implements::CtrprtyMetadata;
 use crate::sql_models::person::implements::PersonMetadata;
 use crate::primitives::composite::implements::Fio;
+use crate::service::parsers::dadata::implements::DadaCompName;
+use crate::primitives::frozen::text_base::String1_1000;
 use crate::primitives::frozen::text::{BoxUuid, CompInn, CompStatus, CompType, Currency, Date, DateTime, DocNum, Email, FirstName, Integ, Kpp, PersInn, Phone, RubF, Snils, SurName};
 
+
+#[derive(Clone, ts_rs::TS, Serialize, Deserialize)]
 pub struct NullPrimitives {
     pub pers_inn: PersInn,
     pub comp_inn: CompInn,
@@ -32,8 +39,10 @@ pub struct NullPrimitives {
     pub doc_type: DocType,
     pub phone: Phone,
     pub email: Email,
+	pub last_update: DateTime
 }
 
+#[derive(Clone, ts_rs::TS, Serialize, Deserialize)]
 pub struct NullIds {
     pub pers_id: BoxUuid,
     pub comp_id: BoxUuid,
@@ -42,6 +51,7 @@ pub struct NullIds {
     pub operation_id: BoxUuid,
 }
 
+#[derive(Clone, ts_rs::TS, Serialize, Deserialize)]
 pub struct NullModels {
     pub person: Person,
     pub company: Company,
@@ -50,6 +60,8 @@ pub struct NullModels {
     pub operation: Operation,
 }
 
+
+#[derive(Clone, ts_rs::TS, Serialize, Deserialize)]
 pub struct NullRegistry {
     pub p: NullPrimitives,
     pub id: NullIds,
@@ -73,6 +85,7 @@ pub static NULLS: LazyLock<NullRegistry> = LazyLock::new(|| {
         doc_type: DocType::Other,
         phone: Phone::unchecked("70000000000".to_string()),
         email: Email::unchecked("null@null.nul".to_string()),
+		last_update: DateTime::unchecked(NaiveDate::from_ymd_opt(2000, 1, 1).unwrap().and_hms_opt(0, 0, 0).unwrap().and_utc(),),
     };
 
     let pers_id = IdRules::Person {
@@ -112,8 +125,6 @@ pub static NULLS: LazyLock<NullRegistry> = LazyLock::new(|| {
         operation_id,
     };
 
-    let now = DateTime::unchecked(Utc::now());
-
     let person = Person {
         pers_id: id.pers_id.clone(),
         pers_inn: p.pers_inn.clone(),
@@ -131,7 +142,7 @@ pub static NULLS: LazyLock<NullRegistry> = LazyLock::new(|| {
             phone: HashSet::new(),
             email: HashSet::new(),
         },
-        last_update: now.clone(),
+        last_update: p.last_update.clone(),
     };
 
     let company = Company {
@@ -147,7 +158,10 @@ pub static NULLS: LazyLock<NullRegistry> = LazyLock::new(|| {
             kind: None,
             is_active: None,
             opf: None,
-            comp_name: None,
+            comp_name: Some(DadaCompName{
+				full_egrul_name: Some(String1_1000::unchecked("Контрагент отстуствует")),
+				short_egrul_name: Some(String1_1000::unchecked("Контрагент отстуствует"))
+			}),
             inn: None,
             ogrn: None,
             oktmo_company: None,
@@ -162,7 +176,7 @@ pub static NULLS: LazyLock<NullRegistry> = LazyLock::new(|| {
             ogrn_date_date: None,
             okpo: None,
         },
-        last_update: now,
+        last_update: p.last_update.clone(),
     };
 
     let user_data = UserSetData {

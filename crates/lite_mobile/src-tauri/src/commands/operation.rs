@@ -1,20 +1,33 @@
-
-
 use shared_lib::primitives::frozen::text::{BoxUuid, DocNum, RubF, Date};
 use shared_lib::sql_models::id_rules::IdRules;
-use shared_lib::sql_models::operation::implements::{DocType, Operation};
+use shared_lib::sql_models::operation::implements::{DocType, Operation, OperationDto};
 use shared_lib::{ClientState, ProcessError, Status};
 use shared_lib::primitives::composite::implements::RasBicAcc;
 use shared_lib::sql_models::operation::service::{OperationInfo, OperationStep};
 use shared_lib::service::mchd::home_mchd_power::HomeMchdPower;
+use shared_lib::sql_models::contracts::implements::{NewContrData};
+
 use shared_lib::primitives::frozen::macros::RussEnumName; 
 use shared_lib::sql_models::operation::account::Account;
-
 use shared_lib::client::sql_queries::operations::get::exist_id_by_id::get_exist_id_by_id;
 use shared_lib::client::sql_queries::operations::add::many::add_new_operations;
 use shared_lib::client::mchd::show_powers::check_access;
+use shared_lib::client::operation::oper_step::add_new_contract::process_cmd_add_new_contract;
+use shared_lib::client::operation::oper_step::add_new_operations::process_cmd_process_operations_function;
+
 
 use crate::service::operation::make_bank_statement_operations;
+
+
+#[tauri::command]
+pub async fn cmd_add_new_contract(
+    state: tauri::State<'_, ClientState>,
+    data: NewContrData
+) -> Result<OperationStep, Status> {
+
+	process_cmd_add_new_contract(&state, data).await
+	
+}
 
 
 #[tauri::command]
@@ -58,7 +71,7 @@ pub async fn cmd_is_operation_exist(
     ctrpty_id: Option<BoxUuid>
 ) -> Result<(BoxUuid, bool), Status> {
 
-	let rule = IdRules::Operation { doc_num: doc_num.clone(), oper_date: oper_date.clone(), amount: amount.clone(), ctrpty_id: ctrpty_id.clone() };
+	let rule = IdRules::Operation { doc_num, oper_date, amount, ctrpty_id };
 	let check_oper_id = rule.make_stat_id();
 
     match get_exist_id_by_id(&state, &check_oper_id).await
@@ -78,38 +91,9 @@ pub fn cmd_get_acc_info(
 #[tauri::command]
 pub async  fn cmd_process_operations(
 	state: tauri::State<'_, ClientState>,
-	option_operations: Vec<Option<Operation>>
+	option_operations: Vec<Option<OperationDto>>
 ) -> Result<OperationStep, Status> {
-
-	match check_access(&state, vec![
-		HomeMchdPower::H210,
-		HomeMchdPower::H110,
-		HomeMchdPower::H510,
-		HomeMchdPower::H810,
-
-	]).await {
-        Ok(true) => {},
-        Ok(false) => {
-            return Ok(OperationStep::TryLater { text: OperationInfo::AccessDenied })
-        },
-        Err(err) => {
-            err.process_err(err, "");
-			return Err(err);
-        }
-    }
-
-	let operations: Vec<Operation> = option_operations.into_iter().flatten().collect();
-
-	let count = operations.len() as i32;
-
-	if let Err(err) = add_new_operations(&state, operations).await {
-		err.process_err(err, "");
-		return Ok(OperationStep::TryLater { text: OperationInfo::ClientApiSystemError });
-	}
-
-	let step = OperationStep::ProcessSuccess { text: OperationInfo::Nothing, count };
-
-	Ok(step)
+	process_cmd_process_operations_function(&state, option_operations).await
 }
 
 

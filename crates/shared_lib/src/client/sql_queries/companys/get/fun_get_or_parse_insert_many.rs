@@ -3,7 +3,7 @@ use crate::sql_models::company::implements::{Company, CompCrateData};
 use crate::service::api_routes::implements::ApiRoutes;
 
 use crate::client::back_api::post_query::post_query_back_api;
-use crate::client::sql_queries::companys::get::que_get_by_inn_kpp::sql_get_company_by_inn_kpp_function;
+use crate::client::sql_queries::companys::get::que::sql_get_company_by_inn_kpp_function;
 use crate::client::sql_queries::companys::add::que_insert_update::sql_insert_update_company_query;
 
 pub async fn get_or_parse_insert_companys_function(
@@ -20,9 +20,9 @@ pub async fn get_or_parse_insert_companys_function(
 	let mut new_pairs: Vec<CompCrateData> = vec![];
 
 	for pair in pairs {
-		let local_comp_options = sql_get_company_by_inn_kpp_function(&mut *conn, &pair.comp_inn, &pair.kpp)
+		let local_comp_option = sql_get_company_by_inn_kpp_function(&mut *conn, &pair.comp_inn, &pair.kpp)
 			.await.map_err(|err| err.process_err(err, ""))?;
-		if local_comp_options.is_some() {continue;}
+		if local_comp_option.is_some() {continue;}
 		new_pairs.push(pair);
 	}
 
