@@ -1,2 +1,3 @@
-pub(crate) mod add;
-pub(crate) mod get;
+pub mod add;
+pub mod get;
+pub mod sync;

@@ -62,6 +62,9 @@ pub enum ReportInfo {
 	#[serde(rename = "Отсутствуют полномочия для выполнения этой операции")]
 	MissPower,
 
+	#[serde(rename = "Отсутствуют привязанная к пользователю организация")]
+	MissUser,
+
 	#[serde(rename = "")]
 	Notning,
 

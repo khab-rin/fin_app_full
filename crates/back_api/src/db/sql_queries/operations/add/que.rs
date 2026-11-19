@@ -5,7 +5,7 @@ use shared_lib::sql_models::operation::account::{Account};
 use shared_lib::sql_models::operation::implements::DocType;
 use shared_lib::sql_models::operation::implements::Operation;
 
-pub async fn que_insert_update_operation_function<'t, E>(
+pub async fn sql_insert_update_operation_function<'t, E>(
 	conn: E,
 	operation: &Operation
 ) -> Result<Operation, Status>

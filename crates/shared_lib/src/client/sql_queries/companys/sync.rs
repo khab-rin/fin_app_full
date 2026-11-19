@@ -24,6 +24,14 @@ pub async fn sync_all_companys(
 		}
 	};
 
+	let mut tx = match session.local_db.begin().await {
+		Ok(t) => t,
+		Err(err) => {
+			err.process_err(Status::SystemErr, "");
+			return Ok(failed_result);
+		}
+	};
+
 	let mut local_companys = match sql_get_all_companys_function(&session.local_db).await {
 		Ok(a) => a,
 		Err(err) => {
@@ -32,13 +40,7 @@ pub async fn sync_all_companys(
 		}
 	};
 
-	let mut conn = match session.local_db.acquire().await {
-		Ok(t) => t,
-		Err(err) => {
-			err.process_err(Status::SystemErr, "");
-			return Ok(failed_result);
-		}
-	};
+	
 
 	while !local_companys.is_empty() {
 		let mut companys: Vec<Company> = vec![];
@@ -66,14 +68,14 @@ pub async fn sync_all_companys(
 
 		if let ReportStep::SyncCompanysToClient { del_companys, server_companys } = step_to_client {
 			for del_company in del_companys {
-				if let Err(err) = sql_del_company_by_id_query(&mut *conn, &del_company.comp_id).await {
+				if let Err(err) = sql_del_company_by_id_query(&mut *tx, &del_company.comp_id).await {
 					err.process_err(err, "");
 					return Ok(failed_result);
 				}
 			}
 
 			for server_company in server_companys {
-				if let Err(err) =  sql_insert_update_company_query(&mut *conn, &server_company).await {
+				if let Err(err) =  sql_insert_update_company_query(&mut *tx, &server_company).await {
 					err.process_err(err, "");
 					return Ok(failed_result);
 				}
@@ -85,6 +87,11 @@ pub async fn sync_all_companys(
 		}
 	}
 
-	Ok(ReportStep::SyncSuccess {text: ReportInfo::Notning})
-
+	match tx.commit().await {
+		Ok(_) => Ok(ReportStep::SyncSuccess {text: ReportInfo::Notning}),
+		Err(err) => {
+			err.process_err(Status::MappingError, "");
+			Ok(failed_result)
+		}
+	}
 }

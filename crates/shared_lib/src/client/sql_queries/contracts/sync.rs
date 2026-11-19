@@ -54,7 +54,7 @@ pub async fn sync_all_contracts(
 		}
 	};
 
-	let mut conn = match session.local_db.acquire().await {
+	let mut tx = match session.local_db.begin().await {
 		Ok(c) => c,
 		Err(err) => {
 			err.process_err(Status::SqlPoolErr, "");
@@ -65,7 +65,7 @@ pub async fn sync_all_contracts(
 	if let ReportStep::SyncContracts { contracts, .. } = step_to_client {
 		for contract in contracts.iter() {
 			if let Err(err) = sql_insert_update_contract_function(
-				&mut *conn, contract, 1
+				&mut *tx, contract, 1
 			).await {
 				err.process_err(err, "");
 				return Ok(failed_result);
@@ -73,6 +73,11 @@ pub async fn sync_all_contracts(
 		}
 	}
 
-	Ok(ReportStep::SyncSuccess { text: ReportInfo::Notning })
-
+	match tx.commit().await {
+		Ok(_) => Ok(ReportStep::SyncSuccess { text: ReportInfo::Notning }),
+		Err(err) => {
+			err.process_err(Status::SqlPoolErr, "");
+			Ok(failed_result)
+		}
+	}
 }

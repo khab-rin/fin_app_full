@@ -21,7 +21,15 @@ pub async fn sync_all_operations(
 		}
 	};
 
-	let local_operations = match sql_get_all_operations_function(&session.local_db).await {
+	let mut tx = match session.local_db.begin().await {
+		Ok(c) => c,
+		Err(err) => {
+			err.process_err(Status::SqlPoolErr, "");
+			return Ok(failed_result);
+		}
+	};
+
+	let local_operations = match sql_get_all_operations_function(&mut *tx).await {
 		Ok(l) => l,
 		Err(err) => {
 			err.process_err(err, "");
@@ -56,18 +64,12 @@ pub async fn sync_all_operations(
 		}
 	};
 
-	let mut conn = match session.local_db.acquire().await {
-		Ok(c) => c,
-		Err(err) => {
-			err.process_err(Status::SqlPoolErr, "");
-			return Ok(failed_result);
-		}
-	};
+	
 
 	if let ReportStep::SyncOperations { operations, .. } = step_to_client {
 		for operation in operations.iter() {
 			if let Err(err) = sql_insert_update_operation_function(
-				&mut *conn, operation, 1
+				&mut *tx, operation, 1
 			).await {
 				err.process_err(err, "");
 				return Ok(failed_result);
@@ -75,5 +77,11 @@ pub async fn sync_all_operations(
 		}
 	}
 
-	Ok(ReportStep::SyncSuccess { text: ReportInfo::Notning })
+	match tx.commit().await {
+		Ok(_) => Ok(ReportStep::SyncSuccess { text: ReportInfo::Notning }),
+		Err(err) => {
+			err.process_err(Status::MappingError, "");
+			Ok(failed_result)
+		}
+	}
 }

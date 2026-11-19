@@ -1,3 +1,5 @@
+use futures::future::try_join_all;
+
 use shared_lib::{Status, ProcessError, LL};
 use shared_lib::sql_models::company::implements::{CompCrateData, Company};
 
@@ -30,18 +32,39 @@ pub async fn get_or_parse_insert_company_many_function(
 			new_keys.push(pair);
 		}
 	}
+	drop(conn);
+
+	let mut dadata_tasks = Vec::with_capacity(new_keys.len());
 
 	for key in new_keys {
-		let new_company_option = get_dadata_company(state, &key.comp_inn, &key.kpp)
-			.await.map_err(|err| err.process_err(err, ""))?;
-		if let Some(new_company) = new_company_option {
-			sql_insert_update_company_function(&mut *conn, &new_company).await
-				.map_err(|err| err.process_err(err, ""))?;
+		let future = async move {
+			let new_company_option = get_dadata_company(state, &key.comp_inn, &key.kpp)
+				.await.map_err(|err| err.process_err(err, ""))?;
+			if new_company_option.is_none() {
+				Status::log(LL::Info, &format!("Company not founded in datata, comp_inn = {:?}, kpp = {:?}", key.comp_inn, key.kpp));
+			}
+			Ok::<_, Status>(new_company_option)
+		};
+		dadata_tasks.push(future);
+	}
+
+	let mut dadata_companys = try_join_all(dadata_tasks).await
+		.map_err(|err| err.process_err(err, ""))?;
+
+	while let Some(comp_option) = dadata_companys.pop() {
+		if let Some(new_company) = comp_option {
 			new_companys.push(new_company);
-		} else {
-			Status::log(LL::Info, &format!("Company not founded in datata, comp_inn = {:?}, kpp = {:?}", key.comp_inn, key.kpp));
 		}
 	}
+
+	let mut tx = state.pool_fast.begin().await.map_err(|err| err.process_err(Status::SqlPoolErr, ""))?;
+
+	for new_company in new_companys.iter() {
+		sql_insert_update_company_function(&mut *tx, new_company).await
+			.map_err(|err| err.process_err(err, ""))?;
+	}
+
+	tx.commit().await.map_err(|err| err.process_err(Status::SqlCommitErr, ""))?;
 
 	server_companys.extend(new_companys);
 

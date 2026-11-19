@@ -26,7 +26,7 @@ pub async fn get_or_parse_insert_companys_function(
 		new_pairs.push(pair);
 	}
 
-	conn.close().await.map_err(|err| err.process_err(Status::SqlPoolErr, ""))?;
+	drop(conn);
 
 	let mut new_companys: Vec<Company> = vec![];
 
@@ -48,14 +48,14 @@ pub async fn get_or_parse_insert_companys_function(
 		new_companys.extend(server_companys);
 	}
 
-	conn = session.local_db.acquire().await
+	let mut tx = session.local_db.begin().await
 		.map_err(|err| err.process_err(Status::SqlPoolErr, ""))?;
 
 	for new_company in new_companys {
-		sql_insert_update_company_query(&mut *conn, &new_company).await
+		sql_insert_update_company_query(&mut *tx, &new_company).await
 			.map_err(|err| err.process_err(err, ""))?;
 	}
 
-	Ok(())
+	tx.commit().await.map_err(|err| err.process_err(Status::SqlCommitErr, ""))
 
 }

@@ -1,4 +1,3 @@
-use shared_lib::sql_models::id_rules::IdRules;
 use shared_lib::{Status, ProcessError};
 use shared_lib::primitives::frozen::text::{BoxUuid, DateTime};
 use shared_lib::sql_models::user::implements::{User, UserSetData, UserDto};
@@ -30,9 +29,6 @@ pub(crate) async fn add_user(
     if exist_user_dto_option.is_some() {
         return Err(Status::Tech.process_err(Status::SystemLogicErr, ""));
     };
-
-	let rule = IdRules::User { comp_id: comp_id.clone(), pers_id: pers_id.clone() };
-	let user_id = rule.make_stat_id();
 
     let user_dto = sqlx::query_file_as!(
             UserDto,

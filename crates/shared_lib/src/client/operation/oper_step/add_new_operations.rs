@@ -41,7 +41,7 @@ pub async fn process_cmd_process_operations_function(
 
 	let count = operations.len();
 
-	let mut conn = match session.local_db.begin().await {
+	let mut tx = match session.local_db.begin().await {
 		Ok(c) => c,
 		Err(err) => {
 			err.process_err(Status::SqlCommitErr, "");
@@ -50,13 +50,13 @@ pub async fn process_cmd_process_operations_function(
 	};
 
 	for operation in operations {
-		if let Err(err) = sql_insert_update_operation_function(&mut *conn, &operation, 0). await {
+		if let Err(err) = sql_insert_update_operation_function(&mut *tx, &operation, 0). await {
 			err.process_err(Status::SqlQueryWrongLogic, "");
 			return Ok(failed_result);
 		}
 	}
 
-	match conn.commit().await {
+	match tx.commit().await {
 		Ok(_) => Ok(OperationStep::ProcessSuccess { text: OperationInfo::Nothing, count: count as i32}),
 		Err(err) => {
 			err.process_err(Status::SqlCommitErr, "");

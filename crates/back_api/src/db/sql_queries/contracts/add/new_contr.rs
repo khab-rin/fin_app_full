@@ -3,7 +3,7 @@ use shared_lib::sql_models::contracts::implements::Contract;
 use shared_lib::primitives::frozen::text::{Integ,BoxUuid, DocNum, Date, Currency, RubF};
 
 use crate::config::BackApiState;
-use crate::db::sql_queries::contracts::get::by_contr_id::get_contract_by_contract_id;
+use crate::db::sql_queries::contracts::get::que::sql_get_contract_by_id_function;
 
 
 pub(crate) async fn add_contract(
@@ -11,7 +11,7 @@ pub(crate) async fn add_contract(
     contract: Contract
 ) -> Result<Contract, Status> {
 
-    let contr_option = get_contract_by_contract_id(state, &contract.contract_id).await
+    let contr_option = sql_get_contract_by_id_function(&state.pool_fast, &contract.contract_id).await
         .map_err(|err| err.process_err(err, ""))?;
 
     if let Some(contract) = contr_option {

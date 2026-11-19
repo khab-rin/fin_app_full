@@ -1,6 +1,10 @@
+use std::collections::HashMap;
+use futures::future::try_join_all;
+
 use shared_lib::{ProcessError, Status};
 use shared_lib::service::reports::service::{ReportStep, ReportInfo};
 use shared_lib::sql_models::company::implements::Company;
+use shared_lib::primitives::frozen::text::{CompInn, Kpp};
 
 use crate::config::BackApiState;
 use crate::db::sql_queries::companys::get::que_option_by_id::get_company_option_by_id;
@@ -12,7 +16,7 @@ pub async fn sql_company_sync(
 	load: &ReportStep
 ) -> Result<ReportStep, Status> {
 
-	let mut failed_result = ReportStep::TryLater { text: ReportInfo::BackApiError };
+	let failed_result = ReportStep::TryLater { text: ReportInfo::BackApiError };
 	
 	let local_companys = match load {
 		ReportStep::SyncCompanysToServer {companys,} => {
@@ -24,56 +28,84 @@ pub async fn sql_company_sync(
 		}
 	};
 
-	let mut tx = match state.pool_fast.acquire().await {
+	let mut conn = match state.pool_fast.acquire().await {
 		Ok(t) => t,
 		Err(err) => {
-			let _ = err.process_err(Status::SqlCommitErr, "ext_info");
+			err.process_err(Status::SqlPoolErr, "ext_info");
 			return Ok(failed_result);
 		}
 	};
 
+	let mut update_companys: HashMap<(CompInn, Kpp), Company> = HashMap::new();
 	let mut del_companys: Vec<Company> = vec![];
 	let mut server_companys: Vec<Company> = vec![];
-
+	let mut dadata_futures = vec![];
 
 	for local_company in local_companys {
-		let comp_id = &local_company.comp_id;
-		let server_company_option = match get_company_option_by_id(&mut *tx, comp_id).await {
-			Ok(Some(o)) => Some(o),
-			Ok(None) => {
+		let serv_comp_option = get_company_option_by_id(&mut *conn, &local_company.comp_id).await
+			.map_err(|err| err.process_err(err, ""))?;
+		match serv_comp_option {
+			Some(mut server_company) => {
+				server_company.merge_acc(local_company);
+				server_companys.push(server_company);
+			},
+			None => {
 				let comp_inn = &local_company.comp_inn;
 				let kpp = &local_company.kpp;
-				match get_dadata_company(state, comp_inn, kpp).await {
-					Ok(Some(c)) => Some(c),
-					Ok(None) => None,
-					Err(err) => {
-						err.process_err(err, "");
-						return Ok(failed_result);
-					}
-				}
+				let future = async move {
+					let new_company_option = get_dadata_company(state, comp_inn, kpp)
+						.await.map_err(|err| err.process_err(err, ""))?;
+					Ok::<_, Status>(((comp_inn.clone(), kpp.clone()), new_company_option))
+				};
+				dadata_futures.push(future);
+				update_companys.insert((comp_inn.clone(), kpp.clone()), local_company.clone());
 			}
-			Err(err) => {
-				err.process_err(err, "");
-				return Ok(failed_result);
-			}
-		};
-		
-
-		if let Some(mut server_company) = server_company_option {
-			server_company.merge_acc(local_company);
-			if let Err(err) = sql_insert_update_company_function(&mut *tx, &server_company).await {
-				if err == Status::SqlSyncError && let ReportStep::TryLater {text, ..} = &mut failed_result {
-					*text = ReportInfo::SqlNeedSync;
-				}
-				return Ok(failed_result);
-			}
-			server_companys.push(server_company);
-		} else {
-			del_companys.push(local_company.clone());
 		}
-
 	}
 
-	Ok(ReportStep::SyncCompanysToClient { del_companys, server_companys })
+	drop(conn);
 
+	let mut dadata_companys = match try_join_all(dadata_futures).await {
+		Ok(res) => res,
+		Err(err) => {
+			err.process_err(err, "ext_info");
+			return Ok(failed_result);
+		}
+	};
+
+	while let Some((key, dadata_company_option)) = dadata_companys.pop() {
+		if let Some(local_company) = update_companys.remove(&key) {
+			if let Some(mut dadata_company) = dadata_company_option {
+				dadata_company.merge_acc(&local_company);
+				server_companys.push(dadata_company);
+			} else {
+				del_companys.push(local_company);
+			}
+		} else if let Some(dadata_company) = dadata_company_option {
+			server_companys.push(dadata_company);
+		}
+	}
+
+	let mut tx = match state.pool_fast.begin().await {
+		Ok(t) => t,
+		Err(err) => {
+			err.process_err(Status::SqlPoolErr, "ext_info");
+			return Ok(failed_result);
+		}
+	};
+
+	for server_company in server_companys.iter() {
+		if let Err(err) = sql_insert_update_company_function(&mut *tx, server_company).await {
+			err.process_err(err, "");
+			return Ok(failed_result);
+		}
+	}
+
+	match tx.commit().await {
+		Ok(_) => Ok(ReportStep::SyncCompanysToClient { del_companys, server_companys }),
+		Err(err) => {
+			err.process_err(Status::SqlCommitErr, "ext_info");
+			Ok(failed_result)
+		}
+	}
 }
