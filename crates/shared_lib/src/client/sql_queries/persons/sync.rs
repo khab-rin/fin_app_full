@@ -1,5 +1,5 @@
 use crate::{Status, ClientState, ProcessError};
-use crate::service::reports::service::{ReportInfo, ReportStep};
+use crate::service::database::service::{DatabaseInfo, DatabaseStep};
 use crate::service::api_routes::implements::ApiRoutes;
 
 use crate::client::back_api::post_query::post_query_back_api;
@@ -7,8 +7,8 @@ use crate::client::sql_queries::persons::get::que::sql_get_all_persons_function;
 
 pub async fn sync_all_persons(
 	state: &ClientState
-) -> Result<ReportStep, Status> {
-	let failed_result = ReportStep::TryLater { text: ReportInfo::ClientServiceError };
+) -> Result<DatabaseStep, Status> {
+	let mut failed_result = DatabaseStep::TryLater { text: DatabaseInfo::ClientServiceError };
 
 	let session = match state.get_session().await {
 		Ok(s) => s,
@@ -26,8 +26,8 @@ pub async fn sync_all_persons(
 		}
 	};
 
-	let step_to_serv = ReportStep::SyncPersons { 
-		text: ReportInfo::Notning, 
+	let step_to_serv = DatabaseStep::SyncPersons { 
+		text: DatabaseInfo::Notning, 
 		persons: local_persons, 
 		user_id: session.session_user.user.user_id.clone()
 	};
@@ -41,12 +41,13 @@ pub async fn sync_all_persons(
 		Ok(r) => r,
 		Err(err) => {
 			err.process_err(err, "ext_info");
-			return Ok(failed_result);
+			failed_result.process_info(&err);
+            return Ok(failed_result);
 		}
 	}; 
 
 	if response.status().is_success() {
-		Ok(ReportStep::SyncSuccess { text: ReportInfo::Notning })
+		Ok(DatabaseStep::SyncSuccess { text: DatabaseInfo::Notning })
 	} else {
 		Ok(failed_result)
 	}

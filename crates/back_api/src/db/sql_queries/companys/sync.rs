@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use futures::future::try_join_all;
 
 use shared_lib::{ProcessError, Status};
-use shared_lib::service::reports::service::{ReportStep, ReportInfo};
+use shared_lib::service::database::service::{DatabaseStep, DatabaseInfo};
 use shared_lib::sql_models::company::implements::Company;
 use shared_lib::primitives::frozen::text::{CompInn, Kpp};
 
@@ -13,13 +13,13 @@ use crate::db::parsers::dadata::get_new_company::get_dadata_company;
 
 pub async fn sql_company_sync(
 	state: &BackApiState,
-	load: &ReportStep
-) -> Result<ReportStep, Status> {
+	load: &DatabaseStep
+) -> Result<DatabaseStep, Status> {
 
-	let failed_result = ReportStep::TryLater { text: ReportInfo::BackApiError };
+	let mut failed_result = DatabaseStep::TryLater { text: DatabaseInfo::BackApiError };
 	
 	let local_companys = match load {
-		ReportStep::SyncCompanysToServer {companys,} => {
+		DatabaseStep::SyncCompanysToServer {companys,} => {
 			companys
 		},
 		_ => {
@@ -69,7 +69,8 @@ pub async fn sql_company_sync(
 		Ok(res) => res,
 		Err(err) => {
 			err.process_err(err, "ext_info");
-			return Ok(failed_result);
+			failed_result.process_info(&err);
+            return Ok(failed_result); 
 		}
 	};
 
@@ -97,12 +98,13 @@ pub async fn sql_company_sync(
 	for server_company in server_companys.iter() {
 		if let Err(err) = sql_insert_update_company_function(&mut *tx, server_company).await {
 			err.process_err(err, "");
-			return Ok(failed_result);
+			failed_result.process_info(&err);
+            return Ok(failed_result); 
 		}
 	}
 
 	match tx.commit().await {
-		Ok(_) => Ok(ReportStep::SyncCompanysToClient { del_companys, server_companys }),
+		Ok(_) => Ok(DatabaseStep::SyncCompanysToClient { del_companys, server_companys }),
 		Err(err) => {
 			err.process_err(Status::SqlCommitErr, "ext_info");
 			Ok(failed_result)

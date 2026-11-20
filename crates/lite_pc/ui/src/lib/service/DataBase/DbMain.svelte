@@ -1,24 +1,40 @@
 <script lang='ts'>
-	import type { ReportStep } from '$lib/models/rustModels/ReportStep';
-	import {invoke} from '@tauri-apps/api/core'
-
+	import {dbStep} from '$lib/models/DataBase/DbManager.svelte';
+	import {pageManager} from '$lib/models/MainManager/MainManager.svelte';
+	import type {DatabaseStep} from '$lib/models/rustModels/DatabaseStep';
 	
+
+	function goToLoading() {
+		const nextStep: DatabaseStep = {Loading: {text: 'Выберите функционал для работы с базой данных'}};
+		dbStep.step = nextStep;
+	}
+
+	function closeReport() {
+		const nextStep: DatabaseStep = {Loading: {text: 'Выберите функционал для работы с базой данных'}};
+		dbStep.step = nextStep;
+		pageManager.Page = null;
+	}
 
 </script>
 
+<section class='w-100'>
+	<span class='x-selft-c'>
+		{dbStep.currentText}
+	</span>
+</section>
+
+<svelte:component this={dbStep.getPage}/>
 
 
-
-
-
-<div class="sync-progress">
-    <div class="sync-progress-info">
-        <span>Синхронизация базы данных...</span>
-        <span>47%</span>
-    </div>
-
-    <div class="sync-progress-track">
-        <div class="sync-progress-bar" style="width: 47%"></div>
-    </div>
-</div>
+<section class='w-40'>
+	<button
+		type="button"
+		class="but-bl"
+		onclick={goToLoading}
+		>
+		<span>
+			Меню отчетов
+		</span>
+	</button>
+</section>
 

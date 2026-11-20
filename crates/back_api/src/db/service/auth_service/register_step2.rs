@@ -115,7 +115,8 @@ pub(crate) async fn register_step2(
         Ok(p) => p,
         Err(err) => {
             err.process_err(err, "");
-            return Ok(failed_result);
+            failed_result.process_info(&err);
+            return Ok(failed_result); 
         }
     };
 
@@ -123,7 +124,8 @@ pub(crate) async fn register_step2(
         Ok(o) => o,
         Err(err) => {
             err.process_err(err, "");
-            return Ok(failed_result);
+            failed_result.process_info(&err);
+            return Ok(failed_result); 
         }
     };
 
@@ -147,7 +149,8 @@ pub(crate) async fn register_step2(
         Ok(o) => o,
         Err(err) => {
             err.process_err(err, "");
-            return Ok(failed_result);
+            failed_result.process_info(&err);
+            return Ok(failed_result); 
         }
     };
 
@@ -156,7 +159,8 @@ pub(crate) async fn register_step2(
             Ok(o) => o,
             Err(err) => {
                 err.process_err(err, "");
-                return Ok(failed_result);
+                failed_result.process_info(&err);
+            	return Ok(failed_result); 
             }
         };
 
@@ -232,7 +236,8 @@ pub(crate) async fn register_step2(
         Ok(r) => r,
         Err(err) => {
             err.process_err(err, "");
-            return Ok(failed_result)
+            failed_result.process_info(&err);
+            return Ok(failed_result); 
         }
     };
 
@@ -273,7 +278,8 @@ pub(crate) async fn register_step2(
         Ok(u) => u,
         Err(err) => {
             err.process_err(err, "");
-            return Ok(failed_result);
+            failed_result.process_info(&err);
+            return Ok(failed_result); 
         }
     };
 
@@ -286,7 +292,8 @@ pub(crate) async fn register_step2(
         Ok(t) => t,
         Err(err) => {
             err.process_err(err, "");
-            return Ok(failed_result);
+            failed_result.process_info(&err);
+            return Ok(failed_result); 
         }
     };
 

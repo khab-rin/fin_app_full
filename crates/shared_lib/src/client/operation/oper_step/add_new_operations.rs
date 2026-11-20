@@ -11,7 +11,7 @@ pub async fn process_cmd_process_operations_function(
 	option_operations: Vec<Option<OperationDto>>
 ) -> Result<OperationStep, Status> {
 
-	let failed_result = OperationStep::TryLater { text: OperationInfo::ClientApiSystemError };
+	let mut failed_result = OperationStep::TryLater { text: OperationInfo::ClientApiSystemError };
 
 	match check_access(state, vec![
 		HomeMchdPower::H210,
@@ -52,7 +52,8 @@ pub async fn process_cmd_process_operations_function(
 	for operation in operations {
 		if let Err(err) = sql_insert_update_operation_function(&mut *tx, &operation, 0). await {
 			err.process_err(Status::SqlQueryWrongLogic, "");
-			return Ok(failed_result);
+			failed_result.process_info(&err);
+            return Ok(failed_result);
 		}
 	}
 

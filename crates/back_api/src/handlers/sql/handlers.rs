@@ -2,8 +2,8 @@ use std::sync::Arc;
 
 use axum::{extract::State, Json};
 
-use shared_lib::service::reports::service::ReportStep;
-use shared_lib::{ProcessError, Status};
+use shared_lib::service::database::service::{DatabaseInfo, DatabaseStep};
+use shared_lib::{ProcessError, Status, LL};
 use shared_lib::primitives::frozen::text::PersInn;
 use shared_lib::sql_models::operation::implements::Operation;
 use shared_lib::sql_models::person::implements::Person;
@@ -12,13 +12,14 @@ use shared_lib::sql_models::contracts::implements::Contract;
 
 use crate::config::BackApiState;
 use crate::db::sql_queries::persons::get::person_by_inn::get_person_by_inn;
-use crate::db::sql_queries::companys::get::fun_get_or_parse_insert_company_many;
 use crate::db::sql_queries::contracts::add::new_contr::add_contract;
 use crate::db::sql_queries::operations::add::add_many::add_operations_many;
 use crate::db::sql_queries::companys::sync::sql_company_sync;
+use crate::db::sql_queries::persons::sync::sync_all_persons;
+use crate::db::sql_queries::contracts::sync::sync_all_contracts;
+use crate::db::sql_queries::operations::sync::sync_all_operations;
 use crate::db::sql_queries::companys::get::fun_get_or_parse_insert_one::get_or_parse_insert_one_company_function;
 use crate::db::sql_queries::companys::get::fun_get_or_parse_insert_company_many::get_or_parse_insert_company_many_function;
-
 
 pub(crate) async fn get_person_by_inn_handler(
     State(state): State<Arc<BackApiState>>,
@@ -91,16 +92,57 @@ pub async fn sql_operations_add_many_handler(
 
 pub async fn sql_sync_handler(
 	State(state): State<Arc<BackApiState>>,
-	Json(data): Json<ReportStep>
-) -> Result<Json<ReportStep>, Status> {
+	Json(data): Json<DatabaseStep>
+) -> Result<Json<DatabaseStep>, Status> {
+
+	let mut failed_result = DatabaseStep::TryLater { text: DatabaseInfo::BackApiError };
 
 	match &data {
-		ReportStep::SyncCompanysToServer { .. } => {
-			let res = sql_company_sync(&state, &data).await
-				.map_err(|err| err.process_err(err, ""))?;
-			Ok(Json(res))
+		DatabaseStep::SyncCompanysToServer { .. } => {
+			match sql_company_sync(&state, &data).await {
+				Ok(res) => Ok(Json(res)),
+				Err(err) => {
+					err.process_err(err, "");
+					failed_result.process_info(&err);
+					Ok(Json(failed_result))
+				}
+			}
+	
 		},
-		_ => Err(Status::Unknown)
+		DatabaseStep::SyncPersons { .. } => {
+			match sync_all_persons(&state, data).await {
+				Ok(res) => Ok(Json(res)),
+				Err(err) => {
+					err.process_err(err, "");
+					failed_result.process_info(&err);
+					Ok(Json(failed_result))
+				}
+			}
+		},
+		DatabaseStep::SyncContracts { .. } => {
+			match sync_all_contracts(&state, &data).await {
+				Ok(res) => Ok(Json(res)),
+				Err(err) => {
+					err.process_err(err, "");
+					failed_result.process_info(&err);
+					Ok(Json(failed_result))
+				}
+			}
+		},
+		DatabaseStep::SyncOperations { .. } => {
+			match sync_all_operations(&state, &data).await {
+				Ok(res) => Ok(Json(res)),
+				Err(err) => {
+					err.process_err(err, "");
+					failed_result.process_info(&err);
+					Ok(Json(failed_result))
+				}
+			}
+		},
+		_ => {
+			Status::log(LL::Error, "WRONG DatabaseStep in sql_sync_handler FUNCTION");
+			Ok(Json(failed_result))
+		}
 	}
 
 }

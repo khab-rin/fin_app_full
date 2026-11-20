@@ -2,7 +2,7 @@
 
 use crate::{ClientState, ProcessError, Status};
 use crate::service::api_routes::implements::ApiRoutes;
-use crate::service::reports::service::{ReportStep, ReportInfo};
+use crate::service::database::service::{DatabaseStep, DatabaseInfo};
 use crate::sql_models::company::implements::Company;
 
 use crate::client::sql_queries::companys::get::que::sql_get_all_companys_function;
@@ -12,9 +12,9 @@ use crate::client::back_api::post_query::post_query_back_api;
 
 pub async fn sync_all_companys(
 	state: &ClientState
-) -> Result<ReportStep, Status> {
+) -> Result<DatabaseStep, Status> {
 
-	let mut failed_result = ReportStep::TryLater { text: ReportInfo::ClientServiceError };
+	let mut failed_result = DatabaseStep::TryLater { text: DatabaseInfo::ClientServiceError };
 
 	let session = match state.get_session().await {
 		Ok(s) => s,
@@ -36,7 +36,8 @@ pub async fn sync_all_companys(
 		Ok(a) => a,
 		Err(err) => {
 			err.process_err(err, "");
-			return Ok(failed_result);
+			failed_result.process_info(&err);
+            return Ok(failed_result);
 		}
 	};
 
@@ -47,18 +48,18 @@ pub async fn sync_all_companys(
 		while companys.len() < 30 && let Some(c) = local_companys.pop() {
 			companys.push(c);
 		}
-		let step_to_serv = ReportStep::SyncCompanysToServer { companys };
+		let step_to_serv = DatabaseStep::SyncCompanysToServer { companys };
 		let response = match post_query_back_api(state, state.config.get_sql_long(), ApiRoutes::SqlSync, &step_to_serv).await {
 			Ok(r) => r,
 			Err(err) => {
-				if err == Status::ConnectProblems && let ReportStep::TryLater{text} = &mut failed_result {
-					*text = ReportInfo::ConnectionError;
+				if err == Status::ConnectProblems && let DatabaseStep::TryLater{text} = &mut failed_result {
+					*text = DatabaseInfo::ConnectionError;
 				}
 				return Ok(failed_result);
 			}
 		};
 
-		let step_to_client: ReportStep = match response.json().await {
+		let step_to_client: DatabaseStep = match response.json().await {
 			Ok(s) => s,
 			Err(err) => {
 				err.process_err(Status::MappingError, "");
@@ -66,7 +67,7 @@ pub async fn sync_all_companys(
 			}
 		};
 
-		if let ReportStep::SyncCompanysToClient { del_companys, server_companys } = step_to_client {
+		if let DatabaseStep::SyncCompanysToClient { del_companys, server_companys } = step_to_client {
 			for del_company in del_companys {
 				if let Err(err) = sql_del_company_by_id_query(&mut *tx, &del_company.comp_id).await {
 					err.process_err(err, "");
@@ -88,7 +89,7 @@ pub async fn sync_all_companys(
 	}
 
 	match tx.commit().await {
-		Ok(_) => Ok(ReportStep::SyncSuccess {text: ReportInfo::Notning}),
+		Ok(_) => Ok(DatabaseStep::SyncSuccess {text: DatabaseInfo::Notning}),
 		Err(err) => {
 			err.process_err(Status::MappingError, "");
 			Ok(failed_result)

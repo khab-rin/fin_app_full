@@ -1,5 +1,6 @@
 use serde::{Serialize, Deserialize};
 
+use crate::Status;
 use crate::sql_models::operation::implements::OperationRaw;
 use crate::sql_models::contracts::implements::Contract;
 
@@ -84,4 +85,17 @@ pub enum OperationInfo {
     
     #[serde(rename = "")]
     Nothing,
+}
+
+
+impl OperationStep {
+	pub fn process_info(&mut self, err: &Status) {
+		if let Self::TryLater { text } = self {
+			match err {
+				Status::ConnectProblems => *text = OperationInfo::ConnectionError,
+				Status::SqlSyncError => *text = OperationInfo::SqlSyncError,
+				_ => {}
+			}
+		}
+	}
 }

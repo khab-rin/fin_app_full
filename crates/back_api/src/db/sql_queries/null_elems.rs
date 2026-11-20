@@ -3,7 +3,7 @@ use shared_lib::{Status, ProcessError};
 
 use crate::config::BackApiState;
 use crate::db::sql_queries::companys::add::que_insert_update::sql_insert_update_company_function;
-use crate::db::sql_queries::persons::add::que_insert_update::sql_insert_update_person_function;
+use crate::db::sql_queries::persons::add::que::sql_insert_update_person_function;
 use crate::db::sql_queries::users::add::que_insert_update_user::sql_insert_update_user_function;
 use crate::db::sql_queries::contracts::add::que::sql_insert_update_contract_function;
 use crate::db::sql_queries::operations::add::que::sql_insert_update_operation_function;

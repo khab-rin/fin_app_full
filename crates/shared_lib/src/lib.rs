@@ -52,6 +52,12 @@ mod ts_tests {
 			sql_models::operation::implements::OperationTSTS::export_all_to(path)
                 .expect("Не удалось экспортировать OperationTSTS");
 
+			service::database::service::DatabaseStepRSTS::export_all_to(path)
+			 .expect("Не удалось экспортировать DatabaseRSTS");
+
+			service::back_communication::implements::ProgressBar::export_all_to(path)
+			 .expect("Не удалось экспортировать ProgressBar");
+
         }
     }
 }

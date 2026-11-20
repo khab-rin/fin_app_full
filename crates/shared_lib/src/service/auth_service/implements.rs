@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 
+use crate::Status;
 use crate::primitives::frozen::text::{BoxUuid, CompInn, Email, FirstName, Kpp, MidName, Password, PersInn, Phone, Snils, SurName};
 use crate::service::auth_service::general::SessionUser;
 
@@ -90,6 +91,9 @@ pub enum AuthInfo {
     #[serde(rename = "Пользователь не найден, требуется пройти регистрацию")]
     MissUserNeedRegistration,
 
+	#[serde(rename = "Операция не завершилась. Требуется синхронизация базы данных")]
+	NeedSync,
+
     #[serde(rename = "Пользователь не найден на устройстве, требуется авторизоваться по паролю или пройти регистрацию")]
     NewUserInSystem,
 
@@ -114,6 +118,18 @@ pub enum AuthInfo {
     #[serde(rename = "")]
     Nothing,
     
+}
+
+impl AuthStep {
+	pub fn process_info(&mut self, err: &Status) {
+		if let Self::TryLater { text } = self {
+			match err {
+				Status::ConnectProblems => *text = AuthInfo::ConnectionError,
+				Status::SqlSyncError => *text = AuthInfo::NeedSync,
+				_ => {}
+			}
+		}
+	}
 }
 
 

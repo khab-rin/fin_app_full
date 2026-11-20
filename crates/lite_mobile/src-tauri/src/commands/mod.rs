@@ -1,4 +1,5 @@
 pub mod auth;
+pub mod database;
 pub mod operation;
 pub mod other;
 pub mod mchd;

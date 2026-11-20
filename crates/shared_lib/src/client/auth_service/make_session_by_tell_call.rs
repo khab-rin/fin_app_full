@@ -18,13 +18,14 @@ pub async fn make_session_by_tel_call(
     external_id: &str,
 ) -> Result<AuthStep, Status> {
 
-    let mut failed_result = Ok(AuthStep::TryLater { text: AuthInfo::ClientApiSystemError });
+    let mut failed_result = AuthStep::TryLater { text: AuthInfo::ClientApiSystemError };
 
     let device_id = match get_device_id(state) {
         Ok(d) => d,
         Err(err) => {
             err.process_err(err, "");
-            return failed_result;
+			failed_result.process_info(&err);
+            return Ok(failed_result);
         }
     };
 
@@ -41,10 +42,8 @@ pub async fn make_session_by_tel_call(
         Ok(r) => r,
         Err(err) => {
             err.process_err(err, "");
-			if err == Status::ConnectProblems && let Ok(AuthStep::TryLater { text }) = &mut failed_result {
-				*text = AuthInfo::ConnectionError;
-			}
-            return failed_result;
+			failed_result.process_info(&err);
+            return Ok(failed_result);
         }
     };
 
@@ -52,7 +51,7 @@ pub async fn make_session_by_tel_call(
         Ok(s) => s,
         Err(err) => {
             err.process_err(Status::MappingError, "");
-            return failed_result;
+            return Ok(failed_result);
         }
     };
 
@@ -65,7 +64,8 @@ pub async fn make_session_by_tel_call(
         Ok(_) => {},
         Err(err) => {
             err.process_err(Status::MappingError, "");
-            return failed_result;
+            failed_result.process_info(&err);
+            return Ok(failed_result);
         }
     }
 
@@ -73,7 +73,8 @@ pub async fn make_session_by_tel_call(
         Ok(_) => Ok(AuthStep::SuccessShort {  }),
         Err(err) => {
             err.process_err(err, "");
-            failed_result
+            failed_result.process_info(&err);
+            Ok(failed_result)
         }
     }
 }

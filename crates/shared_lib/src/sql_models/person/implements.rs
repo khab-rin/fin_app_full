@@ -65,6 +65,7 @@ pub struct PersonMetadata {
 
 impl PersonMetadata {
     pub fn merge(&mut self, new: Self) {
+		self.fio = new.fio;
         if new.passport.is_some()  { self.passport = new.passport; }
         if new.address.is_some()   { self.address = new.address; }
         if new.gender.is_some()    { self.gender = new.gender; }

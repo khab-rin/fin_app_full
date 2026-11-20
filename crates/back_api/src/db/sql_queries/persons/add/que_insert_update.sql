@@ -6,7 +6,8 @@ INSERT INTO persons(
 VALUES ($1, $2, $3)
 ON CONFLICT (pers_inn)
 	DO UPDATE SET
-		metadata = EXCLUDED.metadata
+		metadata = EXCLUDED.metadata,
+		last_update = now()
 
 RETURNING
     pers_id as "pers_id: BoxUuid",

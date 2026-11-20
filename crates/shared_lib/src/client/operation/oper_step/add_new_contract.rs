@@ -18,13 +18,14 @@ pub async fn process_cmd_add_new_contract(
 	new_contr_data: NewContrData
 ) -> Result<OperationStep, Status> {
 
-	let failed_result = OperationStep::TryLater { text: OperationInfo::ClientApiSystemError };
+	let mut failed_result = OperationStep::TryLater { text: OperationInfo::ClientApiSystemError };
 
 	let new_contract = match make_new_contract_function(state, new_contr_data).await {
 		Ok(c) => c,
 		Err(err) => {
 			err.process_err(err, "");
-			return Ok(failed_result);
+			failed_result.process_info(&err);
+            return Ok(failed_result);
 		}
 	};
 
@@ -40,7 +41,8 @@ pub async fn process_cmd_add_new_contract(
 		Ok(opt) => opt,
 		Err(err) => {
 			err.process_err(err, "");
-			return Ok(failed_result);
+			failed_result.process_info(&err);
+            return Ok(failed_result);
 		}
 	};
 
@@ -48,7 +50,8 @@ pub async fn process_cmd_add_new_contract(
 		Ok(c) => c,
 		Err(err) => {
 			err.process_err(err, "");
-			return Ok(failed_result);
+			failed_result.process_info(&err);
+            return Ok(failed_result);
 		}
 	};
 
@@ -65,7 +68,8 @@ pub async fn process_cmd_add_new_contract(
 		Ok(r) => r, 
 		Err(err) => {
 			err.process_err(err, "");
-			return Ok(failed_result);
+			failed_result.process_info(&err);
+            return Ok(failed_result);
 		}
 	};
 
@@ -76,7 +80,8 @@ pub async fn process_cmd_add_new_contract(
 
 	if let Err(err) = sql_insert_update_contract_function(&session.local_db, &new_contract, 1).await {
 		err.process_err(err, "");
-		return Ok(failed_result);
+		failed_result.process_info(&err);
+        return Ok(failed_result);
 	}
 
 	all_contracts.push(new_contract);

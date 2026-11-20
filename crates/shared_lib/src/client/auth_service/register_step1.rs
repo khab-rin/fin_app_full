@@ -14,7 +14,7 @@ pub
     data: &RegInitData
 ) -> Result<AuthStep, Status> {
 
-	let mut failed_result: Result<AuthStep, Status> = Ok(AuthStep::TryLater { text: AuthInfo::ClientApiSystemError });
+	let mut failed_result: AuthStep = AuthStep::TryLater { text: AuthInfo::ClientApiSystemError };
 
     let blake_password = blake3::hash(data.password.as_ref().as_bytes())
         .to_hex()
@@ -33,10 +33,8 @@ pub
 			Ok(r) => r,
 			Err(err) => {
 				err.process_err(err, "");
-				if err == Status::ConnectProblems && let Ok(AuthStep::TryLater { text }) = &mut failed_result {
-					*text = AuthInfo::ConnectionError;
-				}
-				return failed_result;
+				failed_result.process_info(&err);
+            	return Ok(failed_result);
 			}
 		};
 

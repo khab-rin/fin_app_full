@@ -19,13 +19,13 @@ pub async fn restore_by_password(
     data: &PasswordDataClientShort
 ) -> Result<AuthStep, Status> {
 
-    let mut failed_result = Ok(AuthStep::TryLater { text: AuthInfo::ClientApiSystemError });
+    let mut failed_result = AuthStep::TryLater { text: AuthInfo::ClientApiSystemError };
 
     let device_id = match get_device_id(state) {
         Ok(d) => d,
         Err(err) => {
             err.process_err(err, "");
-            return failed_result;
+            return Ok(failed_result);
         }
     };
 
@@ -47,10 +47,8 @@ pub async fn restore_by_password(
         Ok(r) => r,
         Err(err) => {
             err.process_err(err, "");
-			if err == Status::ConnectProblems && let Ok(AuthStep::TryLater { text }) = &mut failed_result {
-				*text = AuthInfo::ConnectionError;
-			}
-            return failed_result;
+			failed_result.process_info(&err);
+            return Ok(failed_result);
         }
     };
 
@@ -59,7 +57,7 @@ pub async fn restore_by_password(
         Ok(s) => s,
         Err(err) => {
             err.process_err(Status::MappingError, "");
-            return failed_result;
+            return Ok(failed_result);
         }
     };
 
@@ -72,7 +70,7 @@ pub async fn restore_by_password(
         Ok(_) => {},
         Err(err) => {
             err.process_err(Status::MappingError, "");
-            return failed_result;
+            return Ok(failed_result);
         }
     }
 
@@ -80,7 +78,7 @@ pub async fn restore_by_password(
         Ok(_) => Ok(AuthStep::SuccessShort {  }),
         Err(err) => {
             err.process_err(err, "");
-            failed_result
+            Ok(failed_result)
         }
     }
 

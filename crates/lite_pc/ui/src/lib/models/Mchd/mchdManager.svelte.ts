@@ -66,7 +66,6 @@ class MchdManager {
 		const key = Object.keys(this._step)[0];
 		if (!key) return;
 
-		// Перезаписываем объект целиком, чтобы Svelte 5 увидел реактивность
 		this._step = { 
 			...this._step, 
 			[key]: { 

@@ -60,7 +60,7 @@ where
 								err
 							),
 						);
-						return Err(Status::SystemErr);
+						return Err(Status::ConnectProblems);
 					}
                 }
             }

@@ -22,13 +22,14 @@ pub(crate) async fn show_powers(
     user_id: &BoxUuid
 ) -> Result<MchdStep, Status> {
 
-    let failed_result = MchdStep::TryLater { text: MchdInfo::BackApiError };
+    let mut failed_result = MchdStep::TryLater { text: MchdInfo::BackApiError };
 
     let mut storage = match get_mchd_storage().await {
         Ok(s) => s,
         Err(err) => {
             err.process_err(err, "");
-            return Ok(failed_result);
+            failed_result.process_info(&err);
+            return Ok(failed_result); 
         }
     };
 
@@ -49,7 +50,8 @@ pub(crate) async fn show_powers(
         Ok(o) => o,
         Err(err) => {
             err.process_err(err, "");
-            return Ok(failed_result);
+            failed_result.process_info(&err);
+            return Ok(failed_result); 
         }
     };
 
@@ -123,12 +125,14 @@ pub(crate) async fn show_powers(
 
         if let Err(err) = write_mchd_storage_to_file(storage).await {
             err.process_err(err, "");
-            return Ok(failed_result);
+            failed_result.process_info(&err);
+            return Ok(failed_result); 
         }
 
         if let Err(err) = del_guids_by_user_id(state, user_id, &del_guids).await {
             err.process_err(err, "");
-            return Ok(failed_result);
+            failed_result.process_info(&err);
+            return Ok(failed_result); 
         }
     }
     

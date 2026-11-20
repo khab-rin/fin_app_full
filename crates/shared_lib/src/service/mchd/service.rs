@@ -1,5 +1,6 @@
 use serde::{Serialize, Deserialize};
 
+use crate::Status;
 use crate::primitives::frozen::text::*;
 use crate::primitives::frozen::text_base::*;
 use crate::service::mchd::implements::*;
@@ -37,11 +38,23 @@ pub enum MchdStep {
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub enum MchdInfo {
+	#[serde(rename = "Критическая ошибка на серверной части приложения...")]
+    BackApiError,
+
     #[serde(rename = "Вы на этапе создания доверенности для электронного документооборота с контрагентами, внимательно заполните поля аналогично полям в личных и учредительных документах")]
     BTBMchd,
 
+	#[serde(rename = "Критическая ошибка на устройстве...")]
+    ClientServiceError,
+
+	#[serde(rename = "Ошибка при запросе в интернет, проверьте подключение к сети")]
+    ClientApiQueryError,
+
 	#[serde(rename = "Ошибка соединения, пожалуйста попробуйте выключить ВПН")]
 	ConnectionError,
+
+	#[serde(rename = "Произошла ошибка при загрузке данных, повторите попытку позже...")]
+    Failed,
 
     #[serde(rename = "Вы на этапе создания доверенности для сдачи отчетности в ФНС, внимательно заполните поля аналогично полям в личных и учредительных документах")]
     FnsMchd,
@@ -55,36 +68,40 @@ pub enum MchdInfo {
     #[serde(rename = "Выберите действие с машиночитаемыми доверенностями. Вы можете создать и зарегистрировать МЧД на любое физ. лицо от имени организации указанной при регистрации в приложении")]
     Loading,
 
+	#[serde(rename = "")]
+    Nothing,
+
     #[serde(rename = "Сохраните доверенность в формате doc и xml. Ознакомьтесь с текстом доверенности. Если все верно рукодитель организации должен подписать xml файл подписью руководителя отсоединенным файлом. Затем переходит в раздел отправки МЧД на регистрацию")]
     SaveXmlDocFiles,
 
     #[serde(rename = "Ознакомьтесь с вашими полномочиями")]
     ShowPowers,
 
+	#[serde(rename = "Ошибка! Требуется синхронизация базы данных")]
+	SqlNeedSync,
+
     #[serde(rename = "Доверенность успешно зарегистрирована. Вы можете проверить её статус через сервис МЧД по указанному ниже номеру. Для этого сохраните этот номер. Для работы в системе данный номер сохранять нет необходимости, он подтягивается автоматически")]
     SuccessRegisterMchd,
-
-    #[serde(rename = "Произошла ошибка при загрузке данных, повторите попытку позже...")]
-    Failed,
-
-    #[serde(rename = "Критическая ошибка на устройстве...")]
-    ClientServiceError,
-
-    #[serde(rename = "Критическая ошибка на серверной части приложения...")]
-    BackApiError,
 
     #[serde(rename = "Введенные данные не соответствуют данным зарегистрированного пользователя")]
     WrongPerson,
 
     #[serde(rename = "Различия в файле доверенности и подписанным файлом, загрузите xml файл доверенности и файл отсоединенной подписи к этой доверенности")]
-    WrongSignFile,
-
-    #[serde(rename = "Ошибка при запросе в интернет, проверьте подключение к сети")]
-    ClientApiQueryError,
-
-    #[serde(rename = "")]
-    Nothing,
+    WrongSignFile,    
 }
+
+impl MchdStep {
+	pub fn process_info(&mut self, err: &Status) {
+		if let Self::TryLater { text } = self {
+			match err {
+				Status::ConnectProblems => *text = MchdInfo::ConnectionError,
+				Status::SqlSyncError => *text = MchdInfo::SqlNeedSync,
+				_ => {}
+			}
+		}
+	}
+}
+
 
 
 #[derive(Deserialize, Debug)]

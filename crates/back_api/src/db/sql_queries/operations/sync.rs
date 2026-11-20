@@ -3,7 +3,7 @@ use std::collections::HashSet;
 
 use shared_lib::sql_models::operation::implements::Operation;
 use shared_lib::{Status, ProcessError, LL};
-use shared_lib::service::reports::service::{ReportStep, ReportInfo};
+use shared_lib::service::database::service::{DatabaseStep, DatabaseInfo};
 use shared_lib::primitives::frozen::text::BoxUuid;
 
 
@@ -18,12 +18,12 @@ use crate::db::sql_queries::operations::add::que::sql_insert_update_operation_fu
 
 pub async fn sync_all_operations(
 	state: &BackApiState,
-	local_step: &ReportStep
-) -> Result<ReportStep, Status> {
+	local_step: &DatabaseStep
+) -> Result<DatabaseStep, Status> {
 
-	let mut failed_result = ReportStep::TryLater { text: ReportInfo::BackApiError };
+	let mut failed_result = DatabaseStep::TryLater { text: DatabaseInfo::BackApiError };
 
-	let (local_operations, user_id) = if let ReportStep::SyncOperations { operations, user_id, ..} = local_step {
+	let (local_operations, user_id) = if let DatabaseStep::SyncOperations { operations, user_id, ..} = local_step {
 		(operations, user_id)
 	} else {
 		Status::log(LL::Error, "WRONG STEP IN sync_all_operations FUNCTION");
@@ -41,15 +41,16 @@ pub async fn sync_all_operations(
 	let comp_id = match sql_get_comp_id_by_user_id_function(&mut *tx, user_id).await {
 		Ok(Some(c)) => c,
 		Ok(None) => {
-			if let ReportStep::TryLater { text } = &mut failed_result {
-				*text = ReportInfo::MissUser;
+			if let DatabaseStep::TryLater { text } = &mut failed_result {
+				*text = DatabaseInfo::MissUser;
 			}
 			Status::log(LL::Error, "MISS USER IN sync_all_operations FUNCTION");
 			return Ok(failed_result);
 		},
 		Err(err) => {
-			err.process_err(Status::SqlPoolErr, "");
-			return Ok(failed_result);
+			err.process_err(err, "");
+			failed_result.process_info(&err);
+            return Ok(failed_result); 
 		}
 	};
 
@@ -57,7 +58,8 @@ pub async fn sync_all_operations(
 		Ok(ids_vec) => ids_vec.into_iter().collect(),
 		Err(err) => {
 			err.process_err(Status::SqlPoolErr, "");
-			return Ok(failed_result);
+			failed_result.process_info(&err);
+            return Ok(failed_result); 
 		}
 	};
 
@@ -66,7 +68,8 @@ pub async fn sync_all_operations(
 	for operation in local_operations {
 		if let Err(err) = sql_insert_update_operation_function(&mut *tx, &operation).await {
 			err.process_err(err, "");
-			return Ok(failed_result);
+			failed_result.process_info(&err);
+            return Ok(failed_result); 
 		}
 		all_server_operation_ids.remove(&operation.oper_id);
 	}
@@ -80,7 +83,7 @@ pub async fn sync_all_operations(
 	}
 
 	match tx.commit().await {
-		Ok(_) => Ok(ReportStep::SyncOperations { text: ReportInfo::Notning, operations: server_operations, user_id: user_id.clone() }),
+		Ok(_) => Ok(DatabaseStep::SyncOperations { text: DatabaseInfo::Notning, operations: server_operations, user_id: user_id.clone() }),
 		Err(err) => {
 			err.process_err(Status::SqlPoolErr, "");
 			Ok(failed_result)

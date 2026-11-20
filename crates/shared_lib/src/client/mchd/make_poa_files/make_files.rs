@@ -12,13 +12,13 @@ pub async fn make_xml_doc_files(
     data: &NewMchdData
 ) -> Result<MchdStep, Status> {
 
-    let failed_result = Ok(MchdStep::TryLater { text:MchdInfo::ClientServiceError });
+    let mut failed_result = MchdStep::TryLater { text:MchdInfo::ClientServiceError };
 
     let session = match state.get_session().await {
         Ok(s) => s,
         Err(err) => {
             err.process_err(err, "");
-            return failed_result;
+            return Ok(failed_result);
         }
     };
 
@@ -29,7 +29,8 @@ pub async fn make_xml_doc_files(
             Ok(_) => {},
             Err(err) => {
                 err.process_err(err, "");
-                return failed_result;
+                failed_result.process_info(&err);
+            	return Ok(failed_result);
             }
         }
 
@@ -37,7 +38,8 @@ pub async fn make_xml_doc_files(
             Ok(_) => {},
             Err(err) => {
                 err.process_err(err, "");
-                return failed_result;
+                failed_result.process_info(&err);
+           		return Ok(failed_result);
             }
         }
     } else {
@@ -48,7 +50,7 @@ pub async fn make_xml_doc_files(
         Ok(p) => p,
         Err(err) => {
             err.process_err(err, "");
-            return failed_result;
+            return Ok(failed_result);
         }
     };
 

@@ -58,7 +58,8 @@ pub(crate) async fn register_step1(
         Ok(p) => p,
         Err(err) => {
             err.process_err(err, "");
-            return Ok(failed_result);
+            failed_result.process_info(&err);
+            return Ok(failed_result); 
         }
     };
 
@@ -73,7 +74,8 @@ pub(crate) async fn register_step1(
         }
         Err(err) => {
             err.process_err(err, "");
-            return Ok(failed_result)
+            failed_result.process_info(&err);
+            return Ok(failed_result); 
         }
     };
 

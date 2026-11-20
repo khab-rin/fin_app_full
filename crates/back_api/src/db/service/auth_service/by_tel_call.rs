@@ -16,14 +16,15 @@ pub(crate) async fn make_session_by_tel_call(
     data: &ExternalDeviceData
 ) -> Result<AuthStep, Status> {
 
-    let failed_result = Ok(AuthStep::TryLater { text: AuthInfo::BackApiError });
+    let mut failed_result = AuthStep::TryLater { text: AuthInfo::BackApiError };
     let ExternalDeviceData {external_id, device_id} = data;
 
     let expire_option = match get_user_time_by_device_external(state, data).await {
         Ok(o) => o,
         Err(err) => {
             err.process_err(err, "");
-            return failed_result;
+            failed_result.process_info(&err);
+            return Ok(failed_result); 
         }
     };
 
@@ -38,7 +39,8 @@ pub(crate) async fn make_session_by_tel_call(
         Ok(cf) => cf,
         Err(err) => {
             err.process_err(err, "");
-            return failed_result;
+            failed_result.process_info(&err);
+            return Ok(failed_result); 
         }
     };
 
@@ -52,7 +54,7 @@ pub(crate) async fn make_session_by_tel_call(
             return Ok(res)
         },
         SmsRuResponseTextCode::UnknownCode => {
-            return failed_result
+            return Ok(failed_result)
         }
     }
 
@@ -68,7 +70,8 @@ pub(crate) async fn make_session_by_tel_call(
         Ok(u) => u,
         Err(err) => {
             err.process_err(err, "");
-            return failed_result;
+            failed_result.process_info(&err);
+            return Ok(failed_result); 
         }
     };
 
@@ -76,7 +79,7 @@ pub(crate) async fn make_session_by_tel_call(
 		let session_user_token = SessionUserToken {user: session_user, token};
 		Ok(AuthStep::SuccessFull { session_user_token: Box::new(session_user_token)})
 	} else {
-		failed_result
+		Ok(failed_result)
 	}
 
 }

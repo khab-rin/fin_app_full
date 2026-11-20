@@ -1,6 +1,6 @@
 use shared_lib::primitives::frozen::text::BoxUuid;
 use shared_lib::{Status, ProcessError, LL};
-use shared_lib::service::reports::service::{ReportStep, ReportInfo};
+use shared_lib::service::database::service::{DatabaseStep, DatabaseInfo};
 use shared_lib::sql_models::contracts::implements::Contract;
 
 
@@ -14,11 +14,11 @@ use crate::db::sql_queries::contracts::get::que::{
 
 pub async fn sync_all_contracts(
 	state: &BackApiState,
-	local_step: &ReportStep
-) -> Result<ReportStep, Status> {
-	let mut failed_result = ReportStep::TryLater { text: ReportInfo::BackApiError };
+	local_step: &DatabaseStep
+) -> Result<DatabaseStep, Status> {
+	let mut failed_result = DatabaseStep::TryLater { text: DatabaseInfo::BackApiError };
 
-	let (local_contracts, user_id) = if let ReportStep::SyncContracts { contracts, user_id, .. } = local_step {
+	let (local_contracts, user_id) = if let DatabaseStep::SyncContracts { contracts, user_id, .. } = local_step {
 		(contracts, user_id)
 	} else {
 		Status::log(LL::Error, "WRONG STEP IN sync_all_contracts function");
@@ -36,22 +36,24 @@ pub async fn sync_all_contracts(
 	let comp_id = match sql_get_comp_id_by_user_id_function(&mut *tx, user_id).await {
 		Ok(Some(c)) => c,
 		Ok(None) => {
-			if let ReportStep::TryLater { text } = &mut failed_result {
-				*text = ReportInfo::MissUser
+			if let DatabaseStep::TryLater { text } = &mut failed_result {
+				*text = DatabaseInfo::MissUser
 			}
 			return Ok(failed_result);
 		}
 		Err(err) => {
-			err.process_err(Status::SqlPoolErr, "");
-			return Ok(failed_result);
+			err.process_err(err, "");
+			failed_result.process_info(&err);
+            return Ok(failed_result); 
 		}
 	};
 
 	let mut serv_contract_ids: std::collections::HashSet<BoxUuid> = match sql_get_contract_ids_by_comp_id(&mut *tx, &comp_id).await{
 		Ok(contr_vec) => contr_vec.into_iter().collect(),
 		Err(err) => {
-			err.process_err(Status::SqlPoolErr, "");
-			return Ok(failed_result);
+			err.process_err(err, "");
+			failed_result.process_info(&err);
+            return Ok(failed_result); 
 		}
 	};
 
@@ -60,7 +62,8 @@ pub async fn sync_all_contracts(
 		serv_contract_ids.remove(local_contract_id);
 		if let Err(err) = sql_insert_update_contract_function(&mut *tx, local_contract).await {
 			err.process_err(err, "");
-			return Ok(failed_result);
+			failed_result.process_info(&err);
+            return Ok(failed_result); 
 		}
 	}
 
@@ -71,8 +74,9 @@ pub async fn sync_all_contracts(
 			Ok(Some(c)) => c,
 			Ok(None) => {continue;},
 			Err(err) => {
-				err.process_err(Status::SqlPoolErr, "");
-				return Ok(failed_result);
+				err.process_err(err, "");
+				failed_result.process_info(&err);
+            	return Ok(failed_result); 
 			}
 		};
 		server_contracts.push(server_contract);
@@ -83,5 +87,5 @@ pub async fn sync_all_contracts(
 		return Ok(failed_result);
 	}
 
-	Ok(ReportStep::SyncContracts { text: ReportInfo::Notning, contracts: server_contracts, user_id: user_id.clone() })
+	Ok(DatabaseStep::SyncContracts { text: DatabaseInfo::Notning, contracts: server_contracts, user_id: user_id.clone() })
 }

@@ -27,13 +27,14 @@ pub(crate) async fn restore_session_by_passord(
     data: &PasswordDataClient
 ) -> Result<AuthStep, Status> {
 
-    let failed_result = Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
+    let mut failed_result = AuthStep::TryLater {text: AuthInfo::BackApiError};
 
     let auth_check_password_option = match get_restore_password_data(state, data).await {
         Ok(opt) => opt,
         Err(err) => { 
             err.process_err(err, "");
-            return failed_result; 
+			failed_result.process_info(&err);
+            return Ok(failed_result); 
         }
     };
 
@@ -54,7 +55,8 @@ pub(crate) async fn restore_session_by_passord(
         Ok(hash) => hash,
         Err(err) => {
             err.process_err(Status::SystemErr, "");
-            return failed_result;
+            failed_result.process_info(&Status::SystemErr);
+            return Ok(failed_result); 
         }
     };
 

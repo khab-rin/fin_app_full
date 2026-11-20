@@ -1,13 +1,9 @@
 use rust_decimal::prelude::ToPrimitive;
 use serde::{Serialize, Deserialize};
 
+use crate::Status;
 use crate::primitives::frozen::text::{RubF, Date, BoxUuid};
 use crate::service::reports::fns_xsd_shemas::usn_1152017_decl::UsnDeclQuaterAmnts;
-use crate::sql_models::company::implements::Company;
-use crate::sql_models::contracts::implements::Contract;
-use crate::sql_models::person::implements::Person;
-
-use crate::sql_models::operation::implements::Operation;
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub enum ReportStep {
@@ -24,15 +20,8 @@ pub enum ReportStep {
 		pdf_name: String, 
 		pdf_file: Vec<u8> 
 	},
-
-	SyncCompanysToServer {companys: Vec<Company>},
-	SyncCompanysToClient {del_companys: Vec<Company>, server_companys: Vec<Company>},
-	SyncContracts {text: ReportInfo, contracts: Vec<Contract>, user_id: BoxUuid},
-	SyncPersons {text: ReportInfo, persons: Vec<Person>, user_id: BoxUuid},
-	SyncOperations {text: ReportInfo, operations: Vec<Operation>, user_id: BoxUuid},
-	SyncSuccess {text: ReportInfo},
-
 	TryLater {text: ReportInfo },
+	
 }
 
 
@@ -79,6 +68,19 @@ pub enum ReportInfo {
 
 	#[serde(rename = "Был введен некоректный год")]
 	WrongYear
+}
+
+
+impl ReportStep {
+	pub fn process_info(&mut self, err: &Status) {
+		if let Self::TryLater { text } = self {
+			match err {
+				Status::ConnectProblems => *text = ReportInfo::ConnectionError,
+				Status::SqlSyncError => *text = ReportInfo::SqlNeedSync,
+				_ => {}
+			}
+		}
+	}
 }
 
 

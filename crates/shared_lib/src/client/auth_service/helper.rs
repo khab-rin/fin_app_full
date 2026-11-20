@@ -77,12 +77,12 @@ pub fn write_new_user_info_to_device(
 pub async fn get_comp_name(
 	state: &ClientState
 ) -> Result<String, Status> {
-	let failed_res = Ok("".to_string());
+	let mut failed_res = "".to_string();
 
 	let session = match state.get_session().await {
 		Ok(s) => s,
 		Err(_) => {
-			return failed_res;
+			return Ok(failed_res);
 		}
 	};
 
@@ -98,10 +98,10 @@ pub async fn get_comp_name(
 			match &c.short_egrul_name {
 				Some(_) => String1_1000::unchecked("ООО Ромашка"),
 				// Some(n) => n.clone(),
-				None => return failed_res
+				None => return Ok(failed_res)
 			}
 		},
-		None => return failed_res
+		None => return Ok(failed_res)
 	};
 
 	Ok(format!("Компания - {}, пользователь - {}", comp_name, name))

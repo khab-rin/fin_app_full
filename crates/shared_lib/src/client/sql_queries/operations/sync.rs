@@ -1,6 +1,6 @@
 use crate::{Status, ProcessError, ClientState};
 
-use crate::service::reports::service::{ReportInfo, ReportStep};
+use crate::service::database::service::{DatabaseInfo, DatabaseStep};
 use crate::service::api_routes::implements::ApiRoutes;
 
 use crate::client::back_api::post_query::post_query_back_api;
@@ -9,9 +9,9 @@ use crate::client::sql_queries::operations::add::que::sql_insert_update_operatio
 
 pub async fn sync_all_operations(
 	state: &ClientState
-) -> Result<ReportStep, Status> {
+) -> Result<DatabaseStep, Status> {
 
-	let failed_result: ReportStep = ReportStep::TryLater { text: ReportInfo::ClientServiceError };
+	let mut failed_result: DatabaseStep = DatabaseStep::TryLater { text: DatabaseInfo::ClientServiceError };
 
 	let session = match state.get_session().await {
 		Ok(s) => s,
@@ -37,8 +37,8 @@ pub async fn sync_all_operations(
 		}
 	};
 
-	let step_to_serv = ReportStep::SyncOperations { 
-		text: ReportInfo::Notning, 
+	let step_to_serv = DatabaseStep::SyncOperations { 
+		text: DatabaseInfo::Notning, 
 		operations: local_operations, 
 		user_id: session.session_user.user.user_id.clone() 
 	};
@@ -52,11 +52,12 @@ pub async fn sync_all_operations(
 		Ok(r) => r,
 		Err(err) => {
 			err.process_err(err, "ext_info");
-			return Ok(failed_result);
+			failed_result.process_info(&err);
+            return Ok(failed_result);
 		}
 	};
 
-	let step_to_client:ReportStep = match response.json().await {
+	let step_to_client:DatabaseStep = match response.json().await {
 		Ok(s) => s,
 		Err(err) => {
 			err.process_err(Status::MappingError, "");
@@ -64,9 +65,7 @@ pub async fn sync_all_operations(
 		}
 	};
 
-	
-
-	if let ReportStep::SyncOperations { operations, .. } = step_to_client {
+	if let DatabaseStep::SyncOperations { operations, .. } = step_to_client {
 		for operation in operations.iter() {
 			if let Err(err) = sql_insert_update_operation_function(
 				&mut *tx, operation, 1
@@ -78,7 +77,7 @@ pub async fn sync_all_operations(
 	}
 
 	match tx.commit().await {
-		Ok(_) => Ok(ReportStep::SyncSuccess { text: ReportInfo::Notning }),
+		Ok(_) => Ok(DatabaseStep::SyncSuccess { text: DatabaseInfo::Notning }),
 		Err(err) => {
 			err.process_err(Status::MappingError, "");
 			Ok(failed_result)

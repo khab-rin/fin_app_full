@@ -34,15 +34,13 @@ pub async fn parse_statement(
     path: &str
 ) -> Result<OperationStep, Status> {
 
-    let failed_result = Ok(OperationStep::TryLater {
-        text: OperationInfo::ClientApiSystemError,
-    });
+    let mut failed_result = OperationStep::TryLater {text: OperationInfo::ClientApiSystemError,};
 
 	let session = match state.get_session().await {
 		Ok(s) => s,
 		Err(err) => {
 			err.process_err(err, "");
-			return failed_result;
+			return Ok(failed_result);
 		}
 	};
 
@@ -71,7 +69,7 @@ pub async fn parse_statement(
 	if let Err(err) = file.read_to_end(&mut bytes).await {
 		let ext_info = format!("wrong file path = {:?}, wrong tokio file = {:?}", path, file);
 		err.process_err(Status::FileReadError, &ext_info);
-		return failed_result;
+		return Ok(failed_result);
 	}
 
     let buffer = match String::from_utf8(bytes) {
@@ -117,7 +115,7 @@ pub async fn parse_statement(
         Ok(h) => h,
         Err(err) => {
             err.process_err(err, "");
-            return failed_result;
+            return Ok(failed_result);
         }
     };
 
@@ -157,7 +155,8 @@ pub async fn parse_statement(
 
 	if let Err(err) = get_or_parse_insert_companys_function(state, new_company_pairs).await {
 		err.process_err(err, "");
-		return failed_result;
+		failed_result.process_info(&err);
+        return Ok(failed_result);
 	}
 
     let mut operations: Vec<OperationRaw> = vec![];   
@@ -166,7 +165,8 @@ pub async fn parse_statement(
 		Ok(v) => v.into_iter().collect(),
 		Err(err) => {
 			err.process_err(err, "");
-			return failed_result;
+			failed_result.process_info(&err);
+            return Ok(failed_result);
 		}
 	};
 
@@ -174,7 +174,8 @@ pub async fn parse_statement(
 		Ok(v) => v.into_iter().collect(),
 		Err(err) => {
 			err.process_err(err, "");
-			return failed_result;
+			failed_result.process_info(&err);
+            return Ok(failed_result);
 		}
 	};
 
@@ -182,7 +183,8 @@ pub async fn parse_statement(
 		Ok(v) => v.into_iter().collect(),
 		Err(err) => {
 			err.process_err(err, "");
-			return failed_result;
+			failed_result.process_info(&err);
+            return Ok(failed_result);
 		}
 	};
 
@@ -190,7 +192,8 @@ pub async fn parse_statement(
 		Ok(v) => v.into_iter().collect(),
 		Err(err) => {
 			err.process_err(err, "");
-			return failed_result;
+			failed_result.process_info(&err);
+            return Ok(failed_result);
 		}
 	};
 
@@ -209,7 +212,8 @@ pub async fn parse_statement(
             Ok(o) => operations.push(o),
             Err(err) => {
                 err.process_err(err, "");
-                return failed_result;
+                failed_result.process_info(&err);
+            	return Ok(failed_result);
             } 
         }
     }
