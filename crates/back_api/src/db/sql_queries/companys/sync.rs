@@ -7,8 +7,8 @@ use shared_lib::sql_models::company::implements::Company;
 use shared_lib::primitives::frozen::text::{CompInn, Kpp};
 
 use crate::config::BackApiState;
-use crate::db::sql_queries::companys::get::que_option_by_id::get_company_option_by_id;
-use crate::db::sql_queries::companys::add::que_insert_update::sql_insert_update_company_function;
+use crate::db::sql_queries::companys::get::que::{get_company_option_by_id};
+use crate::db::sql_queries::companys::add::que::sql_insert_update_company_function;
 use crate::db::parsers::dadata::get_new_company::get_dadata_company;
 
 pub async fn sql_company_sync(

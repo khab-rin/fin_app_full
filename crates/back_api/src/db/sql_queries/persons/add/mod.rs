@@ -1,2 +1,2 @@
-pub(crate) mod by_person;
+pub mod fun_get_update_insert_person;
 pub mod que;

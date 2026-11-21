@@ -17,7 +17,7 @@ use shared_lib::service::auth_service::implements::{
 };
 
 use crate::db::sql_queries::users::get::auth_check_passw_by_authdata::get_restore_password_data;
-use crate::db::sql_queries::call_cf::set::new_cf::new_cf;
+use crate::db::sql_queries::call_cf::set::que::sql_insert_update_call_function;
 use crate::db::service::auth_service::by_device_token::restore_session_by_token;
 use crate::db::service::auth_service::smsru_phone_query::smsru_get_phone;
 use crate::config::BackApiState;
@@ -84,7 +84,7 @@ pub(crate) async fn restore_session_by_passord(
         }
     };
 
-    match new_cf(state, &user_id, &data.device_id, &external_id).await {
+    match sql_insert_update_call_function(&state.pool_fast, &user_id, &data.device_id, &external_id).await {
         Ok(true) => {
             Ok(AuthStep::CallIn { phone: call_phone, external_id, text: AuthInfo::CallIn })
         }

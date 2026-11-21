@@ -15,7 +15,7 @@ INSERT INTO operations(
     is_del,
     entr_date
 ) VALUES(
-	$1, $2, $3,$4,$5,$6,$7, $8, $9,$10,$11,$12,$13, $14, $15
+	$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15
 ) ON CONFLICT(oper_id) 
 	DO UPDATE SET
 		is_del = EXCLUDED.is_del

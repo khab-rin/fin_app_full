@@ -1,2 +1,2 @@
-pub(crate) mod add_many;
+pub(crate) mod fun_insert_operations;
 pub mod que;

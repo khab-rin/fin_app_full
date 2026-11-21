@@ -6,8 +6,8 @@ use shared_lib::sql_models::company::implements::{CompCrateData, Company};
 
 use crate::config::BackApiState;
 
-use crate::db::sql_queries::companys::get::que_get_by_inn_kpp::sql_get_company_by_inn_kpp_function;
-use crate::db::sql_queries::companys::add::que_insert_update::sql_insert_update_company_function;
+use crate::db::sql_queries::companys::get::que::sql_get_company_by_inn_kpp_function;
+use crate::db::sql_queries::companys::add::que::sql_insert_update_company_function;
 use crate::db::parsers::dadata::get_new_company::get_dadata_company;
 
 pub async fn get_or_parse_insert_company_many_function(

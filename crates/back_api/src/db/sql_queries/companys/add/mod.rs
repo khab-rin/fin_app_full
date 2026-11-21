@@ -1,1 +1,1 @@
-pub(crate) mod que_insert_update;
+pub(crate) mod que;

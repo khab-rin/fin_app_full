@@ -32,11 +32,11 @@ use shared_lib::service::auth_service::general::SessionUser;
 use crate::config::BackApiState;
 use crate::db::service::auth_service::helper::{mask_email, mask_string};
 use crate::db::service::mchd::mchd_storage::add_new_manager;
-use crate::db::sql_queries::persons::add::by_person::add_person;
+use crate::db::sql_queries::persons::add::fun_get_update_insert_person::get_update_insert_person_function;
 use crate::db::sql_queries::companys::get::fun_get_or_parse_insert_one::get_or_parse_insert_one_company_function;
 use crate::db::sql_queries::users::get::by_inn_pers_comp_kpp::get_user_by_inn_pers_comp_kpp;
 use crate::db::sql_queries::users::get::tel_mail_by_id::get_user_phone_mail_by_id;
-use crate::db::sql_queries::users::add::user::add_user;
+use crate::db::sql_queries::users::add::que::sql_insert_update_user_function;
 use crate::db::sql_queries::sessions::set::que_insert_session::sql_insert_session_fun;
 use crate::db::service::auth_service::pers_sign_parser::{
     parse_crypto_fields_org,
@@ -111,7 +111,7 @@ pub(crate) async fn register_step2(
 		last_update: DateTime::unchecked(chrono::Utc::now())
 	};
 
-    person = match add_person(state, &person).await {
+    person = match get_update_insert_person_function(state, &person).await {
         Ok(p) => p,
         Err(err) => {
             err.process_err(err, "");
@@ -274,7 +274,7 @@ pub(crate) async fn register_step2(
         guids: std::collections::HashSet::new()
     };
 
-    let user = match add_user(state, &user_set_data).await {
+    let user = match sql_insert_update_user_function(&state.pool_fast, &user_set_data).await {
         Ok(u) => u,
         Err(err) => {
             err.process_err(err, "");

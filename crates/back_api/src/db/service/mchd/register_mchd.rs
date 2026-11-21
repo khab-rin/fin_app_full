@@ -17,7 +17,7 @@ pub(crate) async fn register_mchd(
     data: &RegisterMchdData
 ) -> Result<MchdStep, Status> {
     
-    let mut failed_result = MchdStep::TryLater { text: MchdInfo::BackApiError };
+    let failed_result = MchdStep::TryLater { text: MchdInfo::BackApiError };
     
     let RegisterMchdData { 
         xml_file, 

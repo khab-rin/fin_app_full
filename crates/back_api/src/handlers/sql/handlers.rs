@@ -11,9 +11,9 @@ use shared_lib::sql_models::company::implements::{Company, CompCrateData};
 use shared_lib::sql_models::contracts::implements::Contract;
 
 use crate::config::BackApiState;
-use crate::db::sql_queries::persons::get::person_by_inn::get_person_by_inn;
-use crate::db::sql_queries::contracts::add::new_contr::add_contract;
-use crate::db::sql_queries::operations::add::add_many::add_operations_many;
+use crate::db::sql_queries::persons::get::que::sql_get_person_by_inn_function;
+use crate::db::sql_queries::contracts::add::fun_get_or_insert::insert_contract_if_not_exist_function;
+use crate::db::sql_queries::operations::add::fun_insert_operations::insert_operations_function;
 use crate::db::sql_queries::companys::sync::sql_company_sync;
 use crate::db::sql_queries::persons::sync::sync_all_persons;
 use crate::db::sql_queries::contracts::sync::sync_all_contracts;
@@ -26,10 +26,9 @@ pub(crate) async fn get_person_by_inn_handler(
     Json(pers_inn): Json<PersInn>
 ) -> Result<Json<Option<Person>>, Status> {
 
-    let res = get_person_by_inn(&state, &pers_inn).await?;
+    let res = sql_get_person_by_inn_function(&state.pool_fast, &pers_inn).await?;
 
     Ok(Json(res))
-
 }
 
 pub async fn get_or_parse_insert_company_one_handler(
@@ -73,7 +72,7 @@ pub async fn sql_add_new_contract_handler(
     Json(data): Json<Contract>
 ) -> Result<Json<Contract>, Status> {
 
-    let contr = add_contract(&state, data).await?;
+    let contr = insert_contract_if_not_exist_function(&state, data).await?;
 
     Ok(Json(contr))
 }
@@ -83,11 +82,10 @@ pub async fn sql_operations_add_many_handler(
 	Json(data): Json<Vec<Operation>>
 ) -> Result<(), Status> {
 
-	add_operations_many(&state, data).await
+	insert_operations_function(&state, data).await
 		.map_err(|err| err.process_err(err, ""))?;
 
 	Ok(())
-
 }
 
 pub async fn sql_sync_handler(

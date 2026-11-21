@@ -25,5 +25,5 @@ where E: sqlx::Executor<'t, Database = sqlx::Postgres>
 		.map_err(|err:serde_json::Error| err.process_err(Status::MappingError, ""))?;
 
 	Ok(person)
-
 }
+

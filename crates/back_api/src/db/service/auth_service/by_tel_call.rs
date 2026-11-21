@@ -6,7 +6,7 @@ use shared_lib::service::auth_service::implements::{
 };
 
 use crate::config::BackApiState;
-use crate::db::sql_queries::call_cf::get::by_extern_device::get_user_time_by_device_external;
+use crate::db::sql_queries::call_cf::get::que::sql_get_user_time_by_device_external_function;
 use crate::db::service::auth_service::smsru_cf_query::smsru_get_cf;
 use crate::db::sql_queries::sessions::set::que_insert_session::sql_insert_session_fun;
 use crate::db::sql_queries::users::get::by_user_id::get_user_by_user_id;
@@ -19,7 +19,7 @@ pub(crate) async fn make_session_by_tel_call(
     let mut failed_result = AuthStep::TryLater { text: AuthInfo::BackApiError };
     let ExternalDeviceData {external_id, device_id} = data;
 
-    let expire_option = match get_user_time_by_device_external(state, data).await {
+    let expire_option = match sql_get_user_time_by_device_external_function(&state.pool_fast, data).await {
         Ok(o) => o,
         Err(err) => {
             err.process_err(err, "");

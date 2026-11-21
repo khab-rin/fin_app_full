@@ -66,7 +66,7 @@ pub async fn sync_all_operations(
 	let mut server_operations: Vec<Operation> = vec![];
 
 	for operation in local_operations {
-		if let Err(err) = sql_insert_update_operation_function(&mut *tx, &operation).await {
+		if let Err(err) = sql_insert_update_operation_function(&mut *tx, operation).await {
 			err.process_err(err, "");
 			failed_result.process_info(&err);
             return Ok(failed_result); 

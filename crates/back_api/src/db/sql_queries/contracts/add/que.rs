@@ -12,7 +12,7 @@ where E: sqlx::Executor<'t, Database=sqlx::Postgres>
 
     let contract: Contract = sqlx::query_file_as!(
         Contract,
-        "src/db/sql_queries/contracts/add/new_contr.sql",
+        "src/db/sql_queries/contracts/add/que_insert_update_contract.sql",
         contract.contract_id.as_ref(),
         contract.user_id.as_ref(),
         contract.comp_id.as_ref(),

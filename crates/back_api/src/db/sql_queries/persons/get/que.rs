@@ -23,3 +23,25 @@ where E: sqlx::Executor<'t, Database = sqlx::Postgres>
 		None => Ok(None)
 	}
 }
+
+pub async fn sql_get_person_by_inn_function<'t, E>(
+	conn: E,
+	pers_inn: &PersInn
+) -> Result<Option<Person>, Status>
+where E: sqlx::Executor<'t, Database = sqlx::Postgres>
+{
+	let dto_option = sqlx::query_file_as!(
+		PersonDto,
+		"src/db/sql_queries/persons/get/que_get_person_by_inn.sql",
+		pers_inn as &PersInn
+	).fetch_optional(conn).await
+	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+
+	match dto_option {
+		Some(dto) => {
+			let person = dto.try_into().map_err(|err: serde_json::Error| err.process_err(Status::MappingError, ""))?;
+			Ok(Some(person))
+		},
+		None => Ok(None)
+	}
+}

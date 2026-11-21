@@ -6,7 +6,7 @@ use shared_lib::sql_models::person::implements::{Person, PersonMetadata};
 use shared_lib::service::auth_service::implements::{AuthInfo, AuthStep, RegInitData};
 
 use crate::config::BackApiState;
-use crate::db::sql_queries::persons::add::by_person::add_person;
+use crate::db::sql_queries::persons::add::fun_get_update_insert_person::get_update_insert_person_function;
 use crate::db::sql_queries::companys::get::fun_get_or_parse_insert_one::get_or_parse_insert_one_company_function;
 use crate::db::service::auth_service::make_init_files::make_init_files;
 
@@ -54,7 +54,7 @@ pub(crate) async fn register_step1(
         last_update: DateTime::unchecked(chrono::Local::now())
     };
 
-    let _ = match add_person(state, &new_person).await {
+    let _ = match get_update_insert_person_function(state, &new_person).await {
         Ok(p) => p,
         Err(err) => {
             err.process_err(err, "");

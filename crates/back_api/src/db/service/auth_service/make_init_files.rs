@@ -4,7 +4,7 @@ use shared_lib::service::auth_service::implements::{AuthInfo, AuthStep, RegInitD
 pub(crate) async fn make_init_files(
     data: &RegInitData,
 ) -> Result<AuthStep, Status> {
-    let mut failed_result = AuthStep::TryLater { text: AuthInfo::BackApiError};
+    let failed_result = AuthStep::TryLater { text: AuthInfo::BackApiError};
 
     let RegInitData { 
         sur_name, 
