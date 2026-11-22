@@ -1,36 +1,32 @@
 <script lang='ts'>
     import {onMount} from "svelte";
 	import { invoke } from "@tauri-apps/api/core";
-    
+	
     import {currAuthStep} from "$lib/models/Auth/AuthStep.svelte";
     import type {AuthStep} from "$lib/models/rustModels/AuthStep";
 
     import type {RegInitData} from "$lib/models/rustModels/RegInitData";
     import type {BoxUuid} from "$lib/models/rustModels/BoxUuid";
 
-	import {fitText} from '$lib/rules/text';
     
     let isPushedMakeDocs = $state(false);
 
     let passwordRepeat = $state("");
 
-    
-
     let deviceId = "";
     
-
     let isDataValid = $derived(
-        currAuthStep.data.surName.isValid &&
-        currAuthStep.data.firstName.isValid &&
-        currAuthStep.data.midName.isValid &&
-        currAuthStep.data.persInn.isValid &&
-        currAuthStep.data.snils.isValid &&
-        currAuthStep.data.compInn.isValid &&
-        currAuthStep.data.kpp.isValid &&
-        currAuthStep.data.phone.isValid &&
-        currAuthStep.data.email.isValid &&
-        currAuthStep.data.password.isValid &&
-        currAuthStep.data.password.value == passwordRepeat
+        !currAuthStep.data.surName.isValid ||
+        !currAuthStep.data.firstName.isValid ||
+        !currAuthStep.data.midName.isValid ||
+        !currAuthStep.data.persInn.isValid ||
+        !currAuthStep.data.snils.isValid ||
+        !currAuthStep.data.compInn.isValid ||
+        !currAuthStep.data.kpp.isValid ||
+        !currAuthStep.data.phone.isValid ||
+        !currAuthStep.data.email.isValid ||
+        !currAuthStep.data.password.isValid ||
+        currAuthStep.data.password.value != passwordRepeat
     );
 
     async function finishStep1() {

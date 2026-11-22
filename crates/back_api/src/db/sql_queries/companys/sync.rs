@@ -16,7 +16,7 @@ pub async fn sql_company_sync(
 	load: &DatabaseStep
 ) -> Result<DatabaseStep, Status> {
 
-	let mut failed_result = DatabaseStep::TryLater { text: DatabaseInfo::BackApiError };
+	let failed_result = DatabaseStep::TryLater { text: DatabaseInfo::BackApiError };
 	
 	let local_companys = match load {
 		DatabaseStep::SyncCompanysToServer {companys,} => {
@@ -69,8 +69,7 @@ pub async fn sql_company_sync(
 		Ok(res) => res,
 		Err(err) => {
 			err.process_err(err, "ext_info");
-			failed_result.process_info(&err);
-            return Ok(failed_result); 
+			return Ok(DatabaseStep::from_err(&err));
 		}
 	};
 
@@ -98,8 +97,7 @@ pub async fn sql_company_sync(
 	for server_company in server_companys.iter() {
 		if let Err(err) = sql_insert_update_company_function(&mut *tx, server_company).await {
 			err.process_err(err, "");
-			failed_result.process_info(&err);
-            return Ok(failed_result); 
+			return Ok(DatabaseStep::from_err(&err));
 		}
 	}
 

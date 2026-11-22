@@ -57,7 +57,8 @@ where
             );
 			return local_err;
         }
-
+		
+		#[allow(unreachable_code)]
 		local_err
     }
 }

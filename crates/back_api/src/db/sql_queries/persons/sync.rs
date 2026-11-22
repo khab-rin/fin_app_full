@@ -12,7 +12,7 @@ pub async fn sync_all_persons(
 	local_step: DatabaseStep
 ) -> Result<DatabaseStep, Status> {
 
-	let mut failed_result: DatabaseStep = DatabaseStep::TryLater {text: DatabaseInfo::BackApiError};
+	let failed_result: DatabaseStep = DatabaseStep::TryLater {text: DatabaseInfo::BackApiError};
 
 	let (local_persons, user_id) = if let DatabaseStep::SyncPersons {persons, user_id, ..} = local_step {
 		(persons, user_id)
@@ -36,8 +36,7 @@ pub async fn sync_all_persons(
 			Ok(opt) => opt,
 			Err(err) => {
 				err.process_err(err, "");
-				failed_result.process_info(&err);
-            	return Ok(failed_result); 
+				return Ok(DatabaseStep::from_err(&err));
 			}
 		};
 		if let Some(mut server_person) = server_person_option {
@@ -51,8 +50,7 @@ pub async fn sync_all_persons(
 	for updated_person in updated_persons.iter() {
 		if let Err(err) = sql_insert_update_person_function(&mut *tx, updated_person).await {
 			err.process_err(err, "");
-			failed_result.process_info(&err);
-            return Ok(failed_result); 
+			return Ok(DatabaseStep::from_err(&err));
 		}
 	}
 

@@ -102,6 +102,18 @@ impl MchdStep {
 	}
 }
 
+impl MchdStep {
+	pub fn from_err(err: &Status) -> Self {
+		let info: MchdInfo = match err {
+			Status::ConnectProblems => MchdInfo::ConnectionError,
+			Status::SqlSyncError => MchdInfo::SqlNeedSync,
+			Status::BackApiError => MchdInfo::BackApiError,
+			_ => MchdInfo::ClientApiQueryError
+		};
+		Self::TryLater { text: info }
+	}
+}
+
 
 
 #[derive(Deserialize, Debug)]

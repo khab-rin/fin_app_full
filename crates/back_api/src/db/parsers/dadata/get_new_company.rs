@@ -62,14 +62,19 @@ pub(crate) async fn get_dadata_company(
     };
 
     let comp_type = if okved.starts_with("64.1") || okved.starts_with("64.92") {
-        CompType::Bank
-    } else if opf_code.starts_with('7') || opf_code.starts_with('6') {
-        CompType::Gov
-    } else if opf_code.starts_with('5') {
-        CompType::Ip
-    } else {
-        CompType::ComEnt
-    };
+		CompType::Bank
+	} else if opf_code.starts_with('7')
+		|| opf_code.starts_with('6')
+		|| opf_code.as_ref() == "81"
+		|| okved.starts_with("84.")
+		|| okved.starts_with("75.")
+	{
+		CompType::Gov
+	} else if opf_code.starts_with('5') {
+		CompType::Ip
+	} else {
+		CompType::ComEnt
+	};
 
     let is_active_data = match &metadata.is_active {
         Some(d) => d,

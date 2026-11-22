@@ -93,7 +93,7 @@ pub async fn sql_sync_handler(
 	Json(data): Json<DatabaseStep>
 ) -> Result<Json<DatabaseStep>, Status> {
 
-	let mut failed_result = DatabaseStep::TryLater { text: DatabaseInfo::BackApiError };
+	let failed_result = DatabaseStep::TryLater { text: DatabaseInfo::BackApiError };
 
 	match &data {
 		DatabaseStep::SyncCompanysToServer { .. } => {
@@ -101,19 +101,16 @@ pub async fn sql_sync_handler(
 				Ok(res) => Ok(Json(res)),
 				Err(err) => {
 					err.process_err(err, "");
-					failed_result.process_info(&err);
-					Ok(Json(failed_result))
+					Ok(Json(DatabaseStep::from_err(&err)))
 				}
-			}
-	
+			}	
 		},
 		DatabaseStep::SyncPersons { .. } => {
 			match sync_all_persons(&state, data).await {
 				Ok(res) => Ok(Json(res)),
 				Err(err) => {
 					err.process_err(err, "");
-					failed_result.process_info(&err);
-					Ok(Json(failed_result))
+					Ok(Json(DatabaseStep::from_err(&err)))
 				}
 			}
 		},
@@ -122,8 +119,7 @@ pub async fn sql_sync_handler(
 				Ok(res) => Ok(Json(res)),
 				Err(err) => {
 					err.process_err(err, "");
-					failed_result.process_info(&err);
-					Ok(Json(failed_result))
+					Ok(Json(DatabaseStep::from_err(&err)))
 				}
 			}
 		},
@@ -132,8 +128,7 @@ pub async fn sql_sync_handler(
 				Ok(res) => Ok(Json(res)),
 				Err(err) => {
 					err.process_err(err, "");
-					failed_result.process_info(&err);
-					Ok(Json(failed_result))
+					Ok(Json(DatabaseStep::from_err(&err)))
 				}
 			}
 		},

@@ -58,23 +58,22 @@ class MchdManager {
     })
 
     get currentText(): string {
-        if (!this.step || typeof this.step !== 'object') {
-            return '';
-        }
+		const key = Object.keys(this._step)[0];
+		return (this._step as any)[key]?.text ?? '';
+	}
 
-        const currentStepObj = Object.values(this.step)[0];
+	set currentText(value: string) {
+		const key = Object.keys(this._step)[0];
+		if (!key) return;
 
-        if (
-            currentStepObj && 
-            typeof currentStepObj === 'object' && 
-            'text' in currentStepObj && 
-            typeof (currentStepObj as { text: unknown }).text === 'string'
-        ) {
-            return (currentStepObj as { text: string }).text;
-        }
-        
-        return '';
-    }
+		this._step = { 
+			...this._step, 
+			[key]: { 
+				...(this._step as any)[key],
+				text: value 
+			} 
+		};
+	}
 
     get getPage() {
         const step = this.step;
@@ -110,6 +109,10 @@ class MchdManager {
             console.log("function get_power_info FAILED BY cmd_get_power_info, err = ", err);
         }
     }
+
+	reload() {
+		this.step = {Loading: {text: "Выберите действие с машиночитаемыми доверенностями. Вы можете создать и зарегистрировать МЧД на любое физ. лицо от имени организации указанной при регистрации в приложении"}};
+	}
 
 	async loadUser1() {
 		try {

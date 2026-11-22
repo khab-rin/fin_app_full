@@ -132,6 +132,18 @@ impl AuthStep {
 	}
 }
 
+impl AuthStep {
+	pub fn from_err(err: &Status) -> Self {
+		let info: AuthInfo = match err {
+			Status::ConnectProblems => AuthInfo::ConnectionError,
+			Status::SqlSyncError => AuthInfo::NeedSync,
+			Status::BackApiError => AuthInfo::BackApiError,
+			_ => AuthInfo::ClientApiQueryError
+		};
+		Self::TryLater { text: info }
+	}
+}
+
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct TokenDeviceData {

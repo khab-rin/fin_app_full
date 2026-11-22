@@ -1,3 +1,4 @@
+use shared_lib::service::mchd::service::MchdStep;
 use shared_lib::sql_models::operation::service::OperationInfo::SuccessRaw;
 use shared_lib::{ClientState, ProcessError, Status};
 use shared_lib::sql_models::operation::implements::{OperationRaw};
@@ -29,8 +30,7 @@ pub async fn make_bank_statement_operations(
         },
         Err(err) => {
             err.process_err(err, "");
-			failed_result.process_info(&err);
-            return Ok(failed_result);
+			return Ok(OperationStep::from_err(&err));
         }
     }
 
@@ -42,8 +42,7 @@ pub async fn make_bank_statement_operations(
         Ok(res) => return Ok(res),
         Err(err) => {
             err.process_err(err, "");
-            failed_result.process_info(&err);
-            return Ok(failed_result);
+            return Ok(OperationStep::from_err(&err));
         }
     };
 

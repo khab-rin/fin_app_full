@@ -16,15 +16,13 @@ pub(crate) async fn make_session_by_tel_call(
     data: &ExternalDeviceData
 ) -> Result<AuthStep, Status> {
 
-    let mut failed_result = AuthStep::TryLater { text: AuthInfo::BackApiError };
     let ExternalDeviceData {external_id, device_id} = data;
 
     let expire_option = match sql_get_user_time_by_device_external_function(&state.pool_fast, data).await {
         Ok(o) => o,
         Err(err) => {
             err.process_err(err, "");
-            failed_result.process_info(&err);
-            return Ok(failed_result); 
+            return Ok(AuthStep::from_err(&Status::BackApiError)); 
         }
     };
 
@@ -39,8 +37,7 @@ pub(crate) async fn make_session_by_tel_call(
         Ok(cf) => cf,
         Err(err) => {
             err.process_err(err, "");
-            failed_result.process_info(&err);
-            return Ok(failed_result); 
+            return Ok(AuthStep::from_err(&Status::BackApiError)); 
         }
     };
 
@@ -54,7 +51,7 @@ pub(crate) async fn make_session_by_tel_call(
             return Ok(res)
         },
         SmsRuResponseTextCode::UnknownCode => {
-            return Ok(failed_result)
+            return Ok(AuthStep::from_err(&Status::BackApiError)); 
         }
     }
 
@@ -62,7 +59,7 @@ pub(crate) async fn make_session_by_tel_call(
         Ok(t) => t,
         Err(err) => {
             err.process_err(err, "");
-            return Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
+            return Ok(AuthStep::from_err(&Status::BackApiError));
         }
     };
 
@@ -70,8 +67,7 @@ pub(crate) async fn make_session_by_tel_call(
         Ok(u) => u,
         Err(err) => {
             err.process_err(err, "");
-            failed_result.process_info(&err);
-            return Ok(failed_result); 
+            return Ok(AuthStep::from_err(&err));  
         }
     };
 
@@ -79,7 +75,7 @@ pub(crate) async fn make_session_by_tel_call(
 		let session_user_token = SessionUserToken {user: session_user, token};
 		Ok(AuthStep::SuccessFull { session_user_token: Box::new(session_user_token)})
 	} else {
-		Ok(failed_result)
+		Ok(AuthStep::from_err(&Status::BackApiError)) 
 	}
 
 }

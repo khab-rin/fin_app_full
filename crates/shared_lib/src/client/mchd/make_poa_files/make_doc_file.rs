@@ -9,7 +9,7 @@ pub fn add_doc_to_xml_file(
     poa_mchd: &PoaMchd,
     data: &NewMchdData
 ) -> Result<MchdStep, Status> {
-    let mut failed_res = MchdStep::TryLater { text: MchdInfo::ClientServiceError };
+    let failed_res = MchdStep::TryLater { text: MchdInfo::ClientServiceError };
 
     let doc_name_str = format!("{}.doc", poa_mchd.flie_identificator.as_ref());
     let xml_name_str = format!("{}.xml", poa_mchd.flie_identificator.as_ref());

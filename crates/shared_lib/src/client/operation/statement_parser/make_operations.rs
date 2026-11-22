@@ -1,4 +1,3 @@
-use crate::client::sql_queries::companys::get::fun_get_or_parse_insert_one::get_or_parse_insert_company_function;
 use crate::sql_models::company::implements::CtrPtyTypes;
 use crate::sql_models::id_rules::IdRules;
 use crate::{ClientState, ProcessError, Status};
@@ -11,6 +10,8 @@ use crate::sql_models::operation::implements::{
 use crate::sql_models::operation::account::Account;
 
 use crate::client::sql_queries::contracts::get::contract_by_ids::get_contracts_by_comp_ctrpty_ids;
+use crate::client::sql_queries::companys::get::fun_try_inn_kpp_then_inn::try_get_by_inn_kpp_then_inn_function;
+
 
 pub async fn make_statement_operation_raw(
     state: &ClientState,
@@ -55,14 +56,13 @@ pub async fn make_statement_pay_operation_raw(
 
     let comp_id = session.session_user.company.comp_id.clone();
 
-	let mut ctrpty_option = get_or_parse_insert_company_function(
+	let ctrpty_option = try_get_by_inn_kpp_then_inn_function(
 		state, 
 		&block_fields.rec_inn, 
 		&block_fields.rec_kpp
 	).await
 	.map_err(|err| err.process_err(err, ""))?;
 
-    
     let contracts = if let Some(ctrpty) = ctrpty_option.as_ref() {
         get_contracts_by_comp_ctrpty_ids (
             state,
@@ -143,9 +143,17 @@ pub async fn make_statement_pay_operation_raw(
 
     let entr_date = Date::unchecked(chrono::Utc::now().naive_utc());
 
-    let ctrpty_id_oprion = ctrpty_option.as_ref().map(|c| c.comp_id.clone());
+    let ctrpty_id_option = ctrpty_option.as_ref().map(|c| c.comp_id.clone());
 
-	let rule = IdRules::Operation { doc_num: Some(doc_num.clone()), oper_date: oper_date.clone(), amount: Some(amount.clone()), ctrpty_id: ctrpty_id_oprion };
+	let rule = IdRules::Operation {
+		comp_id: Some(comp_id.clone()),
+		ctrpty_id: ctrpty_id_option,
+		debet: Some(debet.clone()),
+		credit: Some(credit.clone()),
+		amount: Some(amount.clone()),
+		oper_date: oper_date.clone(),
+		doc_num: Some(doc_num.clone()), 
+	};
 	let oper_id = rule.make_stat_id();
 
     let is_sync = Some(false);
@@ -201,7 +209,7 @@ pub async fn make_statement_rec_operation_raw(
 
     let comp_id = session.session_user.company.comp_id.clone();
 
-	let ctrpty_option = get_or_parse_insert_company_function(
+	let ctrpty_option = try_get_by_inn_kpp_then_inn_function(
 		state, 
 		&block_fields.pay_inn, 
 		&block_fields.pay_kpp
@@ -282,7 +290,16 @@ pub async fn make_statement_rec_operation_raw(
 
     let ctrpty_id_option = ctrpty_option.as_ref().map(|c| c.comp_id.clone());
 
-	let rule = IdRules::Operation { doc_num: Some(doc_num.clone()), oper_date: oper_date.clone(), amount: Some(amount.clone()), ctrpty_id: ctrpty_id_option };
+	let rule = IdRules::Operation {
+		comp_id: Some(comp_id.clone()),
+		ctrpty_id: ctrpty_id_option,
+		debet: Some(debet.clone()),
+		credit: Some(credit.clone()),
+		amount: Some(amount.clone()),
+		oper_date: oper_date.clone(),
+		doc_num: Some(doc_num.clone()), 
+	};
+
 	let oper_id = rule.make_stat_id();
 
     let is_sync = Some(false);
@@ -365,7 +382,16 @@ pub async fn make_statement_home_operation_raw(
 
     let ctrpty_id_option = ctrpty_option.as_ref().map(|c| c.comp_id.clone());
 
-	let rule = IdRules::Operation { doc_num: Some(doc_num.clone()), oper_date: oper_date.clone(), amount: Some(amount.clone()), ctrpty_id: ctrpty_id_option.clone() };
+	let rule = IdRules::Operation {
+		comp_id: Some(comp_id.clone()),
+		ctrpty_id: ctrpty_id_option,
+		debet: Some(debet.clone()),
+		credit: Some(credit.clone()),
+		amount: Some(amount.clone()),
+		oper_date: oper_date.clone(),
+		doc_num: Some(doc_num.clone()), 
+	};
+
 	let oper_id = rule.make_stat_id();
 
     let is_sync = Some(false);

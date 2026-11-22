@@ -16,8 +16,6 @@ import RegisterStep2 from "$lib/service/auth_service/RegisterStep2.svelte";
 import TryLater from "$lib/service/auth_service/TryLater.svelte";
 
 import { invoke } from '@tauri-apps/api/core';
-import { PageType } from '../MainManager/PageValues';
-import type { OperationStep } from '../rustModels/OperationStep';
 
 
 class SvelteAuthStep {
@@ -42,10 +40,8 @@ class SvelteAuthStep {
 	}
 
     reset() {
-		console.error("AuthStep reset activated");
         const nextStep: AuthStep = {Loading: {text: 'Страница загружается, подождите пожалуйста. В случае зависания попробуйте обновить или перезагрузить приложение'}}
-        this.step = nextStep;
-		pageManager.Page = PageType.Auth; 
+        this.step = nextStep; 
     }
 
     get isAuthorized() {
@@ -173,6 +169,7 @@ class SvelteAuthStep {
 			currAuthStep.step = err_step;	
 		}
 	}
+
 }
 
 export const currAuthStep = new SvelteAuthStep();

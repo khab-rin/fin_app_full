@@ -1,17 +1,21 @@
-import { FieldValidator } from "../Auth/FieldValidator.svelte";
+import { invoke } from "@tauri-apps/api/core";
 
+import { FieldValidator } from "../Auth/FieldValidator.svelte";
 import type { DocType } from "../rustModels/DocType";
 import type { Account } from "../rustModels/Account";
-import type { Operation } from "../rustModels/Operation";
+import type { OperationDto } from "../rustModels/OperationDto";
 import type { OperationRaw } from "../rustModels/OperationRaw";
-import { invoke } from "@tauri-apps/api/core";
+import { operStep } from "./OperationManager.svelte";
+import {nulls} from '$lib/rules/nulls.svelte';
+import type {Date} from '$lib/models/rustModels/Date';
 import type { Company } from "../rustModels/Company";
 import type { Contract } from "../rustModels/Contract";
 import type { Currency } from "../rustModels/Currency";
 import type { NewContrData } from "../rustModels/NewContrData";
 import type { BoxUuid } from "../rustModels/BoxUuid";
-import type {Date} from '$lib/models/rustModels/Date';
-import { operStep } from "./OperationManager.svelte";
+import type { OperationStep } from "../rustModels/OperationStep";
+import { OperationType } from '$lib/models/Operation/OperationValues';
+
 
 export class OperationSvelte {
 	
@@ -77,6 +81,7 @@ export class OperationSvelte {
 		this.data.userId.isValid &&
 		this.data.compId.isValid &&
 		this.data.ctrptyId.isValid &&
+		this.data.ctrptyId.value !== nulls.value?.id.comp_id &&
 		this.data.debet.isValid &&
 		this.data.credit.isValid &&
 		this.data.amount.isValid &&
@@ -155,16 +160,31 @@ export class OperationSvelte {
             contract_descr: this.newContrData.contractDescr.value
         }
 
-		const contracts = await invoke<Contract[]>(
+		let step: OperationStep = await invoke<OperationStep>(
 			'cmd_add_new_contract',
 			{data: data}
 		);
-		this._allPossContracts = contracts;
-		this._currContract = null;
+
+		switch (true) {
+			case OperationType.AddContractSuccess in step: {
+				operStep.currentText = step.AddContractSuccess.text;
+				this._allPossContracts = step.AddContractSuccess.contracts;
+				this._currContract = null;
+				break;
+			}
+			case OperationType.TryLater in step: {
+				operStep.currentText = step.TryLater.text;
+				break;
+			}
+
+		}
 	}
 
 	private _allCtrPtys = $state<Company[]>([]);
 	get allCtrPtys() {return this._allCtrPtys};
+	set allCtrPtys(allCtrPtys: Company[]) {
+		this._allCtrPtys = allCtrPtys;
+	}
 	async cmdGetAllCompanys() {
 		let companys: Company[] = await invoke(
 			'cmd_get_all_companys',
@@ -203,23 +223,25 @@ export class OperationSvelte {
 	}
 
 	async cmdCheckDuplicate(
-		docNum:string,
+		ctrptyId: string,
+		debet: string,
+		credit: string,
 		operDate: string,
 		amount: string,
-		ctrptyId: string,
+		docNum:string,
 		callback: (res: [string, boolean]) => void
 	 ) {
 		try {
 			let res:[string, boolean] = await invoke<[string, boolean]>(
 				'cmd_is_operation_exist',
-				{docNum, operDate, amount, ctrptyId}
+				{ctrptyId, debet, credit, operDate, amount, docNum}
 			);
 			callback(res);
 		} catch(err) {
 			console.error("cmdNewOperId FAILED, err = ", err);
 			callback(["", false]);
 		}
-	 }
+	}
 
 
 	constructor() {
@@ -243,13 +265,24 @@ export class OperationSvelte {
 			}
 
 			
-			let docNum = this.data.docNum.value;
+			let ctrptyId = this._ctrPty.comp_id;
+			let debet = this.data.debet.value;
+			let credit = this.data.credit.value;
 			let operDate = this.data.operDate.value;
 			let amount = this.data.amount.value;
-			let ctrptyId = this._ctrPty.comp_id;
+			let docNum = this.data.docNum.value;
+			
 
 			(async () => {
-				await this.cmdCheckDuplicate(docNum, operDate, amount, ctrptyId, f);
+				await this.cmdCheckDuplicate(
+					ctrptyId,
+					debet,
+					credit,
+					operDate,
+					amount,
+					docNum, 
+					f
+				);
 			})();
 
 			return () => {isCurrent = false;};
@@ -340,6 +373,7 @@ export class OperationSvelte {
 		if (newCompany == null) {
 			operStep.currentText = "Контрагент с указанными реквизитами не найден"
 		}
+		
 		await this.selectCtrPty(newCompany);
 	}
 
@@ -381,7 +415,7 @@ export class OperationSvelte {
 	}
 
 	
-	makeRust(): Operation | null {
+	makeRust(): OperationDto | null {
 		if (!this.isValid) {
 			return null
 		}
@@ -389,14 +423,14 @@ export class OperationSvelte {
 			this._isConfirmed = true;
 			return null;
 		} else {
-			let operation: Operation = {
+			let operation: OperationDto = {
 				oper_id: this.data.operId.value,
 				user_id: this.data.userId.value,
 				comp_id: this.data.compId.value, 
 
 				ctrpty_id: this.data.ctrptyId.value, 
 
-				contract_id: this._currContract?.contract_id ?? "",
+				contract_id: this._currContract?.contract_id ?? null,
 
 				debet: this.data.debet.value as Account, 
 				credit: this.data.credit.value  as Account, 

@@ -10,10 +10,11 @@
 	import type { Company } from '$lib/models/rustModels/Company';
 	import type {Contract} from '$lib/models/rustModels/Contract';
 	import { onMount } from 'svelte';
+	import type { OperationDto } from '$lib/models/rustModels/OperationDto';
 
 
 	let curOper = $state<OperationSvelte>(new OperationSvelte());
-	let rustOperations: Operation[] = $state<Operation[]>([]);
+	let rustOperations: OperationDto[] = $state<OperationDto[]>([]);
 
 
 	let isChangeCtrPtyPushed = $state(false);
@@ -339,7 +340,7 @@
 <div class='w-25'>
 	<div class='w-v100'>
 		<label for='OperManualIsDupl'>
-			Признак дуприката
+			Признак дупликата
 		</label>
 		<input
 			class='input-gr'

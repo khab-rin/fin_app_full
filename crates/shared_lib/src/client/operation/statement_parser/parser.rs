@@ -5,6 +5,7 @@ use std::str::FromStr;
 use encoding_rs::WINDOWS_1251;
 use futures::stream::{self, StreamExt};
 
+use crate::static_data::null_elems::NULLS;
 use crate::primitives::frozen::text::{BoxUuid, Kpp};
 use crate::{ClientState, ProcessError, Status};
 use crate::sql_models::operation::parser::{
@@ -151,12 +152,14 @@ pub async fn parse_statement(
 
     }
 
-	let new_company_pairs: Vec<CompCrateData> = new_company_pairs.into_iter().collect();
+	let new_company_pairs: Vec<CompCrateData> = new_company_pairs
+		.into_iter()
+		.filter(|x| (x.comp_inn.len() == 10 && x.kpp.len() == 9) || (x.comp_inn.len() == 12 && x.kpp == NULLS.p.ip_kpp))
+		.collect();
 
 	if let Err(err) = get_or_parse_insert_companys_function(state, new_company_pairs).await {
 		err.process_err(err, "");
-		failed_result.process_info(&err);
-        return Ok(failed_result);
+		return Ok(OperationStep::from_err(&err));
 	}
 
     let mut operations: Vec<OperationRaw> = vec![];   
@@ -165,8 +168,7 @@ pub async fn parse_statement(
 		Ok(v) => v.into_iter().collect(),
 		Err(err) => {
 			err.process_err(err, "");
-			failed_result.process_info(&err);
-            return Ok(failed_result);
+			return Ok(OperationStep::from_err(&err));
 		}
 	};
 
@@ -174,8 +176,7 @@ pub async fn parse_statement(
 		Ok(v) => v.into_iter().collect(),
 		Err(err) => {
 			err.process_err(err, "");
-			failed_result.process_info(&err);
-            return Ok(failed_result);
+			return Ok(OperationStep::from_err(&err));
 		}
 	};
 
@@ -183,8 +184,7 @@ pub async fn parse_statement(
 		Ok(v) => v.into_iter().collect(),
 		Err(err) => {
 			err.process_err(err, "");
-			failed_result.process_info(&err);
-            return Ok(failed_result);
+			return Ok(OperationStep::from_err(&err));
 		}
 	};
 
@@ -192,8 +192,7 @@ pub async fn parse_statement(
 		Ok(v) => v.into_iter().collect(),
 		Err(err) => {
 			err.process_err(err, "");
-			failed_result.process_info(&err);
-            return Ok(failed_result);
+			return Ok(OperationStep::from_err(&err));
 		}
 	};
 
@@ -212,8 +211,7 @@ pub async fn parse_statement(
             Ok(o) => operations.push(o),
             Err(err) => {
                 err.process_err(err, "");
-                failed_result.process_info(&err);
-            	return Ok(failed_result);
+                return Ok(OperationStep::from_err(&err));
             } 
         }
     }

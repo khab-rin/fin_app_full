@@ -1,6 +1,5 @@
 pub mod auth_check_passw_by_authdata;
 pub mod by_inn_pers_comp_kpp;
-pub mod by_pers_comp_id;
 pub mod by_user_id;
 pub mod guides_by_id;
 pub mod que;

@@ -52,8 +52,7 @@ pub async fn sync_all_operations(
 		Ok(r) => r,
 		Err(err) => {
 			err.process_err(err, "ext_info");
-			failed_result.process_info(&err);
-            return Ok(failed_result);
+			return Ok(DatabaseStep::from_err(&err));
 		}
 	};
 

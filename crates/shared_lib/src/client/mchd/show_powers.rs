@@ -30,8 +30,7 @@ pub async fn show_powers(
         Ok(r) => r,
         Err(err) => {
             err.process_err(err, "");
-			failed_result.process_info(&err);
-            return Ok(failed_result);
+			return Ok(MchdStep::from_err(&err));
         }
     };
 

@@ -27,11 +27,14 @@ pub async fn get_or_parse_insert_company_function(
 
 	let response = post_query_back_api(
 			state, 
-			state.config.get_sql_fast(),
+			state.config.get_inst_client(),
 			ApiRoutes::SqlCompanyGetOrParseInsertOne, 
 			&data)
 		.await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| {
+			let ext_info = format!("post_query_back_api failed, comp_inn = {:?}, kpp = {:?}", comp_inn, kpp);
+			err.process_err(err, &ext_info)
+		})?;
 
 	let result: Option<Company> = response.json().await
 		.map_err(|err| err.process_err(Status::MappingError, ""))?;

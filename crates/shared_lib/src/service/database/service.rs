@@ -65,6 +65,18 @@ impl DatabaseStep {
 	}
 }
 
+impl DatabaseStep {
+	pub fn from_err(err: &Status) -> Self {
+		let info: DatabaseInfo = match err {
+			Status::ConnectProblems => DatabaseInfo::ConnectionError,
+			Status::SqlSyncError => DatabaseInfo::SqlNeedSync,
+			Status::BackApiError => DatabaseInfo::BackApiError,
+			_ => DatabaseInfo::ClientServiceError
+		};
+		Self::TryLater { text: info }
+	}
+}
+
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub struct DatabaseStepRSTS {
 	database_step: DatabaseStep,

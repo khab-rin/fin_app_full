@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use serde::{Serialize, Deserialize};
 
 use crate::primitives::frozen::text::*;
@@ -204,25 +205,70 @@ pub struct MainManager {
 
 impl CtrprtyMetadata {
     pub fn merge_dynamic(&mut self, other: Self) {
-        let mut base = serde_json::to_value(&self)
-            .unwrap_or(serde_json::Value::Object(Default::default()));
-
-        let extra = serde_json::to_value(&other)
-            .unwrap_or(serde_json::Value::Object(Default::default()));
-
-        if let (
-            serde_json::Value::Object(b),
-            serde_json::Value::Object(e)
-        ) = (&mut base, extra) {
-            for (k, v) in e {
-                if !v.is_null() {
-                    b.insert(k, v);
-                }
-            }
+        if other.kpp.is_some() {
+            self.kpp = other.kpp;
+        }
+        if other.main_manager.is_some() {
+            self.main_manager = other.main_manager;
+        }
+        if other.branch_type.is_some() {
+            self.branch_type = other.branch_type;
+        }
+        if other.kind.is_some() {
+            self.kind = other.kind;
+        }
+        if other.is_active.is_some() {
+            self.is_active = other.is_active;
+        }
+        if other.opf.is_some() {
+            self.opf = other.opf;
+        }
+        if other.comp_name.is_some() {
+            self.comp_name = other.comp_name;
+        }
+        if other.inn.is_some() {
+            self.inn = other.inn;
+        }
+        if other.ogrn.is_some() {
+            self.ogrn = other.ogrn;
+        }
+        if other.okpo.is_some() {
+            self.okpo = other.okpo;
+        }
+        if other.oktmo_company.is_some() {
+            self.oktmo_company = other.oktmo_company;
+        }
+        if other.okogu.is_some() {
+            self.okogu = other.okogu;
+        }
+        if other.okfs.is_some() {
+            self.okfs = other.okfs;
+        }
+        if other.okved.is_some() {
+            self.okved = other.okved;
+        }
+        if other.ogrn_date_dadata.is_some() {
+            self.ogrn_date_dadata = other.ogrn_date_dadata;
+        }
+        if other.address.is_some() {
+            self.address = other.address;
+        }
+        if other.e_mail.is_some() {
+            self.e_mail = other.e_mail;
+        }
+        if other.phone.is_some() {
+            self.phone = other.phone;
         }
 
-        if let Ok(merged) = serde_json::from_value::<Self>(base) {
-            *self = merged;
+        let mut self_bank_acc: HashSet<RasBicAcc> = std::mem::take(&mut self.bank_acc)
+			.into_iter()
+			.collect();
+
+		self_bank_acc.extend(other.bank_acc);
+		self.bank_acc = self_bank_acc.into_iter().collect();
+
+        if other.ogrn_date_date.is_some() {
+            self.ogrn_date_date = other.ogrn_date_date;
         }
     }
 }

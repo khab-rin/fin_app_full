@@ -67,3 +67,24 @@ where E: sqlx::Executor<'t, Database = sqlx::Sqlite>
 	}).collect()
 
 }
+
+pub async fn sql_get_by_inn_function<'t, E>(
+	conn: E,
+	comp_inn: &CompInn
+) -> Result<Vec<Company>, Status>
+where E: sqlx::Executor<'t, Database = sqlx::Sqlite>
+{
+
+	let dtos = sqlx::query_file_as!(
+		CompanyDto,
+		"src/client/sql_queries/companys/get/que_get_by_inn.sql",
+		comp_inn
+	).fetch_all(conn).await
+	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+
+	dtos.into_iter().map(|x| x
+		.try_into()
+		.map_err(|err: serde_json::Error| err.process_err(Status::MappingError, ""))
+	).collect()
+
+}

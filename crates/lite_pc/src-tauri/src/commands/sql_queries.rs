@@ -7,37 +7,22 @@ use shared_lib::primitives::composite::implements::RasBicAcc;
 use shared_lib::primitives::frozen::text::{RasAcc, Bic, CompInn, Kpp, BoxUuid};
 
 use shared_lib::client::sql_queries::companys::get::bank_acc_by_comp_inn_kpp::get_bank_accs_by_comp_id;
-use shared_lib::client::sql_queries::companys::add::by_inn_kpp::add_company_by_inn_cpp_acc;
 use shared_lib::client::sql_queries::companys::get::by_inn_kpp::get_company_by_inn_kpp;
 use shared_lib::client::sql_queries::companys::get::que::sql_get_all_companys_function;
+use shared_lib::client::sql_queries::companys::add::fun_add_bank_acc::add_new_bank_acc;
 
 #[tauri::command]
 pub async fn cmd_add_comp_bank_acc(
     state: tauri::State<'_, ClientState>,
     comp_inn: Option<CompInn>,
     kpp: Option<Kpp>,
-    bic: Option<Bic>,
-    ras_acc: Option<RasAcc>
+    bic: Bic,
+    ras_acc: RasAcc
 ) -> Result<Vec<RasBicAcc>, Status> {
 
-    let ras_bic_acc = if let (Some(b), Some(r)) = (bic, ras_acc) {
-        Some(RasBicAcc::new(b, r).map_err(|err| err.process_err(err, ""))?)
-    } else {
-        None
-    };
+	let ras_bic_acc = RasBicAcc::new(bic, ras_acc).map_err(|err| err.process_err(err, ""))?;
 
-    let company_option = add_company_by_inn_cpp_acc(
-            &state, 
-            &comp_inn, 
-            &kpp, 
-            &ras_bic_acc)
-        .await
-        .map_err(|err| err.process_err(err, ""))?; 
-
-    match company_option {
-        Some(c) => Ok(c.metadata.bank_acc),
-        None => Ok(vec![])
-    }
+    add_new_bank_acc(&state, &comp_inn, &kpp, ras_bic_acc).await
 
 }
 

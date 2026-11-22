@@ -223,23 +223,25 @@ export class OperationSvelte {
 	}
 
 	async cmdCheckDuplicate(
-		docNum:string,
+		ctrptyId: string,
+		debet: string,
+		credit: string,
 		operDate: string,
 		amount: string,
-		ctrptyId: string,
+		docNum:string,
 		callback: (res: [string, boolean]) => void
 	 ) {
 		try {
 			let res:[string, boolean] = await invoke<[string, boolean]>(
 				'cmd_is_operation_exist',
-				{docNum, operDate, amount, ctrptyId}
+				{ctrptyId, debet, credit, operDate, amount, docNum}
 			);
 			callback(res);
 		} catch(err) {
 			console.error("cmdNewOperId FAILED, err = ", err);
 			callback(["", false]);
 		}
-	 }
+	}
 
 
 	constructor() {
@@ -263,13 +265,24 @@ export class OperationSvelte {
 			}
 
 			
-			let docNum = this.data.docNum.value;
+			let ctrptyId = this._ctrPty.comp_id;
+			let debet = this.data.debet.value;
+			let credit = this.data.credit.value;
 			let operDate = this.data.operDate.value;
 			let amount = this.data.amount.value;
-			let ctrptyId = this._ctrPty.comp_id;
+			let docNum = this.data.docNum.value;
+			
 
 			(async () => {
-				await this.cmdCheckDuplicate(docNum, operDate, amount, ctrptyId, f);
+				await this.cmdCheckDuplicate(
+					ctrptyId,
+					debet,
+					credit,
+					operDate,
+					amount,
+					docNum, 
+					f
+				);
 			})();
 
 			return () => {isCurrent = false;};

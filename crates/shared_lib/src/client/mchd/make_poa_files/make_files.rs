@@ -29,8 +29,7 @@ pub async fn make_xml_doc_files(
             Ok(_) => {},
             Err(err) => {
                 err.process_err(err, "");
-                failed_result.process_info(&err);
-            	return Ok(failed_result);
+                return Ok(MchdStep::from_err(&err));
             }
         }
 
@@ -38,8 +37,7 @@ pub async fn make_xml_doc_files(
             Ok(_) => {},
             Err(err) => {
                 err.process_err(err, "");
-                failed_result.process_info(&err);
-           		return Ok(failed_result);
+                return Ok(MchdStep::from_err(&err));
             }
         }
     } else {

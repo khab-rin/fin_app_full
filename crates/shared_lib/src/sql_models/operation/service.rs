@@ -88,6 +88,9 @@ pub enum OperationInfo {
 }
 
 
+
+
+
 impl OperationStep {
 	pub fn process_info(&mut self, err: &Status) {
 		if let Self::TryLater { text } = self {
@@ -97,5 +100,17 @@ impl OperationStep {
 				_ => {}
 			}
 		}
+	}
+}
+
+impl OperationStep {
+	pub fn from_err(err: &Status) -> Self {
+		let info: OperationInfo = match err {
+			Status::ConnectProblems => OperationInfo::ConnectionError,
+			Status::SqlSyncError => OperationInfo::SqlSyncError,
+			Status::BackApiError => OperationInfo::BackApiError,
+			_ => OperationInfo::ClientApiSystemError
+		};
+		Self::TryLater { text: info }
 	}
 }

@@ -1,4 +1,4 @@
-use crate::{Status, ProcessError, ClientState, LL};
+use crate::{Status, ProcessError, ClientState};
 use crate::sql_models::operation::implements::{Operation, OperationDto};
 use crate::sql_models::operation::service::{OperationStep, OperationInfo};
 use crate::service::mchd::home_mchd_power::HomeMchdPower;
@@ -52,8 +52,7 @@ pub async fn process_cmd_process_operations_function(
 	for operation in operations {
 		if let Err(err) = sql_insert_update_operation_function(&mut *tx, &operation, 0). await {
 			err.process_err(Status::SqlQueryWrongLogic, "");
-			failed_result.process_info(&err);
-            return Ok(failed_result);
+			return Ok(OperationStep::from_err(&err));
 		}
 	}
 

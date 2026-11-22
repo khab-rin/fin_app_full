@@ -14,8 +14,6 @@ pub async fn make_bank_statement_operations(
     path: &str
 ) -> Result<OperationStep, Status> {
 
-    let mut failed_result = OperationStep::TryLater { text: OperationInfo::ClientApiSystemError };
-
 	match check_access(state, vec![
 		HomeMchdPower::H210,
 		HomeMchdPower::H110,
@@ -29,8 +27,7 @@ pub async fn make_bank_statement_operations(
         },
         Err(err) => {
             err.process_err(err, "");
-			failed_result.process_info(&err);
-            return Ok(failed_result);
+			return Ok(OperationStep::from_err(&err));
         }
     }
 
@@ -42,8 +39,7 @@ pub async fn make_bank_statement_operations(
         Ok(res) => return Ok(res),
         Err(err) => {
             err.process_err(err, "");
-            failed_result.process_info(&err);
-            return Ok(failed_result);
+            return Ok(OperationStep::from_err(&err));
         }
     };
 

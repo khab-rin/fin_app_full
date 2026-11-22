@@ -1,6 +1,7 @@
 <script lang='ts'>
     import {open as openFileDialog} from '@tauri-apps/plugin-dialog';
     import {invoke} from '@tauri-apps/api/core';
+	import {pageManager} from '$lib/models/MainManager/MainManager.svelte';
     import {currAuthStep} from '$lib/models/Auth/AuthStep.svelte';
 
     import type {AuthStep} from '$lib/models/rustModels/AuthStep';
@@ -50,41 +51,33 @@
     }
 
     async function getSignFilePath() {
-		if (isLoadSignFile) return;
+        if (isLoadSignFile) return;
+        isLoadSignFile = true;
+        try {
+            const selected = await openFileDialog({
+                multiple: false,
+                directory: false,
+                title: "Выберите отсоединенный файл подписи",
+                filters: [{name: 'документ подписи', extensions: ['sig', 'p7s']}]
+            });
 
-		isLoadSignFile = true;
+            if (selected) {
+                if (typeof selected === 'string') {
+                    signFilePath = selected
+                } else {
+                    isLoadSignFile = false;
+                }
+            } else {
+                isLoadSignFile = false;
+            }
 
-		try {
-			const selected = await openFileDialog({
-				multiple: false,
-				directory: false,
-				title: "Выберите отсоединенный файл подписи"
-			});
-
-			if (selected) {
-				if (typeof selected === 'string') {
-					signFilePath = selected;
-					isLoadSignFile = false;
-				} else {
-					isLoadSignFile = false;
-				}
-			} else {
-				isLoadSignFile = false;
-			}
-
-		} catch (err) {
-			console.error("GET FILE PATH FAILED, ERROR = ", err);
-
-			const nextStep: AuthStep = {
-				TryLater: {
-					text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"
-				}
-			};
-
-			isLoadSignFile = false;
-			currAuthStep.step = nextStep;
-		}
-	}
+        } catch (err) {
+            console.error("GET FILE PATH FAILED, ERROR = ", err);
+            const nextStep: AuthStep = {TryLater: {text: "Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение"}};
+            isLoadSignFile = false;
+            currAuthStep.step = nextStep;
+        }
+    }
 
     async function register() {
         if (isPushedRegister) return;
@@ -97,7 +90,7 @@
             const nextStep: AuthStep = await invoke<AuthStep>("cmd_register_step2", {
                 data: data
             });
-
+			pageManager.compName = await invoke<string>('cmd_get_comp_name', {});
             isPushedRegister = false;
             currAuthStep.step = nextStep;
         } catch (err) {
@@ -107,6 +100,7 @@
             currAuthStep.step = nextStep;
         }
     }
+
 </script>
 
 

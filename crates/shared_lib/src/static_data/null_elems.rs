@@ -39,7 +39,8 @@ pub struct NullPrimitives {
     pub doc_type: DocType,
     pub phone: Phone,
     pub email: Email,
-	pub last_update: DateTime
+	pub last_update: DateTime,
+	pub ip_kpp: Kpp
 }
 
 #[derive(Clone, ts_rs::TS, Serialize, Deserialize)]
@@ -86,6 +87,7 @@ pub static NULLS: LazyLock<NullRegistry> = LazyLock::new(|| {
         phone: Phone::unchecked("70000000000".to_string()),
         email: Email::unchecked("null@null.nul".to_string()),
 		last_update: DateTime::unchecked(NaiveDate::from_ymd_opt(2000, 1, 1).unwrap().and_hms_opt(0, 0, 0).unwrap().and_utc(),),
+		ip_kpp: Kpp::unchecked("0".to_string()),
     };
 
     let pers_id = IdRules::Person {
@@ -110,11 +112,17 @@ pub static NULLS: LazyLock<NullRegistry> = LazyLock::new(|| {
         contrac_date: p.date.clone(),
     }.make_stat_id();
 
+
+
     let operation_id = IdRules::Operation {
+		comp_id: Some(comp_id.clone()),
+		ctrpty_id: Some(comp_id.clone()),
+		debet: Some(p.acc.clone()),
+		credit: Some(p.acc.clone()),
         doc_num: Some(p.doc_num.clone()),
         oper_date: Some(p.date.clone()),
         amount: Some(p.amount.clone()),
-        ctrpty_id: Some(comp_id.clone()),
+        
     }.make_stat_id();
 
     let id = NullIds {

@@ -47,8 +47,7 @@ pub async fn restore_by_password(
         Ok(r) => r,
         Err(err) => {
             err.process_err(err, "");
-			failed_result.process_info(&err);
-            return Ok(failed_result);
+			return Ok(AuthStep::from_err(&err));
         }
     };
 

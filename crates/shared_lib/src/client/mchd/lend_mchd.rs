@@ -65,8 +65,7 @@ pub async fn lend_mchd_to_back_api_for_register(
         Ok(r) => r, 
         Err(err) => {
             err.process_err(err, "");
-			failed_result.process_info(&err);
-            return Ok(failed_result);
+			return Ok(MchdStep::from_err(&err));
         }
     };
 

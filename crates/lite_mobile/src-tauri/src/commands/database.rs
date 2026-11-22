@@ -1,30 +1,53 @@
 use tauri::Emitter;
 
-use shared_lib::{ClientState, Status, ProcessError};
+use shared_lib::{ClientState, ProcessError, Status};
 use shared_lib::service::database::service::{DatabaseInfo, DatabaseStep};
+use shared_lib::service::back_communication::implements::ProgressBar;
 
 use shared_lib::client::sql_queries::companys::sync::sync_all_companys;
+use shared_lib::client::sql_queries::persons::sync::sync_all_persons;
+use shared_lib::client::sql_queries::contracts::sync::sync_all_contracts;
+use shared_lib::client::sql_queries::operations::sync::sync_all_operations;
+
 
 #[tauri::command]
 pub async fn cmd_sync_data_base(
 	state: tauri::State<'_, ClientState>
 ) -> Result<DatabaseStep, Status> {
-	state.app_handle.emit("синхронизация контрагентов", 0).ok();
 
+	let emit_progress = |label: &'static str, percent: u8| {
+		let _ = state.app_handle.emit("db_sync_progress", ProgressBar {label, percent});
+	};
 
-	state.app_handle.emit("синхронизация физ. лиц", 25).ok();
+	emit_progress("Синхронизация контрагентов...", 0);
 
-	state.app_handle.emit("синхронизация договоров", 50).ok();
-
-	state.app_handle.emit("синхронизация операций", 75).ok();
-
-
-	state.app_handle.emit("синхронизация завершена", 100).ok();
-
-	let step = sync_all_companys(&state).await?;
-	if let DatabaseStep::SyncSuccess { .. } = step {
-		return Ok(DatabaseStep::Loading { text: DatabaseInfo::SqlSyncSuccess  });
+	if let Err(err) = sync_all_companys(&state).await {
+		err.process_err(err,"");
+		return Ok(DatabaseStep::from_err(&err));
 	}
 
-	Ok(DatabaseStep::TryLater { text: DatabaseInfo::Notning })
+	emit_progress("Синхронизация физ. лиц...", 25);
+
+	if let Err(err) = sync_all_persons(&state).await {
+		err.process_err(err,"");
+		return Ok(DatabaseStep::from_err(&err));
+	}
+
+	emit_progress("Синхронизация договоров...", 50);
+
+	if let Err(err) = sync_all_contracts(&state).await {
+		err.process_err(err,"");
+		return Ok(DatabaseStep::from_err(&err));
+	}
+
+	emit_progress("Синхронизация операций...", 75);
+
+	if let Err(err) = sync_all_operations(&state).await {
+		err.process_err(err,"");
+		return Ok(DatabaseStep::from_err(&err));
+	}
+
+	emit_progress("Синхронизация завершена", 100);
+
+	Ok(DatabaseStep::Loading { text: DatabaseInfo::SqlSyncSuccess  })
 }

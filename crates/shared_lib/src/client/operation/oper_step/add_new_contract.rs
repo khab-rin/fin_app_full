@@ -24,8 +24,7 @@ pub async fn process_cmd_add_new_contract(
 		Ok(c) => c,
 		Err(err) => {
 			err.process_err(err, "");
-			failed_result.process_info(&err);
-            return Ok(failed_result);
+			return Ok(OperationStep::from_err(&err));
 		}
 	};
 
@@ -41,8 +40,7 @@ pub async fn process_cmd_add_new_contract(
 		Ok(opt) => opt,
 		Err(err) => {
 			err.process_err(err, "");
-			failed_result.process_info(&err);
-            return Ok(failed_result);
+			return Ok(OperationStep::from_err(&err));
 		}
 	};
 
@@ -50,8 +48,7 @@ pub async fn process_cmd_add_new_contract(
 		Ok(c) => c,
 		Err(err) => {
 			err.process_err(err, "");
-			failed_result.process_info(&err);
-            return Ok(failed_result);
+			return Ok(OperationStep::from_err(&err));
 		}
 	};
 
@@ -68,8 +65,7 @@ pub async fn process_cmd_add_new_contract(
 		Ok(r) => r, 
 		Err(err) => {
 			err.process_err(err, "");
-			failed_result.process_info(&err);
-            return Ok(failed_result);
+			return Ok(OperationStep::from_err(&err));
 		}
 	};
 
@@ -80,8 +76,7 @@ pub async fn process_cmd_add_new_contract(
 
 	if let Err(err) = sql_insert_update_contract_function(&session.local_db, &new_contract, 1).await {
 		err.process_err(err, "");
-		failed_result.process_info(&err);
-        return Ok(failed_result);
+		return Ok(OperationStep::from_err(&err));
 	}
 
 	all_contracts.push(new_contract);

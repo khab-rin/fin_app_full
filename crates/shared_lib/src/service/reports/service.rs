@@ -83,6 +83,18 @@ impl ReportStep {
 	}
 }
 
+impl ReportStep {
+	pub fn from_err(err: &Status) -> Self {
+		let info: ReportInfo = match err {
+			Status::ConnectProblems => ReportInfo::ConnectionError,
+			Status::SqlSyncError => ReportInfo::SqlNeedSync,
+			Status::BackApiError => ReportInfo::BackApiError,
+			_ => ReportInfo::ClientServiceError
+		};
+		Self::TryLater { text: info }
+	}
+}
+
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub enum FnsReportType {

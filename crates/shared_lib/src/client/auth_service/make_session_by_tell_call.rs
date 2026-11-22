@@ -24,8 +24,7 @@ pub async fn make_session_by_tel_call(
         Ok(d) => d,
         Err(err) => {
             err.process_err(err, "");
-			failed_result.process_info(&err);
-            return Ok(failed_result);
+			return Ok(AuthStep::from_err(&err));
         }
     };
 
@@ -42,8 +41,7 @@ pub async fn make_session_by_tel_call(
         Ok(r) => r,
         Err(err) => {
             err.process_err(err, "");
-			failed_result.process_info(&err);
-            return Ok(failed_result);
+			return Ok(AuthStep::from_err(&err));
         }
     };
 
@@ -64,8 +62,7 @@ pub async fn make_session_by_tel_call(
         Ok(_) => {},
         Err(err) => {
             err.process_err(Status::MappingError, "");
-            failed_result.process_info(&err);
-            return Ok(failed_result);
+            return Ok(AuthStep::from_err(&err));
         }
     }
 
@@ -73,8 +70,7 @@ pub async fn make_session_by_tel_call(
         Ok(_) => Ok(AuthStep::SuccessShort {  }),
         Err(err) => {
             err.process_err(err, "");
-            failed_result.process_info(&err);
-            Ok(failed_result)
+            return Ok(AuthStep::from_err(&err));
         }
     }
 }

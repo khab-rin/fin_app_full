@@ -36,8 +36,7 @@ pub async fn sync_all_companys(
 		Ok(a) => a,
 		Err(err) => {
 			err.process_err(err, "");
-			failed_result.process_info(&err);
-            return Ok(failed_result);
+			return Ok(DatabaseStep::from_err(&err));
 		}
 	};
 

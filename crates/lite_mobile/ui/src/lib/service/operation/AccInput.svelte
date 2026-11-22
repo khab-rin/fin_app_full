@@ -15,6 +15,7 @@
 		if (!bic.isValid || !rasAcc.isValid || isNewAccPushed) {
 			return;
 		}
+
 		isNewAccPushed = true;
 
 		try {
@@ -25,14 +26,12 @@
 			await invoke(
 				"cmd_add_comp_bank_acc", data
 			);
-			bic.value = "";
-			rasAcc.value = "";
 			isNewAccPushed = false;
 		} catch(err) {
 			let next_step: OperationStep = {TryLater: {text: 'Критическая ошибка в работе программы на устройстве пользователя, попробуйте обновить или перезагрузить приложение'}};
 			console.error("isNewAccPushed FAILED, err = ",err);
-			isNewAccPushed = false;
 			operStep.step = next_step;
+			isNewAccPushed = false;
 		}
 	}
 </script>

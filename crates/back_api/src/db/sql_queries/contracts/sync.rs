@@ -43,8 +43,7 @@ pub async fn sync_all_contracts(
 		}
 		Err(err) => {
 			err.process_err(err, "");
-			failed_result.process_info(&err);
-            return Ok(failed_result); 
+			return Ok(DatabaseStep::from_err(&err));
 		}
 	};
 
@@ -52,8 +51,7 @@ pub async fn sync_all_contracts(
 		Ok(contr_vec) => contr_vec.into_iter().collect(),
 		Err(err) => {
 			err.process_err(err, "");
-			failed_result.process_info(&err);
-            return Ok(failed_result); 
+			return Ok(DatabaseStep::from_err(&err));
 		}
 	};
 
@@ -62,8 +60,7 @@ pub async fn sync_all_contracts(
 		serv_contract_ids.remove(local_contract_id);
 		if let Err(err) = sql_insert_update_contract_function(&mut *tx, local_contract).await {
 			err.process_err(err, "");
-			failed_result.process_info(&err);
-            return Ok(failed_result); 
+			return Ok(DatabaseStep::from_err(&err));
 		}
 	}
 
@@ -75,8 +72,7 @@ pub async fn sync_all_contracts(
 			Ok(None) => {continue;},
 			Err(err) => {
 				err.process_err(err, "");
-				failed_result.process_info(&err);
-            	return Ok(failed_result); 
+				return Ok(DatabaseStep::from_err(&err)); 
 			}
 		};
 		server_contracts.push(server_contract);

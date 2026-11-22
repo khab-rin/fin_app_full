@@ -26,13 +26,23 @@ class OperationManager {
 		this._step = next_step;
 	}
 
-
-    get currentText(): string {
-		return Object.values(this._step)[0].text;
+	get currentText(): string {
+		const key = Object.keys(this._step)[0];
+		return (this._step as any)[key]?.text ?? '';
 	}
 
-	set currentText(value: OperationInfo) {
-		Object.values(this._step)[0].text = value
+	set currentText(value: string) {
+		const key = Object.keys(this._step)[0];
+		if (!key) return;
+
+		// Перезаписываем объект целиком, чтобы Svelte 5 увидел реактивность
+		this._step = { 
+			...this._step, 
+			[key]: { 
+				...(this._step as any)[key],
+				text: value 
+			} 
+		};
 	}
 
     get getPage() {
@@ -53,6 +63,10 @@ class OperationManager {
             return TryLater
         }
     }
+
+	reload() {
+		this.step = {Loading: {text: "Выберите функционал работы с проводками"}};
+	}
 }
 
 export const operStep = new OperationManager;

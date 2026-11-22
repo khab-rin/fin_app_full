@@ -45,8 +45,7 @@ pub async fn restore_session_by_nick(
         Ok(u) => u,
         Err(err) => {
             err.process_err(err, "");
-			failed_result.process_info(&err);
-            return Ok(failed_result);
+			return Ok(AuthStep::from_err(&err));
         }
     };
 
@@ -69,8 +68,7 @@ pub async fn restore_session_by_nick(
         Ok(r) => r,
         Err(err) => {
             err.process_err(err, "");
-			failed_result.process_info(&err);
-            return Ok(failed_result);
+			return Ok(AuthStep::from_err(&err));
         }
     };
 
@@ -87,8 +85,7 @@ pub async fn restore_session_by_nick(
             Ok(_) => return Ok(AuthStep::SuccessShort {}),
             Err(err) => {
                 err.process_err(err, "");
-                failed_result.process_info(&err);
-            	return Ok(failed_result);
+                return Ok(AuthStep::from_err(&err));
             }
         }
     }

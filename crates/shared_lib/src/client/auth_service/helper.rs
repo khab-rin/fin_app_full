@@ -77,7 +77,7 @@ pub fn write_new_user_info_to_device(
 pub async fn get_comp_name(
 	state: &ClientState
 ) -> Result<String, Status> {
-	let mut failed_res = "".to_string();
+	let failed_res = "".to_string();
 
 	let session = match state.get_session().await {
 		Ok(s) => s,

@@ -62,8 +62,7 @@ pub async fn register_step2(
         Ok(r) => r,
         Err(err) => {
             err.process_err(err, "");
-			failed_result.process_info(&err);
-            return Ok(failed_result);
+			return Ok(AuthStep::from_err(&err));
         }
     };
 
@@ -92,8 +91,7 @@ pub async fn register_step2(
         Ok(_) => Ok(AuthStep::SuccessShort {  }),
         Err(err) => {
             err.process_err(err, "");
-            failed_result.process_info(&err);
-            Ok(failed_result)
+            return Ok(AuthStep::from_err(&err));
         }
     }
 
