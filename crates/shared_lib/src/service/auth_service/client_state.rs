@@ -218,6 +218,7 @@ pub(crate) async fn init_session(
 
     let path_str = db_path.to_string_lossy();
 
+	#[allow(unused_mut)]
     let mut db_url = format!("sqlite://{}", path_str);
 
     #[cfg(all(debug_assertions, not(target_os = "android")))]

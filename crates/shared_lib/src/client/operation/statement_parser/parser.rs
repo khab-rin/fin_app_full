@@ -35,7 +35,7 @@ pub async fn parse_statement(
     path: &str
 ) -> Result<OperationStep, Status> {
 
-    let mut failed_result = OperationStep::TryLater {text: OperationInfo::ClientApiSystemError,};
+    let failed_result = OperationStep::TryLater {text: OperationInfo::ClientApiSystemError,};
 
 	let session = match state.get_session().await {
 		Ok(s) => s,

@@ -26,8 +26,8 @@
 
 .sync-progress {
     position: fixed;
-    right: 16px;
-    bottom: 16px;
+    right: 40px;
+    bottom: 40px;
 
     width: 280px;
     padding: 12px;

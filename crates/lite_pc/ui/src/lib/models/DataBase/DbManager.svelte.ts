@@ -44,6 +44,10 @@ class DbManager {
             return null
         }
     }
+
+	reload() {
+		this.step = { Loading: {text: 'Выберите функционал для работы с базой данных'}};
+	}
 }
 
 export const dbStep = new DbManager;

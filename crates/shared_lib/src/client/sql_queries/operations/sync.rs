@@ -11,7 +11,7 @@ pub async fn sync_all_operations(
 	state: &ClientState
 ) -> Result<DatabaseStep, Status> {
 
-	let mut failed_result: DatabaseStep = DatabaseStep::TryLater { text: DatabaseInfo::ClientServiceError };
+	let failed_result: DatabaseStep = DatabaseStep::TryLater { text: DatabaseInfo::ClientServiceError };
 
 	let session = match state.get_session().await {
 		Ok(s) => s,

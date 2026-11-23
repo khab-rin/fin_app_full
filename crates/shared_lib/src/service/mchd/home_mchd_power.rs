@@ -146,6 +146,8 @@ pub enum HomeMchdPower {
     H911,
     H1010,
     H1011,
+	H1110,
+	H1111,
     #[serde(rename = "Неизвестное полномиче")]
     Unknown,
 }
@@ -233,6 +235,8 @@ impl HomeMchdPower {
             Self::H911 => &H911,
             Self::H1010 => &H1010,
             Self::H1011 => &H1011,
+			Self::H1110 => &H1110,
+			Self::H1111 => &H1111,
 
             Self::Unknown => &UNKNOWN
 
@@ -280,6 +284,8 @@ impl HomeMchdPower {
         else if t == H911.name { Self::H911 }
         else if t == H1010.name { Self::H1010 }
         else if t == H1011.name { Self::H1011 }
+		else if t == H1110.name { Self::H1110 }
+		else if t == H1111.name { Self::H1111 }
         else { Self::Unknown }
     }
 
@@ -372,6 +378,8 @@ impl HomeMchdPower {
             HomeMchdPower::H911,
             HomeMchdPower::H1010,
             HomeMchdPower::H1011,
+			HomeMchdPower::H1110,
+			HomeMchdPower::H1111
         ]
     }
 }

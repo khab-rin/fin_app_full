@@ -9,7 +9,7 @@ use crate::client::back_api::post_query::post_query_back_api;
 pub async fn sync_all_contracts(
 	state: &ClientState,
 ) -> Result<DatabaseStep, Status> {
-	let mut failed_result = DatabaseStep::TryLater { text: DatabaseInfo::ClientServiceError };
+	let failed_result = DatabaseStep::TryLater { text: DatabaseInfo::ClientServiceError };
 
 	let session = match state.get_session().await {
 		Ok(s) => s,

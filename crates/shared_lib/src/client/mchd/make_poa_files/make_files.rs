@@ -12,7 +12,7 @@ pub async fn make_xml_doc_files(
     data: &NewMchdData
 ) -> Result<MchdStep, Status> {
 
-    let mut failed_result = MchdStep::TryLater { text:MchdInfo::ClientServiceError };
+    let failed_result = MchdStep::TryLater { text:MchdInfo::ClientServiceError };
 
     let session = match state.get_session().await {
         Ok(s) => s,

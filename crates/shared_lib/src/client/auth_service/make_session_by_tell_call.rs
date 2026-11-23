@@ -18,7 +18,7 @@ pub async fn make_session_by_tel_call(
     external_id: &str,
 ) -> Result<AuthStep, Status> {
 
-    let mut failed_result = AuthStep::TryLater { text: AuthInfo::ClientApiSystemError };
+    let failed_result = AuthStep::TryLater { text: AuthInfo::ClientApiSystemError };
 
     let device_id = match get_device_id(state) {
         Ok(d) => d,
@@ -70,7 +70,7 @@ pub async fn make_session_by_tel_call(
         Ok(_) => Ok(AuthStep::SuccessShort {  }),
         Err(err) => {
             err.process_err(err, "");
-            return Ok(AuthStep::from_err(&err));
+            Ok(AuthStep::from_err(&err))
         }
     }
 }

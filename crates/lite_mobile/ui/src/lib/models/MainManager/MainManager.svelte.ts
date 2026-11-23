@@ -4,7 +4,7 @@ import {PageType} from "$lib/models/MainManager/PageValues";
 import { currAuthStep } from '$lib/models/Auth/AuthStep.svelte';
 
 import AuthManager from "$lib/service/auth_service/AuthManager.svelte";
-import DbMain from '$lib/service/DataBase/DbLoading.svelte';
+import DbMain from '$lib/service/DataBase/DbMain.svelte';
 import MchdManager from "$lib/service/mchd/MchdManager.svelte";
 import OperationManager from "$lib/service/operation/OperationManager.svelte";
 import ReportManager from "$lib/service/Reports/ReportManager.svelte";

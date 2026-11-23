@@ -38,7 +38,7 @@
 	}
 </script>
 
-<div class='w-40'>
+<div class='w-100'>
 	<div class='w-v100'>
 		<label class='label-close' for='DbMainSync'>
 			Синхронизация всей базы данных
@@ -63,15 +63,17 @@
 
 
 
+{#if isFullSyncPushed}
+	<div class="sync-progress">
+		<div class="sync-progress-info">
+			<span>{syncLabel}</span>
+			<span>{syncPercent}%</span>
+		</div>
 
-<div class="sync-progress">
-    <div class="sync-progress-info">
-        <span>{syncLabel}</span>
-        <span>{syncPercent}%</span>
-    </div>
+		<div class="sync-progress-track">
+			<div class="sync-progress-bar" style:width="{syncPercent}%"></div>
+		</div>
+	</div>
+{/if}
 
-    <div class="sync-progress-track">
-        <div class="sync-progress-bar" style:width="{syncPercent}%"></div>
-    </div>
-</div>
 

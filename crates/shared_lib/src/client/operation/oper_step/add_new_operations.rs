@@ -11,7 +11,7 @@ pub async fn process_cmd_process_operations_function(
 	option_operations: Vec<Option<OperationDto>>
 ) -> Result<OperationStep, Status> {
 
-	let mut failed_result = OperationStep::TryLater { text: OperationInfo::ClientApiSystemError };
+	let failed_result = OperationStep::TryLater { text: OperationInfo::ClientApiSystemError };
 
 	match check_access(state, vec![
 		HomeMchdPower::H210,

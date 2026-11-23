@@ -18,7 +18,7 @@ pub async fn register_step2(
     data: &RegFilesPathData
 ) -> Result<AuthStep, Status> {
 
-    let mut failed_result = AuthStep::TryLater { text: AuthInfo::ClientApiSystemError };
+    let failed_result = AuthStep::TryLater { text: AuthInfo::ClientApiSystemError };
 
     let RegFilesPathData { json_path, sign_path } = data;
 
@@ -91,7 +91,7 @@ pub async fn register_step2(
         Ok(_) => Ok(AuthStep::SuccessShort {  }),
         Err(err) => {
             err.process_err(err, "");
-            return Ok(AuthStep::from_err(&err));
+            Ok(AuthStep::from_err(&err))
         }
     }
 

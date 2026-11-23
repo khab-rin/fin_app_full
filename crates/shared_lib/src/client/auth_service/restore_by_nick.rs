@@ -16,7 +16,7 @@ pub async fn restore_session_by_nick(
     nick: &str
 ) -> Result<AuthStep, Status> {
 
-    let mut failed_result = AuthStep::TryLater {text: AuthInfo::ClientApiSystemError};
+    let failed_result = AuthStep::TryLater {text: AuthInfo::ClientApiSystemError};
 
     let device_id = match get_device_id(state) {
         Ok(d) => d,

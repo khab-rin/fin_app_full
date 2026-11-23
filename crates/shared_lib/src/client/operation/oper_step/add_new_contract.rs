@@ -18,7 +18,7 @@ pub async fn process_cmd_add_new_contract(
 	new_contr_data: NewContrData
 ) -> Result<OperationStep, Status> {
 
-	let mut failed_result = OperationStep::TryLater { text: OperationInfo::ClientApiSystemError };
+	let failed_result = OperationStep::TryLater { text: OperationInfo::ClientApiSystemError };
 
 	let new_contract = match make_new_contract_function(state, new_contr_data).await {
 		Ok(c) => c,

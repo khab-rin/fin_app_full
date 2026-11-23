@@ -6,6 +6,7 @@
 	import { operStep } from '$lib/models/Operation/OperationManager.svelte';
 	import {currentMchdStep} from '$lib/models/Mchd/mchdManager.svelte';
 	import {reportManager} from '$lib/models/Reports/ReportsManager.svelte';
+	import { dbStep } from '$lib/models/DataBase/DbManager.svelte'
 
 	function goToOperation() {
 		pageManager.Page = PageType.Operation;
@@ -14,16 +15,17 @@
 
 	function goToMchd() {
 		pageManager.Page = PageType.Mchd;
-		currentMchdStep.reload()
+		currentMchdStep.reload();
 	}
 
 	function goToReports() {
 		pageManager.Page = PageType.Report;
-		reportManager.reload()
+		reportManager.reload();
 	}
 
 	function goToDb() {
 		pageManager.Page = PageType.DataBase;
+		dbStep.reload();
 	}
 
 	async function logOut() {

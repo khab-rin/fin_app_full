@@ -65,14 +65,16 @@
 
 
 
-<div class="sync-progress">
-    <div class="sync-progress-info">
-        <span>{syncLabel}</span>
-        <span>{syncPercent}%</span>
-    </div>
+{#if isFullSyncPushed}
+	<div class="sync-progress">
+		<div class="sync-progress-info">
+			<span>{syncLabel}</span>
+			<span>{syncPercent}%</span>
+		</div>
 
-    <div class="sync-progress-track">
-        <div class="sync-progress-bar" style:width="{syncPercent}%"></div>
-    </div>
-</div>
+		<div class="sync-progress-track">
+			<div class="sync-progress-bar" style:width="{syncPercent}%"></div>
+		</div>
+	</div>
+{/if}
 

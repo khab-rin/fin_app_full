@@ -8,6 +8,8 @@
     import { currAuthStep } from "$lib/models/Auth/AuthStep.svelte";
     import type { AuthStep } from '$lib/models/rustModels/AuthStep';
 
+	import {fitText} from '$lib/rules/text';
+
     let IsPushed = $state(false);
 
     let currNick = $state("");
@@ -56,3 +58,92 @@
     });
 
 </script>
+
+
+<dialog
+	class='dial-t-l'
+	id='AuthNickNames'
+	onclick={dialogBackdrop}
+>
+	<div class='w-100'>
+		<span class='v-w100 x-self-c x-cont-ce'>
+			Выберите пользователя
+		</span>
+	</div>
+	{#if currAuthStep.nick_names.length > 0}
+		{#each currAuthStep.nick_names as nickName}
+			<div class='w100'>
+				<button
+					class='but-ye'
+					type="button"
+					disabled={false}
+					onclick={()=> {currNick=selectElem("AuthNickNames", nickName)}}
+				>
+					<span
+						class='x-self-c t-fill' use:fitText
+					>
+						{nickName}
+					</span>
+				</button>
+			</div>
+		{/each}	
+	{:else}
+		<div class='w-100'>
+			<p>На этом устройстве еще нет сохраненных аккаунтов</p>
+		</div>
+	{/if}
+
+	<div class='w-100'>
+		<div class='w-v100'>
+			<button
+				type='button'
+				class='but-ye'
+				onclick={()=> {
+					selectElem('AuthNickNames', '')
+				}}
+			>
+				Отмена
+			</button>
+		</div>
+	</div>
+</dialog>
+
+
+<div class="w-100">
+    <button
+        type="button"
+        class="but-gr"
+        disabled={IsPushed}
+        
+        onclick={()=>{openAccountsModal("AuthNickNames")}}
+    >
+
+        <span class="x-self-c text-fill">
+            {#if currNick}
+				Текущий выбор - {currNick}
+			{:else}
+				Выберите пользователя
+			{/if}
+        </span>
+    </button>
+</div>
+
+
+<div class="w-100">
+	<button 
+		type="button" 
+		class="but-gr" 
+		disabled={!currNick || IsPushed}
+		onclick={() => call_nick_handle(currNick)}
+	>	
+		{#if IsPushed}
+			<span class="loading-content">
+				<span class="loading-spinner"></span>
+				Подключение...
+			</span>
+		{:else}
+			<span class="x-self-c">Войти как {currNick}</span>
+		{/if}
+	</button>
+</div>
+

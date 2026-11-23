@@ -19,7 +19,7 @@ pub async fn restore_by_password(
     data: &PasswordDataClientShort
 ) -> Result<AuthStep, Status> {
 
-    let mut failed_result = AuthStep::TryLater { text: AuthInfo::ClientApiSystemError };
+    let failed_result = AuthStep::TryLater { text: AuthInfo::ClientApiSystemError };
 
     let device_id = match get_device_id(state) {
         Ok(d) => d,

@@ -22,6 +22,9 @@ pub enum DatabaseStep {
 
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub enum DatabaseInfo {
+	#[serde(rename = "У вас недостаточно прав для доступа к этому разделу")]
+    AccessDenied,
+	
 	#[serde(rename = "Критическая ошибка на серверной части приложения...")]
     BackApiError,
 

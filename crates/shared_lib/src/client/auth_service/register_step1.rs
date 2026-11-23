@@ -1,7 +1,7 @@
 use crate::{Status, ClientState, ProcessError};
 use crate::primitives::frozen::text::Password;
 
-use crate::service::auth_service::implements::{RegInitData, AuthStep, AuthInfo};
+use crate::service::auth_service::implements::{RegInitData, AuthStep};
 use crate::service::api_routes::implements::ApiRoutes;
 
 
@@ -14,7 +14,6 @@ pub
     data: &RegInitData
 ) -> Result<AuthStep, Status> {
 
-	let mut failed_result: AuthStep = AuthStep::TryLater { text: AuthInfo::ClientApiSystemError };
 
     let blake_password = blake3::hash(data.password.as_ref().as_bytes())
         .to_hex()

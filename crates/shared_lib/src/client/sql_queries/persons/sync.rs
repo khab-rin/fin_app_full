@@ -8,7 +8,7 @@ use crate::client::sql_queries::persons::get::que::sql_get_all_persons_function;
 pub async fn sync_all_persons(
 	state: &ClientState
 ) -> Result<DatabaseStep, Status> {
-	let mut failed_result = DatabaseStep::TryLater { text: DatabaseInfo::ClientServiceError };
+	let failed_result = DatabaseStep::TryLater { text: DatabaseInfo::ClientServiceError };
 
 	let session = match state.get_session().await {
 		Ok(s) => s,

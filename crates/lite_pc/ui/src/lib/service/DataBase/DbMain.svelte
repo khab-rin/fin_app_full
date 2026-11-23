@@ -26,15 +26,3 @@
 <svelte:component this={dbStep.getPage}/>
 
 
-<section class='w-40'>
-	<button
-		type="button"
-		class="but-bl"
-		onclick={goToLoading}
-		>
-		<span>
-			Меню отчетов
-		</span>
-	</button>
-</section>
-

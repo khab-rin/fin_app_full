@@ -1,4 +1,3 @@
-use shared_lib::service::mchd::service::MchdStep;
 use shared_lib::sql_models::operation::service::OperationInfo::SuccessRaw;
 use shared_lib::{ClientState, ProcessError, Status};
 use shared_lib::sql_models::operation::implements::{OperationRaw};
@@ -14,8 +13,6 @@ pub async fn make_bank_statement_operations(
     ras_bic_acc: &RasBicAcc,
     path: &str
 ) -> Result<OperationStep, Status> {
-
-    let mut failed_result = OperationStep::TryLater { text: OperationInfo::ClientApiSystemError };
 
 	match check_access(state, vec![
 		HomeMchdPower::H210,
