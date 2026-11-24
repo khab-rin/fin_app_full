@@ -19,7 +19,7 @@ pub(crate) async fn get_user_by_inn_pers_comp_kpp(
             kpp.as_ref()
         ).fetch_optional(&state.pool_fast)
         .await
-        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?; 
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?; 
 
         
     let user_dto = match user_dto_option {
@@ -29,7 +29,7 @@ pub(crate) async fn get_user_by_inn_pers_comp_kpp(
 
     let user = user_dto
         .try_into()
-        .map_err(|err: serde_json::Error| err.process_err(Status::MappingError, ""))?;
+        .map_err(|err: serde_json::Error| err.process_err(Status::MappingError, None))?;
 
     Ok(Some(user))
 

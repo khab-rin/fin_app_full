@@ -26,7 +26,7 @@ pub async fn make_bank_statement_operations(
             return Ok(OperationStep::TryLater { text: OperationInfo::AccessDenied })
         },
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
 			return Ok(OperationStep::from_err(&err));
         }
     }
@@ -38,7 +38,7 @@ pub async fn make_bank_statement_operations(
         Ok(OperationStep::StatementSuccess { operations, ..}) => operations,
         Ok(res) => return Ok(res),
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(OperationStep::from_err(&err));
         }
     };

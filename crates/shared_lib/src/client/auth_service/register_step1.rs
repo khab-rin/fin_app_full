@@ -31,7 +31,7 @@ pub
         .await {
 			Ok(r) => r,
 			Err(err) => {
-				err.process_err(err, "");
+				err.process_err(err, None);
 				return Ok(AuthStep::from_err(&err));
 			}
 		};
@@ -39,7 +39,7 @@ pub
 
     let auth_step: AuthStep = response.json()
         .await
-        .map_err(|err| err.process_err(Status::MappingError, ""))?;
+        .map_err(|err| err.process_err(Status::MappingError, None))?;
 
 
     Ok(auth_step)

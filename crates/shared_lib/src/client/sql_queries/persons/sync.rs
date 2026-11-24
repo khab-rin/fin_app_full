@@ -13,7 +13,7 @@ pub async fn sync_all_persons(
 	let session = match state.get_session().await {
 		Ok(s) => s,
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return Ok(failed_result);
 		}
 	};
@@ -21,7 +21,7 @@ pub async fn sync_all_persons(
 	let local_persons = match sql_get_all_persons_function(&session.local_db).await {
 		Ok(l) => l,
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return Ok(failed_result);
 		}
 	};
@@ -40,7 +40,7 @@ pub async fn sync_all_persons(
 	).await {
 		Ok(r) => r,
 		Err(err) => {
-			err.process_err(err, "ext_info");
+			err.process_err(err, None);
 			return Ok(DatabaseStep::from_err(&err));
 		}
 	}; 

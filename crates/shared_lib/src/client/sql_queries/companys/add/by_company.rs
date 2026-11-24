@@ -9,11 +9,11 @@ pub async fn add_company(
 ) -> Result<Company, Status> {
 
     let session = state.get_session().await
-        .map_err(|err| err.process_err(err, ""))?; 
+        .map_err(|err| err.process_err(err, None))?; 
 
 	let prev_company_option = get_company_by_inn_kpp(
 		state, &company.comp_inn, &company.kpp).await
-		.map_err(|err| err. process_err(err, ""))?;
+		.map_err(|err| err. process_err(err, None))?;
 
 	let company = match prev_company_option {
 		Some(mut c) => {
@@ -44,11 +44,11 @@ pub async fn add_company(
 		metadata,
 		last_update
 	).fetch_one(&session.local_db).await
-	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?;
 
 	let company: Company = company_dto
 		.try_into()
-		.map_err(|err: serde_json::Error| err.process_err(Status::MappingError, ""))?;
+		.map_err(|err: serde_json::Error| err.process_err(Status::MappingError, None))?;
 
 	Ok(company)
 }

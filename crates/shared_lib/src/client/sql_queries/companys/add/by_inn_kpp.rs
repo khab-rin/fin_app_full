@@ -16,7 +16,7 @@ pub async fn add_company_by_inn_cpp_acc(
 ) -> Result<Option<Company>, Status> {
 
     let session = state.get_session().await
-        .map_err(|err| err.process_err(err, ""))?; 
+        .map_err(|err| err.process_err(err, None))?; 
 
     let comp_inn = match comp_inn {
         Some(c) => c.clone(),
@@ -37,7 +37,7 @@ pub async fn add_company_by_inn_cpp_acc(
     let data: Vec<CompCrateData> = vec![CompCrateData{comp_inn, kpp}];
 
     let companys = add_companys_by_inn_cpp_acc(state, &data).await
-        .map_err(|err| err.process_err(err, ""))?; 
+        .map_err(|err| err.process_err(err, None))?; 
 
     let company_option = companys.into_iter().next();
 

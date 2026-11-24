@@ -40,7 +40,7 @@ pub async fn parse_statement(
 	let session = match state.get_session().await {
 		Ok(s) => s,
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return Ok(failed_result);
 		}
 	};
@@ -52,7 +52,7 @@ pub async fn parse_statement(
 	let tauri_file_path = tauri_plugin_fs::FilePath::from_str(path)
 		.map_err(|err| {
 			let ext_info = format!("wrong svelte path = {:?}", path);
-			err.process_err(Status::FilePathError, &ext_info)
+			err.process_err(Status::FilePathError, Some(&ext_info))
 		})?;
 
 	let mut tauri_open_options = tauri_plugin_fs::OpenOptions::new();
@@ -61,7 +61,7 @@ pub async fn parse_statement(
 	let open_file_obj = state.app_handle.fs().open(tauri_file_path.clone(), tauri_open_options.clone())
 		.map_err(|err| {
 			let ext_info = format!("wrong tauri_file_path = {:?}, wrong tauri_open_options = {:?}", tauri_file_path, tauri_open_options);
-			err.process_err(Status::FileReadError, &ext_info)
+			err.process_err(Status::FileReadError, Some(&ext_info))
 		})?;
 	
 	let mut file = tokio::fs::File::from_std(open_file_obj);
@@ -69,7 +69,7 @@ pub async fn parse_statement(
 
 	if let Err(err) = file.read_to_end(&mut bytes).await {
 		let ext_info = format!("wrong file path = {:?}, wrong tokio file = {:?}", path, file);
-		err.process_err(Status::FileReadError, &ext_info);
+		err.process_err(Status::FileReadError, Some(&ext_info));
 		return Ok(failed_result);
 	}
 
@@ -87,7 +87,7 @@ pub async fn parse_statement(
     let full_head = match data_iter.next() {
         Some(a) => a.to_string(),
         None =>  {
-            Status::Tech.process_err(Status::DataCorruptionErr, "");
+            Status::Tech.process_err(Status::DataCorruptionErr, None);
             return Ok(OperationStep::Loading { text: OperationInfo::WrongFile });
         }
     };
@@ -97,7 +97,7 @@ pub async fn parse_statement(
     match full_head_iter.next() {
         Some(_) => {},
         None =>  {
-            Status::Tech.process_err(Status::DataCorruptionErr, "");
+            Status::Tech.process_err(Status::DataCorruptionErr, None);
             return Ok(OperationStep::Loading { text: OperationInfo::WrongFile });
         }
     };
@@ -105,7 +105,7 @@ pub async fn parse_statement(
     let head_str  = match full_head_iter.next() {
         Some(a) => a.trim(),
         None =>  {
-            Status::Tech.process_err(Status::DataCorruptionErr, "");
+            Status::Tech.process_err(Status::DataCorruptionErr, None);
             return Ok(OperationStep::Loading { text: OperationInfo::WrongFile });
         }
     };
@@ -115,7 +115,7 @@ pub async fn parse_statement(
     let head = match StatementHead::from_map(&head_map) {
         Ok(h) => h,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(failed_result);
         }
     };
@@ -130,7 +130,7 @@ pub async fn parse_statement(
         let block_map: std::collections::HashMap<&str, &str> = make_statement_block_map(block_str);
 
 		let mut block_fields = BlockFields::try_from(&block_map)
-    		.map_err(|err| err.process_err(err, ""))?;
+    		.map_err(|err| err.process_err(err, None))?;
 
 		if block_fields.pay_inn.len() == 12 {
 			block_fields.pay_kpp = Kpp::unchecked("0".to_string());
@@ -158,7 +158,7 @@ pub async fn parse_statement(
 		.collect();
 
 	if let Err(err) = get_or_parse_insert_companys_function(state, new_company_pairs).await {
-		err.process_err(err, "");
+		err.process_err(err, None);
 		return Ok(OperationStep::from_err(&err));
 	}
 
@@ -167,7 +167,7 @@ pub async fn parse_statement(
 	let gov: std::collections::HashSet<BoxUuid> = match sql_get_company_ids_by_type_function(&session.local_db, &CompType::Gov).await {
 		Ok(v) => v.into_iter().collect(),
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return Ok(OperationStep::from_err(&err));
 		}
 	};
@@ -175,7 +175,7 @@ pub async fn parse_statement(
 	let com_ent: std::collections::HashSet<BoxUuid> = match sql_get_company_ids_by_type_function(&session.local_db, &CompType::ComEnt).await {
 		Ok(v) => v.into_iter().collect(),
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return Ok(OperationStep::from_err(&err));
 		}
 	};
@@ -183,7 +183,7 @@ pub async fn parse_statement(
 	let ip: std::collections::HashSet<BoxUuid> = match sql_get_company_ids_by_type_function(&session.local_db, &CompType::Ip).await {
 		Ok(v) => v.into_iter().collect(),
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return Ok(OperationStep::from_err(&err));
 		}
 	};
@@ -191,7 +191,7 @@ pub async fn parse_statement(
 	let banks: std::collections::HashSet<BoxUuid> = match sql_get_company_ids_by_type_function(&session.local_db, &CompType::Bank).await {
 		Ok(v) => v.into_iter().collect(),
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return Ok(OperationStep::from_err(&err));
 		}
 	};
@@ -210,7 +210,7 @@ pub async fn parse_statement(
         match res {
             Ok(o) => operations.push(o),
             Err(err) => {
-                err.process_err(err, "");
+                err.process_err(err, None);
                 return Ok(OperationStep::from_err(&err));
             } 
         }
@@ -221,7 +221,7 @@ pub async fn parse_statement(
 	let exist_ids: std::collections::HashSet<BoxUuid> = get_exists_operations_by_ids_function(
 		state, &check_ids
 	).await
-	.map_err(|err| err.process_err(err, ""))?
+	.map_err(|err| err.process_err(err, None))?
 	.into_iter()
 	.collect();
 

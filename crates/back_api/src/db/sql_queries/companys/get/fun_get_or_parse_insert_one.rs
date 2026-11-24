@@ -18,16 +18,16 @@ pub async fn get_or_parse_insert_one_company_function(
 		&state.pool_fast,
 		comp_inn,
 		kpp
-	).await.map_err(|err| err.process_err(err, ""))?;
+	).await.map_err(|err| err.process_err(err, None))?;
 
 	if let Some(c) = server_company { return Ok(Some(c));}
 
 	let dadata_company = get_dadata_company(state, comp_inn, kpp).await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 	if let Some(c) = dadata_company {
 		sql_insert_update_company_function(&state.pool_fast, &c).await
-			.map_err(|err| err.process_err(err, ""))?;
+			.map_err(|err| err.process_err(err, None))?;
 		return Ok(Some(c));
 	}
 

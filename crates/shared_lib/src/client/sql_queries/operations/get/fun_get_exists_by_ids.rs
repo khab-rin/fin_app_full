@@ -9,15 +9,15 @@ pub async fn get_exists_operations_by_ids_function(
 ) -> Result<Vec<BoxUuid>, Status> {
 
 	let session = state.get_session().await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 	let mut res: Vec<BoxUuid> = vec![];
 
 	let mut conn = session.local_db.acquire().await
-		.map_err(|err| err.process_err(Status::SqlPoolErr, ""))?;
+		.map_err(|err| err.process_err(Status::SqlPoolErr, None))?;
 
 	for id in ids {
-		if sql_exist_operation_by_id_que(&mut *conn, id).await.map_err(|err| err.process_err(err, ""))? {
+		if sql_exist_operation_by_id_que(&mut *conn, id).await.map_err(|err| err.process_err(err, None))? {
 			res.push(id.clone());
 		}
 	}

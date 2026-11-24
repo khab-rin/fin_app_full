@@ -30,7 +30,7 @@ where E: sqlx::Executor<'t, Database=sqlx::Postgres>
         contract.entr_date.as_ref(),
         &contract.is_del
     ).fetch_one(conn).await
-    .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;    
+    .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?;    
 
     Ok(contract)
     

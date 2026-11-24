@@ -16,7 +16,7 @@ where E: sqlx::Executor<'t, Database = sqlx::Sqlite>
             inn
         ).fetch_optional(conn)
         .await
-        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?;
 
     let person_dto = match person_dto_option {
         Some(dto) => dto,
@@ -26,7 +26,7 @@ where E: sqlx::Executor<'t, Database = sqlx::Sqlite>
     match person_dto.try_into() {
         Ok(p) => Ok(Some(p)),
         Err(err) => {
-            Err(err.process_err(Status::MappingError, ""))
+            Err(err.process_err(Status::MappingError, None))
         }
     }
 }
@@ -41,14 +41,14 @@ where E: sqlx::Executor<'t, Database = sqlx::Sqlite>
 		PersonDto,
 		"src/client/sql_queries/persons/get/que_get_all_persons.sql"
 	).fetch_all(conn).await
-	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?;
 
 	persons_dto
 		.into_iter()
 		.filter(|x| x.pers_id != NULLS.id.pers_id)
 		.map(|dto| {
 			dto.try_into()
-			.map_err(|err:serde_json::Error| err.process_err(Status::MappingError, ""))
+			.map_err(|err:serde_json::Error| err.process_err(Status::MappingError, None))
 		}).collect()
 
 }

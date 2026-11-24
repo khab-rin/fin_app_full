@@ -10,7 +10,7 @@ pub async fn get_bank_accs_by_comp_id(
 ) -> Result<Vec<RasBicAcc>, Status> {
 
     let session = state.get_session().await
-        .map_err(|err| err.process_err(err, ""))?; 
+        .map_err(|err| err.process_err(err, None))?; 
 
     let comp_inn = match comp_inn {
         Some(c) => c,
@@ -28,7 +28,7 @@ pub async fn get_bank_accs_by_comp_id(
             kpp
         ).fetch_optional(&session.local_db)
         .await
-        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?;
 
     let metadata_str = match metadata_str_option {
         Some(m) => m,
@@ -36,7 +36,7 @@ pub async fn get_bank_accs_by_comp_id(
     };
 
     let metadata: CtrprtyMetadata = serde_json::from_str(&metadata_str)
-        .map_err(|err| err.process_err(Status::MappingError, ""))?; 
+        .map_err(|err| err.process_err(Status::MappingError, None))?; 
 
     Ok(metadata.bank_acc)
 

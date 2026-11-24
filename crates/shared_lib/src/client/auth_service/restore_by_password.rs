@@ -24,7 +24,7 @@ pub async fn restore_by_password(
     let device_id = match get_device_id(state) {
         Ok(d) => d,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(failed_result);
         }
     };
@@ -46,7 +46,7 @@ pub async fn restore_by_password(
             &password_data).await {
         Ok(r) => r,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
 			return Ok(AuthStep::from_err(&err));
         }
     };
@@ -55,7 +55,7 @@ pub async fn restore_by_password(
     let auth_step:AuthStep = match response.json().await {
         Ok(s) => s,
         Err(err) => {
-            err.process_err(Status::MappingError, "");
+            err.process_err(Status::MappingError, None);
             return Ok(failed_result);
         }
     };
@@ -68,7 +68,7 @@ pub async fn restore_by_password(
     match write_new_user_info_to_device(state, &session_token) {
         Ok(_) => {},
         Err(err) => {
-            err.process_err(Status::MappingError, "");
+            err.process_err(Status::MappingError, None);
             return Ok(failed_result);
         }
     }
@@ -76,7 +76,7 @@ pub async fn restore_by_password(
     match init_session(state, session_token.as_ref()).await {
         Ok(_) => Ok(AuthStep::SuccessShort {  }),
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             Ok(failed_result)
         }
     }

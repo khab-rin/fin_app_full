@@ -10,7 +10,7 @@ pub async fn add_companys_by_inn_cpp_acc(
 ) -> Result<Vec<Company>, Status> {
 
     let session = state.get_session().await
-        .map_err(|err| err.process_err(err, ""))?; 
+        .map_err(|err| err.process_err(err, None))?; 
 
    let response = post_query_back_api(
             state, 
@@ -18,13 +18,13 @@ pub async fn add_companys_by_inn_cpp_acc(
             ApiRoutes::SqlComppanyAddByInnKpp, 
             data)
         .await
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
 
     let companys: Vec<Company> = response.json().await
-        .map_err(|err| err.process_err(Status::MappingError, ""))?; 
+        .map_err(|err| err.process_err(Status::MappingError, None))?; 
 
     let mut tx = session.local_db.begin().await
-        .map_err(|err| err.process_err(Status::SqlPoolErr, ""))?;
+        .map_err(|err| err.process_err(Status::SqlPoolErr, None))?;
 
     for company in companys.iter() {
         let comp_id = company.comp_id.clone();
@@ -45,12 +45,12 @@ pub async fn add_companys_by_inn_cpp_acc(
             metadata,
             last_update
         ).execute(&mut *tx).await
-        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?; 
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?; 
 
     }
 
     tx.commit().await
-        .map_err(|err| err.process_err(Status::SqlCommitErr, ""))?;
+        .map_err(|err| err.process_err(Status::SqlCommitErr, None))?;
 
     Ok(companys)
 }

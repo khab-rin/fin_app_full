@@ -26,7 +26,7 @@ pub async fn sync_all_persons(
 	let mut tx = match state.pool_fast.begin().await {
 		Ok(t) => t,
 		Err(err) => {
-			err.process_err(Status::SqlPoolErr, "");
+			err.process_err(Status::SqlPoolErr, None);
 			return Ok(failed_result);
 		}
 	};
@@ -35,7 +35,7 @@ pub async fn sync_all_persons(
 		let server_person_option = match sql_get_person_by_id_function(&mut *tx, &local_person.pers_id).await {
 			Ok(opt) => opt,
 			Err(err) => {
-				err.process_err(err, "");
+				err.process_err(err, None);
 				return Ok(DatabaseStep::from_err(&err));
 			}
 		};
@@ -49,7 +49,7 @@ pub async fn sync_all_persons(
 
 	for updated_person in updated_persons.iter() {
 		if let Err(err) = sql_insert_update_person_function(&mut *tx, updated_person).await {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return Ok(DatabaseStep::from_err(&err));
 		}
 	}
@@ -57,7 +57,7 @@ pub async fn sync_all_persons(
 	match tx.commit().await {
 		Ok(_) => Ok(DatabaseStep::SyncPersons { text: DatabaseInfo::Notning, persons: updated_persons, user_id }),
 		Err(err) => {
-			err.process_err(Status::SqlPoolErr, "");
+			err.process_err(Status::SqlPoolErr, None);
 			Ok(failed_result)
 		}
 	}

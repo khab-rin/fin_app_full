@@ -8,7 +8,7 @@ pub async fn add_new_operations(
 	operations: Vec<Operation>
 ) -> Result<(), Status> {
 	let session = state.get_session().await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 	
 	post_query_back_api(
@@ -16,11 +16,11 @@ pub async fn add_new_operations(
 		state.config.get_sql_long(), 
 		ApiRoutes::SqlOperationAddMany, 
 		&operations).await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 
 	let mut tx = session.local_db.begin().await
-		.map_err(|err| err.process_err(Status::SqlPoolErr, ""))?;
+		.map_err(|err| err.process_err(Status::SqlPoolErr, None))?;
 
 
 	for oper in operations.iter() {
@@ -42,10 +42,10 @@ pub async fn add_new_operations(
 			oper.is_del,
 			oper.entr_date
 		).execute(&mut *tx).await
-		.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+		.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?;
 	}
 
-	tx.commit().await.map_err(|err| err.process_err(Status::SqlCommitErr, ""))?;
+	tx.commit().await.map_err(|err| err.process_err(Status::SqlCommitErr, None))?;
 
 	Ok(())
 }

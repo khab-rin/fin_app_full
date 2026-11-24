@@ -23,7 +23,7 @@ pub async fn sql_company_sync(
 			companys
 		},
 		_ => {
-			Status::Tech.process_err(Status::SystemLogicErr, "");
+			Status::Tech.process_err(Status::SystemLogicErr, None);
 			return Ok(failed_result);
 		}
 	};
@@ -31,7 +31,7 @@ pub async fn sql_company_sync(
 	let mut conn = match state.pool_fast.acquire().await {
 		Ok(t) => t,
 		Err(err) => {
-			err.process_err(Status::SqlPoolErr, "ext_info");
+			err.process_err(Status::SqlPoolErr, None);
 			return Ok(failed_result);
 		}
 	};
@@ -43,7 +43,7 @@ pub async fn sql_company_sync(
 
 	for local_company in local_companys {
 		let serv_comp_option = get_company_option_by_id(&mut *conn, &local_company.comp_id).await
-			.map_err(|err| err.process_err(err, ""))?;
+			.map_err(|err| err.process_err(err, None))?;
 		match serv_comp_option {
 			Some(mut server_company) => {
 				server_company.merge_acc(local_company);
@@ -54,7 +54,7 @@ pub async fn sql_company_sync(
 				let kpp = &local_company.kpp;
 				let future = async move {
 					let new_company_option = get_dadata_company(state, comp_inn, kpp)
-						.await.map_err(|err| err.process_err(err, ""))?;
+						.await.map_err(|err| err.process_err(err, None))?;
 					Ok::<_, Status>(((comp_inn.clone(), kpp.clone()), new_company_option))
 				};
 				dadata_futures.push(future);
@@ -68,7 +68,7 @@ pub async fn sql_company_sync(
 	let mut dadata_companys = match try_join_all(dadata_futures).await {
 		Ok(res) => res,
 		Err(err) => {
-			err.process_err(err, "ext_info");
+			err.process_err(err, None);
 			return Ok(DatabaseStep::from_err(&err));
 		}
 	};
@@ -89,14 +89,14 @@ pub async fn sql_company_sync(
 	let mut tx = match state.pool_fast.begin().await {
 		Ok(t) => t,
 		Err(err) => {
-			err.process_err(Status::SqlPoolErr, "ext_info");
+			err.process_err(Status::SqlPoolErr, None);
 			return Ok(failed_result);
 		}
 	};
 
 	for server_company in server_companys.iter() {
 		if let Err(err) = sql_insert_update_company_function(&mut *tx, server_company).await {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return Ok(DatabaseStep::from_err(&err));
 		}
 	}
@@ -104,7 +104,7 @@ pub async fn sql_company_sync(
 	match tx.commit().await {
 		Ok(_) => Ok(DatabaseStep::SyncCompanysToClient { del_companys, server_companys }),
 		Err(err) => {
-			err.process_err(Status::SqlCommitErr, "ext_info");
+			err.process_err(Status::SqlCommitErr, None);
 			Ok(failed_result)
 		}
 	}

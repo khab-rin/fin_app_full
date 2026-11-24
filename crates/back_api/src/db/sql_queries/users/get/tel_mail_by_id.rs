@@ -14,7 +14,7 @@ pub(crate) async fn get_user_phone_mail_by_id(
             user_id.as_ref()
         ).fetch_optional(&state.pool_fast)
         .await 
-        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?;
   
         
     match record_option {

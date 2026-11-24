@@ -14,10 +14,10 @@ pub async fn get_or_parse_insert_company_function(
 ) -> Result<Option<Company>, Status> {
 
 	let session = state.get_session().await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 	let exist_local_company = sql_get_company_by_inn_kpp_function(&session.local_db, comp_inn, kpp).await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 	if exist_local_company.is_some() {
 		return Ok(exist_local_company);
@@ -33,15 +33,15 @@ pub async fn get_or_parse_insert_company_function(
 		.await
 		.map_err(|err| {
 			let ext_info = format!("post_query_back_api failed, comp_inn = {:?}, kpp = {:?}", comp_inn, kpp);
-			err.process_err(err, &ext_info)
+			err.process_err(err, Some(&ext_info))
 		})?;
 
 	let result: Option<Company> = response.json().await
-		.map_err(|err| err.process_err(Status::MappingError, ""))?;
+		.map_err(|err| err.process_err(Status::MappingError, None))?;
 
 	if let Some(comp) = &result {
 		sql_insert_update_company_query(&session.local_db, comp).await
-			.map_err(|err| err.process_err(err, ""))?;
+			.map_err(|err| err.process_err(err, None))?;
 	}
 
 	Ok(result)

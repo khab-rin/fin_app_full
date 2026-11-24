@@ -34,11 +34,11 @@ where E: sqlx::Executor<'t, Database = sqlx::Postgres>
             &guids_vec,
         ).fetch_one(conn)
         .await
-        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;  
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?;  
 
     user_dto
         .try_into()
-        .map_err(|err: serde_json::Error| err.process_err(Status::MappingError, ""))  
+        .map_err(|err: serde_json::Error| err.process_err(Status::MappingError, None))  
 
 
 }

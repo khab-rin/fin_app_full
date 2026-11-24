@@ -32,7 +32,7 @@ where E: sqlx::Executor<'t, Database = Sqlite>
         contract.is_del,
 		is_sync
 	).fetch_one(conn).await
-	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?;
 
 	Ok(contract)
 }

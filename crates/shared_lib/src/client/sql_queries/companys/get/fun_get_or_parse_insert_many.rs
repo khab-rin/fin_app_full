@@ -12,16 +12,16 @@ pub async fn get_or_parse_insert_companys_function(
 ) -> Result<(), Status> {
 
 	let session = state.get_session().await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 	let mut conn = session.local_db.acquire().await
-		.map_err(|err| err.process_err(Status::SqlPoolErr, ""))?;
+		.map_err(|err| err.process_err(Status::SqlPoolErr, None))?;
 
 	let mut new_pairs: Vec<CompCrateData> = vec![];
 
 	for pair in pairs {
 		let local_comp_option = sql_get_company_by_inn_kpp_function(&mut *conn, &pair.comp_inn, &pair.kpp)
-			.await.map_err(|err| err.process_err(err, ""))?;
+			.await.map_err(|err| err.process_err(err, None))?;
 		if local_comp_option.is_some() {continue;}
 		new_pairs.push(pair);
 	}
@@ -40,22 +40,22 @@ pub async fn get_or_parse_insert_companys_function(
 			state.config.get_sql_long(), 
 			ApiRoutes::SqlCompanyGetOrParseInsertMany, 
 			&pairs_chunk
-		).await.map_err(|err| err.process_err(err, ""))?;
+		).await.map_err(|err| err.process_err(err, None))?;
 
 		let server_companys: Vec<Company> = response.json().await
-			.map_err(|err| err.process_err(Status::MappingError, ""))?;
+			.map_err(|err| err.process_err(Status::MappingError, None))?;
 
 		new_companys.extend(server_companys);
 	}
 
 	let mut tx = session.local_db.begin().await
-		.map_err(|err| err.process_err(Status::SqlPoolErr, ""))?;
+		.map_err(|err| err.process_err(Status::SqlPoolErr, None))?;
 
 	for new_company in new_companys {
 		sql_insert_update_company_query(&mut *tx, &new_company).await
-			.map_err(|err| err.process_err(err, ""))?;
+			.map_err(|err| err.process_err(err, None))?;
 	}
 
-	tx.commit().await.map_err(|err| err.process_err(Status::SqlCommitErr, ""))
+	tx.commit().await.map_err(|err| err.process_err(Status::SqlCommitErr, None))
 
 }

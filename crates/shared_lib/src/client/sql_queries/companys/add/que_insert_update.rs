@@ -22,7 +22,7 @@ where E: sqlx::Executor<'t, Database = Sqlite>
 	).execute(conn).await
 	.map_err(|err| {
 		let ext_info = format!("comp_id = {}, comp_inn = {}, kpp = {}", company.comp_id, company.comp_inn, company.kpp);
-		err.process_err(Status::SqlQueryWrongLogic, &ext_info)
+		err.process_err(Status::SqlQueryWrongLogic, Some(&ext_info))
 	})?;
 
 

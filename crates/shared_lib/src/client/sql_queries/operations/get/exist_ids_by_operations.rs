@@ -10,7 +10,7 @@ pub async fn get_exist_ids_by_ids(
 ) -> Result<HashSet<BoxUuid>, Status> {
 
     let session = state.get_session().await
-        .map_err(|err| err.process_err(err, ""))?; 
+        .map_err(|err| err.process_err(err, None))?; 
 
 
     let all_check_ids: HashSet<BoxUuid> = operations
@@ -19,7 +19,7 @@ pub async fn get_exist_ids_by_ids(
         .collect();
 
     let json_ids = serde_json::to_string(&all_check_ids)
-        .map_err(|err: serde_json::Error| err.process_err(Status::MappingError, ""))?; 
+        .map_err(|err: serde_json::Error| err.process_err(Status::MappingError, None))?; 
 
     let json_ids_str = &json_ids;
 
@@ -28,7 +28,7 @@ pub async fn get_exist_ids_by_ids(
             json_ids_str
         ).fetch_all(&session.local_db)
         .await
-        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?
         .into_iter()
         .collect(); 
 

@@ -14,7 +14,7 @@ where E: sqlx::Executor<'t, Database = Sqlite>
 	).execute(conn).await {
 		Ok(_) => Ok(()),
 		Err(err) => {
-			err.process_err(Status::SqlQueryWrongLogic, "");
+			err.process_err(Status::SqlQueryWrongLogic, None);
 			Err(Status::SqlQueryWrongLogic)
 		}
 	}

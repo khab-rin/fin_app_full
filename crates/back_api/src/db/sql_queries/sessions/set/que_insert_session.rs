@@ -22,6 +22,6 @@ where E: sqlx::Executor<'t, Database = sqlx::Postgres>
 			new_token as BoxUuid
         ).fetch_one(conn)
         .await
-        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?;
     Ok(record.token) 
 }

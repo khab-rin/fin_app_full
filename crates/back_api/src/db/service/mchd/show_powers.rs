@@ -25,7 +25,7 @@ pub(crate) async fn show_powers(
     let mut storage = match get_mchd_storage().await {
         Ok(s) => s,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(MchdStep::from_err(&err));
         }
     };
@@ -46,7 +46,7 @@ pub(crate) async fn show_powers(
     let guids = match get_guids_by_user_id(state, user_id).await {
         Ok(o) => o,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(MchdStep::from_err(&err));
         }
     };
@@ -98,9 +98,9 @@ pub(crate) async fn show_powers(
 
         for power in &root_poa.delegate_powers.mchd_powers {
 			let serde_val = serde_json::to_value(&power.powers_code)
-				.map_err(|err| err.process_err(Status::MappingError, ""))?;
+				.map_err(|err| err.process_err(Status::MappingError, None))?;
 			let home_power: HomeMchdPower = serde_json::from_value(serde_val)
-				.map_err(|err:serde_json::Error| err.process_err(Status::MappingError, ""))?;
+				.map_err(|err:serde_json::Error| err.process_err(Status::MappingError, None))?;
 			if home_power == HomeMchdPower::Unknown {
 				Status::log(LL::Warn, &format!("wrong power = {:?}, guid = {}", power, guid));
 			} else {
@@ -120,12 +120,12 @@ pub(crate) async fn show_powers(
         }
 
         if let Err(err) = write_mchd_storage_to_file(storage).await {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(MchdStep::from_err(&err));
         }
 
         if let Err(err) = del_guids_by_user_id(state, user_id, &del_guids).await {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(MchdStep::from_err(&err)); 
         }
     }

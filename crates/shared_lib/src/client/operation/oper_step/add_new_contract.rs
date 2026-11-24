@@ -23,7 +23,7 @@ pub async fn process_cmd_add_new_contract(
 	let new_contract = match make_new_contract_function(state, new_contr_data).await {
 		Ok(c) => c,
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return Ok(OperationStep::from_err(&err));
 		}
 	};
@@ -31,7 +31,7 @@ pub async fn process_cmd_add_new_contract(
 	let session = match state.get_session().await {
 		Ok(s) => s, 
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return Ok(failed_result);
 		}
 	};
@@ -39,7 +39,7 @@ pub async fn process_cmd_add_new_contract(
 	let exist_contract = match sql_get_contract_by_contr_id_fun(&session.local_db, &new_contract.contract_id).await {
 		Ok(opt) => opt,
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return Ok(OperationStep::from_err(&err));
 		}
 	};
@@ -47,7 +47,7 @@ pub async fn process_cmd_add_new_contract(
 	let mut all_contracts = match sql_get_contracts_by_comp_ctrpty_id_func(&session.local_db, &new_contract.comp_id, &new_contract.ctrpty_id).await {
 		Ok(c) => c,
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return Ok(OperationStep::from_err(&err));
 		}
 	};
@@ -64,7 +64,7 @@ pub async fn process_cmd_add_new_contract(
 	).await {
 		Ok(r) => r, 
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return Ok(OperationStep::from_err(&err));
 		}
 	};
@@ -75,7 +75,7 @@ pub async fn process_cmd_add_new_contract(
 	}
 
 	if let Err(err) = sql_insert_update_contract_function(&session.local_db, &new_contract, 1).await {
-		err.process_err(err, "");
+		err.process_err(err, None);
 		return Ok(OperationStep::from_err(&err));
 	}
 

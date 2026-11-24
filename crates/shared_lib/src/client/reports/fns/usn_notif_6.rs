@@ -24,7 +24,7 @@ pub async fn make_notif_usn_6_files(
 	let session = match state.get_session().await {
 		Ok(s) => s,
 		Err(err) => {
-			err.process_err(err,"");
+			err.process_err(err,None);
 			return failed_result;
 		}
 	};
@@ -32,7 +32,7 @@ pub async fn make_notif_usn_6_files(
 	let quart_dates = match make_quaters(year) {
 		Ok(q) => q,
 		Err(err) => {
-			err.process_err(err,"");
+			err.process_err(err,None);
 			return failed_result;
 		}
 	};
@@ -40,7 +40,7 @@ pub async fn make_notif_usn_6_files(
 	let quat_amonts = match get_quater_cummul_incomes_usn(state, &quart_dates).await {
 		Ok(q) => q,
 		Err(err) => {
-			err.process_err(err,"");
+			err.process_err(err,None);
 			return failed_result;
 		}
 	};
@@ -53,7 +53,7 @@ pub async fn make_notif_usn_6_files(
 	let oktmo = match &session.session_user.company.metadata.oktmo_company {
 		Some(o) => o.clone(),
 		None => {
-			Status::Tech.process_err(Status::SystemLogicErr, "");
+			Status::Tech.process_err(Status::SystemLogicErr, None);
 			return failed_result;
 		}
 	};
@@ -63,7 +63,7 @@ pub async fn make_notif_usn_6_files(
 	let not_year = match Digits4_4::new(year.to_string().as_str()) {
 		Ok(y) => y,
 		Err(err) => {
-			err.process_err(err,"");
+			err.process_err(err,None);
 			return failed_result;
 		} 
 	};
@@ -99,7 +99,7 @@ pub async fn make_notif_usn_6_files(
 			year: not_year 
 		},
 		_ => {
-			return Err(Status::Tech.process_err(Status::SystemLogicErr, ""));
+			return Err(Status::Tech.process_err(Status::SystemLogicErr, None));
 		}
 
 	};
@@ -138,7 +138,7 @@ pub async fn make_notif_usn_6_files(
 	let file_id = match make_file_id(&session, &fns_branch, FnsKnd::UsnNotification) {
 		Ok(id) => id,
 		Err(err) => {
-			err.process_err(err,"");
+			err.process_err(err,None);
 			return failed_result;
 		}
 	};
@@ -157,7 +157,7 @@ pub async fn make_notif_usn_6_files(
 	let mut xml_string = String::with_capacity(4096);
 	
 	if let Err(err) = quick_xml::se::to_writer_with_root(&mut xml_string, "Файл", &notif_file){
-		err.process_err(Status::FileWriteError, "");
+		err.process_err(Status::FileWriteError, None);
 		return failed_result;
 	};
 
@@ -173,7 +173,7 @@ pub async fn make_notif_usn_6_files(
 	let pdf_file = match fill_usn_notif_elems_make_pdf(&session, &notif_file, pdf_tpl_bytes) {
 		Ok(f) => f,
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return failed_result;
 		}
 	};

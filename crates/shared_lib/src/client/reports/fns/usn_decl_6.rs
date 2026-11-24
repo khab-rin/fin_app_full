@@ -33,7 +33,7 @@ pub async fn make_decl_6_files(
 	let session = match state.get_session().await {
 		Ok(s) => s,
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return failed_result;
 		}
 	};
@@ -50,7 +50,7 @@ pub async fn make_decl_6_files(
 		{
 			Ok(r) => r,
 			Err(err) => {
-				err.process_err(err, "");
+				err.process_err(err, None);
 				return failed_result;
 			}
 		};
@@ -58,7 +58,7 @@ pub async fn make_decl_6_files(
 	let power_verify: VerifyPowersResult = match power_verify_response.json().await {
 		Ok(p) => p,
 		Err(err) => {
-			err.process_err(Status::MappingError, "");
+			err.process_err(Status::MappingError, None);
 			return failed_result;
 		}
 	};
@@ -70,7 +70,7 @@ pub async fn make_decl_6_files(
 	let datata_comp_name = match session.session_user.company.metadata.comp_name.as_ref() {
 		Some(d) => d,
 		None => {
-			Status::Tech.process_err(Status::DataCorruptionErr, "");
+			Status::Tech.process_err(Status::DataCorruptionErr, None);
 			return failed_result;
 		}
 	};
@@ -78,7 +78,7 @@ pub async fn make_decl_6_files(
 	let comp_name = match datata_comp_name.short_egrul_name.as_ref() {
 		Some(n) => n.clone(), 
 		None => {
-			Status::Tech.process_err(Status::DataCorruptionErr, "");
+			Status::Tech.process_err(Status::DataCorruptionErr, None);
 			return failed_result;
 		}
 	};
@@ -138,7 +138,7 @@ pub async fn make_decl_6_files(
 			if let Some(g) = power_verify.mchd_uuid {
 				Some(UsnDeclDelegateInfo{doc_name:String1_120::unchecked(g.to_string())})
 			} else {
-				Status::Tech.process_err(Status::SystemLogicErr, "");
+				Status::Tech.process_err(Status::SystemLogicErr, None);
 				return failed_result;
 			}
 		}
@@ -154,7 +154,7 @@ pub async fn make_decl_6_files(
 	let dates = match make_quaters(year) {
 		Ok(d) => d,
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return failed_result;
 		}
 	};
@@ -162,7 +162,7 @@ pub async fn make_decl_6_files(
 	let cumul_incomes_kop = match get_quater_cummul_incomes_usn(state, &dates).await {
 		Ok(c) => c,
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return failed_result;
 		}
 	};
@@ -206,7 +206,7 @@ pub async fn make_decl_6_files(
 	let tax_deduction_dec = match get_quater_cummul_social_usn(state, &dates).await {
 		Ok(a) => a,
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return failed_result;
 		}
 	};
@@ -263,7 +263,7 @@ pub async fn make_decl_6_files(
 		.oktmo_company.as_ref() {
 			o.clone()
 		} else {
-			Status::Tech.process_err(Status::SystemLogicErr, "");
+			Status::Tech.process_err(Status::SystemLogicErr, None);
 			return failed_result;
 		};
 
@@ -327,7 +327,7 @@ pub async fn make_decl_6_files(
 	let file_id = match make_file_id(&session, &fns_branch, FnsKnd::UsnDeclatation){
 		Ok(f) => f,
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return failed_result;
 		}
 	};
@@ -348,7 +348,7 @@ pub async fn make_decl_6_files(
 	let mut xml_string = String::with_capacity(4096);
 
 	 if let Err(err) = quick_xml::se::to_writer_with_root(&mut xml_string, "Файл", &decl_file) {
-		err.process_err(Status::FileWriteError, "");
+		err.process_err(Status::FileWriteError, None);
 		return failed_result;
 	}
 
@@ -364,7 +364,7 @@ pub async fn make_decl_6_files(
 	let pdf_file = match fill_usn_decl_elems_make_pdf(&session, &decl_file, pdf_tpl_bytes) {
 		Ok(f) => f,
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return failed_result;
 		}
 	};

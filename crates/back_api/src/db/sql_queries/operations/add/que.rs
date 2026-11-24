@@ -36,7 +36,7 @@ where E: sqlx::Executor<'t, Database = sqlx::Postgres>
 
 		*operation.entr_date
 	).fetch_one(conn).await
-	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?;
 
 	Ok(operation)
 }

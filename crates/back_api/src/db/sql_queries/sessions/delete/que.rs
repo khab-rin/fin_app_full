@@ -17,7 +17,7 @@ where E: sqlx::Executor<'t, Database = sqlx::Postgres>
             token.as_ref(),
         ).fetch_all(conn)
         .await
-        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?; 
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?; 
 
     Ok(row)
 }

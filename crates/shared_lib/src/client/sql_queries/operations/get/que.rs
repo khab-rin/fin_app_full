@@ -16,7 +16,7 @@ where E: sqlx::Executor<'t, Database = sqlx::Sqlite>
 		"src/client/sql_queries/operations/get/que_exist_by_id.sql",
 		oper_id
 	).fetch_one(conn).await
-	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))
+	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))
 }
 
 pub async fn sql_get_all_operations_function<'t, E>(
@@ -29,7 +29,7 @@ where E: sqlx::Executor<'t, Database = sqlx::Sqlite>
 		Operation,
 		"src/client/sql_queries/operations/get/que_get_all_operations.sql"
 	).fetch_all(conn).await
-	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?;
 
 	Ok(operations.into_iter().filter(|x| x.oper_id != NULLS.id.operation_id).collect())
 

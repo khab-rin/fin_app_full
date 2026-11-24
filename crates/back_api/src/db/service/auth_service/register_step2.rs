@@ -61,7 +61,7 @@ pub(crate) async fn register_step2(
     let json_content = match String::from_utf8(init_file.clone()) {
         Ok(c) => c,
         Err(err) => {
-            err.process_err(Status::FileReadError, "");
+            err.process_err(Status::FileReadError, None);
             return Ok(failed_result);
         }
     };
@@ -69,7 +69,7 @@ pub(crate) async fn register_step2(
     let json_data: RegInitData = match serde_json::from_str(&json_content) {
         Ok(d) => d,
         Err(err) => {
-            err.process_err(Status::MappingError, "");
+            err.process_err(Status::MappingError, None);
             return Ok(failed_result);
         }
     };
@@ -114,7 +114,7 @@ pub(crate) async fn register_step2(
     person = match get_update_insert_person_function(state, &person).await {
         Ok(p) => p,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(AuthStep::from_err(&err));  
         }
     };
@@ -122,7 +122,7 @@ pub(crate) async fn register_step2(
     let company_option = match get_or_parse_insert_one_company_function(state, &comp_inn, &kpp).await {
         Ok(o) => o,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(AuthStep::from_err(&err));  
         }
     };
@@ -146,7 +146,7 @@ pub(crate) async fn register_step2(
             &kpp).await {
         Ok(o) => o,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(AuthStep::from_err(&err));  
         }
     };
@@ -155,7 +155,7 @@ pub(crate) async fn register_step2(
         let tel_email_option = match get_user_phone_mail_by_id(state, &u.user_id).await {
             Ok(o) => o,
             Err(err) => {
-                err.process_err(err, "");
+                err.process_err(err, None);
                 return Ok(AuthStep::from_err(&err)); 
             }
         };
@@ -176,7 +176,7 @@ pub(crate) async fn register_step2(
                 });
             }
             None => {
-                Status::Tech.process_err(Status::SystemLogicErr, "");
+                Status::Tech.process_err(Status::SystemLogicErr, None);
                 return Ok(failed_result);
             }
         }
@@ -199,7 +199,7 @@ pub(crate) async fn register_step2(
         Ok(r) => r,
         Err(err) => {
             let ext_inf = format!("url = {:?}, is_timeout = {:?}, is_connect = {:?}", crypto_url, err.is_timeout(), err.is_connect());
-            err.process_err(Status::QueryGetRequestErr, &ext_inf);
+            err.process_err(Status::QueryGetRequestErr, Some(&ext_inf));
             return Ok(failed_result);
         }
     };
@@ -208,7 +208,7 @@ pub(crate) async fn register_step2(
         let status_code = response.status();
         let error_body = response.text().await.unwrap_or_else(|_| "Failed to read body".to_string());
         let ext_inf = format!("url = {:?}, http_status = {:?}, response_body = {:?}", crypto_url, status_code, error_body);
-        Status::Tech.process_err(Status::QueryGetRequestErr, &ext_inf);
+        Status::Tech.process_err(Status::QueryGetRequestErr, Some(&ext_inf));
         return Ok(failed_result);
     }
 
@@ -217,7 +217,7 @@ pub(crate) async fn register_step2(
             .await {
         Ok(r) => r,
         Err(err) => {
-            err.process_err(Status::MappingError, "");
+            err.process_err(Status::MappingError, None);
             return Ok(failed_result);
         }
     };
@@ -231,7 +231,7 @@ pub(crate) async fn register_step2(
     let sign_fields = match parse_crypto_fields_org(&check_result.text) {
         Ok(r) => r,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(AuthStep::from_err(&err));  
         }
     };
@@ -249,7 +249,7 @@ pub(crate) async fn register_step2(
     let argon2_hash = match hasher.hash_password(password.as_ref().as_bytes(), &salt) {
         Ok(h) => h.to_string(),
         Err(err) => {
-            err.process_err(Status::SystemErr, "");
+            err.process_err(Status::SystemErr, None);
             return Ok(failed_result);
         }
     };
@@ -272,20 +272,20 @@ pub(crate) async fn register_step2(
     let user = match sql_insert_update_user_function(&state.pool_fast, &user_set_data).await {
         Ok(u) => u,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(AuthStep::from_err(&err));  
         }
     };
 
     if check_auth_manager(&json_data, &sign_fields) && let Err(err) = add_new_manager(&user.user_id).await {
-		err.process_err(err, "");
+		err.process_err(err, None);
 		return Ok(failed_result);
     }
 
     let token = match sql_insert_session_fun(&state.pool_fast, &user.user_id, &device_id).await {
         Ok(t) => t,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(AuthStep::from_err(&err)); 
         }
     };

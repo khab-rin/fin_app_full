@@ -1,6 +1,6 @@
 use crate::{Status, ProcessError};
 use crate::ClientState;
-use crate::primitives::frozen::text::BoxUuid;
+use crate::primitives::frozen::text::BoxUuid; 
 
 
 pub fn get_keyring_token(
@@ -10,12 +10,12 @@ pub fn get_keyring_token(
 
     let app_name = state.app_handle.package_info().name.as_str();
 
-	let entry = new_entry(app_name, key_).map_err(|err| err.process_err(err, ""))?;
+	let entry = new_entry(app_name, key_).map_err(|err| err.process_err(err, Some("")))?;
 
-	let token_str = entry.get_password().map_err(|err| err.process_err(Status::KeyRingError, ""))?;
+	let token_str = entry.get_password().map_err(|err| err.process_err(Status::KeyRingError, None))?;
 
     let token = BoxUuid::new(&token_str)
-        .map_err(|err| err.process_err(Status::SystemLogicErr, ""))?;
+        .map_err(|err| err.process_err(Status::SystemLogicErr, Some("")))?;
 
     Ok(Some(token))
 }
@@ -33,11 +33,11 @@ pub fn write_keyring_token (
 
 	let ext_info = format!("key_ = {}, app_name = {}", key_, app_name);
 
-    let entry = new_entry(app_name, key_).map_err(|err| err.process_err(err, ""))?;
+    let entry = new_entry(app_name, key_).map_err(|err| err.process_err(err, Some("")))?;
 
     entry
         .set_password(&token_string)
-        .map_err(|err| err.process_err(Status::SystemLogicErr, &ext_info))?;
+        .map_err(|err| err.process_err(Status::SystemLogicErr, Some(&ext_info)))?;
 
     Ok(())
 
@@ -51,13 +51,13 @@ pub fn delete_keyring_token(
 
     let app_name = state.app_handle.package_info().name.as_str();
 
-    let entry = new_entry(app_name, key_).map_err(|err| err.process_err(err, ""))?;
+    let entry = new_entry(app_name, key_).map_err(|err| err.process_err(err, Some("")))?;
 
     match entry.delete_credential() {
         Ok(_) => Ok(true),
         Err(keyring::Error::NoEntry) => Ok(false),
         Err(err) => {
-            Err(err.process_err(Status::SystemErr, ""))
+            Err(err.process_err(Status::SystemErr, None))
         }
     }
 }
@@ -67,7 +67,7 @@ pub fn new_entry(
 	app_name: &str,
 	key_: &str
 ) -> Result<keyring_core::Entry, Status> {
-	keyring_core::Entry::new(app_name, key_).map_err(|err| err.process_err(Status::KeyRingError, ""))
+	keyring_core::Entry::new(app_name, key_).map_err(|err| err.process_err(Status::KeyRingError, None))
 }
 
 
@@ -77,7 +77,7 @@ pub fn new_entry(
 	app_name: &str,
 	key_: &str
 ) -> Result<keyring::Entry, Status> {
-	keyring::Entry::new(app_name, key_).map_err(|err| err.process_err(Status::KeyRingError, ""))
+	keyring::Entry::new(app_name, key_).map_err(|err| err.process_err(Status::KeyRingError, None))
 }
 
 
@@ -86,7 +86,7 @@ pub fn init_android_keyring() -> Result<(), Status> {
     use android_native_keyring_store::Store;
     use keyring_core::set_default_store;
 
-	let store = Store::new().map_err(|err| err.process_err(Status::KeyRingError, ""))?;
+	let store = Store::new().map_err(|err| err.process_err(Status::KeyRingError, None))?;
 
     set_default_store(store);
 

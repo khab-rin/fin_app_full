@@ -21,7 +21,7 @@ pub async fn restore_session_by_nick(
     let device_id = match get_device_id(state) {
         Ok(d) => d,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(failed_result);
         }
     };
@@ -29,7 +29,7 @@ pub async fn restore_session_by_nick(
     let nick_data_option = match get_nick_data_by_nick(state, nick) {
         Ok(o) => o,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(failed_result);
         }
     };
@@ -44,7 +44,7 @@ pub async fn restore_session_by_nick(
     let token_option = match get_keyring_token(state, &key_) {
         Ok(u) => u,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
 			return Ok(AuthStep::from_err(&err));
         }
     };
@@ -67,7 +67,7 @@ pub async fn restore_session_by_nick(
             &token_device_data).await {
         Ok(r) => r,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
 			return Ok(AuthStep::from_err(&err));
         }
     };
@@ -75,7 +75,7 @@ pub async fn restore_session_by_nick(
     let auth_step: AuthStep = match response.json().await {
         Ok(s) => s,
         Err(err) => {
-            err.process_err(Status::MappingError, "");
+            err.process_err(Status::MappingError, None);
             return Ok(failed_result);
         }
     };
@@ -84,7 +84,7 @@ pub async fn restore_session_by_nick(
         match init_session(state, session_user_token.as_ref()).await {
             Ok(_) => return Ok(AuthStep::SuccessShort {}),
             Err(err) => {
-                err.process_err(err, "");
+                err.process_err(err, None);
                 return Ok(AuthStep::from_err(&err));
             }
         }

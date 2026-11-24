@@ -30,7 +30,7 @@ pub(crate) async fn restore_session_by_passord(
     let auth_check_password_option = match get_restore_password_data(state, data).await {
         Ok(opt) => opt,
         Err(err) => { 
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(AuthStep::from_err(&err)); 
         }
     };
@@ -51,7 +51,7 @@ pub(crate) async fn restore_session_by_passord(
     let server_parsed_hash = match PasswordHash::new(&password_hash) {
         Ok(hash) => hash,
         Err(err) => {
-            err.process_err(Status::SystemErr, "");
+            err.process_err(Status::SystemErr, None);
             return Ok(AuthStep::from_err(&Status::BackApiError)); 
         }
     };
@@ -59,7 +59,7 @@ pub(crate) async fn restore_session_by_passord(
     match Argon2::default().verify_password(data.password.as_bytes(), &server_parsed_hash) {
         Ok(_) => {}
         Err(err) => {
-            err.process_err(Status::SystemErr, "");
+            err.process_err(Status::SystemErr, None);
             return Ok(AuthStep::Password {text: AuthInfo::WrongPassword});
         }  
     }
@@ -75,7 +75,7 @@ pub(crate) async fn restore_session_by_passord(
     let (external_id, call_phone) = match smsru_get_phone(state, &phone).await {
         Ok(res) => res,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(AuthStep::from_err(&Status::BackApiError));
         }
     };
@@ -85,11 +85,11 @@ pub(crate) async fn restore_session_by_passord(
             Ok(AuthStep::CallIn { phone: call_phone, external_id, text: AuthInfo::CallIn })
         }
         Ok(false) => {
-            Status::Tech.process_err(Status::SystemLogicErr, "");
+            Status::Tech.process_err(Status::SystemLogicErr, None);
             Ok(AuthStep::TryLater {text: AuthInfo::BackApiError})
         }
         Err(err) => {
-            err.process_err(Status::SystemLogicErr, "");
+            err.process_err(Status::SystemLogicErr, None);
             Ok(AuthStep::TryLater {text: AuthInfo::BackApiError})
         } 
     }

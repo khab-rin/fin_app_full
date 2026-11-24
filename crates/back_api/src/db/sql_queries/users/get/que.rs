@@ -13,5 +13,5 @@ where E: sqlx::Executor<'t, Database = sqlx::Postgres>
 		"src/db/sql_queries/users/get/que_get_comp_id_by_user_id.sql",
 		user_id as &BoxUuid
 	).fetch_optional(conn).await
-	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))
+	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))
 }

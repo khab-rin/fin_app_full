@@ -25,26 +25,26 @@ pub async fn register_step2(
 	let tauri_json_path = tauri_plugin_fs::FilePath::from_str(json_path)
 		.map_err(|err| {
 			let ext_info = format!("wrong svelte json_path = {:?}", json_path);
-			err.process_err(Status::FilePathError, &ext_info)
+			err.process_err(Status::FilePathError, Some(&ext_info))
 		})?;
 
 	let init_file = state.app_handle.fs().read(tauri_json_path.to_owned())
 		.map_err(|err| {
 			let ext_info = format!("wrong tauri_json_path = {:?}", tauri_json_path);
-			err.process_err(Status::FileReadError, &ext_info)
+			err.process_err(Status::FileReadError, Some(&ext_info))
 		})?;
 
 
 	let tauri_sign_path = tauri_plugin_fs::FilePath::from_str(sign_path)
 		.map_err(|err| {
 			let ext_info = format!("wrong svelte sign_path = {:?}", sign_path);
-			err.process_err(Status::FilePathError, &ext_info)
+			err.process_err(Status::FilePathError, Some(&ext_info))
 		})?;
 
 	let sign_file = state.app_handle.fs().read(tauri_sign_path.to_owned())
 		.map_err(|err| {
 			let ext_info = format!("wrong tauri_sign_path = {:?}", tauri_sign_path);
-			err.process_err(Status::FileReadError, &ext_info)
+			err.process_err(Status::FileReadError, Some(&ext_info))
 		})?;
 
 	
@@ -61,7 +61,7 @@ pub async fn register_step2(
     ).await {
         Ok(r) => r,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
 			return Ok(AuthStep::from_err(&err));
         }
     };
@@ -69,7 +69,7 @@ pub async fn register_step2(
     let auth_step: AuthStep = match response.json().await {
         Ok(s) => s,
         Err(err) => {
-            err.process_err(Status::MappingError, "");
+            err.process_err(Status::MappingError, None);
             return Ok(failed_result);
         }
     };
@@ -82,7 +82,7 @@ pub async fn register_step2(
     match write_new_user_info_to_device(state, &session_token) {
         Ok(_) => {},
         Err(err) => {
-            err.process_err(Status::MappingError, "");
+            err.process_err(Status::MappingError, None);
             return Ok(failed_result);
         }
     }
@@ -90,7 +90,7 @@ pub async fn register_step2(
     match init_session(state, session_token.as_ref()).await {
         Ok(_) => Ok(AuthStep::SuccessShort {  }),
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             Ok(AuthStep::from_err(&err))
         }
     }

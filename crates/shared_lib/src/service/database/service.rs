@@ -11,12 +11,18 @@ use crate::primitives::frozen::text::{BoxUuid};
 #[derive(Serialize, Deserialize, Debug, ts_rs::TS)]
 pub enum DatabaseStep {
 	Loading { text: DatabaseInfo },
+
 	SyncCompanysToServer {companys: Vec<Company>},
 	SyncCompanysToClient {del_companys: Vec<Company>, server_companys: Vec<Company>},
-	SyncContracts {text: DatabaseInfo, contracts: Vec<Contract>, user_id: BoxUuid},
+
 	SyncPersons {text: DatabaseInfo, persons: Vec<Person>, user_id: BoxUuid},
-	SyncOperations {text: DatabaseInfo, operations: Vec<Operation>, user_id: BoxUuid},
+	
+	SyncContracts {text: DatabaseInfo, contracts: Vec<Contract>, companys: Vec<Company>, user_id: BoxUuid},
+
+	SyncOperations {text: DatabaseInfo, operations: Vec<Operation>, companys: Vec<Company>, user_id: BoxUuid},
+	
 	SyncSuccess {text: DatabaseInfo},
+
 	TryLater {text: DatabaseInfo },	
 }
 

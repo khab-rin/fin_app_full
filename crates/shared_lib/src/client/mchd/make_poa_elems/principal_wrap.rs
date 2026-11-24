@@ -33,7 +33,7 @@ pub fn make_principal_wrap(
     };
 
     let principal = make_principal (session, data)
-        .map_err(|err| err.process_err(err, ""))?; 
+        .map_err(|err| err.process_err(err, None))?; 
 
     let principal_info = PrincipalWrap { 
         principal_identity, 
@@ -51,10 +51,10 @@ pub fn make_principal(
 ) -> Result<Principal, Status> {
 
     let russian_org = make_russ_org_principal(session, data)
-        .map_err(|err| err.process_err(err, ""))?; 
+        .map_err(|err| err.process_err(err, None))?; 
 
     let ip = make_ip_principal(session, data)
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
 
     let principal = Principal {
         russian_org,
@@ -76,7 +76,7 @@ pub fn make_russ_org_principal(
     }
     
     let russ_organization = make_russ_organization(session)
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
     
     let root_manager = make_rootmanager(data);
 
@@ -100,14 +100,14 @@ pub fn make_russ_organization(
     let comp_name_data = match session.session_user.company.metadata.comp_name.clone() {
         Some(d) => d,
         None => {
-            return Err(Status::Tech.process_err(Status::RequiredFieldsMiss, ""));
+            return Err(Status::Tech.process_err(Status::RequiredFieldsMiss, None));
         }
     };
 
     let comp_name = match comp_name_data.full_egrul_name {
         Some(n) => n,
         None => {
-            return Err(Status::Tech.process_err(Status::RequiredFieldsMiss, ""));
+            return Err(Status::Tech.process_err(Status::RequiredFieldsMiss, None));
         }
     };
 
@@ -222,7 +222,7 @@ pub fn make_ip_principal(
     let ogrnip = match session.session_user.company.metadata.ogrn.clone() {
         Some(o) => Ogrn::unchecked(o.beat_string()),
         None => {
-            return Err(Status::Tech.process_err(Status::RequiredFieldsMiss, ""));
+            return Err(Status::Tech.process_err(Status::RequiredFieldsMiss, None));
         }
     };
 

@@ -4,6 +4,7 @@ use crate::service::database::service::{DatabaseInfo, DatabaseStep};
 use crate::service::api_routes::implements::ApiRoutes;
 
 use crate::client::back_api::post_query::post_query_back_api;
+use crate::client::sql_queries::companys::add::que_insert_update::sql_insert_update_company_query;
 use crate::client::sql_queries::operations::get::que::sql_get_all_operations_function;
 use crate::client::sql_queries::operations::add::que::sql_insert_update_operation_function;
 
@@ -16,7 +17,7 @@ pub async fn sync_all_operations(
 	let session = match state.get_session().await {
 		Ok(s) => s,
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return Ok(failed_result);
 		}
 	};
@@ -24,7 +25,7 @@ pub async fn sync_all_operations(
 	let mut tx = match session.local_db.begin().await {
 		Ok(c) => c,
 		Err(err) => {
-			err.process_err(Status::SqlPoolErr, "");
+			err.process_err(Status::SqlPoolErr, None);
 			return Ok(failed_result);
 		}
 	};
@@ -32,7 +33,7 @@ pub async fn sync_all_operations(
 	let local_operations = match sql_get_all_operations_function(&mut *tx).await {
 		Ok(l) => l,
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return Ok(failed_result)
 		}
 	};
@@ -40,6 +41,7 @@ pub async fn sync_all_operations(
 	let step_to_serv = DatabaseStep::SyncOperations { 
 		text: DatabaseInfo::Notning, 
 		operations: local_operations, 
+		companys: vec![],
 		user_id: session.session_user.user.user_id.clone() 
 	};
 
@@ -51,7 +53,7 @@ pub async fn sync_all_operations(
 	).await {
 		Ok(r) => r,
 		Err(err) => {
-			err.process_err(err, "ext_info");
+			err.process_err(err, None);
 			return Ok(DatabaseStep::from_err(&err));
 		}
 	};
@@ -59,18 +61,24 @@ pub async fn sync_all_operations(
 	let step_to_client:DatabaseStep = match response.json().await {
 		Ok(s) => s,
 		Err(err) => {
-			err.process_err(Status::MappingError, "");
+			err.process_err(Status::MappingError, None);
 			return Ok(failed_result);
 		}
 	};
 
-	if let DatabaseStep::SyncOperations { operations, .. } = step_to_client {
+	if let DatabaseStep::SyncOperations { operations, companys, .. } = step_to_client {
+		for company in companys.iter() {
+			if let Err(err) = sql_insert_update_company_query(&mut *tx, company).await {
+				err.process_err(err, None);
+				return Ok(DatabaseStep::from_err(&err));
+			}
+		}
 		for operation in operations.iter() {
 			if let Err(err) = sql_insert_update_operation_function(
 				&mut *tx, operation, 1
 			).await {
-				err.process_err(err, "");
-				return Ok(failed_result);
+				err.process_err(err, None);
+				return Ok(DatabaseStep::from_err(&err));
 			}
 		}
 	}
@@ -78,7 +86,7 @@ pub async fn sync_all_operations(
 	match tx.commit().await {
 		Ok(_) => Ok(DatabaseStep::SyncSuccess { text: DatabaseInfo::Notning }),
 		Err(err) => {
-			err.process_err(Status::MappingError, "");
+			err.process_err(Status::MappingError, None);
 			Ok(failed_result)
 		}
 	}

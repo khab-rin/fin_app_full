@@ -11,21 +11,21 @@ pub async fn make_null_sqlite_elements(
 	session: &ActiveSession
 ) -> Result<(), Status> {
 
-	let mut conn = session.local_db.begin().await.map_err(|err| err.process_err(Status::SqlCommitErr, ""))?;
+	let mut conn = session.local_db.begin().await.map_err(|err| err.process_err(Status::SqlCommitErr, None))?;
 
 	sql_insert_update_company_query(&mut *conn, &NULLS.model.company).await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 	sql_insert_update_person_function(&mut *conn, &NULLS.model.person, 1).await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 	sql_insert_update_contract_function(&mut *conn, &NULLS.model.contract, 1).await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 	sql_insert_update_operation_function(&mut *conn, &NULLS.model.operation, 1).await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
-	conn.commit().await.map_err(|err| err.process_err(Status::SqlCommitErr, ""))?;
+	conn.commit().await.map_err(|err| err.process_err(Status::SqlCommitErr, None))?;
 
 	Ok(())
 }

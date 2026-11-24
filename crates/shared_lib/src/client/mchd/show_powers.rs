@@ -15,7 +15,7 @@ pub async fn show_powers(
     let session = match state.get_session().await {
         Ok(s) => s,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(failed_result);
         }
     };
@@ -29,7 +29,7 @@ pub async fn show_powers(
             &user_id).await {
         Ok(r) => r,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
 			return Ok(MchdStep::from_err(&err));
         }
     };
@@ -37,7 +37,7 @@ pub async fn show_powers(
     let mchd_step: MchdStep = match response.json().await {
         Ok(s) => s,
         Err(err) => {
-            err.process_err(Status::MappingError, "");
+            err.process_err(Status::MappingError, None);
             return Ok(failed_result);
         }
     };
@@ -54,12 +54,12 @@ pub async fn check_access(
 
     let step = show_powers(state)
         .await
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
 
     let all_powers = match step {
         MchdStep::ShowPowers { fns, btb, home, .. } => [fns, btb, home],
         _ => {
-            return Err(Status::Tech.process_err(Status::SystemLogicErr, ""));
+            return Err(Status::Tech.process_err(Status::SystemLogicErr, None));
         }
     };
 

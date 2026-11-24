@@ -19,10 +19,10 @@ where E: sqlx::Executor<'t, Database = sqlx::Sqlite>
 		comp_inn,
 		kpp
 	).fetch_optional(conn).await
-	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?;
 
 	if let Some(dto) = dto_option {
-		Ok(Some(dto.try_into().map_err(|err:serde_json::Error| err.process_err(Status::MappingError, ""))?))
+		Ok(Some(dto.try_into().map_err(|err:serde_json::Error| err.process_err(Status::MappingError, None))?))
 	} else {
 		Ok(None)
 	}
@@ -39,7 +39,7 @@ where E: sqlx::Executor<'t, Database = sqlx::Sqlite>
 		"src/client/sql_queries/companys/get/que_ids_by_comp_type.sql",
 		comp_type
 	).fetch_all(conn).await
-	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?
+	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?
 	.into_iter()
 	.filter(|x| x != NULLS.id.comp_id)
 	.collect();
@@ -58,12 +58,12 @@ where E: sqlx::Executor<'t, Database = sqlx::Sqlite>
 		CompanyDto,
 		"src/client/sql_queries/companys/get/que_get_all_companys.sql",
 	).fetch_all(conn).await
-	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?
+	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?
 	.into_iter()
 	.filter(|x| x.comp_id != NULLS.id.comp_id)
 	.map(|x| {
 		x.try_into()
-		.map_err(|err:serde_json::Error| err.process_err(Status::MappingError, ""))
+		.map_err(|err:serde_json::Error| err.process_err(Status::MappingError, None))
 	}).collect()
 
 }
@@ -80,11 +80,11 @@ where E: sqlx::Executor<'t, Database = sqlx::Sqlite>
 		"src/client/sql_queries/companys/get/que_get_by_inn.sql",
 		comp_inn
 	).fetch_all(conn).await
-	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?;
 
 	dtos.into_iter().map(|x| x
 		.try_into()
-		.map_err(|err: serde_json::Error| err.process_err(Status::MappingError, ""))
+		.map_err(|err: serde_json::Error| err.process_err(Status::MappingError, None))
 	).collect()
 
 }

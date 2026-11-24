@@ -23,7 +23,7 @@ pub async fn cmd_get_user_comp_ids(
 ) -> Result<(BoxUuid, BoxUuid), Status> {
 
 	let session = state.get_session().await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 	let user_id = session.session_user.user.user_id.clone();
 	let comp_id = session.session_user.company.comp_id.clone();

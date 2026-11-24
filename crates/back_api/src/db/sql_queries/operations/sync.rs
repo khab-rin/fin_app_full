@@ -2,6 +2,7 @@ use std::collections::HashSet;
 
 
 use shared_lib::sql_models::operation::implements::Operation;
+use shared_lib::sql_models::company::implements::Company;
 use shared_lib::{Status, ProcessError, LL};
 use shared_lib::service::database::service::{DatabaseStep, DatabaseInfo};
 use shared_lib::primitives::frozen::text::BoxUuid;
@@ -10,11 +11,13 @@ use shared_lib::primitives::frozen::text::BoxUuid;
 use crate::config::BackApiState;
 
 use crate::db::sql_queries::users::get::que::sql_get_comp_id_by_user_id_function;
+use crate::db::sql_queries::operations::add::que::sql_insert_update_operation_function;
+use crate::db::sql_queries::companys::get::que::get_company_option_by_id;
 use crate::db::sql_queries::operations::get::que::{
 	sql_get_operation_ids_by_comp_id_function,
 	sql_get_operation_by_id_function
 };
-use crate::db::sql_queries::operations::add::que::sql_insert_update_operation_function;
+
 
 pub async fn sync_all_operations(
 	state: &BackApiState,
@@ -33,7 +36,7 @@ pub async fn sync_all_operations(
 	let mut tx = match state.pool_fast.begin().await {
 		Ok(t) => t,
 		Err(err) => {
-			err.process_err(Status::SqlPoolErr, "");
+			err.process_err(Status::SqlPoolErr, None);
 			return Ok(failed_result);
 		}
 	};
@@ -48,7 +51,7 @@ pub async fn sync_all_operations(
 			return Ok(failed_result);
 		},
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return Ok(DatabaseStep::from_err(&err));
 		}
 	};
@@ -56,16 +59,17 @@ pub async fn sync_all_operations(
 	let mut all_server_operation_ids: HashSet<BoxUuid> = match sql_get_operation_ids_by_comp_id_function(&mut *tx, &comp_id).await {
 		Ok(ids_vec) => ids_vec.into_iter().collect(),
 		Err(err) => {
-			err.process_err(Status::SqlPoolErr, "");
+			err.process_err(Status::SqlPoolErr, None);
 			return Ok(DatabaseStep::from_err(&err));
 		}
 	};
 
 	let mut server_operations: Vec<Operation> = vec![];
+	let mut server_companys: Vec<Company> = vec![];
 
 	for operation in local_operations {
 		if let Err(err) = sql_insert_update_operation_function(&mut *tx, operation).await {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return Ok(DatabaseStep::from_err(&err));
 		}
 		all_server_operation_ids.remove(&operation.oper_id);
@@ -73,16 +77,32 @@ pub async fn sync_all_operations(
 
 	for server_operation_id in all_server_operation_ids {
 		let server_operation_option = sql_get_operation_by_id_function(&mut *tx, &server_operation_id).await
-			.map_err(|err| err.process_err(err, ""))?;
+			.map_err(|err| err.process_err(err, None))?;
 		if let Some(server_operation) = server_operation_option {
 			server_operations.push(server_operation);
 		}
 	}
 
+	for operation in server_operations.iter() {
+		let comp_id = &operation.ctrpty_id;
+		match get_company_option_by_id(&mut *tx, comp_id).await {
+			Ok(Some(c)) => server_companys.push(c),
+			Ok(None) => {},
+			Err(err) => {
+				err.process_err(err, None);
+				return Ok(DatabaseStep::from_err(&err));
+			}
+		}
+	}
+
 	match tx.commit().await {
-		Ok(_) => Ok(DatabaseStep::SyncOperations { text: DatabaseInfo::Notning, operations: server_operations, user_id: user_id.clone() }),
+		Ok(_) => Ok(DatabaseStep::SyncOperations { 
+			text: DatabaseInfo::Notning, 
+			operations: server_operations, 
+			companys: server_companys,
+			user_id: user_id.clone() }),
 		Err(err) => {
-			err.process_err(Status::SqlPoolErr, "");
+			err.process_err(Status::SqlPoolErr, None);
 			Ok(failed_result)
 		}
 	}

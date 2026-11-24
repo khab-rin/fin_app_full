@@ -19,7 +19,7 @@ pub async fn sync_all_companys(
 	let session = match state.get_session().await {
 		Ok(s) => s,
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return Ok(failed_result);
 		}
 	};
@@ -27,7 +27,7 @@ pub async fn sync_all_companys(
 	let mut tx = match session.local_db.begin().await {
 		Ok(t) => t,
 		Err(err) => {
-			err.process_err(Status::SystemErr, "");
+			err.process_err(Status::SystemErr, None);
 			return Ok(failed_result);
 		}
 	};
@@ -35,7 +35,7 @@ pub async fn sync_all_companys(
 	let mut local_companys = match sql_get_all_companys_function(&session.local_db).await {
 		Ok(a) => a,
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return Ok(DatabaseStep::from_err(&err));
 		}
 	};
@@ -61,7 +61,7 @@ pub async fn sync_all_companys(
 		let step_to_client: DatabaseStep = match response.json().await {
 			Ok(s) => s,
 			Err(err) => {
-				err.process_err(Status::MappingError, "");
+				err.process_err(Status::MappingError, None);
 				return Ok(failed_result);
 			}
 		};
@@ -69,20 +69,20 @@ pub async fn sync_all_companys(
 		if let DatabaseStep::SyncCompanysToClient { del_companys, server_companys } = step_to_client {
 			for del_company in del_companys {
 				if let Err(err) = sql_del_company_by_id_query(&mut *tx, &del_company.comp_id).await {
-					err.process_err(err, "");
+					err.process_err(err, None);
 					return Ok(failed_result);
 				}
 			}
 
 			for server_company in server_companys {
 				if let Err(err) =  sql_insert_update_company_query(&mut *tx, &server_company).await {
-					err.process_err(err, "");
+					err.process_err(err, None);
 					return Ok(failed_result);
 				}
 			}
 
 		} else {
-			Status::Tech.process_err(Status::SystemLogicErr, "");
+			Status::Tech.process_err(Status::SystemLogicErr, None);
 			return Ok(failed_result);
 		}
 	}
@@ -90,7 +90,7 @@ pub async fn sync_all_companys(
 	match tx.commit().await {
 		Ok(_) => Ok(DatabaseStep::SyncSuccess {text: DatabaseInfo::Notning}),
 		Err(err) => {
-			err.process_err(Status::MappingError, "");
+			err.process_err(Status::MappingError, None);
 			Ok(failed_result)
 		}
 	}

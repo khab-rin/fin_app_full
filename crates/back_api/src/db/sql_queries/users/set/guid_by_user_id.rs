@@ -14,7 +14,7 @@ pub(crate) async fn set_guid_by_user_id(
         user_id.as_ref(),
         guid.as_ref()
     ).fetch_optional(&state.pool_fast).await {
-        return Err(err.process_err(Status::SqlQueryWrongLogic, ""));
+        return Err(err.process_err(Status::SqlQueryWrongLogic, None));
     }
 
     Ok(())

@@ -65,10 +65,10 @@ pub fn write_new_user_info_to_device(
     };
 
     add_nick_data(state, &nick_data)
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
 
     write_keyring_token(state, &key_, &token)
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
 
 
     Ok(())

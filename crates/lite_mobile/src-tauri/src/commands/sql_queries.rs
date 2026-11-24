@@ -20,7 +20,7 @@ pub async fn cmd_add_comp_bank_acc(
     ras_acc: RasAcc
 ) -> Result<Vec<RasBicAcc>, Status> {
 
-	let ras_bic_acc = RasBicAcc::new(bic, ras_acc).map_err(|err| err.process_err(err, ""))?;
+	let ras_bic_acc = RasBicAcc::new(bic, ras_acc).map_err(|err| err.process_err(err, None))?;
 
     add_new_bank_acc(&state, &comp_inn, &kpp, ras_bic_acc).await
 
@@ -67,7 +67,7 @@ pub async fn cmd_get_all_companys(
 ) -> Result<Vec<Company>, Status> {
 
 	let session = state.get_session().await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 	
 	sql_get_all_companys_function(&session.local_db).await
 }

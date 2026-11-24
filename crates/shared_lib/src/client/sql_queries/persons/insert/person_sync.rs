@@ -9,11 +9,11 @@ pub async fn insert_person_sync(
 ) -> Result<Person, Status> {
 
     let session = state.get_session().await
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
 
     let prev_person_option = sql_get_person_by_inn_function(&session.local_db, &person.pers_inn)
         .await
-        .map_err(|err| err. process_err(Status::SqlQueryWrongLogic, ""))?;
+        .map_err(|err| err. process_err(Status::SqlQueryWrongLogic, None))?;
 
     let mut prev_person = match prev_person_option {
         Some(p) => p,
@@ -33,7 +33,7 @@ pub async fn insert_person_sync(
         prev_person.last_update
         ).fetch_optional(&session.local_db)
         .await
-        .map_err(|err| err. process_err(Status::SqlQueryWrongLogic, ""))?;
+        .map_err(|err| err. process_err(Status::SqlQueryWrongLogic, None))?;
 
     Ok(prev_person)
 }

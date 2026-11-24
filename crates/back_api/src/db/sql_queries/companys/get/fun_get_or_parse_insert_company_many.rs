@@ -20,12 +20,12 @@ pub async fn get_or_parse_insert_company_many_function(
 	let mut new_keys: Vec<CompCrateData> = vec![];
 
 	let mut conn = state.pool_fast.acquire().await
-		.map_err(|err| err.process_err(Status::SqlPoolErr, ""))?;
+		.map_err(|err| err.process_err(Status::SqlPoolErr, None))?;
 
 	for pair in data {
 		let server_company_option = sql_get_company_by_inn_kpp_function(
 			&mut *conn, &pair.comp_inn, &pair.kpp
-		).await.map_err(|err| err.process_err(err, ""))?;
+		).await.map_err(|err| err.process_err(err, None))?;
 		if let Some(c) = server_company_option {
 			server_companys.push(c);
 		} else {
@@ -39,7 +39,7 @@ pub async fn get_or_parse_insert_company_many_function(
 	for key in new_keys {
 		let future = async move {
 			let new_company_option = get_dadata_company(state, &key.comp_inn, &key.kpp)
-				.await.map_err(|err| err.process_err(err, ""))?;
+				.await.map_err(|err| err.process_err(err, None))?;
 			if new_company_option.is_none() {
 				Status::log(LL::Info, &format!("Company not founded in datata, comp_inn = {:?}, kpp = {:?}", key.comp_inn, key.kpp));
 			}
@@ -49,7 +49,7 @@ pub async fn get_or_parse_insert_company_many_function(
 	}
 
 	let mut dadata_companys = try_join_all(dadata_tasks).await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 	while let Some(comp_option) = dadata_companys.pop() {
 		if let Some(new_company) = comp_option {
@@ -57,14 +57,14 @@ pub async fn get_or_parse_insert_company_many_function(
 		}
 	}
 
-	let mut tx = state.pool_fast.begin().await.map_err(|err| err.process_err(Status::SqlPoolErr, ""))?;
+	let mut tx = state.pool_fast.begin().await.map_err(|err| err.process_err(Status::SqlPoolErr, None))?;
 
 	for new_company in new_companys.iter() {
 		sql_insert_update_company_function(&mut *tx, new_company).await
-			.map_err(|err| err.process_err(err, ""))?;
+			.map_err(|err| err.process_err(err, None))?;
 	}
 
-	tx.commit().await.map_err(|err| err.process_err(Status::SqlCommitErr, ""))?;
+	tx.commit().await.map_err(|err| err.process_err(Status::SqlCommitErr, None))?;
 
 	server_companys.extend(new_companys);
 

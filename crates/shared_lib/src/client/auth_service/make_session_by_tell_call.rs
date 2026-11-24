@@ -23,7 +23,7 @@ pub async fn make_session_by_tel_call(
     let device_id = match get_device_id(state) {
         Ok(d) => d,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
 			return Ok(AuthStep::from_err(&err));
         }
     };
@@ -40,7 +40,7 @@ pub async fn make_session_by_tel_call(
             &external_device_data).await {
         Ok(r) => r,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
 			return Ok(AuthStep::from_err(&err));
         }
     };
@@ -48,7 +48,7 @@ pub async fn make_session_by_tel_call(
     let auth_step: AuthStep = match response.json().await {
         Ok(s) => s,
         Err(err) => {
-            err.process_err(Status::MappingError, "");
+            err.process_err(Status::MappingError, None);
             return Ok(failed_result);
         }
     };
@@ -61,7 +61,7 @@ pub async fn make_session_by_tel_call(
     match write_new_user_info_to_device(state, &session_token) {
         Ok(_) => {},
         Err(err) => {
-            err.process_err(Status::MappingError, "");
+            err.process_err(Status::MappingError, None);
             return Ok(AuthStep::from_err(&err));
         }
     }
@@ -69,7 +69,7 @@ pub async fn make_session_by_tel_call(
     match init_session(state, session_token.as_ref()).await {
         Ok(_) => Ok(AuthStep::SuccessShort {  }),
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             Ok(AuthStep::from_err(&err))
         }
     }

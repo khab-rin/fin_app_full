@@ -10,7 +10,7 @@ pub async fn get_company_by_inn_kpp(
 ) -> Result<Option<Company>, Status> {
 
     let session = state.get_session().await
-        .map_err(|err| err.process_err(err, ""))?; 
+        .map_err(|err| err.process_err(err, None))?; 
 
     let var1= comp_inn.as_ref();
     let var2 = kpp.as_ref();
@@ -22,10 +22,10 @@ pub async fn get_company_by_inn_kpp(
             var2
         ).fetch_optional(&session.local_db)
         .await
-        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?; 
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?; 
 
     if let Some(dto) = company_dto_option {
-        let company: Company = dto.try_into().map_err(|err: serde_json::Error| err.process_err(Status::MappingError, ""))?;
+        let company: Company = dto.try_into().map_err(|err: serde_json::Error| err.process_err(Status::MappingError, None))?;
         return Ok(Some(company));
     }
 

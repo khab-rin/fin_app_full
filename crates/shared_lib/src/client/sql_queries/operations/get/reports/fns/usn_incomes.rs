@@ -10,7 +10,7 @@ pub async fn get_quater_cummul_incomes_usn(
 ) -> Result<QuartCummulAmnt, Status> {
 	
 	let session = state.get_session().await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 	sqlx::query_file_as!(
 		QuartCummulAmnt,
@@ -21,5 +21,5 @@ pub async fn get_quater_cummul_incomes_usn(
 		dates.q3,
 		dates.q4
 	).fetch_one(&session.local_db).await
-	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))
+	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))
 }

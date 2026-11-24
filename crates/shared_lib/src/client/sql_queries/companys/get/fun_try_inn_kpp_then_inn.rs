@@ -13,12 +13,12 @@ pub async fn try_get_by_inn_kpp_then_inn_function(
 
 
 	let session = state.get_session().await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 
 	let all_companys = sql_get_by_inn_function(
 		&session.local_db, comp_inn).await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 	
 	// for (i, company) in all_companys.iter().enumerate() {
 	// 	Status::log(LL::Debug, &format!("\nnum = {}\n, name = {:?}\n, type = {:?}\n, que_inn = {}\n, que_kpp = {}\n, list_inn = {}\n, list_kpp = {}\n, metadata_kpp = {:?}\n",

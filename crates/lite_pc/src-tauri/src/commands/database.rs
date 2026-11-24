@@ -21,7 +21,7 @@ pub async fn cmd_sync_data_base(
 		Ok(true) => {},
 		Ok(false) => { return Ok(DatabaseStep::TryLater { text: DatabaseInfo::AccessDenied });}
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return Ok(DatabaseStep::from_err(&err));
 		}
 	}
@@ -33,28 +33,28 @@ pub async fn cmd_sync_data_base(
 	emit_progress("Синхронизация контрагентов...", 0);
 
 	if let Err(err) = sync_all_companys(&state).await {
-		err.process_err(err,"");
+		err.process_err(err,None);
 		return Ok(DatabaseStep::from_err(&err));
 	}
 
 	emit_progress("Синхронизация физ. лиц...", 25);
 
 	if let Err(err) = sync_all_persons(&state).await {
-		err.process_err(err,"");
+		err.process_err(err,None);
 		return Ok(DatabaseStep::from_err(&err));
 	}
 
 	emit_progress("Синхронизация договоров...", 50);
 
 	if let Err(err) = sync_all_contracts(&state).await {
-		err.process_err(err,"");
+		err.process_err(err,None);
 		return Ok(DatabaseStep::from_err(&err));
 	}
 
 	emit_progress("Синхронизация операций...", 75);
 
 	if let Err(err) = sync_all_operations(&state).await {
-		err.process_err(err,"");
+		err.process_err(err,None);
 		return Ok(DatabaseStep::from_err(&err));
 	}
 

@@ -40,7 +40,7 @@ pub(crate) async fn verify_user_power_exist_handler(
 ) -> Result<Json<VerifyPowersResult>, Status> {
 
     let res = verify_user_power_exist(&state, user_id, power)
-		.await.map_err(|err| err.process_err(err, ""))?;
+		.await.map_err(|err| err.process_err(err, None))?;
 		
 
     Ok(Json(res))

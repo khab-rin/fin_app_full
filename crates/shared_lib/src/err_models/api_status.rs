@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use crate::Status;
 
 #[derive(Debug)]
@@ -11,39 +12,56 @@ impl std::error::Error for Status{}
 
 pub trait ProcessError {
     #[track_caller]
-    fn process_err(self, local_err: Status, ext_info: &str) -> Status;
+    fn process_err(self, local_err: Status, ext_info: Option<&str>) -> Status;
 }
 
 
 impl<E> ProcessError for E
 where 
-    E: std::fmt::Display + 'static
+    E: std::error::Error + Send + Sync + 'static
 {
     #[track_caller]
-    fn process_err(self, local_err: Status, ext_info: &str) -> Status {
+    fn process_err(self, local_err: Status, ext_info: Option<&str>) -> Status {
 
-		let local_err = match (&self as &dyn std::any::Any)
-                .downcast_ref::<sqlx::Error>()
-            {
-                Some(sqlx::Error::Database(db_err))
-                    if db_err.code().as_deref() == Some("23503") =>
-                {
-                    Status::SqlSyncError
-                },
-                _ => local_err,
-            };
+
+		let local_err = match (&self as &dyn std::any::Any).downcast_ref::<sqlx::Error>(){
+			Some(sqlx::Error::Database(db_err))
+				if db_err.code().as_deref() == Some("23503") =>
+			{
+				Status::SqlSyncError
+			},
+			_ => local_err,
+		};
         
+		let tech_err = anyhow::Error::new(self);
+
+        let info: Cow<'_, str> = match ext_info {
+			Some(i) => Cow::Borrowed(i),
+			None => {
+				if tech_err.downcast_ref::<Status>().is_some() {
+					Cow::Borrowed("")
+				} else {
+					Cow::Owned(format!("{:?}", tech_err))
+				}
+			}
+		};
+
+		let tech_err = tech_err.to_string();
+
         #[cfg(feature = "server")]
         {   
-			let tech_err = anyhow::Error::msg(self.to_string());
+
+	
             let caller = std::panic::Location::caller();
             let location = format!("api_error_at::{}:{}:{}", caller.file().replace(".rs", ""), caller.line(), caller.column());
+
+			
 
             tracing::error!(
                 location = &location,
                 tech_err = ?tech_err,
                 local_err = ?local_err,
-                ext_info = ext_info,
+                ext_info = %info,
             );
 			return local_err;
         }
@@ -51,9 +69,9 @@ where
 		#[allow(unreachable_code)]
         #[cfg(any(feature = "lite_pc", feature = "lite_mobile"))]
         {
-			let tech_err = anyhow::Error::msg(self.to_string());
+
             log::error!(
-                "tech_err = {:?}, local_err = {:?}, ext_info = {}", tech_err, local_err, ext_info
+                "tech_err = {:?}, local_err = {:?}, ext_info = {}", tech_err, local_err, info
             );
 			return local_err;
         }

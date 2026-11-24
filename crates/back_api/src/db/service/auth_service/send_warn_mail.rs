@@ -44,7 +44,7 @@ pub(crate) async fn send_warn_mail(
         .json(&payload)
         .send()
         .await
-        .map_err(|err| err.process_err(Status::QueryPostRequestErr, &state_clone.config.email_sender.api))?;
+        .map_err(|err| err.process_err(Status::QueryPostRequestErr, Some(&state_clone.config.email_sender.api)))?;
    
 
     if !response.status().is_success() {

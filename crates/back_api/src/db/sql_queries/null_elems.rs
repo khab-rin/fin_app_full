@@ -14,24 +14,24 @@ pub async fn make_null_postgress_elements(
 	
 
 	let mut tx = state.pool_fast.begin().await
-		.map_err(|err| err.process_err(Status::SqlCommitErr, ""))?;
+		.map_err(|err| err.process_err(Status::SqlCommitErr, None))?;
 
 	sql_insert_update_company_function(&mut *tx, &NULLS.model.company).await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 	
 	sql_insert_update_person_function(&mut *tx, &NULLS.model.person).await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 	sql_insert_update_user_function(&mut *tx, &NULLS.model.user_data).await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 	sql_insert_update_contract_function(&mut *tx, &NULLS.model.contract).await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 	sql_insert_update_operation_function(&mut *tx, &NULLS.model.operation).await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
-	tx.commit().await.map_err(|err| err.process_err(Status::SqlCommitErr, ""))?;
+	tx.commit().await.map_err(|err| err.process_err(Status::SqlCommitErr, None))?;
 
 	Ok(())
 }

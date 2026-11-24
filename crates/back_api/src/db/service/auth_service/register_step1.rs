@@ -57,7 +57,7 @@ pub(crate) async fn register_step1(
     let _ = match get_update_insert_person_function(state, &new_person).await {
         Ok(p) => p,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(AuthStep::from_err(&err)); 
         }
     };
@@ -72,7 +72,7 @@ pub(crate) async fn register_step1(
             return Ok(failed_result);
         }
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(AuthStep::from_err(&err)); 
         }
     };

@@ -26,20 +26,20 @@ pub async fn verify_signature_handler(
 
     let mut init_file = tokio::fs::File::create(&init_path)
         .await
-        .map_err(|err| err.process_err(Status::FileCreateError, ""))?;
+        .map_err(|err| err.process_err(Status::FileCreateError, None))?;
 
     init_file.write_all(&payload.init_file)
         .await
-        .map_err(|err| err.process_err(Status::FileWriteError, ""))?;
+        .map_err(|err| err.process_err(Status::FileWriteError, None))?;
 
     let mut sig_file = tokio::fs::File::create(&sig_path)
         .await
-        .map_err(|err| err.process_err(Status::FileCreateError, ""))?;
+        .map_err(|err| err.process_err(Status::FileCreateError, None))?;
 
 
     sig_file.write_all(&payload.sign_file)
         .await
-        .map_err(|err| err.process_err(Status::FileWriteError, ""))?;
+        .map_err(|err| err.process_err(Status::FileWriteError, None))?;
 
     let cryptcp_output = tokio::process::Command::new(&state.cryptcp_path)
         .current_dir(&temp_dir) // Переходим в /tmp, чтобы избегать ошибки 0x20000065
@@ -53,7 +53,7 @@ pub async fn verify_signature_handler(
         .arg(&init_filename)  // Относительное имя
         .output()
         .await
-        .map_err(|err| err.process_err(Status::CryptoServerError, ""))?;
+        .map_err(|err| err.process_err(Status::CryptoServerError, None))?;
 
     if !cryptcp_output.status.success() {
         let stdout_err = String::from_utf8_lossy(&cryptcp_output.stdout);
@@ -89,7 +89,7 @@ pub async fn verify_signature_handler(
         .arg(&sig_filename)
         .output()
         .await
-        .map_err(|err| err.process_err(Status::CryptoServerError, ""))?;
+        .map_err(|err| err.process_err(Status::CryptoServerError, None))?;
 
     let _ = tokio::fs::remove_file(&init_path).await;
     let _ = tokio::fs::remove_file(&sig_path).await;

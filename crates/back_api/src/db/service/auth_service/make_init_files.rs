@@ -91,7 +91,7 @@ pub(crate) async fn make_init_files(
     let json_file = match serde_json::to_vec(&data) {
         Ok(j) => j,
         Err(err) => {
-            err.process_err(Status::SerializationError, "ext_info");
+            err.process_err(Status::SerializationError, None);
             return Ok(failed_result);
         }
     };

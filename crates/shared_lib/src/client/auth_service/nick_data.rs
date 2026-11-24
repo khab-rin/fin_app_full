@@ -11,10 +11,10 @@ pub fn add_nick_data(
 ) -> Result<NickData, Status> {
     
     let file_path = get_nick_data_path(state)
-        .map_err(|err| err.process_err(err, ""))?; 
+        .map_err(|err| err.process_err(err, None))?; 
 
     let nick_datas = get_nick_datas_from_file_path(&file_path)
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
 
     let mut new_nick_datas: std::collections::HashSet<NickData> = std::collections::HashSet::new();
 
@@ -33,7 +33,7 @@ pub fn add_nick_data(
 
 
     if let Err(err) =  save_nick_datas(&file_path, &new_nick_datas) {
-        return Err(err.process_err(err, ""));
+        return Err(err.process_err(err, None));
     }
 
     Ok(nick_data.clone())
@@ -46,11 +46,11 @@ pub fn get_nick_names(
 ) -> Result<Vec<String>, Status> {
 
     let file_path = get_nick_data_path(state)
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
 
 
     let nick_datas = get_nick_datas_from_file_path(&file_path)
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
 
     let res: Vec<String> = nick_datas.into_iter().map(|x| x.nick).collect();
 
@@ -64,10 +64,10 @@ pub fn get_nick_data_by_nick(
 ) -> Result<Option<NickData>, Status> {
 
     let file_path = get_nick_data_path(state)
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
 
     let nick_datas = get_nick_datas_from_file_path(&file_path)
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
 
     for nick_data in nick_datas {
         if nick_data.nick == nick {
@@ -89,10 +89,10 @@ pub fn get_nick_data_path(
     let app_path = app_handle
         .path()
         .app_data_dir()
-        .map_err(|err| err.process_err(Status::SystemErr, ""))?;
+        .map_err(|err| err.process_err(Status::SystemErr, None))?;
 
     std::fs::create_dir_all(&app_path)
-        .map_err(|err| err.process_err(Status::SystemErr, ""))?;
+        .map_err(|err| err.process_err(Status::SystemErr, None))?;
 
 
     let file_path = app_path.join("nick_names.json");
@@ -112,20 +112,20 @@ pub fn get_nick_datas_from_file_path(
         .create(true)
         .truncate(false)
         .open(file_path)
-        .map_err(|err| err.process_err(Status::SystemErr, ""))?;
+        .map_err(|err| err.process_err(Status::SystemErr, None))?;
 
     let mut content = String::new();
 
     file
         .read_to_string(& mut content)
-        .map_err(|err| err.process_err(Status::FileReadError, ""))?;
+        .map_err(|err| err.process_err(Status::FileReadError, None))?;
 
 
     let nick_datas: std::collections::HashSet<NickData> = match content.is_empty() {
         true => std::collections::HashSet::new(),
         false => {
             serde_json::from_str(&content)
-                .map_err(|err| err.process_err(Status::MappingError, ""))? 
+                .map_err(|err| err.process_err(Status::MappingError, None))? 
         }
     };
 
@@ -139,7 +139,7 @@ pub fn save_nick_datas(
 ) -> Result<(), Status> {
 
     let content = serde_json::to_string_pretty(nick_datas)
-        .map_err(|err| err.process_err(Status::SerializationError, ""))?; 
+        .map_err(|err| err.process_err(Status::SerializationError, None))?; 
 
 
     let mut file = std::fs::OpenOptions::new()
@@ -148,10 +148,10 @@ pub fn save_nick_datas(
         .truncate(true)
         .read(false)
         .open(file_path)
-        .map_err(|err| err.process_err(Status::FileReadError, ""))?;
+        .map_err(|err| err.process_err(Status::FileReadError, None))?;
   
 
     std::io::Write::write_all(&mut file, content.as_bytes())
-        .map_err(|err| err.process_err(Status::FileWriteError, "")) 
+        .map_err(|err| err.process_err(Status::FileWriteError, None)) 
 
 }

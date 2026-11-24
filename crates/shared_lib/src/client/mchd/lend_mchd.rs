@@ -19,7 +19,7 @@ pub async fn lend_mchd_to_back_api_for_register(
     let session = match state.get_session().await {
         Ok(s) => s,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(failed_result);
         }
     };
@@ -27,26 +27,26 @@ pub async fn lend_mchd_to_back_api_for_register(
 	let tauri_xml_path = tauri_plugin_fs::FilePath::from_str(xml_file_path)
 		.map_err(|err| {
 			let ext_info = format!("wrong svelte xml_file_path = {:?}", xml_file_path);
-			err.process_err(Status::FilePathError, &ext_info)
+			err.process_err(Status::FilePathError, Some(&ext_info))
 		})?;
 
 	let xml_file = state.app_handle.fs().read(tauri_xml_path.to_owned())
 		.map_err(|err| {
 			let ext_info = format!("wrong tauri_xml_path = {:?}", tauri_xml_path);
-			err.process_err(Status::FileReadError, &ext_info)
+			err.process_err(Status::FileReadError, Some(&ext_info))
 		})?;
 
 	
 	let tauri_sig_path = tauri_plugin_fs::FilePath::from_str(sig_file_path)
 		.map_err(|err| {
 			let ext_info = format!("wrong svelte sig_file_path = {:?}", sig_file_path);
-			err.process_err(Status::FilePathError, &ext_info)
+			err.process_err(Status::FilePathError, Some(&ext_info))
 		})?;
 
 	let sig_file = state.app_handle.fs().read(tauri_sig_path.to_owned())
 		.map_err(|err| {
 			let ext_info = format!("wrong tauri_sig_path ={:?}", tauri_sig_path);
-			err.process_err(Status::FileReadError, &ext_info)
+			err.process_err(Status::FileReadError, Some(&ext_info))
 		})?;
 
     let user_id = session.session_user.user.user_id.clone();
@@ -64,7 +64,7 @@ pub async fn lend_mchd_to_back_api_for_register(
             &data).await {
         Ok(r) => r, 
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
 			return Ok(MchdStep::from_err(&err));
         }
     };
@@ -72,7 +72,7 @@ pub async fn lend_mchd_to_back_api_for_register(
     let mchd_step = match response.json().await {
         Ok(d) => d,
         Err(err) => {
-            err.process_err(Status::MappingError, "");
+            err.process_err(Status::MappingError, None);
             return Ok(failed_result);
         }
     };

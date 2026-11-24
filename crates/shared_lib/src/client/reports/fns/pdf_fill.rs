@@ -12,7 +12,7 @@ pub fn custom_pdf_fill(
 ) -> Result<Vec<u8>, Status> {
 
 	let mut doc = lopdf::Document::load_mem(pdf_tpl_bytes)
-		.map_err(|err| err.process_err(Status::PdfFileLogicError, ""))?;
+		.map_err(|err| err.process_err(Status::PdfFileLogicError, None))?;
 
 	let mut pdf_key_values_map: HashMap<String, Vec<ObjectId>> = HashMap::new();
 	
@@ -20,24 +20,24 @@ pub fn custom_pdf_fill(
 
 	{
 		let catalog = doc.catalog()
-			.map_err(|err| err.process_err(Status::PdfFileLogicError, ""))?;
+			.map_err(|err| err.process_err(Status::PdfFileLogicError, None))?;
 
 		if let Ok(Object::Reference(id)) = catalog.get(b"AcroForm") {
 			acro_form_id = Some(*id);
 		}
 
 		let acro_form_obj = catalog.get_deref(b"AcroForm", &doc)
-			.map_err(|err| err.process_err(Status::PdfFileLogicError, "Ключ AcroForm не найден или поврежден"))?;
+			.map_err(|err| err.process_err(Status::PdfFileLogicError, Some("Ключ AcroForm не найден или поврежден")))?;
 
 		let acro_form: &Dictionary = acro_form_obj.as_dict()
-			.map_err(|err| err.process_err(Status::PdfFileLogicError, "AcroForm не является словарем"))?;
+			.map_err(|err| err.process_err(Status::PdfFileLogicError, Some("AcroForm не является словарем")))?;
 
 		collect_pdf_pattern_keys_ids(acro_form, &doc, &mut pdf_key_values_map)
-			.map_err(|err| err.process_err(Status::PdfFileLogicError, ""))?;
+			.map_err(|err| err.process_err(Status::PdfFileLogicError, None))?;
 	}
 
 	let json_value = serde_json::to_value(elems)
-		.map_err(|err| err.process_err(Status::MappingError, ""))?;
+		.map_err(|err| err.process_err(Status::MappingError, None))?;
 
 	let mut date_map: HashMap<String, String> = HashMap::new();
 
@@ -56,11 +56,11 @@ pub fn custom_pdf_fill(
 		if let Some(val) = date_map.get(&field_name) {
 			for &(k1, k2) in object_ids.iter() {
 				let mut field_obj = doc.get_object((k1, k2))
-					.map_err(|err| err.process_err(Status::PdfFileLogicError, "Ошибка получения объекта"))?
+					.map_err(|err| err.process_err(Status::PdfFileLogicError, Some("Ошибка получения объекта")))?
 					.clone();
 
 				let field_dict = field_obj.as_dict_mut()
-					.map_err(|err| err.process_err(Status::PdfFileLogicError, "Объект поля не является словарем"))?;
+					.map_err(|err| err.process_err(Status::PdfFileLogicError, Some("Объект поля не является словарем")))?;
 
 				let encoded_bytes = to_pdf_utf16_bom(val);
 				let pdf_value_obj = lopdf::Object::String(encoded_bytes, lopdf::StringFormat::Hexadecimal);
@@ -75,12 +75,12 @@ pub fn custom_pdf_fill(
 	if let Some(id) = acro_form_id {
 
 		let acro_obj_ref = doc.get_object(id)
-			.map_err(|err| err.process_err(Status::PdfFileLogicError, ""))?;
+			.map_err(|err| err.process_err(Status::PdfFileLogicError, None))?;
 
 		let mut acro_obj = acro_obj_ref.clone();
 
 		let acro_dict = acro_obj.as_dict_mut()
-			.map_err(|err| err.process_err(Status::PdfFileLogicError, ""))?;
+			.map_err(|err| err.process_err(Status::PdfFileLogicError, None))?;
 
 		acro_dict.set("NeedAppearances", Object::Boolean(true));
 		doc.set_object(id, acro_obj);
@@ -88,7 +88,7 @@ pub fn custom_pdf_fill(
 
 	let mut output_bytes = Vec::new();
 	doc.save_to(&mut output_bytes)
-		.map_err(|err| err.process_err(Status::PdfFileLogicError, "Не удалось сохранить PDF-документ"))?;
+		.map_err(|err| err.process_err(Status::PdfFileLogicError, Some("Не удалось сохранить PDF-документ")))?;
 
 	Ok(output_bytes)
 }
@@ -101,10 +101,10 @@ fn collect_pdf_pattern_keys_ids(
 ) -> Result<(), Status> {
 
     let fields_obj = acro_form.get_deref(b"Fields", doc)
-        .map_err(|err| err.process_err(Status::PdfFileLogicError, "Ключ Fields не найден в форме"))?;
+        .map_err(|err| err.process_err(Status::PdfFileLogicError, Some("Ключ Fields не найден в форме")))?;
 
     let fields_arr = fields_obj.as_array()
-        .map_err(|err| err.process_err(Status::PdfFileLogicError, "Fields не является массивом"))?;
+        .map_err(|err| err.process_err(Status::PdfFileLogicError, Some("Fields не является массивом")))?;
 
     for obj in fields_arr {
         if let Object::Reference(field_id) = obj {

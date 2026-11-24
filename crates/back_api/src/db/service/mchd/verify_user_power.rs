@@ -19,7 +19,7 @@ pub async fn verify_user_power_exist(
 
 	let storage = get_mchd_storage()
 		.await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 	if storage.managers.contains(&user_id) {
 		return Ok(VerifyPowersResult {
@@ -30,7 +30,7 @@ pub async fn verify_user_power_exist(
 
 	let guides = get_guids_by_user_id(state, &user_id)
 		.await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 	for g in guides {
 		let Some(mchd) = storage.storage.get(&g) else {continue;};

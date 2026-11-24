@@ -10,7 +10,7 @@ pub async fn make_new_contract_function(
     data: NewContrData
 ) -> Result<Contract, Status> {
     let session = state.get_session().await
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
 
 	let comp_id = session.session_user.company.comp_id.clone();
 

@@ -20,7 +20,7 @@ pub(crate) async fn restore_session_by_token(
     let session_user_option = match get_user_by_device_token(state, payload).await {
         Ok(o) => o,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(AuthStep::TryLater {text: AuthInfo::BackApiError});
         }
     };
@@ -29,7 +29,7 @@ pub(crate) async fn restore_session_by_token(
         Some(s_u) => s_u,
         None => {
             if let Err(err) = delete_warn_token_device(state, payload).await {
-                err.process_err(err, "");
+                err.process_err(err, None);
 				return Ok(AuthStep::TryLater { text: AuthInfo::BackApiError });
             }
             return Ok(AuthStep::TokenDevicePairMiss { 

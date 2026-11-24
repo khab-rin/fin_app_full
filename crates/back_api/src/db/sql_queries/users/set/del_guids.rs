@@ -18,7 +18,7 @@ pub(crate) async fn del_guids_by_user_id(
 
     let prev_guids = get_guids_by_user_id(state, user_id)
         .await
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
 
     let mut new_guids_set: HashSet<BoxUuid> =HashSet::new();
 
@@ -44,7 +44,7 @@ pub(crate) async fn del_guids_by_user_id(
         ).bind(user_id.as_ref())
         .fetch_optional(&state.pool_fast)
         .await
-        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?
         .map(|row| row.get("user_id"))
      
     } else {
@@ -54,7 +54,7 @@ pub(crate) async fn del_guids_by_user_id(
             &new_guids_vec
         ).fetch_optional(&state.pool_fast)
         .await
-        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?
         .map(|record| record.user_id)
     };
 

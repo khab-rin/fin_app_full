@@ -25,20 +25,20 @@ pub(crate) async fn smsru_get_cf(
         .query(&query_params)
         .send()
         .await
-        .map_err(|err| err.process_err(Status::QueryGetRequestErr, ""))?; 
+        .map_err(|err| err.process_err(Status::QueryGetRequestErr, None))?; 
 
 
             
     let text_body = response.text().await
-        .map_err(|err| err.process_err(Status::QueryBodyReadErr, ""))?;
+        .map_err(|err| err.process_err(Status::QueryBodyReadErr, None))?;
 
 
     let smsru_response: SmsruGetResResponse = serde_json::from_str(&text_body)
-        .map_err(|err| err.process_err(Status::MappingError, ""))?;
+        .map_err(|err| err.process_err(Status::MappingError, None))?;
 
 
     if smsru_response.status_code != 100 {
-        return Err(Status::Tech.process_err(Status::BackSmsRuBalance, ""));
+        return Err(Status::Tech.process_err(Status::BackSmsRuBalance, None));
     }
 
 
@@ -50,7 +50,7 @@ pub(crate) async fn smsru_get_cf(
             _ => Ok(SmsRuResponseTextCode::UnknownCode)
         }
     } else {
-        Err(Status::Tech.process_err(Status::BackApiError, ""))
+        Err(Status::Tech.process_err(Status::BackApiError, None))
     }
 
 

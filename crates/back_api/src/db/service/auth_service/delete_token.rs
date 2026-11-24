@@ -13,7 +13,7 @@ pub(crate) async  fn delete_warn_token_device(
 ) -> Result<Status, Status> {
 
     let warn_vec: Vec<WarnEmailData> = sql_delete_session_by_token_function(&state.pool_fast, payload).await
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
 
     for warn_data in warn_vec {
         let state_clone = state.clone();

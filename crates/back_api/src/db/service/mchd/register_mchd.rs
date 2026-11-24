@@ -44,7 +44,7 @@ pub(crate) async fn register_mchd(
         .await {
             Ok(r) => r,
             Err(err) => {
-                err.process_err(Status::QueryGetRequestErr, "");
+                err.process_err(Status::QueryGetRequestErr, None);
                 return Ok(failed_result);
             }
         };
@@ -53,7 +53,7 @@ pub(crate) async fn register_mchd(
         let status_code = response.status();
         let error_body = response.text().await.unwrap_or_else(|_| "Failed to read body".to_string());
         let ext_inf = format!("url = {:?}, http_status = {:?}, err_body = {:?}", crypto_url, status_code, error_body);
-        Status::Tech.process_err(Status::QueryGetRequestErr, &ext_inf);
+        Status::Tech.process_err(Status::QueryGetRequestErr, Some(&ext_inf));
         return Ok(failed_result);
     }
 
@@ -62,7 +62,7 @@ pub(crate) async fn register_mchd(
             .await {
         Ok(r) => r,
         Err(err) => {
-            err.process_err(Status::MappingError, "");
+            err.process_err(Status::MappingError, None);
             return Ok(failed_result);
         }
     };
@@ -74,7 +74,7 @@ pub(crate) async fn register_mchd(
 	let sign_fields = match parse_crypto_fields_org(&check_result.text) {
 		Ok(r) => r,
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return Ok(failed_result);
 		}
 	};
@@ -82,7 +82,7 @@ pub(crate) async fn register_mchd(
     let xml_content = match String::from_utf8(xml_file.clone()) {
         Ok(c) => c,
         Err(err) => {
-            err.process_err(Status::FileReadError, "");
+            err.process_err(Status::FileReadError, None);
             return Ok(failed_result);
         }
     };
@@ -90,14 +90,14 @@ pub(crate) async fn register_mchd(
     let poa: PoaMchd = match quick_xml::de::from_str(&xml_content) {
         Ok(p) => p,
         Err(err) => {
-            err.process_err(Status::MappingError, "");
+            err.process_err(Status::MappingError, None);
             return Ok(failed_result);
         }
     };
 
 	let session_user_option = get_user_by_user_id(state, user_id)
 		.await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 	let session_user = match session_user_option {
 		Some(s) => s,
@@ -146,14 +146,14 @@ pub(crate) async fn register_mchd(
     let guide_str: String = if identificator.len() > 36 {
         identificator[identificator.len() - 36..].iter().collect()
     } else {
-        Status::Tech.process_err(Status::SystemLogicErr, "");
+        Status::Tech.process_err(Status::SystemLogicErr, None);
         return Ok(failed_result);
     };
 
     let guide_uuid = match uuid::Uuid::parse_str(&guide_str) {
         Ok(g) => g,
         Err(err) => {
-            err.process_err(Status::SystemLogicErr, "");
+            err.process_err(Status::SystemLogicErr, None);
             return Ok(failed_result);
         }
     };
@@ -163,13 +163,13 @@ pub(crate) async fn register_mchd(
     match set_guid_by_user_id(state, user_id, &guide).await {
         Ok(_) => {},
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(failed_result);
         }
     }
 
     if let Err(err) = add_new_poa(poa).await {
-        err.process_err(err, "");
+        err.process_err(err, None);
         return Ok(failed_result);
     }
    

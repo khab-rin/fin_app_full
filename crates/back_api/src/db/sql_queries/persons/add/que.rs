@@ -18,11 +18,11 @@ where E: sqlx::Executor<'t, Database = sqlx::Postgres>
 		serde_json::to_value(&person.metadata).unwrap_or_default(),
 
 	).fetch_one(conn).await
-	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?;
 
 	let person: Person = person_dto
 		.try_into()
-		.map_err(|err:serde_json::Error| err.process_err(Status::MappingError, ""))?;
+		.map_err(|err:serde_json::Error| err.process_err(Status::MappingError, None))?;
 
 	Ok(person)
 }

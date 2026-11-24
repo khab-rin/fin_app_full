@@ -39,7 +39,7 @@ pub async fn get_or_parse_insert_company_one_handler(
 	let CompCrateData { comp_inn, kpp } = data;
 
 	let res = get_or_parse_insert_one_company_function(&state, &comp_inn, &kpp).await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 	Ok(Json(res))
 }
@@ -51,7 +51,7 @@ pub async fn get_or_parse_insert_company_many_handler(
 
 	let res = get_or_parse_insert_company_many_function(
 		&state, data
-	).await.map_err(|err| err.process_err(err, ""))?;
+	).await.map_err(|err| err.process_err(err, None))?;
 
 	Ok(Json(res))
 
@@ -83,7 +83,7 @@ pub async fn sql_operations_add_many_handler(
 ) -> Result<(), Status> {
 
 	insert_operations_function(&state, data).await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 	Ok(())
 }
@@ -100,7 +100,7 @@ pub async fn sql_sync_handler(
 			match sql_company_sync(&state, &data).await {
 				Ok(res) => Ok(Json(res)),
 				Err(err) => {
-					err.process_err(err, "");
+					err.process_err(err, None);
 					Ok(Json(DatabaseStep::from_err(&err)))
 				}
 			}	
@@ -109,7 +109,7 @@ pub async fn sql_sync_handler(
 			match sync_all_persons(&state, data).await {
 				Ok(res) => Ok(Json(res)),
 				Err(err) => {
-					err.process_err(err, "");
+					err.process_err(err, None);
 					Ok(Json(DatabaseStep::from_err(&err)))
 				}
 			}
@@ -118,7 +118,7 @@ pub async fn sql_sync_handler(
 			match sync_all_contracts(&state, &data).await {
 				Ok(res) => Ok(Json(res)),
 				Err(err) => {
-					err.process_err(err, "");
+					err.process_err(err, None);
 					Ok(Json(DatabaseStep::from_err(&err)))
 				}
 			}
@@ -127,7 +127,7 @@ pub async fn sql_sync_handler(
 			match sync_all_operations(&state, &data).await {
 				Ok(res) => Ok(Json(res)),
 				Err(err) => {
-					err.process_err(err, "");
+					err.process_err(err, None);
 					Ok(Json(DatabaseStep::from_err(&err)))
 				}
 			}

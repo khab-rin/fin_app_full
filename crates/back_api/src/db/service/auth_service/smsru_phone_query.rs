@@ -27,18 +27,18 @@ pub(crate) async fn smsru_get_phone(
         .query(&query_params)
         .send()
         .await
-        .map_err(|err| err.process_err(Status::QueryGetRequestErr, url))?;
+        .map_err(|err| err.process_err(Status::QueryGetRequestErr, Some(url)))?;
 
 	let text_body = response
 		.text()
 		.await
-		.map_err(|err| err.process_err(Status::MappingError, "Не удалось прочитать тело ответа"))?;
+		.map_err(|err| err.process_err(Status::MappingError, Some("Не удалось прочитать тело ответа")))?;
 
 
 	let data: SmsruCallResponse = serde_json::from_str(&text_body)
 		.map_err(|err| {
 			// Если JSON невалидный, передаем текст ответа в ошибку
-			err.process_err(Status::MappingError, &text_body)
+			err.process_err(Status::MappingError, Some(&text_body))
 		})?;
 
 
@@ -46,12 +46,12 @@ pub(crate) async fn smsru_get_phone(
         
         let check_id = data
             .check_id
-            .ok_or_else(|| Status::Tech.process_err(Status::QueryResponseFormatErr, ""))?;
+            .ok_or_else(|| Status::Tech.process_err(Status::QueryResponseFormatErr, None))?;
 
         
         let call_phone:Phone = data
             .call_phone
-            .ok_or_else(|| Status::Tech.process_err(Status::QueryResponseFormatErr, ""))?;
+            .ok_or_else(|| Status::Tech.process_err(Status::QueryResponseFormatErr, None))?;
         
         Ok((check_id, call_phone))
 

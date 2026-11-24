@@ -21,7 +21,7 @@ pub(crate) async fn make_session_by_tel_call(
     let expire_option = match sql_get_user_time_by_device_external_function(&state.pool_fast, data).await {
         Ok(o) => o,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(AuthStep::from_err(&Status::BackApiError)); 
         }
     };
@@ -36,7 +36,7 @@ pub(crate) async fn make_session_by_tel_call(
     let phone_cf = match smsru_get_cf(state, external_id).await {
         Ok(cf) => cf,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(AuthStep::from_err(&Status::BackApiError)); 
         }
     };
@@ -58,7 +58,7 @@ pub(crate) async fn make_session_by_tel_call(
     let token = match sql_insert_session_fun(&state.pool_fast, &user_id, device_id).await {
         Ok(t) => t,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(AuthStep::from_err(&Status::BackApiError));
         }
     };
@@ -66,7 +66,7 @@ pub(crate) async fn make_session_by_tel_call(
     let session_user_option = match get_user_by_user_id(state, &user_id).await {
         Ok(u) => u,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(AuthStep::from_err(&err));  
         }
     };

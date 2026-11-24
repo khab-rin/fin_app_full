@@ -8,7 +8,7 @@ pub async fn get_contracts_by_comp_ctrpty_ids(
 ) -> Result<Vec<Contract>, Status> {
 
     let session = state.get_session().await
-        .map_err(|err| err.process_err(err, ""))?; 
+        .map_err(|err| err.process_err(err, None))?; 
 
     let comp_id = session.session_user.company.comp_id.clone();
 
@@ -19,7 +19,7 @@ pub async fn get_contracts_by_comp_ctrpty_ids(
             ctrpty_id
         ).fetch_all(&session.local_db)
         .await
-        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))
 
 }
 
@@ -29,7 +29,7 @@ pub async fn get_contract_by_contr_id(
 ) -> Result<Option<Contract>, Status> {
 
     let session = state.get_session().await
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
 
 
     sqlx::query_file_as!(
@@ -38,6 +38,6 @@ pub async fn get_contract_by_contr_id(
             contr_id
         ).fetch_optional(&session.local_db)
         .await
-        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))
 
 }

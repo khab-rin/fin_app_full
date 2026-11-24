@@ -43,7 +43,7 @@ pub(crate) fn get_mchd_data_path() -> Result<PathBuf, Status> {
                 Ok(home.join(format!(".{}", crate_name)).join("mchd"))
             }
             None => {
-                Err(Status::Tech.process_err(Status::DirCreateError, ""))
+                Err(Status::Tech.process_err(Status::DirCreateError, None))
             }
         }
     }
@@ -55,7 +55,7 @@ pub(crate) fn get_mchd_data_path() -> Result<PathBuf, Status> {
 pub(crate) async fn get_mchd_storage() -> Result<MchdStorage, Status> {
 
     let path = get_mchd_data_path()
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
 
     let file_path = path.join("storage.json");
 
@@ -66,12 +66,12 @@ pub(crate) async fn get_mchd_storage() -> Result<MchdStorage, Status> {
     }
 
     let json_content = std::fs::read_to_string(&file_path)
-        .map_err(|err| err.process_err(Status::FileReadError, ""))?;
+        .map_err(|err| err.process_err(Status::FileReadError, None))?;
 
 
 
     serde_json::from_str(&json_content)
-        .map_err(|err| err.process_err(Status::MappingError, ""))
+        .map_err(|err| err.process_err(Status::MappingError, None))
 
 }
 
@@ -80,20 +80,20 @@ pub(crate) async fn write_mchd_storage_to_file(
     storage: MchdStorage
 ) -> Result<(), Status> {
     let path = get_mchd_data_path()
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
  
 
     if let Err(err) = std::fs::create_dir_all(&path) {
-        return Err(err.process_err(Status::DirCreateError, ""));
+        return Err(err.process_err(Status::DirCreateError, None));
     }
 
     let file_path = path.join("storage.json");
 
     let json_content = serde_json::to_string_pretty(&storage)
-        .map_err(|err| err.process_err(Status::MappingError, ""))?;
+        .map_err(|err| err.process_err(Status::MappingError, None))?;
     
     if let Err(err) = std::fs::write(&file_path, &json_content) {
-        return Err(err.process_err(Status::FileWriteError, ""));
+        return Err(err.process_err(Status::FileWriteError, None));
     }
 
     Ok(())
@@ -110,11 +110,11 @@ pub(crate) fn insert_poa(
     let guide_str: String = if identificator.len() > 36 {
         identificator[identificator.len() - 36..].iter().collect()
     } else {
-        return Err(Status::Tech.process_err(Status::DataCorruptionErr, ""));
+        return Err(Status::Tech.process_err(Status::DataCorruptionErr, None));
     };
 
     let guide_uuid = uuid::Uuid::parse_str(&guide_str)
-        .map_err(|err| err.process_err(Status::SystemLogicErr, ""))?;
+        .map_err(|err| err.process_err(Status::SystemLogicErr, None))?;
 
 
     let guide = BoxUuid::unchecked(guide_uuid);
@@ -133,7 +133,7 @@ pub(crate) fn insert_poa(
         let poa_end_date = match &poa.poa.poa_doc {
             PoaRootKind::RootPoa(boxed_root) => boxed_root.poa_metadata.life_date.clone(),
             _ => { 
-                return Err(Status::Tech.process_err(Status::SystemLogicErr, "")); 
+                return Err(Status::Tech.process_err(Status::SystemLogicErr, None)); 
             }
         };
 
@@ -154,13 +154,13 @@ pub(crate) async fn add_new_manager(
 ) -> Result<(), Status> {
     let mut storage = get_mchd_storage()
         .await
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
     
     storage.managers.insert(user_id.clone());
 
     write_mchd_storage_to_file(storage)
         .await
-        .map_err(|err| err.process_err(err,""))?;
+        .map_err(|err| err.process_err(err,None))?;
 
     Ok(())
 }
@@ -171,13 +171,13 @@ pub(crate) async fn add_new_poa(
 
     let storage = get_mchd_storage()
         .await
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
 
     let storage = insert_poa(poa, storage)
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
 
     write_mchd_storage_to_file(storage).await
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
 
     
     Ok(())

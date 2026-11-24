@@ -45,7 +45,7 @@ pub fn make_root_poa(
     let poa_metadata = make_poametadata(data, mchd_num, today);
 
     let principal_wrap = make_principal_wrap(session, data)
-        .map_err(|err| err.process_err(err, ""))?; 
+        .map_err(|err| err.process_err(err, None))?; 
 
     let delegate_powers = make_delegate_powers(data);
 

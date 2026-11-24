@@ -34,7 +34,7 @@ pub async fn add_bank_acc_by_inn_kpp(
             kpp, 
             ras_bic_acc)
         .await
-        .map_err(|err| err.process_err(err, ""))?; 
+        .map_err(|err| err.process_err(err, None))?; 
 
     match company_option {
         Some(c) => Ok(c.metadata.bank_acc),

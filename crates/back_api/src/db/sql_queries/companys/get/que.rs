@@ -16,11 +16,11 @@ where E: sqlx::Executor<'t, Database = sqlx::Postgres>
         **comp_id,
     ).fetch_optional(conn)
     .await
-    .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+    .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?;
 
 	match dto_option {
 		Some(dto) => {
-			let company: Company = dto.try_into().map_err(|err: serde_json::Error| err.process_err(Status::MappingError, ""))?;
+			let company: Company = dto.try_into().map_err(|err: serde_json::Error| err.process_err(Status::MappingError, None))?;
 			Ok(Some(company))
 		},
 		None => Ok(None)
@@ -40,10 +40,10 @@ where E: sqlx::Executor<'t, Database = sqlx::Postgres>
 		comp_inn as &CompInn,
 		kpp as &Kpp
 	).fetch_optional(conn).await
-	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?;
 
 	if let Some(dto) = dto_option {
-		let company: Company = dto.try_into().map_err(|err: serde_json::Error| err.process_err(Status::MappingError, ""))?;
+		let company: Company = dto.try_into().map_err(|err: serde_json::Error| err.process_err(Status::MappingError, None))?;
 		Ok(Some(company))
 	} else {
 		Ok(None)

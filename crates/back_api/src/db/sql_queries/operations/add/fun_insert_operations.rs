@@ -11,13 +11,13 @@ pub async fn insert_operations_function(
 ) -> Result<(), Status> {
 
 	let mut tx = state.pool_long.begin().await
-		.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+		.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?;
 
 	for operation in operations.iter() {
 		sql_insert_update_operation_function(&mut *tx, operation).await
-			.map_err(|err| err.process_err(err, ""))?;
+			.map_err(|err| err.process_err(err, None))?;
 	}
 
-	tx.commit().await.map_err(|err| err.process_err(Status::SqlCommitErr, ""))
+	tx.commit().await.map_err(|err| err.process_err(Status::SqlCommitErr, None))
 
 }

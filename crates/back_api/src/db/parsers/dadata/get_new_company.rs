@@ -19,7 +19,7 @@ pub(crate) async fn get_dadata_company(
         .await {
             Ok(m) => m,
             Err(err) => {
-                err.process_err(err, "");
+                err.process_err(err, None);
                 return Ok(None);
             }
         };
@@ -40,7 +40,7 @@ pub(crate) async fn get_dadata_company(
     let okved = match &metadata.okved {
         Some(o) => o,
         None => {
-            Status::Tech.process_err(Status::MappingError, &ext_info);
+            Status::Tech.process_err(Status::MappingError, Some(&ext_info));
             return Ok(None);
         }
     };
@@ -48,7 +48,7 @@ pub(crate) async fn get_dadata_company(
     let opf_data = match &metadata.opf {
         Some(o_d) => o_d,
         None => {
-            Status::Tech.process_err(Status::MappingError, &ext_info);
+            Status::Tech.process_err(Status::MappingError, Some(&ext_info));
             return Ok(None);
         }
     };
@@ -56,7 +56,7 @@ pub(crate) async fn get_dadata_company(
     let opf_code = match &opf_data.opf_code {
         Some(code) => code,
         None => {
-            Status::Tech.process_err(Status::MappingError, &ext_info);
+            Status::Tech.process_err(Status::MappingError, Some(&ext_info));
             return Ok(None);
         }
     };
@@ -79,7 +79,7 @@ pub(crate) async fn get_dadata_company(
     let is_active_data = match &metadata.is_active {
         Some(d) => d,
         None => {
-            Status::Tech.process_err(Status::MappingError, &ext_info);
+            Status::Tech.process_err(Status::MappingError, Some(&ext_info));
             return Ok(None);
         }
     };
@@ -87,7 +87,7 @@ pub(crate) async fn get_dadata_company(
     let comp_state = match &is_active_data.status {
         Some(s) => s,
         None => {
-            Status::Tech.process_err(Status::MappingError, &ext_info);
+            Status::Tech.process_err(Status::MappingError, Some(&ext_info));
             return Ok(None);
         }
     };
@@ -97,7 +97,7 @@ pub(crate) async fn get_dadata_company(
 		metadata.ogrn_date_date = match Date::new(date_str.as_str()) {
 			Ok(d) => Some(d),
 			Err(err) => {
-				err.process_err(Status::MappingError, &ext_info);
+				err.process_err(Status::MappingError, Some(&ext_info));
 				return Ok(None);
 			}
 		}

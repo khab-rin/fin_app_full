@@ -30,5 +30,5 @@ pub(crate) async fn get_restore_password_data(
             device_id.as_ref()
         ).fetch_optional(&state.pool_fast)
         .await
-        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))
 }   

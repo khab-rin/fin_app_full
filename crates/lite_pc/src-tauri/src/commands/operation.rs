@@ -71,7 +71,7 @@ pub async fn cmd_is_operation_exist(
 ) -> Result<(BoxUuid, bool), Status> {
 
 	let session = state.get_session().await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 	let comp_id = session.session_user.company.comp_id.clone();
 
@@ -87,7 +87,7 @@ pub async fn cmd_is_operation_exist(
 	let check_oper_id = rule.make_stat_id();
 
     match get_exist_id_by_id(&state, &check_oper_id).await
-        .map_err(|err| err.process_err(err, ""))? {
+        .map_err(|err| err.process_err(err, None))? {
             Some(id) => Ok((id, true)),
             None => Ok((check_oper_id, false))
         }

@@ -13,7 +13,7 @@ pub(crate) async fn insert_contract_if_not_exist_function(
 ) -> Result<Contract, Status> {
 
     let contr_option = sql_get_contract_by_id_function(&state.pool_fast, &contract.contract_id).await
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
 
     if let Some(contract) = contr_option {
 		Status::log(LL::Debug, &format!("{:?}", contract.contract_id));
@@ -21,6 +21,6 @@ pub(crate) async fn insert_contract_if_not_exist_function(
     }
 
 	sql_insert_update_contract_function(&state.pool_fast, &contract).await
-		.map_err(|err| err.process_err(err, ""))
+		.map_err(|err| err.process_err(err, None))
    
 }

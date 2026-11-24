@@ -15,11 +15,11 @@ pub(crate) async fn get_user_by_user_id(
 		user_id.as_ref()
 	).fetch_optional(&state.pool_fast)
 	.await
-	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?;
 
 	if let Some(session_user_dto) = session_user_dto_option {
 		let session_user: SessionUser = session_user_dto.try_into()
-			.map_err(|err: serde_json::Error| err.process_err(Status::MappingError, ""))?;
+			.map_err(|err: serde_json::Error| err.process_err(Status::MappingError, None))?;
 		return Ok(Some(session_user));
 	}
     

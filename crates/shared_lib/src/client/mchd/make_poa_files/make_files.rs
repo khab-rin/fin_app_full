@@ -17,7 +17,7 @@ pub async fn make_xml_doc_files(
     let session = match state.get_session().await {
         Ok(s) => s,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(failed_result);
         }
     };
@@ -28,7 +28,7 @@ pub async fn make_xml_doc_files(
         match state.update_person(person.clone()).await {
             Ok(_) => {},
             Err(err) => {
-                err.process_err(err, "");
+                err.process_err(err, None);
                 return Ok(MchdStep::from_err(&err));
             }
         }
@@ -36,7 +36,7 @@ pub async fn make_xml_doc_files(
         match insert_person_no_sync(state, &person).await {
             Ok(_) => {},
             Err(err) => {
-                err.process_err(err, "");
+                err.process_err(err, None);
                 return Ok(MchdStep::from_err(&err));
             }
         }
@@ -47,7 +47,7 @@ pub async fn make_xml_doc_files(
     let poa_mchd = match make_poa(&session, data) {
         Ok(p) => p,
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
             return Ok(failed_result);
         }
     };

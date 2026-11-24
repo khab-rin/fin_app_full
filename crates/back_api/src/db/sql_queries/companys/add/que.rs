@@ -22,13 +22,12 @@ where E: sqlx::Executor<'t, Database = sqlx::Postgres>
         ).fetch_one(conn)
         .await
         .map_err(|err| {
-			let ext_info = format!("ошибка в запросе. инн = {:?}, кпп = {:?}", company.comp_inn, company.kpp);
-			err.process_err(Status::SqlQueryWrongLogic, &ext_info)
+			err.process_err(Status::SqlQueryWrongLogic, None)
 		})?;
     
     let company: Company = company_dto
         .try_into()
-        .map_err(|err: serde_json::Error| err.process_err(Status::MappingError, ""))?;
+        .map_err(|err: serde_json::Error| err.process_err(Status::MappingError, None))?;
 
     Ok(company)
 

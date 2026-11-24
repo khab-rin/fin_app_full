@@ -14,7 +14,7 @@ where E: sqlx::Executor<'t, Database = sqlx::Postgres>
 		"src/db/sql_queries/operations/get/que_get_operation_ids_by_comp_id.sql",
 		comp_id as &BoxUuid
 	).fetch_all(conn).await
-	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))
+	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))
 
 }
 
@@ -29,5 +29,5 @@ where E: sqlx::Executor<'t, Database = sqlx::Postgres>
 		"src/db/sql_queries/operations/get/que_get_operation_by_id.sql",
 		oper_id as &BoxUuid
 	).fetch_optional(conn).await
-	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))
+	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))
 }

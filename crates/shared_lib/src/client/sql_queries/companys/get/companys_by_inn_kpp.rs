@@ -13,11 +13,11 @@ pub
 ) -> Result<Vec<Company>, Status> {
 
     let session = state.get_session().await
-        .map_err(|err| err.process_err(err, ""))?; 
+        .map_err(|err| err.process_err(err, None))?; 
 
     let mut tx = session.local_db.begin()
         .await
-        .map_err(|err| err.process_err(Status::SqlPoolErr, ""))?; 
+        .map_err(|err| err.process_err(Status::SqlPoolErr, None))?; 
 
 
     let mut res: Vec<Company> = vec![];
@@ -34,7 +34,7 @@ pub
                 var2
             ).fetch_optional(&mut *tx)
             .await
-            .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?; 
+            .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?; 
 
 
         let Some(company_dto) = company_dto_option else {
@@ -43,14 +43,14 @@ pub
 
         let company: Company = company_dto
             .try_into()
-            .map_err(|err: serde_json::Error| err.process_err(Status::MappingError, ""))?;
+            .map_err(|err: serde_json::Error| err.process_err(Status::MappingError, None))?;
 
         res.push(company);  
 
     }
 
     tx.commit().await
-        .map_err(|err| err.process_err(Status::SqlCommitErr, ""))?; 
+        .map_err(|err| err.process_err(Status::SqlCommitErr, None))?; 
 
 
     Ok(res)

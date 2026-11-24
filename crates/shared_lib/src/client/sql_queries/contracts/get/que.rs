@@ -17,7 +17,7 @@ where E: sqlx::Executor <'t, Database = sqlx::Sqlite>
 		comp_id,
 		ctrpty_id
 	).fetch_all(conn).await
-	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?;
 
 	Ok(contracts)
 
@@ -34,7 +34,7 @@ where E: sqlx::Executor<'t, Database = sqlx::Sqlite>
 		"src/client/sql_queries/contracts/get/que_get_by_contr_id.sql",
 		contr_id
 	).fetch_optional(conn).await
-	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))
+	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))
 }
 
 pub async fn sql_get_all_contracts<'t, E>(
@@ -46,7 +46,7 @@ where E: sqlx::Executor<'t, Database = sqlx::Sqlite>
 		Contract,
 		"src/client/sql_queries/contracts/get/que_get_all_contracts.sql"
 	).fetch_all(conn).await
-	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?
+	.map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?
 	.into_iter()
 	.filter(|x| x.contract_id != NULLS.id.contract_id)
 	.collect();

@@ -19,7 +19,7 @@ pub fn add_doc_to_xml_file(
     let xml_string = match quick_xml::se::to_string(&poa_mchd) {
         Ok(xml) => xml,
         Err(err) => {
-            err.process_err(Status::MappingError, "");
+            err.process_err(Status::MappingError, None);
             return Ok(failed_res);
         }
     };
@@ -54,14 +54,14 @@ pub fn add_doc_to_xml_file(
     let comp_name_data = match session.session_user.company.metadata.comp_name.clone() {
         Some(d) => d,
         None => {
-            return Err(Status::Tech.process_err(Status::RequiredFieldsMiss, ""));
+            return Err(Status::Tech.process_err(Status::RequiredFieldsMiss, None));
         }
     };
 
     let comp_name = match comp_name_data.full_egrul_name {
         Some(n) => n,
         None => {
-            Status::Tech.process_err(Status::RequiredFieldsMiss, "");
+            Status::Tech.process_err(Status::RequiredFieldsMiss, None);
             return Ok(failed_res);
         }
     };

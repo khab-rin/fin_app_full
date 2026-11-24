@@ -24,7 +24,7 @@ pub async fn process_cmd_process_operations_function(
             return Ok(OperationStep::TryLater { text: OperationInfo::AccessDenied })
         },
         Err(err) => {
-            err.process_err(err, "");
+            err.process_err(err, None);
 			return Ok(failed_result);
         }
     }
@@ -32,7 +32,7 @@ pub async fn process_cmd_process_operations_function(
 	let session = match state.get_session().await {
 		Ok(s) => s,
 		Err(err) => {
-			err.process_err(err, "");
+			err.process_err(err, None);
 			return Ok(failed_result);
 		}
 	};
@@ -44,14 +44,14 @@ pub async fn process_cmd_process_operations_function(
 	let mut tx = match session.local_db.begin().await {
 		Ok(c) => c,
 		Err(err) => {
-			err.process_err(Status::SqlCommitErr, "");
+			err.process_err(Status::SqlCommitErr, None);
 			return Ok(failed_result);
 		}
 	};
 
 	for operation in operations {
 		if let Err(err) = sql_insert_update_operation_function(&mut *tx, &operation, 0). await {
-			err.process_err(Status::SqlQueryWrongLogic, "");
+			err.process_err(Status::SqlQueryWrongLogic, None);
 			return Ok(OperationStep::from_err(&err));
 		}
 	}
@@ -59,7 +59,7 @@ pub async fn process_cmd_process_operations_function(
 	match tx.commit().await {
 		Ok(_) => Ok(OperationStep::ProcessSuccess { text: OperationInfo::Nothing, count: count as i32}),
 		Err(err) => {
-			err.process_err(Status::SqlCommitErr, "");
+			err.process_err(Status::SqlCommitErr, None);
 			Ok(failed_result)
 		}
 	}

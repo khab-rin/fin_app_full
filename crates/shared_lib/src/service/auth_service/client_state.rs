@@ -45,7 +45,7 @@ impl ClientState {
             *current_session = Arc::new(updated_session);
             Ok(())
         } else {
-            Err(Status::Tech.process_err(Status::ClientSessionMissError, ""))
+            Err(Status::Tech.process_err(Status::ClientSessionMissError, None))
 
         }
     }
@@ -205,14 +205,14 @@ pub(crate) async fn init_session(
     let app_path = app_handle
         .path()
         .app_data_dir()
-        .map_err(|err| err.process_err(Status::SystemErr, ""))?;
+        .map_err(|err| err.process_err(Status::SystemErr, None))?;
 
     let user_path = app_path
         .join(comp_inn.to_string())
         .join(kpp.to_string());
 
     std::fs::create_dir_all(&user_path)
-        .map_err(|err| err.process_err(Status::SystemErr, ""))?; 
+        .map_err(|err| err.process_err(Status::SystemErr, None))?; 
     
     let db_path = user_path.join("database.db");
 
@@ -235,7 +235,7 @@ pub(crate) async fn init_session(
 	Status::log(LL::Info, &format!("connecting to database {}", db_url));
 
     let connect_options = SqliteConnectOptions::from_str(&db_url)
-        .map_err(|err| err.process_err(Status::SystemErr, ""))?
+        .map_err(|err| err.process_err(Status::SystemErr, None))?
         .create_if_missing(true)
         .journal_mode(SqliteJournalMode::Wal)
         .foreign_keys(true);
@@ -245,12 +245,12 @@ pub(crate) async fn init_session(
         .acquire_timeout(Config::global().sqlite_options.duration)
         .connect_with(connect_options)
         .await
-        .map_err(|err| err.process_err(Status::SystemErr, ""))?;
+        .map_err(|err| err.process_err(Status::SystemErr, None))?;
     
     sqlx::migrate!("./migrations")
         .run(&pool)
         .await
-        .map_err(|err| err.process_err(Status::SystemErr, ""))?;
+        .map_err(|err| err.process_err(Status::SystemErr, None))?;
 
     let session = Arc::new(ActiveSession {
         session_user: user_data.user.clone(),
@@ -262,15 +262,15 @@ pub(crate) async fn init_session(
 	let person: &Person = &user_data.user.person;
 
 	make_null_sqlite_elements(&session).await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 	{
 		let mut session_ref = state.session.lock().await;
 		*session_ref = Some(session);
 	}
 
-	insert_person_no_sync(state, person).await.map_err(|err| err.process_err(err, ""))?;
-	add_company(state, company).await.map_err(|err| err.process_err(err, ""))?;
+	insert_person_no_sync(state, person).await.map_err(|err| err.process_err(err, None))?;
+	add_company(state, company).await.map_err(|err| err.process_err(err, None))?;
 
     Ok(Status::Success)
 

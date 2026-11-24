@@ -17,7 +17,7 @@ where E: sqlx::Executor<'t, Database = sqlx::Postgres>
             external_id
         ).fetch_optional(conn)
         .await
-        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, ""))?;
+        .map_err(|err| err.process_err(Status::SqlQueryWrongLogic, None))?;
 
 
     Ok(insert_res.is_some())

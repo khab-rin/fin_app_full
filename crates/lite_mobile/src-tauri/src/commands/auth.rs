@@ -60,7 +60,7 @@ pub async  fn cmd_is_state_active_init(
         match session.local_db.acquire().await {
             Ok(_) => Ok(AuthStep::SuccessShort { }),
             Err(err) => {
-                err.process_err(Status::SystemErr, "");
+                err.process_err(Status::SystemErr, None);
                 Ok(AuthStep::Loading { text: AuthInfo::LoadingInfo})
             }
         }

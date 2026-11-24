@@ -22,7 +22,7 @@ pub async fn make_statement_operation_raw(
     let session = state
         .get_session()
         .await
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
 
 	let own_inn = &session.session_user.company.comp_inn;
 	let comp_inn_pay = &parsed_block.block_fields.pay_inn;
@@ -48,7 +48,7 @@ pub async fn make_statement_pay_operation_raw(
     let session = state
         .get_session()
         .await
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
 
     let ParsedBlock { block_fields, comment_data } = parsed_block;
 
@@ -61,14 +61,14 @@ pub async fn make_statement_pay_operation_raw(
 		&block_fields.rec_inn, 
 		&block_fields.rec_kpp
 	).await
-	.map_err(|err| err.process_err(err, ""))?;
+	.map_err(|err| err.process_err(err, None))?;
 
     let contracts = if let Some(ctrpty) = ctrpty_option.as_ref() {
         get_contracts_by_comp_ctrpty_ids (
             state,
             &ctrpty.comp_id
         ).await
-        .map_err(|err| err.process_err(err, ""))?
+        .map_err(|err| err.process_err(err, None))?
     } else {
         vec![]
     };
@@ -201,7 +201,7 @@ pub async fn make_statement_rec_operation_raw(
     let session = state
         .get_session()
         .await
-        .map_err(|err| err.process_err(err, ""))?; 
+        .map_err(|err| err.process_err(err, None))?; 
 
     let ParsedBlock { block_fields, comment_data } = parsed_block;
 
@@ -214,14 +214,14 @@ pub async fn make_statement_rec_operation_raw(
 		&block_fields.pay_inn, 
 		&block_fields.pay_kpp
 	).await
-	.map_err(|err| err.process_err(err, ""))?;
+	.map_err(|err| err.process_err(err, None))?;
 
     let contracts = if let Some(ctrpty) = ctrpty_option.as_ref() {
         get_contracts_by_comp_ctrpty_ids (
             state,
             &ctrpty.comp_id
         ).await
-        .map_err(|err| err.process_err(err, ""))?
+        .map_err(|err| err.process_err(err, None))?
     } else {
         vec![]
     };
@@ -345,7 +345,7 @@ pub async fn make_statement_home_operation_raw(
 ) -> Result<OperationRaw, Status> {
 
     let session = state.get_session().await
-        .map_err(|err| err.process_err(err, ""))?;
+        .map_err(|err| err.process_err(err, None))?;
 
     let user_id = session.session_user.user.user_id.clone();
 

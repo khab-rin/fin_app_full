@@ -17,7 +17,7 @@ pub async fn add_new_bank_acc(
 ) -> Result<Vec<RasBicAcc>, Status> {
 
 	let session = state.get_session().await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 	let (comp_inn, kpp) = match (comp_inn, kpp) {
 		(Some(i), Some(k)) => (i, k),
@@ -26,7 +26,7 @@ pub async fn add_new_bank_acc(
 
 	let comp_option = get_or_parse_insert_company_function(
 		state, comp_inn, kpp
-	).await.map_err(|err| err.process_err(err, ""))?;
+	).await.map_err(|err| err.process_err(err, None))?;
 
 	let mut company = match comp_option {
 		Some(c) => c,
@@ -40,7 +40,7 @@ pub async fn add_new_bank_acc(
 	company.metadata.bank_acc = prev_accounts.into_iter().collect();
 
 	sql_insert_update_company_query(&session.local_db, &company).await
-		.map_err(|err| err.process_err(err, ""))?;
+		.map_err(|err| err.process_err(err, None))?;
 
 	Ok(company.metadata.bank_acc)
 
