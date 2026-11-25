@@ -43,22 +43,7 @@ pub async fn make_bank_statement_operations(
         }
     };
 
-    let mut in_operations: Vec<OperationRaw> = vec![];
-
-    for opr in all_operations {
-		
-        if opr.debet == Account::BankAcc && opr.credit == Account::SpecBankAcc {
-            continue;
-        }
-		if opr.debet == Account::SpecBankAcc && opr.credit == Account::BankAcc{
-            continue;
-        }
-		
-        in_operations.push(opr);
-    }
-
-
-    Ok(OperationStep::StatementSuccess { text: SuccessRaw, operations: in_operations })
+    Ok(OperationStep::StatementSuccess { text: SuccessRaw, operations: all_operations })
 
   
 }
