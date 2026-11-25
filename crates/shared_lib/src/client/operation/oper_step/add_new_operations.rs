@@ -2,8 +2,10 @@ use crate::{Status, ProcessError, ClientState};
 use crate::sql_models::operation::implements::{Operation, OperationDto};
 use crate::sql_models::operation::service::{OperationStep, OperationInfo};
 use crate::service::mchd::home_mchd_power::HomeMchdPower;
+use crate::service::api_routes::implements::ApiRoutes;
 
 use crate::client::mchd::show_powers::check_access;
+use crate::client::back_api::post_query::post_query_back_api;
 use crate::client::sql_queries::operations::add::que::sql_insert_update_operation_function;
 
 pub async fn process_cmd_process_operations_function(
@@ -49,19 +51,35 @@ pub async fn process_cmd_process_operations_function(
 		}
 	};
 
-	for operation in operations {
-		if let Err(err) = sql_insert_update_operation_function(&mut *tx, &operation, 0). await {
+	for operation in operations.iter() {
+		if let Err(err) = sql_insert_update_operation_function(&mut *tx, operation, 1). await {
 			err.process_err(Status::SqlQueryWrongLogic, None);
 			return Ok(OperationStep::from_err(&err));
 		}
 	}
 
-	match tx.commit().await {
-		Ok(_) => Ok(OperationStep::ProcessSuccess { text: OperationInfo::Nothing, count: count as i32}),
-		Err(err) => {
-			err.process_err(Status::SqlCommitErr, None);
-			Ok(failed_result)
-		}
+	if let Err(err) = tx.commit().await {
+		err.process_err(Status::SqlCommitErr, None);
+		return Ok(OperationStep::from_err(&Status::SqlCommitErr));
 	}
+
+	let response = match post_query_back_api(
+		state, 
+		state.config.get_sql_long(), 
+		ApiRoutes::SqlOperationAddMany,
+		&operations 
+	).await{
+		Ok(r) => r,
+		Err(err) =>  {
+			err.process_err(err, None);
+			return Ok(OperationStep::from_err(&err));
+		}		
+	};
+
+	if !response.status().is_success() {
+		return Ok(OperationStep::from_err(&Status::SqlSyncError));
+	}
+
+	Ok(OperationStep::ProcessSuccess { text: OperationInfo::Nothing, count: count as i32})
 
 }
