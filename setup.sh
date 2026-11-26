@@ -25,24 +25,42 @@ echo "🚀 Setup statrting..."
 
 
 if ! command -v docker &> /dev/null; then
-    echo "❌ Error: Docker is missing! It is strictly required for this setup."
-    echo "💡 Please install Docker first to proceed."
+    echo "❌ Docker CLI is missing!"
+    echo "💡 Install Docker Desktop and enable WSL Integration."
     exit 1
-else
-    echo "✅ Docker detected and available."
 fi
 
+echo "🐳 Checking Docker daemon..."
 
-sudo apt-get update || {
-    echo "ERROR: Failed to update package lists."
+for i in {1..15}; do
+    if docker info &>/dev/null; then
+        break
+    fi
+
+    echo "⏳ Waiting for Docker Desktop... ($i/15)"
+    sleep 2
+done
+
+if ! docker info &>/dev/null; then
+    echo "❌ Docker daemon is not running or WSL Integration is disabled!"
+    echo "💡 Start Docker Desktop and enable WSL Integration for this distro."
     exit 1
-}
+fi
 
-sudo apt-get install -y \
+if ! docker compose version &>/dev/null; then
+    echo "❌ Docker Compose plugin is missing!"
+    exit 1
+fi
+
+echo "✅ Docker is running and available."
+
+
+sudo apt-get update && sudo apt-get install -y \
     gnome-keyring \
     libsecret-tools \
     dbus-user-session \
-    libdbus-1-dev || {
+    libdbus-1-dev \
+	unzip || {
     echo "ERROR: Failed to install dependencies."
     exit 1
 }
@@ -73,8 +91,8 @@ echo "--------------------------------------------------"
 
 
 echo "📦 Installing basic Linux system dependencies (requires sudo)..."
-sudo apt-get update && sudo apt-get install -y \
-    build-essential \
+sudo apt-get install -y \
+	build-essential \
     curl \
     wget \
     pkg-config \
@@ -108,28 +126,37 @@ fi
 
 
 export NVM_DIR="$HOME/.nvm"
+
 if [[ ! -s "$NVM_DIR/nvm.sh" ]]; then
     sudo apt-get install -y curl
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
 fi
+
 source "$NVM_DIR/nvm.sh"
-nvm install 22
+
+if [[ "$(nvm version 22)" == "N/A" ]]; then
+    nvm install 22
+else
+    echo "Node.js 22 is already installed."
+fi
+
 nvm use 22
 nvm alias default 22
 
 # Install Bun if missing.
+export PATH="$HOME/.bun/bin:$PATH"
+
 if ! command -v bun &>/dev/null; then
     curl -fsSL https://bun.sh/install | bash
-    export PATH="$HOME/.bun/bin:$PATH"
 fi
 
 echo "✅ Node.js: $(node -v), Bun: $(bun --version)"
 
 
+export PATH="$HOME/.cargo/bin:$PATH"
 
-
-if ! command -v cargo-tauri &> /dev/null && ! cargo --list | grep -q "tauri"; then
-    echo "⏳ Tauri CLI is missing. Installing tauri-cli via Cargo (this may take a few minutes)..."
+if ! cargo tauri --version &>/dev/null; then
+    echo "⏳ Installing Tauri CLI..."
     cargo install tauri-cli
     echo "✅ Tauri CLI installed successfully."
 else
@@ -145,25 +172,60 @@ else
     echo "✅ sqlx-cli  is already installed."
 fi
 
-cp .env.example .env
-export $(grep -v '^#' .env | xargs)
 
-sqlx database create
-sleep 1
-sqlx migrate run --source "crates//shared_lib/migrations"
-echo "local database created"
-sleep 1
-
+# PostgreSQL
 cd crates/back_api
-cp .env.example .env
-export $(grep -v '^#' .env | xargs)
+
+if [[ ! -f .env ]]; then
+    cp .env.example .env
+fi
+
+set -a
+source .env
+set +a
+
 docker compose up -d
 
 echo "⏳ Waiting for Postgres..."
-for i in {1..5}; do sqlx migrate run && break || sleep 3; done
+
+postgres_ready=false
+
+for i in {1..10}; do
+    if sqlx migrate run; then
+        postgres_ready=true
+        break
+    fi
+
+    sleep 3
+done
+
+if [[ "$postgres_ready" != true ]]; then
+    echo "❌ PostgreSQL migrations failed."
+    exit 1
+fi
 
 echo "✅ Server database created"
-cd -
+
+# SQLite
+cd ../..
+
+if [[ ! -f .env ]]; then
+    cp .env.example .env
+fi
+
+set -a
+source .env
+set +a
+
+if [[ "${DATABASE_URL:-}" != sqlite:* ]]; then
+    echo "❌ Expected SQLite DATABASE_URL!"
+    exit 1
+fi
+
+sqlx database create
+sqlx migrate run --source "crates/shared_lib/migrations"
+
+echo "✅ Local SQLite database created"
 
 cargo test -p shared_lib --features "lite_pc,lite_mobile"
 
