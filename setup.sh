@@ -165,7 +165,7 @@ for i in {1..5}; do sqlx migrate run && break || sleep 3; done
 echo "✅ Server database created"
 cd -
 
-cargo test -p shared_lib
+cargo test -p shared_lib --features "lite_pc,lite_mobile"
 
 echo "✅ Rust model export TypeScript - DONE"
 
