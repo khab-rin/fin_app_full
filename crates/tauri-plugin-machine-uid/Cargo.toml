@@ -29,7 +29,6 @@ autoexamples = false
 autotests = false
 autobenches = false
 description = "A Tauri plugin for retrieving machine UID"
-homepage = "https://github.com/SkipperNDT/tauri-plugin-machine-uid"
 documentation = "https://docs.rs/tauri-plugin-machine-uid"
 readme = "README.md"
 license = "MIT"

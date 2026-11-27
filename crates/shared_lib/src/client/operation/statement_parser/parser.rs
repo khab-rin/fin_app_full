@@ -50,10 +50,7 @@ pub async fn parse_statement(
     let mut parsed_blocks: Vec<ParsedBlock> = vec![];
 
 	let tauri_file_path = tauri_plugin_fs::FilePath::from_str(path)
-		.map_err(|err| {
-			let ext_info = format!("wrong svelte path = {:?}", path);
-			err.process_err(Status::FilePathError, Some(&ext_info))
-		})?;
+		.map_err(|_| Status::FilePathError)?;
 
 	let mut tauri_open_options = tauri_plugin_fs::OpenOptions::new();
 	tauri_open_options.read(true);

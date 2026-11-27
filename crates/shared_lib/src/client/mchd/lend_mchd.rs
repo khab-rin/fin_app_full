@@ -10,8 +10,8 @@ use crate::client::back_api::post_query::post_query_back_api;
 
 pub async fn lend_mchd_to_back_api_for_register(
     state: &ClientState,
-    xml_file_path: &String,
-    sig_file_path: &String
+    xml_file_path: &str,
+    sig_file_path: &str
 ) -> Result<MchdStep, Status> {
 
     let failed_result = MchdStep::TryLater { text: MchdInfo::ClientServiceError };
@@ -25,10 +25,7 @@ pub async fn lend_mchd_to_back_api_for_register(
     };
 
 	let tauri_xml_path = tauri_plugin_fs::FilePath::from_str(xml_file_path)
-		.map_err(|err| {
-			let ext_info = format!("wrong svelte xml_file_path = {:?}", xml_file_path);
-			err.process_err(Status::FilePathError, Some(&ext_info))
-		})?;
+		.map_err(|_| Status::FilePathError)?;
 
 	let xml_file = state.app_handle.fs().read(tauri_xml_path.to_owned())
 		.map_err(|err| {
@@ -38,10 +35,7 @@ pub async fn lend_mchd_to_back_api_for_register(
 
 	
 	let tauri_sig_path = tauri_plugin_fs::FilePath::from_str(sig_file_path)
-		.map_err(|err| {
-			let ext_info = format!("wrong svelte sig_file_path = {:?}", sig_file_path);
-			err.process_err(Status::FilePathError, Some(&ext_info))
-		})?;
+		.map_err(|_| Status::FilePathError)?;
 
 	let sig_file = state.app_handle.fs().read(tauri_sig_path.to_owned())
 		.map_err(|err| {

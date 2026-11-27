@@ -12,7 +12,6 @@ use crate::service::auth_service::client_state::init_session;
 use crate::client::back_api::post_query::post_query_back_api;
 use crate::client::auth_service::helper::write_new_user_info_to_device;
 
-
 pub async fn register_step2(
     state: &ClientState,
     data: &RegFilesPathData
@@ -23,10 +22,7 @@ pub async fn register_step2(
     let RegFilesPathData { json_path, sign_path } = data;
 
 	let tauri_json_path = tauri_plugin_fs::FilePath::from_str(json_path)
-		.map_err(|err| {
-			let ext_info = format!("wrong svelte json_path = {:?}", json_path);
-			err.process_err(Status::FilePathError, Some(&ext_info))
-		})?;
+		.map_err(|_| Status::FilePathError)?;
 
 	let init_file = state.app_handle.fs().read(tauri_json_path.to_owned())
 		.map_err(|err| {
@@ -36,10 +32,7 @@ pub async fn register_step2(
 
 
 	let tauri_sign_path = tauri_plugin_fs::FilePath::from_str(sign_path)
-		.map_err(|err| {
-			let ext_info = format!("wrong svelte sign_path = {:?}", sign_path);
-			err.process_err(Status::FilePathError, Some(&ext_info))
-		})?;
+		.map_err(|_| Status::FilePathError)?;
 
 	let sign_file = state.app_handle.fs().read(tauri_sign_path.to_owned())
 		.map_err(|err| {
