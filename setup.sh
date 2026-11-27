@@ -1,6 +1,16 @@
+
 #!/bin/bash
 
-set -e
+set -euo pipefail
+
+# --------------------------------------------------
+# PROJECT ROOT
+# --------------------------------------------------
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
+PROJECT_ROOT="$SCRIPT_DIR"
 
 echo "🚀 Welcome to the Setup!"
 echo "----------------------------------------------------------------"
@@ -29,13 +39,13 @@ echo "🚀 Setup starting..."
 # DOCKER
 # --------------------------------------------------
 
+echo "🐳 Checking Docker..."
+
 if ! command -v docker &>/dev/null; then
     echo "❌ Docker CLI is missing!"
     echo "💡 Install Docker and make sure its daemon is accessible."
     exit 1
 fi
-
-echo "🐳 Checking Docker daemon..."
 
 docker_ready=false
 
@@ -51,7 +61,6 @@ done
 
 if [[ "$docker_ready" != true ]]; then
     echo "❌ Docker daemon is not running or is not accessible!"
-    echo "💡 Start Docker Engine/Desktop and check your permissions."
     exit 1
 fi
 
@@ -136,7 +145,10 @@ export PATH="$HOME/.cargo/bin:$PATH"
 if ! command -v cargo &>/dev/null; then
     echo "⏳ Installing Rust toolchain..."
 
-    curl -sSfL https://sh.rustup.rs -o rustup-init.sh
+    curl -4 -fsSL --retry 3 --retry-all-errors \
+        https://sh.rustup.rs \
+        -o rustup-init.sh
+
     chmod +x rustup-init.sh
     ./rustup-init.sh -y
     rm rustup-init.sh
@@ -164,7 +176,10 @@ export NVM_DIR="$HOME/.nvm"
 
 if [[ ! -s "$NVM_DIR/nvm.sh" ]]; then
     echo "⏳ Installing NVM..."
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+
+    curl -4 -fsSL --retry 3 --retry-all-errors \
+        https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh \
+        | bash
 fi
 
 source "$NVM_DIR/nvm.sh"
@@ -183,7 +198,10 @@ export PATH="$HOME/.bun/bin:$PATH"
 
 if ! command -v bun &>/dev/null; then
     echo "⏳ Installing Bun..."
-    curl -fsSL https://bun.sh/install | bash
+
+    curl -4 -fsSL --retry 3 --retry-all-errors \
+        https://bun.sh/install | bash
+
     export PATH="$HOME/.bun/bin:$PATH"
 fi
 
@@ -194,6 +212,29 @@ fi
 
 echo "✅ Node.js: $(node --version)"
 echo "✅ Bun: $(bun --version)"
+
+
+# --------------------------------------------------
+# PERSIST ENVIRONMENT PATHS
+# --------------------------------------------------
+
+echo "⚙️ Configuring environment..."
+
+BASHRC="$HOME/.bashrc"
+touch "$BASHRC"
+
+if ! grep -qF 'export PATH="$HOME/.cargo/bin:$PATH"' "$BASHRC"; then
+    echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> "$BASHRC"
+fi
+
+if ! grep -qF 'export PATH="$HOME/.bun/bin:$PATH"' "$BASHRC"; then
+    echo 'export PATH="$HOME/.bun/bin:$PATH"' >> "$BASHRC"
+fi
+
+# Current setup script environment
+export PATH="$HOME/.cargo/bin:$HOME/.bun/bin:$PATH"
+
+echo "✅ Environment paths configured."
 
 
 # --------------------------------------------------
@@ -211,20 +252,43 @@ fi
 
 if ! command -v sqlx &>/dev/null; then
     echo "⏳ Installing SQLx CLI..."
-    cargo install sqlx-cli --no-default-features --features "postgres,sqlite,native-tls"
+
+    cargo install sqlx-cli \
+        --no-default-features \
+        --features "postgres,sqlite,native-tls"
 else
     echo "✅ SQLx CLI is already installed."
 fi
 
 
+# --------------------------------------------------
+# FRONTEND DEPENDENCIES
+# --------------------------------------------------
 
-# Frontend dependencies:
 echo "📦 Installing frontend dependencies..."
 
-cd crates/lite_pc/ui
+PC_UI="$PROJECT_ROOT/crates/lite_pc/ui"
+MOBILE_UI="$PROJECT_ROOT/crates/lite_mobile/ui"
+
+if [[ ! -f "$PC_UI/package.json" ]]; then
+    echo "❌ package.json not found: $PC_UI"
+    exit 1
+fi
+
+if [[ ! -f "$MOBILE_UI/package.json" ]]; then
+    echo "❌ package.json not found: $MOBILE_UI"
+    exit 1
+fi
+
+echo "📦 Installing PC frontend dependencies..."
+cd "$PC_UI"
 bun install
-cd ../../lite_mobile/ui
-cd ../../..
+
+echo "📦 Installing Mobile frontend dependencies..."
+cd "$MOBILE_UI"
+bun install
+
+cd "$PROJECT_ROOT"
 
 echo "✅ Frontend dependencies installed."
 
@@ -235,9 +299,14 @@ echo "✅ Frontend dependencies installed."
 
 echo "🐳 Setting up PostgreSQL..."
 
-cd crates/back_api
+cd "$PROJECT_ROOT/crates/back_api"
 
 if [[ ! -f .env ]]; then
+    if [[ ! -f .env.example ]]; then
+        echo "❌ crates/back_api/.env.example not found!"
+        exit 1
+    fi
+
     cp .env.example .env
 fi
 
@@ -274,9 +343,14 @@ echo "✅ Server database created."
 
 echo "🗄️ Setting up SQLite..."
 
-cd ../..
+cd "$PROJECT_ROOT"
 
 if [[ ! -f .env ]]; then
+    if [[ ! -f .env.example ]]; then
+        echo "❌ Project .env.example not found!"
+        exit 1
+    fi
+
     cp .env.example .env
 fi
 
@@ -289,7 +363,29 @@ if [[ "${DATABASE_URL:-}" != sqlite:* ]]; then
     exit 1
 fi
 
-sqlx database create
+# Determine the SQLite database file path
+sqlite_db_path="${DATABASE_URL#sqlite:}"
+sqlite_db_path="${sqlite_db_path%%\?*}"
+sqlite_db_path="${sqlite_db_path#//}"
+
+if [[ "$sqlite_db_path" == ":memory:" || -z "$sqlite_db_path" ]]; then
+    echo "❌ A persistent SQLite database path is required!"
+    exit 1
+fi
+
+if [[ "$sqlite_db_path" != /* ]]; then
+    sqlite_db_path="$PROJECT_ROOT/$sqlite_db_path"
+fi
+
+if [[ -f "$sqlite_db_path" ]]; then
+    echo "✅ SQLite database already exists."
+else
+    echo "⏳ Creating SQLite database..."
+    sqlx database create
+fi
+
+echo "⏳ Running SQLite migrations..."
+
 sqlx migrate run --source "crates/shared_lib/migrations"
 
 echo "✅ Local SQLite database created."
@@ -314,6 +410,6 @@ echo "----------------------------------------------------------------"
 echo "🎉 SETUP COMPLETED SUCCESSFULLY!"
 echo "----------------------------------------------------------------"
 echo "⚠️  RECOMMENDATION:"
-echo "   Restart your system before starting development"
+echo "   Restart WSL or open a new terminal"
 echo "   to apply all environment changes properly."
 echo "----------------------------------------------------------------"
